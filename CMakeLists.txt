@@ -1,5 +1,5 @@
-project("MinVRconfig_parser")
+project("MinVRSettings")
 
 
 add_executable(driver main.cpp
-                      MinVRconfig_parser.cpp)
+                      MinVRSettings.cpp)

@@ -30,3 +30,4 @@ TileFarClip             100.0
 TileFlipStereo          0
 TileInitialHeadFrame    ((1,0,0,0), (0,1,0,0), (0,0,1,-1), (0,0,0,1))
 ScalableMeshFile        /users/cavedemo/scalable/cave/ScalableData.pol_16
+

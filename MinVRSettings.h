@@ -1,42 +1,73 @@
 // -*-c++-*-
 #include <vector>
 #include <string>
+#include <map>
+#include <iostream>
+#include <string.h>
+#include <stdio.h>
+#include <fstream>
 using namespace std;
+
+
+typedef enum 
+{
+  NONE       = 0,
+  INT        = 1,
+  FLOAT      = 2,
+  STRING     = 3,
+  VEC_INT    = 4,
+  VEC_FLOAT  = 5,
+  VEC_STRING = 6
+} TYPE_ID;
 
 class MinVRSettings 
 {
 
- private:
-  // Setting up a vector of name and value pairs, where the value can
-  // be strings, ints, or doubles.
-  std::vector<string> settingNames;
-  std::vector<int> settingFlags;
-  std::vector<string> settingValues;
-  std::vector<int> settingIntValues;
-  std::vector<double> settingFloatValues;
+  private:
+    // Setting up a vector of name and value pairs, where the value can
+    // be strings, ints, or doubles.
+    // map<string, string> settingNames;
+    map<string, int>    settingFlags;
+    map<string, string> settingValues;
+    map<string, int>    settingIntValues;
+    map<string, float>  settingFloatValues;
 
- public:
-  MinVRSettings(); // Constructor need not do much
-  MinVRSettings(string settingFileName); // Populate settings
-                                              // with file contents.
+    map<string, vector<string> > settingValuesVector;
+    map<string, vector<int> >    settingIntValuesVector;
+    map<string, vector<float> >  settingFloatValuesVector;
+    
+    map<string, string> settingsToValues;
 
+    map<string, TYPE_ID> keyword_to_type;
+  protected:
+    vector<int>   string_int_vec(string value_column);
+    vector<float> string_float_vec(string value_column);
+    
+    
+  public:
+    MinVRSettings(){ } // Constructor need not do much
+    MinVRSettings(string settingFileName) { } // Populate settings
 
-  string getValue(string settingName);
-  int    getValue(string settingName);
-  double getValue(string settingName);
+    string getValueString(string settingName);
+    int    getValueStringVector(string settingName,vector<string>& stringValues);
+    int    getValueInt(string settingName);
+    int    getValueIntVector(string settingName,vector<int>& intValues);
+    float  getValueFloat(string settingName);
+    int    getValueFloatVector(string settingName,vector<float>& floatValues);
+  
+    int setValueString(string settingName, string settingValue);
+    int setValueInt(string settingName, int settingValue);
+    int setValueFloat(string settingName, float settingValue);
 
-  // Return value is some indicator of success/failure/type mismatch/etc
-  int setValue(string settingName, string settingValue);
-  int setValue(string settingName, int settingValue);
-  int setValue(string settingName, double settingValue);
+    // Return value is some indicator of success/failure/type mismatch/etc
 
-  int readValues(string settingFileName);
+    int readValues(string settingFileName);
 
-  int writeValues(string settingFileName);
+    int writeValues(string settingFileName);
 
-  // Incorporate a collection of settings into this collection.
-  int incorporateSettings(MinVRSettings settings);
-
+    // Incorporate a collection of settings into this collection.
+    int incorporateSettings(MinVRSettings settings);
+    vector<string> string_float_vec_test(const string m_string);
 
 };
 
@@ -45,10 +76,11 @@ class MinVRSettings
 class MinVRCoreSettings : public MinVRSettings {
 
  public:
-  MinVRSettings() {
+  MinVRCoreSettings() {
     // set names and default values
-  };
+  }
 };
+#if 0
 
 //usage could then be something like this:
 
@@ -68,3 +100,5 @@ class MinVRCoreSettings : public MinVRSettings {
     MinVRCore::instance()->initialize(settings);
   /*****************************************/
 
+
+#endif
