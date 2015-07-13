@@ -6,8 +6,12 @@
 #include <string.h>
 #include <stdio.h>
 #include <fstream>
+#include <iomanip>
+#include <algorithm>
 using namespace std;
 
+const int SUCCESS = 0;
+const int FAILURE = 1;
 
 typedef enum 
 {
@@ -56,8 +60,11 @@ class MinVRSettings
     int    getValueFloatVector(string settingName,vector<float>& floatValues);
   
     int setValueString(string settingName, string settingValue);
+    int setValueStringVector(string settingName, const vector<string>& settingValues);
     int setValueInt(string settingName, int settingValue);
+    int setValueIntVector(string settingName, const vector<int>& settingValues);
     int setValueFloat(string settingName, float settingValue);
+    int setValueFloatVector(string settingName, const vector<float>& settingValues);
 
     // Return value is some indicator of success/failure/type mismatch/etc
 
