@@ -212,7 +212,8 @@ MinVRSettings::getValueFloatVector(string settingName,vector<float>& floatValues
 }
 
 
-vector<float> MinVRSettings::string_float_vec(const string& value_column)
+vector<float>    
+MinVRSettings::string_float_vec(const string& value_column)
 {
     vector<float> f_tmp;
     char *pch, *dup = strdup(value_column.c_str());
@@ -261,10 +262,11 @@ MinVRSettings::setValueIntVector(string settingName, const vector<int>& settingV
 {
     string tmp;
     char str_tmp[128];
-    for (int j = 0; j < settingValues.size(); j++)
+    for (int j=0; j<settingValues.size(); j++)
     {
         sprintf(str_tmp,"%d",settingValues[j]);
-        tmp+=str_tmp;
+        tmp += str_tmp;
+        tmp += " ";
     }
     settingsToValues[settingName]=tmp;
     
@@ -291,11 +293,11 @@ MinVRSettings::setValueFloatVector(string settingName, const vector<float>& sett
 {
     string tmp;
     char str_tmp[128];
-    memset(str_tmp, 0,128);
-    for (int j = 0; j < settingValues.size(); j++)
+    for (int j=0; j<settingValues.size(); j++)
     {
         sprintf(str_tmp,"%f",settingValues[j]);
-        tmp+=str_tmp;
+        tmp += str_tmp;
+        tmp += " ";
     }
     settingsToValues[settingName]=tmp;
     
