@@ -1,13 +1,15 @@
 // -*-c++-*-
+#ifndef MINVR_SETTINGS_H
+#define MINVR_SETTINGS_H
+
 #include <vector>
-#include <string>
+#include <cstring>
 #include <map>
 #include <iostream>
-#include <string.h>
-#include <stdio.h>
 #include <fstream>
 #include <iomanip>
 #include <algorithm>
+#include <cstdlib>
 using namespace std;
 
 const int SUCCESS = 0;
@@ -29,7 +31,7 @@ class MinVRSettings
 
   private:
     // Setting up a vector of name and value pairs, where the value can
-    // be strings, ints, or doubles.
+    // be strings, ints, or floats.
     // map<string, string> settingNames;
     map<string, int>    settingFlags;
     map<string, string> settingValues;
@@ -44,8 +46,8 @@ class MinVRSettings
 
     map<string, TYPE_ID> keyword_to_type;
   protected:
-    vector<int>   string_int_vec(string value_column);
-    vector<float> string_float_vec(string value_column);
+    vector<int>   string_int_vec(const string& value_column);
+    vector<float> string_float_vec(const string& value_column);
     
     
   public:
@@ -74,8 +76,6 @@ class MinVRSettings
 
     // Incorporate a collection of settings into this collection.
     int incorporateSettings(MinVRSettings settings);
-    vector<string> string_float_vec_test(const string m_string);
-
 };
 
 
@@ -109,3 +109,4 @@ class MinVRCoreSettings : public MinVRSettings {
 
 
 #endif
+#endif // MINVR_SETTINGS_H

@@ -1,8 +1,7 @@
 #include "MinVRSettings.h"
-#include <stdlib.h>
-#include <cstdlib>
 
-string 
+
+string    
 MinVRSettings::getValueString(string settingName)
 {
     map<string, TYPE_ID>::iterator i;
@@ -37,12 +36,14 @@ MinVRSettings::getValueString(string settingName)
     return string();
 }
 
+
 int    
 MinVRSettings::getValueStringVector(string settingName,vector<string>& stringValues)
 {
     //
     return SUCCESS;
 }
+
 
 int    
 MinVRSettings::getValueInt(string settingName)
@@ -80,10 +81,10 @@ MinVRSettings::getValueInt(string settingName)
     return FAILURE;
 }
 
+
 int    
 MinVRSettings::getValueIntVector(string settingName,vector<int>& intValues)
 {
-    //
     map<string, TYPE_ID>::iterator i;
     i = keyword_to_type.find(settingName);
     if (i == keyword_to_type.end())
@@ -118,23 +119,24 @@ MinVRSettings::getValueIntVector(string settingName,vector<int>& intValues)
     return SUCCESS;
 }
 
-vector<int> MinVRSettings::string_int_vec(string value_column)
+
+vector<int>    
+MinVRSettings::string_int_vec(const string& value_column)
 {
-    //
-    char * pch;
-    vector<int> tmp;
-    char* str=(char*)value_column.c_str();
-    pch = strtok (str," \t,()");
-    while (pch != NULL)
+    vector<int> i_tmp;
+    char *pch, *dup = strdup(value_column.c_str());
+    pch = strtok(dup," \t,()");
+    while(pch != NULL)
     {
-        //printf ("%s\n",pch);
-        tmp.push_back(atoi(pch));
-        pch = strtok (NULL, " \t,()");
+        i_tmp.push_back(atoi(pch));
+        pch = strtok(NULL," \t,()");
     }
-    return tmp;
+    return i_tmp;
+    
 }
 
-float 
+
+float    
 MinVRSettings::getValueFloat(string settingName)
 {
     map<string, TYPE_ID>::iterator i;
@@ -170,10 +172,10 @@ MinVRSettings::getValueFloat(string settingName)
     return FAILURE;
 }
 
+
 int    
 MinVRSettings::getValueFloatVector(string settingName,vector<float>& floatValues)
 {
-    //
     map<string, TYPE_ID>::iterator i;
     i = keyword_to_type.find(settingName);
     if (i == keyword_to_type.end())
@@ -185,6 +187,7 @@ MinVRSettings::getValueFloatVector(string settingName,vector<float>& floatValues
         keyword_to_type[settingName] = VEC_FLOAT;
         
         floatValues = string_float_vec(value_column);
+        
         // save it in the settingValues map
         settingFloatValuesVector[settingName] = floatValues;
         return floatValues.size();
@@ -208,27 +211,22 @@ MinVRSettings::getValueFloatVector(string settingName,vector<float>& floatValues
     return SUCCESS;
 }
 
-vector<float> MinVRSettings::string_float_vec(string value_column)
+
+vector<float> MinVRSettings::string_float_vec(const string& value_column)
 {
-    //
-    char * pch;
-    vector<float> tmp;
-    char s_tmp[128];
-    char* str=(char*)value_column.c_str();
-    pch = strtok (str," \t,()");
-    while (pch != NULL)
+    vector<float> f_tmp;
+    char *pch, *dup = strdup(value_column.c_str());
+    pch = strtok(dup," \t,()");
+    while(pch != NULL)
     {
-        //printf ("%s\n",pch);
-        sprintf(s_tmp,"%s",pch);
-        float t = (float) strtod(s_tmp,NULL);
-        tmp.push_back(t);
-        pch = strtok (NULL, " \t,()");
+        f_tmp.push_back(static_cast<float>(strtod(pch,NULL)));
+        pch = strtok(NULL," \t,()");
     }
-    
-    return tmp;
+    return f_tmp;
 }
 
-int 
+
+int    
 MinVRSettings::setValueString(string settingName, string settingValue)
 {
     settingValues[settingName]=settingValue;
@@ -236,7 +234,8 @@ MinVRSettings::setValueString(string settingName, string settingValue)
     return SUCCESS;
 }
 
-int 
+
+int    
 MinVRSettings::setValueStringVector(string settingName, const vector<string>& settingValues)
 {
 //    settingValues[settingName]=settingValue;
@@ -244,7 +243,8 @@ MinVRSettings::setValueStringVector(string settingName, const vector<string>& se
     return SUCCESS;
 }
 
-int 
+
+int    
 MinVRSettings::setValueInt(string settingName, int settingValue)
 {
     char str_tmp[128];
@@ -255,7 +255,8 @@ MinVRSettings::setValueInt(string settingName, int settingValue)
     return SUCCESS;
 }
 
-int 
+
+int    
 MinVRSettings::setValueIntVector(string settingName, const vector<int>& settingValues)
 {
     string tmp;
@@ -272,7 +273,8 @@ MinVRSettings::setValueIntVector(string settingName, const vector<int>& settingV
     return SUCCESS;
 }
 
-int 
+
+int    
 MinVRSettings::setValueFloat(string settingName, float settingValue)
 {
     char str_tmp[128];
@@ -283,7 +285,8 @@ MinVRSettings::setValueFloat(string settingName, float settingValue)
     return SUCCESS;
 }
 
-int 
+
+int    
 MinVRSettings::setValueFloatVector(string settingName, const vector<float>& settingValues)
 {
     string tmp;
@@ -301,25 +304,9 @@ MinVRSettings::setValueFloatVector(string settingName, const vector<float>& sett
     return SUCCESS;
 }
 
-vector<std::string> MinVRSettings::string_float_vec_test(const std::string m_string)
-{
-    //
-    char * pch;
-    vector<string> tmp;
-    char* str=(char*)m_string.c_str();
-//    printf ("Splitting string \"%s\" into tokens:\n",str);
-    pch = strtok (str," \t,()");
-    while (pch != NULL)
-    {
-        //printf ("%s\n",pch);
-        tmp.push_back(string(pch));
-        pch = strtok (NULL, " \t,()");
-    }
-    return tmp;
-}
 
-
-int MinVRSettings::readValues(string settingFileName)
+int    
+MinVRSettings::readValues(string settingFileName)
 {
     // Read config settings from a file
     ifstream file(settingFileName.c_str());
@@ -345,7 +332,6 @@ int MinVRSettings::readValues(string settingFileName)
                 if(pch)
                 {
                     the_val = string(pch);
-                    cout << "the_key = " << the_key << ", the_val = " << the_val << endl;
                     settingsToValues[the_key] = the_val;
                 }
                 else
@@ -361,22 +347,22 @@ int MinVRSettings::readValues(string settingFileName)
     return SUCCESS;
 }
 
-int MinVRSettings::writeValues(string settingFileName)
+
+int    
+MinVRSettings::writeValues(string settingFileName)
 {
-    //
-    ofstream file(settingFileName.c_str());
-    
-    if (file.is_open())
+    ofstream m_file;
+    m_file.open(settingFileName.c_str());
+    if (m_file.is_open())
     {
         map<string, string>::iterator i;
         for(i=settingsToValues.begin(); i!= settingsToValues.end(); i++)
         {
             string tmp = i->second;
             tmp.erase(tmp.begin(), std::find_if(tmp.begin(), tmp.end(), std::bind1st(std::not_equal_to<char>(), ' ')));
-            file << setw(25) << left << i->first << " " << tmp << endl;
-            //file <<  i->first << " " << tmp << endl;
+            m_file << setw(25) << left << i->first << " " << tmp << endl;
         }
-        file.close();
+        m_file.close();
     }
     else
     {
@@ -385,3 +371,4 @@ int MinVRSettings::writeValues(string settingFileName)
     }
     return SUCCESS;
 }
+
