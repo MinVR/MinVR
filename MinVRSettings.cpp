@@ -38,10 +38,12 @@ MinVRSettings::getValueString(string settingName)
     return string();
 }
 
-int    
+int    ls
+
 MinVRSettings::getValueStringVector(string settingName,vector<string>& stringValues)
 {
     //
+	return 0;
 }
 
 int    
