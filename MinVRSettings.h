@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <algorithm>
 #include <cstdlib>
+#include <string>
 using namespace std;
 
 const int SUCCESS = 0;
