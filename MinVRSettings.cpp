@@ -1,5 +1,7 @@
 #include "MinVRSettings.h"
 
+const string keyword_delimiter_str="/";
+const char   keyword_delimiter_char = '/';
 
 string    
 MinVRSettings::getValueString(string settingName)
@@ -306,7 +308,61 @@ MinVRSettings::setValueFloatVector(string settingName, const vector<float>& sett
     return SUCCESS;
 }
 
+static void
+remove_surrounding_spaces(string& s,
+			  const string& sp = " \t[]\r")
+{
+    //string sp(" \t[]\r");
+  int i,j;
+  if (s.empty())
+    return;
+  i = s.find_first_not_of(sp);
+  if (i < 0)
+    {
+      // all spaces in here so get out
+      return;
+    }
+  s = s.substr(i);
+  j = s.find_last_not_of(sp);
+  if ( j>=0)
+    s.erase(j+1, s.size());
+}
 
+string
+parse_begin_section(const string& first_column,
+			      const string& str)
+{
+    int s;
+
+    s = first_column.find(" section");
+    if (s >= 0)
+    {
+	string sp=str;
+	remove_surrounding_spaces(sp);
+	// assumes the name is well-formed; no error checking
+	return sp;
+    }
+    return string("");
+}
+
+void 
+parse_end_section(const string& first_column,
+		  string& accumulated_key)
+{
+    int s;
+
+    s = first_column.find("endsection");
+    if (s >= 0)
+    {
+	int i = accumulated_key.find_last_of(keyword_delimiter_char);
+
+	accumulated_key = accumulated_key.substr(0,i);
+    }
+    else
+    {
+	return;
+    }
+}
 int    
 MinVRSettings::readValues(string settingFileName)
 {
@@ -315,7 +371,10 @@ MinVRSettings::readValues(string settingFileName)
     int i;
     char *pch, *str;
     string line, the_key, the_val;
-    
+    const string empty_string="";
+    string       new_section_name;
+    string       accumulated_key="";
+
     if (file.is_open())
     {
         while (!file.eof())
@@ -334,10 +393,23 @@ MinVRSettings::readValues(string settingFileName)
                 if(pch)
                 {
                     the_val = string(pch);
-                    settingsToValues[the_key] = the_val;
+		    // find new section  scoping and process it
+		    new_section_name = parse_begin_section(the_key, the_val);
+
+		    // check to see if end def scoping, and do book-keeping
+		    parse_end_section(the_key, accumulated_key);
+		    if (new_section_name == empty_string)
+		    {
+			settingsToValues[accumulated_key+the_key] = the_val;
+		    }
+		    else
+		    {
+			accumulated_key+=keyword_delimiter_str;
+			accumulated_key+=new_section_name;
+		    }
                 }
                 else
-                    settingsToValues[the_key] = "";
+                    settingsToValues[accumulated_key+the_key] = "";
             }
         }
     }
