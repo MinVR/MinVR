@@ -56,7 +56,7 @@ int main(int argc,char** argv)
             
             Cxml *xml = new  Cxml();
             xml->parse_string((char*)xml_string.c_str());
-            element *xml_node = xml->get_root_node()->get_next_child();
+            element *xml_node = xml->get_root_element()->get_next_child();
             fill_xml_tree(xml_node);
             delete xml_node;
             std::cout << std::endl;

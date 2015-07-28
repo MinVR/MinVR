@@ -56,7 +56,7 @@ bool Cxml::get_node(char* xml_string)
     if(k >= m_length)
         return false;
     m_root_node->set_name("XML_DOC");
-    element* Current = m_root_node->add_child_node();
+    element* Current = m_root_node->add_child_element();
     while(k<m_length)
     {
         c = xml_string[k];
@@ -79,7 +79,7 @@ bool Cxml::get_node(char* xml_string)
                 }
                 k+=3;
                 if(Current->get_name() != NULL)//we have seted this node, navigate to a child of it
-                    Current = Current->add_child_node();
+                    Current = Current->add_child_element();
                 Current->set_comment(szAttrNameBuff);//set it as a comment node
                 Current = Current->get_parent();//return to the previous level
                 continue;
@@ -141,7 +141,7 @@ bool Cxml::get_node(char* xml_string)
             }
             if(Current != NULL)//we have seted this node, navigate to a child of it
                 if(Current->get_name() != NULL)//we have seted this node, navigate to a child of it
-                    Current = Current->add_child_node();
+                    Current = Current->add_child_element();
             
             Current->set_name(szNodeNameBuff);
             while(c == CSPACE)
@@ -229,7 +229,7 @@ bool Cxml::get_node(char* xml_string)
 }
 
 
-element* Cxml::get_root_node()
+element* Cxml::get_root_element()
 {
     return m_root_node;
 }

@@ -10,7 +10,7 @@ element::element() : is_empty_attribute_list(true),
                    m_parrent(NULL),
                    is_pi(false)
 {
-    m_node_iterator = m_node_list.begin();
+    m_element_iterator = m_element_list.begin();
     m_attribute_iterator = m_attribute_list.begin();
 }
 
@@ -27,9 +27,9 @@ element::element(element* node) : is_empty_attribute_list(true),
         set_value(node->get_value());
         set_name(node->get_name());
         m_attribute_list = node->get_attribute_list();
-        m_node_list = node->get_node_list();
+        m_element_list = node->get_element_list();
     }
-    m_node_iterator = m_node_list.begin();
+    m_element_iterator = m_element_list.begin();
     m_attribute_iterator = m_attribute_list.begin();
 }
 
@@ -48,8 +48,8 @@ element::~element()
             it++;
         }
     }
-    i = m_node_list.begin();
-    while(i != m_node_list.end())
+    i = m_element_list.begin();
+    while(i != m_element_list.end())
     {
         delete(*i);
         i++;
@@ -150,12 +150,12 @@ bool element::set_value(char* the_value)
 }
 
 // //adds a child node to this one
-element* element::add_child_node(element* child)
+element* element::add_child_element(element* child)
 {
     if(child == NULL)
         return NULL;
-    m_node_list.push_front(child);
-    i = m_node_list.begin();
+    m_element_list.push_front(child);
+    i = m_element_list.begin();
     return (*i);
 }
 
@@ -201,42 +201,42 @@ char* element::get_name()
     return m_name;
 }
 
-element* element::add_child_node()
+element* element::add_child_element()
 {
     element* child = new element();
     child->set_parrent(this);
-    m_node_list.push_front(child);
-    i = m_node_list.begin();
-    m_node_iterator = m_node_list.begin();
+    m_element_list.push_front(child);
+    i = m_element_list.begin();
+    m_element_iterator = m_element_list.begin();
     return (*i);
 }
 
 element* element::get_next_child()
 {
-    if(m_node_iterator != m_node_list.end())
+    if(m_element_iterator != m_element_list.end())
     {
-        element* res =  (element*)*m_node_iterator;
-        m_node_iterator++;
+        element* res =  (element*)*m_element_iterator;
+        m_element_iterator++;
         return res;
     }
     return NULL;
 }
 
-element& element::operator=( element& the_node)
+element& element::operator=( element& the_element)
 {
-    set_name(the_node.get_name());
-    set_value(the_node.get_value());
-    m_node_list = the_node.get_node_list();
-    m_attribute_list = the_node.get_attribute_list();
+    set_name(the_element.get_name());
+    set_value(the_element.get_value());
+    m_element_list = the_element.get_element_list();
+    m_attribute_list = the_element.get_attribute_list();
     return *this;
 }
 
-element* element::operator = ( element* the_node)
+element* element::operator = ( element* the_element)
 {
-    set_name(the_node->get_name());
-    set_value(the_node->get_value());
-    m_node_list = the_node->get_node_list();
-    m_attribute_list = the_node->get_attribute_list();
+    set_name(the_element->get_name());
+    set_value(the_element->get_value());
+    m_element_list = the_element->get_element_list();
+    m_attribute_list = the_element->get_attribute_list();
     return this;
 }
 
@@ -245,9 +245,9 @@ std::list<attribute*> element::get_attribute_list()
     return m_attribute_list;
 }
 
-std::list<element*> element::get_node_list()
+std::list<element*> element::get_element_list()
 {
-    return m_node_list;
+    return m_element_list;
 }
 
 bool element::set_comment(char* the_comment)
@@ -258,7 +258,7 @@ bool element::set_comment(char* the_comment)
     return true;
 }
 
-bool element::is_comment_node()
+bool element::is_comment_element()
 {
     return is_comment;
 }

@@ -1,5 +1,5 @@
-#ifndef NODE_H
-#define NODE_H
+#ifndef ELEMENT_H
+#define ELEMENT_H
 
 #include "attribute.h"
 #include <list>
@@ -7,21 +7,21 @@
 class element
 {
   public:
-    element(void);
-    element(element* node);
-    ~element(void);
+    element();
+    element(element* element);
+    ~element();
   private:
     std::list<attribute*> m_attribute_list;
     std::list<attribute*>::iterator it;                   //used for various functions
     std::list<attribute*>::iterator m_attribute_iterator; //global iterator for get next/prev attribute
-    std::list<element*> m_node_list;
-    std::list<element*>::iterator m_node_iterator;           //global iterator for get next/prev node
+    std::list<element*> m_element_list;
+    std::list<element*>::iterator m_element_iterator;           //global iterator for get next/prev node
     std::list<element*>::iterator i;                         //used for various functions
     std::list<char*> m_comment_list;
     std::list<char*>::iterator m_comment_iterator;          //Global iterator for GetNext/prev comment
     std::list<char*>::iterator ic;                          //Global iterator for GetNext/prev comment
     std::list<attribute*> get_attribute_list();           //{return m_attribute_list;};
-    std::list<element*> get_node_list();                     //{return m_node_list;);
+    std::list<element*> get_element_list();                     //{return m_element_list;);
     
   public:
     // Adds an attribute to the attribute list
@@ -34,7 +34,7 @@ class element
     bool set_comment(char* the_comment);
     bool set_as_pi();
     bool is_pi_element();
-    bool is_comment_node();
+    bool is_comment_element();
     // Getter for the attribut by name
     attribute* get_attribute(char* the_name);
     // Gets the next attribute in the list, starting from head and increments the counter
@@ -44,10 +44,10 @@ class element
     // //adds a child node to this one
     element &operator = (element& the_element);
     element *operator = (element* the_element);
-    element* add_child_node();
+    element* add_child_element();
     element* get_next_child();
     element* get_parent();
-    element* add_child_node(element* child_element);
+    element* add_child_element(element* child_element);
     char* get_value();
     char* get_name();
 private:
@@ -61,4 +61,4 @@ private:
     char* m_value;
     element* m_parrent;
 };
-#endif // NODE_H
+#endif // ELEMENT_H

@@ -3,6 +3,7 @@ ClusterClient           1
 ClusterServerHost               cave001
 InputDevicesFile
 WindowWidth             1920
+                        
 WindowHeight            1080
 WindowX                 0
 WindowY                 0

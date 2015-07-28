@@ -17,6 +17,6 @@ class Cxml
     element* m_root_node;
     bool get_node(char* xml_string);
   public:
-    element* get_root_node();
+    element* get_root_element();
 };
 #endif // CXML_H
