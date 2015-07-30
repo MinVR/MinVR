@@ -1,17 +1,20 @@
 
-#include "GraphicsEngine.h"
-
 #include "VREvent.h"
 #include "VRMath.h"
 #include "VREngine.h"
+#include "VRScene.h"
 #include <iostream>
 
 
-class TestVRApp : public VRApp {
+class MyVRScene : public VRScene {
 public:
+  MyVRScene() : frame(0) {}
   void drawGraphics() {
-    std::cout << "Drawing graphics..." << std::endl;
+    std::cout << frame << ":  Drawing graphics..." << std::endl;
+    frame++;
   }
+private:
+  int frame;
 };
 
 
@@ -80,16 +83,12 @@ int main(int argc, char **argv) {
   std::cout << bs2.readInt() << std::endl;
   
 
-  std::string pluginDir = ".";
-  std::map<std::string,std::string> configMap;
-  GraphicsEngine testGfxEngine;
-
-  VREngine *vrEngine = VREngine::create(pluginDir, configMap, &testGfxEngine);
-
-  TestVRApp testVRApp;
-  vrEngine->run(&testVRApp);
-
-  return 0;
-  
+  VREngine *vrEngine = VREngine::fromCommandLineOptions(argc, argv);
+  VRScene *currentScene = new MyVRScene();
+  while (!currentScene->readyToClose()) {
+    vrEngine->mainloop(currentScene);    
+  }
+  vrEngine->shutdown();
+  delete vrEngine;  
 }
 

@@ -170,44 +170,8 @@ VRNetServer::synchronizeSwapBuffersAcrossAllNodes()
   }
 }
 
-
-
-
+/***
 int main() {
-
-  /*
-  ByteStream bs;
-  bs.writeString("hello there");
-
-  std::string s = bs.readString();
-
-  cout << s << endl;
-
-
-  VREvent e2("event 2", 2);
-  e2.serialize(bs);
-
-  VREvent e3;
-  e3.deserialize(bs);
-
-  int i = e3.getData().toInt();
-  std::cout << "i = " << i << std::endl;
-
-
-  Vec3 v1(1,2,3);
-  v1.print();
-  VREvent e1("event 1", v1);
-
-  e1.serialize(bs);
-
-
-  // To get the data out, we can use the templated deserializeData method:
-  VREvent e4;
-  e4.deserialize(bs);
-  Vec3 v2(e4.getData());
-  v2.print();
-  */
-
   VRNetServer server("3490", 1);
   int i = 0;
   std::vector<VREvent> events;
@@ -218,5 +182,5 @@ int main() {
     server.synchronizeSwapBuffersAcrossAllNodes();
     i++;
   }
-
 }
+**/

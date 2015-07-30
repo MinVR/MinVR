@@ -15,7 +15,7 @@
 
 
 // get sockaddr, IPv4 or IPv6:
-void *get_in_addr(struct sockaddr *sa) {
+void *get_in_addr2(struct sockaddr *sa) {
   if (sa->sa_family == AF_INET) {
     return &(((struct sockaddr_in*)sa)->sin_addr);
   }
@@ -63,7 +63,7 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
     exit(2);
   }
   
-  inet_ntop(p->ai_family, get_in_addr((struct sockaddr *)p->ai_addr), s, sizeof s);
+  inet_ntop(p->ai_family, get_in_addr2((struct sockaddr *)p->ai_addr), s, sizeof s);
   printf("client: connecting to %s\n", s);
 
   freeaddrinfo(servinfo); // all done with this structure
@@ -102,7 +102,7 @@ VRNetClient::synchronizeSwapBuffersAcrossAllNodes()
   waitForAndReceiveSwapBuffersNow(_socketFD);
 }
 
-
+/***
 int main() {
   VRNetClient client("localhost", "3490");
   int i = 0;
@@ -115,3 +115,4 @@ int main() {
     i++;
   }
 }
+**/

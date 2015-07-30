@@ -1,7 +1,6 @@
 # ================================================================================
 # 
-# This file is part of the MinVR Open Source Project, which is developed and
-# maintained by the University of Minnesota's Interactive Visualization Lab.
+# This file is part of the MinVR project.
 # 
 # File: CMakeLists.txt
 # 
@@ -12,7 +11,7 @@
 # 	...
 # 
 # -----------------------------------------------------------------------------------
-# Copyright (c) 2015 Regents of the University of Minnesota
+# Copyright (c) 2015 Regents of the University of Minnesota and Brown University
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without modification,

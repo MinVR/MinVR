@@ -9,7 +9,7 @@
  */
 class InputDevice {
 public:
-  virtual void pollForInput(std::vector<VREvent*> &inputEvents);
+  virtual void appendNewInputEventsSinceLastCall(std::vector<VREvent> &inputEvents) = 0;
 };
 
 
