@@ -1,7 +1,6 @@
 /* ================================================================================
 
-This file is part of the MinVR Open Source Project, which is developed and
-maintained by the University of Minnesota's Interactive Visualization Lab.
+This file is part of the MinVR Open Source Project.
 
 File: extend/PluginFramework.h
 
