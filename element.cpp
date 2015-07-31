@@ -130,7 +130,7 @@ char* element::get_value()
     return m_value;
 }
 
-bool element::set_value(char* the_value)
+bool element::set_value(const char* the_value)
 {
     if(the_value != NULL)
     {

@@ -1,8 +1,6 @@
-#include "Cxml.h"
-#include <string.h>
 #include <malloc.h>
 #include "utils.h"
-
+#include "Cxml.h"
 
 Cxml::Cxml() : m_cursor(0),
                m_length(0)
@@ -15,7 +13,7 @@ Cxml::~Cxml()
     delete(m_root_node);
 }
 
-// parse a string containg xml code
+// parse a string with the xml code
 bool Cxml::parse_string(char* xml_string)
 {
     if(xml_string == NULL)
@@ -48,14 +46,15 @@ bool Cxml::get_node(char* xml_string)
     const char CSQRPC = ']';
     const char SZCDATA[9] = "![CDATA[";
     const char CQM = '?';
-    const char CRET = 13; //carriage return
+    const char CRET = 13; // carriage return
     char *szNodeNameBuff = (char *)calloc(256,sizeof(char));
-    char *szNodeValBuff = (char *)calloc(256,sizeof(char));
+    char *szNodeValBuff  = (char *)calloc(256,sizeof(char));
     char *szAttrNameBuff = (char *)calloc(256,sizeof(char));
-    char *szAttrValBuff = (char *)calloc(256,sizeof(char));
+    char *szAttrValBuff  = (char *)calloc(256,sizeof(char));
     if(k >= m_length)
         return false;
     m_root_node->set_name("XML_DOC");
+    m_root_node->set_value(""); // just in case we want to access it later...
     element* Current = m_root_node->add_child_element();
     while(k<m_length)
     {
@@ -67,8 +66,8 @@ bool Cxml::get_node(char* xml_string)
         }
         if(c == COPEN)
         {
-            if(xml_string[k+1] == CEXCLAMATION && xml_string[k+2] == CMINUS && xml_string[k+3] == CMINUS)//it is a comment
-            {//Comment section
+            if(xml_string[k+1] == CEXCLAMATION && xml_string[k+2] == CMINUS && xml_string[k+3] == CMINUS) // this is a comment
+            { //the comment section
                 clean_str(szAttrValBuff);
                 k+=4;
                 c = xml_string[k];
@@ -78,10 +77,10 @@ bool Cxml::get_node(char* xml_string)
                     c = xml_string[++k];
                 }
                 k+=3;
-                if(Current->get_name() != NULL)//we have seted this node, navigate to a child of it
+                if(Current->get_name() != NULL)       //we have set this node, navigate to a child of it
                     Current = Current->add_child_element();
-                Current->set_comment(szAttrNameBuff);//set it as a comment node
-                Current = Current->get_parent();//return to the previous level
+                Current->set_comment(szAttrNameBuff); //set it as a comment node
+                Current = Current->get_parent();      //return to the previous level
                 continue;
             }
             while(k+10 < m_length && j < 9)
@@ -91,7 +90,7 @@ bool Cxml::get_node(char* xml_string)
                 j++;
                 if(j==8)
                 {
-                    //definetly a CDATA section follows
+                    // definetly a CDATA section
                     k = k + j;
                     int start = k;
                     while((k + 3) < m_length && xml_string[k+1] != CSQRPC && xml_string[k+2] != CSQRPC && xml_string[k+3] != CCLOSE)
@@ -116,7 +115,7 @@ bool Cxml::get_node(char* xml_string)
             }
             clean_str(szNodeNameBuff);
             if(xml_string[k+1] == CSLASH)
-            {//closing tag for the last opend node
+            { // closing tag for the last opened node
                 Current = Current->get_parent();
                 k++;
                 while(xml_string[k] != CCLOSE)
@@ -139,8 +138,8 @@ bool Cxml::get_node(char* xml_string)
                     szNodeNameBuff = concat(szNodeNameBuff,c);
                 c = xml_string[++k];
             }
-            if(Current != NULL)//we have seted this node, navigate to a child of it
-                if(Current->get_name() != NULL)//we have seted this node, navigate to a child of it
+            if(Current != NULL)                 // this node is set, navigate to a child of it
+                if(Current->get_name() != NULL) // this node is set, navigate to a child of it
                     Current = Current->add_child_element();
             
             Current->set_name(szNodeNameBuff);
