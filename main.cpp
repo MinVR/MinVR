@@ -69,6 +69,10 @@ int main(int argc,char** argv)
         // call the write() function
         std::cout << "Opening file = " << file_name_2 << " for writing..." << std::endl;
         minvr_settings.writeValues(file_name_2);
+
+	cout << "============XML test=========" << endl;
+	cout << "getValueString(CAVEViewer/headDeviceTransformation)=" << minvr_settings.getValueString("CAVEViewer/headDeviceTransformation") << endl;
+
     }
     else
     {

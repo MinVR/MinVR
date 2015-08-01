@@ -1,8 +1,10 @@
 #include "MinVRSettings.h"
 
+
 const string keyword_delimiter_str="/";
 const char   keyword_delimiter_char = '/';
 
+const string MinVRSettings::id_str = "id";
 string    
 MinVRSettings::getValueString(string settingName)
 {
@@ -318,10 +320,11 @@ remove_surrounding_spaces(string& s,
     return;
   i = s.find_first_not_of(sp);
   if (i < 0)
-    {
+  {
       // all spaces in here so get out
+      s="";
       return;
-    }
+  }
   s = s.substr(i);
   j = s.find_last_not_of(sp);
   if ( j>=0)
@@ -334,7 +337,7 @@ parse_begin_section(const string& first_column,
 {
     int s;
 
-    s = first_column.find(" section");
+    s = first_column.find("section");
     if (s >= 0)
     {
 	string sp=str;
@@ -345,7 +348,7 @@ parse_begin_section(const string& first_column,
     return string("");
 }
 
-void 
+int
 parse_end_section(const string& first_column,
 		  string& accumulated_key)
 {
@@ -358,13 +361,124 @@ parse_end_section(const string& first_column,
 
 	accumulated_key = accumulated_key.substr(0,i);
     }
+   
+    return s;
+   
+}
+
+bool 
+MinVRSettings::determine_if_xml(string settingFileName)
+{
+    ifstream file(settingFileName.c_str());
+    int i;
+    string line;
+    if (file.is_open())
+    {
+        while (!file.eof())
+        {
+            getline(file, line);
+            i = line.find("?xml");
+	    if (i >=0)
+	    {
+		file.close();
+		return true;
+	    }
+	}
+    }
+    file.close();
+    return false;
+
+}
+
+string xml_root_name;
+const string key_id="id";
+void 
+MinVRSettings::fill_xml_tree(element* xml_node)
+{
+    attribute *a = NULL;
+    if(xml_node == NULL)
+        return;
+    
+    while((a=xml_node->get_next_attribute()) != NULL)
+        key_list.push_back(a->get_value());
+    char* tmp_value;
+    string tmp_value_str;
+    while(true)
+    {
+        element *chld = xml_node->get_next_child();
+        if(chld == NULL)
+        {
+	    tmp_value = xml_node->get_value();
+	    if (tmp_value != NULL)
+	    {
+		tmp_value_str=tmp_value;
+		int i = tmp_value_str.find_first_not_of(string(" "));
+		if (i >=0)	    
+		{
+		    if(xml_node->get_value()!=NULL && 
+		       xml_node->get_attribute((char*)id_str.c_str())==NULL && 
+		       xml_node->get_value()!="")
+		    {
+			std::stringstream key_buffer;
+			key_buffer << key_list.back() << "/" << xml_node->get_name();
+			std::string str_value = xml_node->get_value();
+			
+			// populate the settings map here...
+			settingsToValues[key_buffer.str()] = str_value;
+		    }
+		}
+	    }
+            return;
+        }
+        fill_xml_tree(chld);
+    }
+    key_list.pop_back();
+}
+
+int    
+MinVRSettings::readValuesXML(string settingFileName)
+{
+    std::string line;
+    std::string xml_string="";
+    string key, value;
+    ifstream file(settingFileName.c_str());
+    if(file.is_open())
+    {
+	std::stringstream buffer;
+	buffer << file.rdbuf();
+	xml_string = buffer.rdbuf()->str();
+            
+	Cxml *xml = new  Cxml();
+	xml->parse_string((char*)xml_string.c_str());
+	element *xml_node = xml->get_root_element();
+	fill_xml_tree(xml_node);
+	delete xml_node;
+	std::cout << std::endl;
+	file.close();
+    }
     else
     {
-	return;
+	std::cout << "Error opening file " << settingFileName << std::endl;
     }
+    return SUCCESS;
 }
+
 int    
 MinVRSettings::readValues(string settingFileName)
+{
+    if (determine_if_xml(settingFileName))
+    {
+	readValuesXML(settingFileName);
+    }
+    else
+    {
+	readValuesNonXML(settingFileName);
+    }
+    return SUCCESS;
+}
+
+int    
+MinVRSettings::readValuesNonXML(string settingFileName)
 {
     // Read config settings from a file
     ifstream file(settingFileName.c_str());
@@ -382,7 +496,7 @@ MinVRSettings::readValues(string settingFileName)
             getline(file, line);
             i = line.find("#");
             if (i>=0)
-                continue;
+	      continue;
             
             str=(char*)line.c_str();
             pch = strtok (str," \t,()");
@@ -397,19 +511,30 @@ MinVRSettings::readValues(string settingFileName)
 		    new_section_name = parse_begin_section(the_key, the_val);
 
 		    // check to see if end def scoping, and do book-keeping
-		    parse_end_section(the_key, accumulated_key);
+		    //parse_end_section(the_key, accumulated_key);
 		    if (new_section_name == empty_string)
 		    {
+			the_key=string("/")+the_key;
 			settingsToValues[accumulated_key+the_key] = the_val;
 		    }
-		    else
+		    else 
 		    {
-			accumulated_key+=keyword_delimiter_str;
+			if (!accumulated_key.empty())
+			{
+			    accumulated_key+=keyword_delimiter_str;
+			}
 			accumulated_key+=new_section_name;
+			settingsToValues[accumulated_key]="_section_definition_";
 		    }
                 }
                 else
-                    settingsToValues[accumulated_key+the_key] = "";
+		{
+		    // check to see if end def scoping, and do book-keeping
+		    if (parse_end_section(the_key, accumulated_key)< 0)
+		    {
+			settingsToValues[accumulated_key+the_key] = "";
+		    }
+		}
             }
         }
     }
@@ -427,12 +552,15 @@ MinVRSettings::writeValues(string settingFileName)
 {
     ofstream m_file;
     m_file.open(settingFileName.c_str());
+    const string section_definition="_section_definition_";
     if (m_file.is_open())
     {
         map<string, string>::iterator i;
         for(i=settingsToValues.begin(); i!= settingsToValues.end(); i++)
         {
             string tmp = i->second;
+	    if (tmp == section_definition)
+	      continue;
             tmp.erase(tmp.begin(), std::find_if(tmp.begin(), tmp.end(), std::bind1st(std::not_equal_to<char>(), ' ')));
             m_file << setw(25) << left << i->first << " " << tmp << endl;
         }

@@ -11,6 +11,9 @@
 #include <algorithm>
 #include <cstdlib>
 #include <string>
+#include <deque>
+#include "Cxml.h"
+
 using namespace std;
 
 const int SUCCESS = 0;
@@ -46,11 +49,17 @@ class MinVRSettings
     map<string, string> settingsToValues;
 
     map<string, TYPE_ID> keyword_to_type;
+    deque<std::string> key_list;
+    static const string id_str;
   protected:
     vector<int>   string_int_vec(const string& value_column);
     vector<float> string_float_vec(const string& value_column);
     
-    
+    bool determine_if_xml(string);
+    void fill_xml_tree(element* xml_node);
+    int  readValuesNonXML(string settingFileName);
+    int  readValuesXML(string settingFileName);
+
   public:
     MinVRSettings(){ } // Constructor need not do much
     MinVRSettings(string settingFileName) { } // Populate settings
