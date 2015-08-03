@@ -1,0 +1,34 @@
+#conf cave006 :0.3
+ClusterClient           1
+ClusterServerHost               cave001
+InputDevicesFile
+WindowWidth             1920
+                        
+WindowHeight            1080
+WindowX                 0
+WindowY                 0
+WindowCenter            0
+WindowRGBBits           8
+WindowAlphaBits         8
+WindowDepthBits         24
+WindowStencilBits       8
+WindowFSAASamples       4
+WindowFullScreen        0
+WindowAsynchronous      1
+WindowStereo            1
+WindowRefreshRate       120
+WindowResizable         0
+WindowAllowMaximize     1
+WindowFramed            0
+WindowCaption           VRG3D Application
+WindowMouseVisible      1
+TileTopLeft             (-3.32802 , -0.191319, -2.53334)
+TileTopRight            (-3.025 , 1.86973, -2.21588)
+TileBotLeft             (-2.38032 , -0.191319, -3.43794)
+TileBotRight            (-2.0773 , 1.86973, -3.12048)
+TileNearClip            0.01
+TileFarClip             100.0
+TileFlipStereo          0
+TileInitialHeadFrame    ((1,0,0,0), (0,1,0,0), (0,0,1,-1), (0,0,0,1))
+ScalableMeshFile        /users/cavedemo/scalable/cave/ScalableData.pol_16
+

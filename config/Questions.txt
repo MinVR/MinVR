@@ -1,0 +1,19 @@
+Questions:
+
+1. Error checking - how much and how detailed?
+2. Failure:
+    - exit(1)?
+    - throw()?
+    - Something else?
+    - Failure code: 0 or 1, EXIT_SUCCESS, EXIT_FAILURE?
+3. How to return multiple values
+    - vector<int>, int*
+    - vector<float>, float*
+    - Do we anticipate anything more complex than ((0,0,0,1), (1,0,0,0), (0,1,0,0), (0,0,1,0))?
+4. Method overload
+    - template <typename T> getValue(string settingName)
+        - int tmp = getValue<int>(settingName);
+5. Parse the config properties
+    - At the initialization time? (may save some cycles)
+    - Do the parsing on the fly?
+

@@ -1,0 +1,16 @@
+#ifndef UTILS_H
+#define UTILS_H
+
+#include <locale>
+#include <iostream>
+#include <string>
+#include <sstream>
+
+#include "element.h"
+using namespace std;
+
+char* concat(char *str, char c);
+void copyx(char* dst ,char* src, int start, int stop);
+void clean_str(char* str);
+
+#endif // UTILS_H

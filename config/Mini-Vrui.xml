@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<MiniVrui>
+    <section id="CAVEViewer">
+        <name>CAVEViewer</name>
+        <headTracked>true</headTracked>
+        <headDevice>Head</headDevice>
+        <headDeviceTransformation>translate (0.0, 0.0, 0.0)</headDeviceTransformation>
+        <viewDirection>(0.0, -1.0, 0.0)</viewDirection>
+        <monoEyePosition>(0.0, -2.0, -1.5)</monoEyePosition>
+        <leftEyePosition>(-1.25, -2.0, -1.5) </leftEyePosition>
+        <rightEyePosition>(1.25, -2.0, -1.5) </rightEyePosition>  
+    </section>
+    <section id="CAVEfront">
+        <name> CAVEfront</name>
+        <deviceMounted> false</deviceMounted>
+        <origin> (-48.0, -48.0, -48.0)</origin>
+        <horizontalAxis>(1.0, 0.0, 0.0)</horizontalAxis>
+        <width>96.0</width>
+        <verticalAxis>(0.0, 1.0, 0.0)</verticalAxis>
+        <height>96.0</height>
+    </section>
+    <section id="CAVEfloor">
+        <name> CAVEfloor</name>
+        <deviceMounted> false</deviceMounted>
+        <origin> (48.0, -48.0, -48.0)</origin>
+        <horizontalAxis> (-1.0, 0.0, 0.0)</horizontalAxis>
+        <width> 96.0</width>
+        <verticalAxis> (0.0, 0.0, 1.0)</verticalAxis>
+        <height> 54.0</height>
+    </section>
+    <section id="CAVEleft">
+        <name> CAVEleft</name>
+        <deviceMounted> false</deviceMounted>
+        <origin> (-48.0, -48.0, 48.0)</origin>
+        <horizontalAxis> (0.0, 0.0, -1.0)</horizontalAxis>
+        <width> 96.0</width>
+        <verticalAxis> (0.0, 1.0, 0.0)</verticalAxis>
+        <height> 96.0</height>
+    </section>
+    <section id="CAVEright">
+        <name> CAVEright</name>
+        <deviceMounted> false</deviceMounted>
+        <origin> (48.0, -48.0, -48.0)</origin>
+        <horizontalAxis> (0.0, 0.0, 1.0)</horizontalAxis>
+        <width> 96.0</width>
+        <verticalAxis> (0.0, 1.0, 0.0)</verticalAxis>
+        <height> 96.0</height>
+    </section>
+    <section id="frontWindow">
+        <display> cave5:0.0</display>
+        <windowPos> (0,0), (1280,1280)</windowPos>
+        <windowFullscreen> false</windowFullscreen>
+        <windowType> QuadbufferStereo</windowType>
+        <multisamplingLevel> 1</multisamplingLevel>
+        <screenName> CAVEfront</screenName>
+        <viewerName> CAVEViewer</viewerName>
+        <joinSwapGroup> false</joinSwapGroup>
+    </section>
+</MiniVrui>
