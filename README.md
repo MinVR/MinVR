@@ -29,11 +29,17 @@ DisplayDevices do not necessarily need to be OpenGL-based graphics displays.  Yo
 The rest of the classes here are much rougher in terms of the ideas.  Current working idea is something like:
 
 GraphicsWindow is a DisplayDevice
+
   has Viewport1
+
     has VRProjectionMethod (or maybe VRFrustum or VRCameraRig, best name?)
+  
     has VRStereoFormatter
+  
   has Viewport2
+  
     has VRProjectionMethod
+  
     has VRStereoFormatter
 
 Implemenations of VRProjectionMethod could be:  VRHeadTrackedPanel, VRHeadTrackedCurvedPanel (if needed for the YURT), VRHMD, VRDesktopCamera
