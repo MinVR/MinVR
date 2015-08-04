@@ -1,10 +1,99 @@
 # MinVR
 
+## Overview of Directories and Current Code Status
+
+### main
+
+Overview:  VRMain (name still under debate, has also been called VRCore and VREngine) is the key API for application programmers.  It provides the "big 4" functions that need to be added to any project in order to use MinVR.  There is an example program in this directory as well.
+
+Status:  May not even compile yet, but serves as a good working spec for this really important API.
+
+Lead:  Dan K. submits this as a proposal to the group for feedback...  Would be great for the Brown team and others at UMN (Dan O., maybe Seth) to take a look and provide design feedback. 
+
+
+### event
+
+Overview:  VREvent is one of the most important classes in the whole library.  There is an interesting/important design proposal here to try to make the event data payload very flexible.  This is currently implemented using the VRByteData and VRByteStream classes.
+
+Status:  This has compiled and worked with just the caveat that it does not yet check for big/littleendianness of the current machine.  There is a simple test program inside the tests/eventdata subdir that may or may not still compile.  Would be good to resurrect that and use it as a test.  Ultimately, would like to improve this by replacing ByteData with DataStruct.
+
+Lead:  Brown team has ideas about how to best implement something like a flexible DataStruct class that could be a nice replacement for the ByteData and ByteStream classes used currently.  This seems like the next step.  One of the key issues with the current ByteData approach is that it is not self-revealing, i.e., it's just bytes with no header info, so programmers need to know what types based only upon the name of the event in order to correctly access the data.  
+
+
+### display
+
+Overview:  Like, InputDevices, the idea here is that VR programs will have a list of current InputDevices and a list of current DisplayDevices.  For DisplayDevices, this list is contained within the DisplayManager class.  DisplayManager's job is to each frame prep each DisplayDevice for drawing and then call the application's draw() routine.  Many apps will have multiple DisplayDevices, e.g., multiple walls in a Cave.  The default is to render these sequentially in a for loop.  Alternatively, a subclass called VRDisplayManagerThreaded knows how to render each DisplayDevice in its own thread.
+
+DisplayDevices do not necessarily need to be OpenGL-based graphics displays.  You could have an audio display or a haptic display or an offscreen display that writes images to disk or sends them over a network connection.  So, DisplayDevice is very generic.  However, the most typical display will use 3D graphics, and these graphics are always rendered to a VRGraphicsWindow.  VRGraphicsWindow is an abstract class that will be implemented in plugins for particular windowing systems, like glut.  
+
+The rest of the classes here are much rougher in terms of the ideas.  Current working idea is something like:
+
+GraphicsWindow is a DisplayDevice
+  has Viewport1
+    has VRProjectionMethod (or maybe VRFrustum or VRCameraRig, best name?)
+    has VRStereoFormatter
+  has Viewport2
+    has VRProjectionMethod
+    has VRStereoFormatter
+
+Implemenations of VRProjectionMethod could be:  VRHeadTrackedPanel, VRHeadTrackedCurvedPanel (if needed for the YURT), VRHMD, VRDesktopCamera
+
+Implementations of VRStereoFormatter could be:  VRMono, VRQuadBufferedStereo, VRSideBySideStereo, VRColumnInterlacedStereo
+
+
+Status:  Very much a work in progress.  This is a tricky design to do in a general way while also trying to avoid making it overly complicated.
+
+Lead:  Dan K. is still enjoying thinking about this and trying to refine it, but welcoming comments and discussion if others can understand what is there now enough to comment.  If time, will try to draw up a UML diagram to facilitate discussion.
+
+
+### net
+
+Overview:  VRNetInterface handles synchronization for rendering and events when running on a cluster.  There are two implementations of the interface, one for servers and one for clients.  
+
+Status:  The network code needs to be extended to support Windows.  This has been tested and works on OSX with the current events that use ByteData.  
+
+Lead:  Extending the network code to also work on windows would be a good task for a non-graphics programmer.
+
+
+### math
+
+Overview:  We need just a little bit of support for linear algebra math (3D vectors and 4x4 matrices) in order to calculate projection matrices and do other things in the display code.  I think that we should take the approach of assuming that app programmers will pull in their own math library when they pull in their own graphics toolkit, so I would view this as support for math inside MinVR only.  We don't expect others to use our Vector and Matrix classes.
+
+Status:  Made a very simplistic Vec3 class in order to test the VREvent class.  No other work on this.
+
+Lead:  ??  Just implement as necessary as we get into creating projection matrices etc.
+
+
+### plugin
+
+Overview:  This is a framework that Dan O. built for MinVR1 to support plugins.  
+
+Status:  Dan O. has been using this, so seems robust.  Explaining how this is setup would be a good topic for an upcoming meeting.
+
+Lead:  Dan O.
+
+
+### config
+
+Overview:  Support for XML-based config files.
+
+Status:  ??
+
+Lead:  Brown team.
+
+
+
+
+
+
+
+## Philosophical Ramblings
+
 MinVR is an Open Source Project developed and maintained collaboratively by the University of Minnesota and Brown University.
 
 The goal of MinVR is to facilitate a variety of data visualization and virtual reality research projects by providing a robust, cross-platform VR toolkit for use with many different VR displays (e.g., CAVE's, PowerWalls, multi-touch stereoscopic tables, 3DTV's, head-mounted displays) and input devices (e.g., 6 degree-of-freedom trackers, multi-touch input devices, haptic devices, home-built devices).
 
-Informed by our collective experience with a variety of VR research platforms in the past decade, the approach is to create an as-minimal-as-possible (hence the name MinVR) library that at its core contains the key code necessary to support head-tracked stereoscopic VR on a variety of displays and with a variety of input devices.  But, to have this core written in a generic way that does not impose a dependency on application programmers to use specific display or input hardware or even a specific 3D graphics library.  Of course, every VR program requires some graphics, so the library also supports this, but this support along with support for specific input devices is implemented outside of the core using a plugin architecture.  In summary, the core has essentially no external dependencies and is designed to be common to all VR programs, while support for specific graphics toolkits, input devices, and other non-essential features are all implemented in plugins.
+Informed by our collective experience with a variety of VR research platforms in the past decade, the approach is to create an as-minimal-as-possible (hence the name MinVR) library that at its core contains the key code necessary to support head-tracked stereoscopic VR on a variety of displays and with a variety of input devices.  But, to have this core written in a generic way that does not impose a dependency on application programmers to use specific display or input hardware or even a specific 3D graphics library.  Of course, every VR program requires some graphics, so the library also supports this, but this support along with support for specific input devices is implemented outside of the core using a plugin architecture.  In summary, the core has essentially no external dependencies and is designed to be common to all VR programs and support for specific graphics toolkits, input devices, and other non-essential features are all implemented in plugins.
 
 The rationale for this design comes from our experiences with VR programming over the years.  Some key points follow:
 
