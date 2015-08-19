@@ -23,14 +23,14 @@ class element
     std::list<char*>::iterator ic;                        //Global iterator for GetNext/prev comment
     std::list<attribute*> get_attribute_list();           //{return m_attribute_list;};
     std::list<element*> get_element_list();               //{return m_element_list;);
-    
+
   public:
     // Adds an attribute to the attribute list
     bool add_attribute(char* attribute_name, char* value=NULL);
     bool add_attribute(attribute* m_attribute);
     bool set_value(const char* value);
     bool set_name(const char* the_name);
-    bool set_parrent(element* the_element);
+    bool set_parent(element* the_element);
     bool is_root();
     bool set_comment(char* the_comment);
     bool set_as_pi();
@@ -47,6 +47,7 @@ class element
     element *operator = (element* the_element);
     element* add_child_element();
     element* get_next_child();
+    element* get_first_child();
     element* get_parent();
     element* add_child_element(element* child_element);
     char* get_value();
@@ -60,6 +61,6 @@ private:
     bool is_pi;
     char* m_name;
     char* m_value;
-    element* m_parrent;
+    element* m_parent;
 };
 #endif // ELEMENT_H
