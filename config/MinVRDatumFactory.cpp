@@ -1,7 +1,7 @@
 #include "MinVRDatumFactory.h"
 
-MinVRDatum* MinVRDatumFactory::CreateMinVRDatum(int MinVRDatumId,
-                                                void* pData) {
+MinVRDatumPtr MinVRDatumFactory::CreateMinVRDatum(int MinVRDatumId,
+                                                      void* pData) {
   // try to find the callback corresponding to the given shape id;
   // if no shape id found, throw exception
   CallbackMap::const_iterator it = m_callbacks.find(MinVRDatumId);
@@ -15,7 +15,7 @@ MinVRDatum* MinVRDatumFactory::CreateMinVRDatum(int MinVRDatumId,
 
 bool MinVRDatumFactory::RegisterMinVRDatum(int MinVRDatumId,
                                            CreateMinVRDatumCallback Creator) {
-  // returns true if shape was registered; false if it had already
+  // returns true if type was registered; false if it had already
   // been registered
   return m_callbacks.insert(CallbackMap::value_type(MinVRDatumId, Creator)).second;
 }

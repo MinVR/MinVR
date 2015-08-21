@@ -31,7 +31,6 @@ typedef enum
   MVRCONTAINER  = 7
 } MVRTYPE_ID;
 
-
 // This class is meant to hold a data object of some arbitrary type
 // (ok, arbitrary within a small range of types), and to serialize and
 // deserialize it into a query-able form suitable for transmission.
@@ -98,6 +97,8 @@ public:
   void doSomething() const;
   std::string serialize();
   std::string getDescription();
+
+  int getValue() { return value; };
 };
 
 // The specialization for a float.  (Or a 'double' in C++-speak.)
@@ -111,11 +112,86 @@ public:
   void doSomething() const;
   std::string serialize();
   std::string getDescription();
+
+  double getValue() { return value; };
+};
+
+
+// A smart pointer class, specialized to work with MinVRDatum.
+class MinVRDatumPtr {
+private:
+  MinVRDatum*  pData;     // Pointer
+  int reference; // Reference count
+
+public:
+  MinVRDatumPtr() : pData(0), reference(1) {}
+  MinVRDatumPtr(MinVRDatum* pValue) : pData(pValue), reference(1) {}
+
+  MinVRDatumPtr(const MinVRDatumPtr& sp) : pData(sp.pData), reference(sp.reference)
+  {
+        // Copy constructor
+        // Copy the data and reference pointer
+        // and increment the reference count
+    reference++;
+  }
+
+  ~MinVRDatumPtr()
+  {
+    // Destructor
+    // Decrement the reference count
+    // if reference become zero delete the data
+    if(--reference == 0)
+      {
+        delete pData;
+      }
+  }
+
+  MinVRDatum& operator* ()
+  {
+    return *pData;
+  }
+
+  MinVRDatum* operator-> ()
+  {
+    return pData;
+  }
+
+  MinVRDatumInt* intVal()
+  {
+    return static_cast<MinVRDatumInt*>(pData);
+  }
+
+  MinVRDatumDouble* doubleVal()
+  {
+    return static_cast<MinVRDatumDouble*>(pData);
+  }
+
+  MinVRDatumPtr& operator = (const MinVRDatumPtr& sp)
+  {
+    // Assignment operator
+    if (this != &sp) // Avoid self assignment
+      {
+        // Decrement the old reference count
+        // if reference become zero delete the old data
+        if(--reference == 0)
+          {
+            delete pData;
+          }
+
+        // Copy the data and reference pointer
+        // and increment the reference count
+        pData = sp.pData;
+        reference = sp.reference;
+        reference++;
+      }
+    return *this;
+  }
 };
 
 // Each specialization needs a callback of the following form, to be
 // invoked by the factory.
-MinVRDatum* CreateMinVRDatumInt(void *pData);
-MinVRDatum* CreateMinVRDatumDouble(void *pData);
+MinVRDatumPtr CreateMinVRDatumInt(void *pData);
+MinVRDatumPtr CreateMinVRDatumDouble(void *pData);
+
 
 #endif

@@ -15,7 +15,7 @@ void MinVRDatumInt::doSomething() const {
   std::cout << "Something with an int " << " (" << ")" << std::endl;
 }
 
-MinVRDatum* CreateMinVRDatumInt(void *pData) {
+MinVRDatumPtr CreateMinVRDatumInt(void *pData) {
   return new MinVRDatumInt(*static_cast<int *>(pData));
 }
 
@@ -35,7 +35,7 @@ void MinVRDatumDouble::doSomething() const {
   std::cout << "Something with a double " << " (" << ")" << std::endl;
 }
 
-MinVRDatum* CreateMinVRDatumDouble(void *pData) {
+MinVRDatumPtr CreateMinVRDatumDouble(void *pData) {
   return new MinVRDatumDouble(*static_cast<double *>(pData));
 }
 

@@ -1,3 +1,7 @@
+// -*-c++-*-
+#ifndef MINVR_DATUM_FACTORY_H
+#define MINVR_DATUM_FACTORY_H
+
 #include <map>
 #include <iostream>
 #include <stdexcept>
@@ -15,9 +19,9 @@ class MinVRDatumFactory {
 public:
   // this typedef allows to "name" arbitrary functions which take no
   // arguments and return a pointer to a MinVRDatum instance
-  typedef MinVRDatum* (*CreateMinVRDatumCallback)(void *pData);
+  typedef MinVRDatumPtr (*CreateMinVRDatumCallback)(void *pData);
 
-  MinVRDatum* CreateMinVRDatum(int MinVRDatumId, void *pData);
+  MinVRDatumPtr CreateMinVRDatum(int MinVRDatumId, void *pData);
 
   bool RegisterMinVRDatum(int MinVRDatumId,
                           CreateMinVRDatumCallback Creator);
@@ -32,4 +36,4 @@ private:
   CallbackMap m_callbacks;
 };
 
-
+#endif
