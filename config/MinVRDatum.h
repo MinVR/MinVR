@@ -35,78 +35,85 @@ typedef enum
 // This class is meant to hold a data object of some arbitrary type
 // (ok, arbitrary within a small range of types), and to serialize and
 // deserialize it into a query-able form suitable for transmission.
+// It holds a type, value, and a name.  The idea is that all MinVR
+// data types can be addressed as a MinVRDatum object, for convenient
+// loading in a map or list.
 //
-// Right now we just store values as strings and be done with it, but
-// that's just a crutch to allow us to work on the settings business.
-// It might deserve serious consideration as an option, but that
-// hasn't happened as of 8/19.
-//
-// The base class for all supported data types.
-// In addition to supplying an entry for the virtual methods, the
-// specializations should also supply a value entry and a getValue()
-// method for the appropriate type.
+// The data for each object is stored both in its native form, and as
+// a serialized data string.  It can be constructed from either form,
+// so the serialized string can be sent across the network and
+// reconstructed to another datum object on the other side.
+
+
+// This is the base class for all supported data types.  In addition
+// to supplying an entry for the virtual methods, the specializations
+// should also supply a value entry and a getValue() method for the
+// appropriate type.  These are not prototyped in the base class
+// because they are too variable across the classes.  It's on you to
+// keep track, not the compiler.
 class MinVRDatum {
  protected:
   MVRTYPE_ID type;
   std::string name;
- public:
 
+  // This is to be a description of the data type, e.g. "int nWindows" or
+  // "string winName" or something like that.
+  std::string description;
+
+ public:
+  // The constructor for the native storage form.
   MinVRDatum(const MVRTYPE_ID inType, const std::string inName) :
     type(inType), name(inName) {};
-  MinVRDatum(const MVRTYPE_ID inType, const char* inName) :
-    type(inType), name(std::string(inName)) {};
+
+  // The constructor for the serialized data form.  This extracts the
+  // necessary data from the string, and creates the type, value, and
+  // name from there.
+  MinVRDatum(const std::string serializedData) {};
   // virtual destructor allows concrete types to implement their own
   // destruction mechanisms
   virtual ~MinVRDatum() {}
 
+  // This produces the serialized version of the datum, ready for
+  // transmission across some connection to another process or another
+  // machine.
   virtual std::string serialize() = 0;
-  virtual std::string getDescription() = 0;
+
+  std::string getDescription() { return description; };
 
   virtual void doSomething() const = 0;
 };
 
-// create some concrete shapes... you would do this in other CPP files
+// This is the specialization for an integer.
 class MinVRDatumInt : public MinVRDatum {
 private:
+  // The actual data is stored here.
   int value;
 
 public:
-  MinVRDatumInt(const MVRTYPE_ID inType, const int inVal, const std::string inName) :
-    MinVRDatum(inType, inName), value(inVal) {};
-  MinVRDatumInt(const MVRTYPE_ID inType, const int inVal, const char* inName) :
-    MinVRDatum(inType, inName), value(inVal) {};
+  MinVRDatumInt(const int inVal, const std::string inName);
 
   void doSomething() const;
   std::string serialize();
   std::string getDescription();
 };
 
-// another concrete shape...
+// The specialization for a float.  (Or a 'double' in C++-speak.)
 class MinVRDatumDouble : public MinVRDatum {
 private:
   double value;
 
 public:
-  MinVRDatumDouble(const MVRTYPE_ID inType,
-                   const double inVal,
-                   const std::string inName) :
-    MinVRDatum(inType, inName), value(inVal) {};
-  MinVRDatumDouble(const MVRTYPE_ID inType,
-                   const double inVal,
-                   const char* inName) :
-    MinVRDatum(inType, inName), value(inVal) {};
-
-
+  MinVRDatumDouble(const double inVal,
+                   const std::string inName);
 
   void doSomething() const;
   std::string serialize();
   std::string getDescription();
 };
-// ... other concrete shapes...
 
-MinVRDatum* CreateMinVRDatumDouble(void *pData, std::string name);
+// Each specialization needs a callback of the following form, to be
+// invoked by the factory.
 MinVRDatum* CreateMinVRDatumInt(void *pData, std::string name);
-
-
+MinVRDatum* CreateMinVRDatumDouble(void *pData, std::string name);
 
 #endif
