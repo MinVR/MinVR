@@ -1,9 +1,8 @@
 #include "MinVRDatum.h"
 
-MinVRDatumInt::MinVRDatumInt(const int inVal,
-                             const std::string inName) :
-  MinVRDatum(MVRINT, inName), value(inVal) {
-  description = "int " + inName + ";" ;
+MinVRDatumInt::MinVRDatumInt(const int inVal) :
+  MinVRDatum(MVRINT), value(inVal) {
+  description = "int";
 };
 
 
@@ -13,20 +12,18 @@ std::string MinVRDatumInt::serialize() {
 }
 
 void MinVRDatumInt::doSomething() const {
-  std::cout << "Something with an int called: "<< name << " (" << ")" << std::endl;
+  std::cout << "Something with an int " << " (" << ")" << std::endl;
 }
 
-MinVRDatum* CreateMinVRDatumInt(void *pData, std::string name) {
-  return new MinVRDatumInt(*static_cast<int *>(pData),
-                           name);
+MinVRDatum* CreateMinVRDatumInt(void *pData) {
+  return new MinVRDatumInt(*static_cast<int *>(pData));
 }
 
 ////////////////////////////////////////////
 
-MinVRDatumDouble::MinVRDatumDouble(const double inVal,
-                                   const std::string inName) :
-  MinVRDatum(MVRFLOAT, inName), value(inVal) {
-  description = "float " + inName + ";" ;
+MinVRDatumDouble::MinVRDatumDouble(const double inVal) :
+  MinVRDatum(MVRFLOAT), value(inVal) {
+  description = "float";
 };
 
 
@@ -35,12 +32,11 @@ std::string MinVRDatumDouble::serialize() {
 }
 
 void MinVRDatumDouble::doSomething() const {
-  std::cout << "Something with a double called: " << name << " (" << ")" << std::endl;
+  std::cout << "Something with a double " << " (" << ")" << std::endl;
 }
 
-MinVRDatum* CreateMinVRDatumDouble(void *pData, std::string name) {
-  return new MinVRDatumDouble(*static_cast<double *>(pData),
-                              name);
+MinVRDatum* CreateMinVRDatumDouble(void *pData) {
+  return new MinVRDatumDouble(*static_cast<double *>(pData));
 }
 
 
