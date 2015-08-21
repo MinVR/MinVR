@@ -1,6 +1,6 @@
 #include "MinVRDatumFactory.h"
 
-MinVRDatum* MinVRDatumFactory::CreateMinVRDatum(int MinVRDatumId) {
+MinVRDatum* MinVRDatumFactory::CreateMinVRDatum(int MinVRDatumId, void* pData) {
   // try to find the callback corresponding to the given shape id;
   // if no shape id found, throw exception
   CallbackMap::const_iterator it = m_callbacks.find(MinVRDatumId);
@@ -8,7 +8,7 @@ MinVRDatum* MinVRDatumFactory::CreateMinVRDatum(int MinVRDatumId) {
     throw std::runtime_error("unknown shape id");
   } else {
     // create the instance using the creator callback
-    return (it->second)();
+    return (it->second)(static_cast<void *>(pData));
   }
 }
 

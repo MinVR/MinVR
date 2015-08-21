@@ -104,8 +104,8 @@ public:
 };
 // ... other concrete shapes...
 
-MinVRDatum* CreateMinVRDatumDouble();
-MinVRDatum* CreateMinVRDatumInt();
+MinVRDatum* CreateMinVRDatumDouble(void *pData);
+MinVRDatum* CreateMinVRDatumInt(void *pData);
 
 
 

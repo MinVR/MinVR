@@ -15,9 +15,9 @@ class MinVRDatumFactory {
 public:
   // this typedef allows to "name" arbitrary functions which take no
   // arguments and return a pointer to a MinVRDatum instance
-  typedef MinVRDatum* (*CreateMinVRDatumCallback)();
+  typedef MinVRDatum* (*CreateMinVRDatumCallback)(void *pData);
 
-  MinVRDatum* CreateMinVRDatum(int MinVRDatumId);
+  MinVRDatum* CreateMinVRDatum(int MinVRDatumId, void *pData);
 
   bool RegisterMinVRDatum(int MinVRDatumId,
                           CreateMinVRDatumCallback Creator);
