@@ -13,13 +13,13 @@ int main() {
 
   int i = 14;
   double f = 3.1415926;
-  MinVRDatum* s1 = factory->CreateMinVRDatum(MVRINT, &i);
-  MinVRDatum* s2 = factory->CreateMinVRDatum(MVRFLOAT, &f);
+  MinVRDatum* s1 = factory->CreateMinVRDatum(MVRINT, &i, std::string("ralph"));
+  MinVRDatum* s2 = factory->CreateMinVRDatum(MVRFLOAT, &f, std::string("henry"));
   s1->doSomething();
   s2->doSomething();
   // will throw an error
   try {
-    MinVRDatum* s3 = factory->CreateMinVRDatum(-1, &f);
+    MinVRDatum* s3 = factory->CreateMinVRDatum(-1, &f, std::string("lloyd"));
     s3->doSomething();
   } catch(const std::exception& e) {
     std::cout<<"caught exception: "<<e.what()<<std::endl;

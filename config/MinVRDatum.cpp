@@ -9,7 +9,7 @@ std::string MinVRDatumInt::getDescription() {
 }
 
 void MinVRDatumInt::doSomething() const {
-    std::cout<<"Something with an int"<<std::endl;
+  std::cout << "Something with an int called: "<< name << std::endl;
 }
 
 ////////////////////////////////////////////
@@ -23,19 +23,19 @@ std::string MinVRDatumDouble::getDescription() {
 }
 
 void MinVRDatumDouble::doSomething() const {
-  std::cout<<"Something with a double"<<std::endl;
+  std::cout << "Something with a double called: " << name << std::endl;
 }
 
-MinVRDatum* CreateMinVRDatumInt(void *pData) {
+MinVRDatum* CreateMinVRDatumInt(void *pData, std::string name) {
   return new MinVRDatumInt(MVRINT,
                            *static_cast<int *>(pData),
-                           "henry");
+                           name);
 }
 
-MinVRDatum* CreateMinVRDatumDouble(void *pData) {
+MinVRDatum* CreateMinVRDatumDouble(void *pData, std::string name) {
   return new MinVRDatumDouble(MVRFLOAT,
                               *static_cast<double *>(pData),
-                              "ralph");
+                              name);
 }
 
 

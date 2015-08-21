@@ -104,8 +104,8 @@ public:
 };
 // ... other concrete shapes...
 
-MinVRDatum* CreateMinVRDatumDouble(void *pData);
-MinVRDatum* CreateMinVRDatumInt(void *pData);
+MinVRDatum* CreateMinVRDatumDouble(void *pData, std::string name);
+MinVRDatum* CreateMinVRDatumInt(void *pData, std::string name);
 
 
 
