@@ -118,7 +118,7 @@ class MinVRDatum {
 
   // The description of the datum is a part of the network-ready
   // serialized data.
-  std::string getDescription() { return description; };
+  std::string getDescription() const { return description; };
   MVRTYPE_ID getType() { return type; };
 
   virtual void doSomething() const = 0;
@@ -138,7 +138,6 @@ public:
 
   void doSomething() const;
   std::string serialize();
-  std::string getDescription();
 
   int getValue() { return value; };
 };
@@ -153,7 +152,6 @@ public:
 
   void doSomething() const;
   std::string serialize();
-  std::string getDescription();
 
   double getValue() { return value; };
 };
@@ -180,10 +178,26 @@ public:
   }
 };
 
-// A smart pointer class, specialized to work with MinVRDatum.
+// A smart pointer class, specialized to work with MinVRDatum.  Note
+// that we are overloading the -> operator, so you can use it, but it
+// points to a MinVRDatum object.  So if what you want is a field or
+// method belonging to MinVRDatumInt or one of the other
+// specializations, you have to use one of the specialized accessors.
+//
+// For example:
+//
+//  MinVRDatumPtr p;
+//
+//  <initialize p with integer data via an MinVRDatumInt object>
+//
+//    p->getValue()          Returns an error, since there is no
+//                           getValue() in the MinVRDatum object.
+//
+//    p.intVal()->getValue() Returns the integer value held in *p.
+//
 class MinVRDatumPtr {
 private:
-  MinVRDatum*  pData;     // Pointer
+  MinVRDatum*  pData;         // Pointer
   MinVRDatumPtrRC* reference; // Reference count
 
 public:
@@ -194,17 +208,15 @@ public:
 
   MinVRDatumPtr(const MinVRDatumPtr& sp) : pData(sp.pData), reference(sp.reference)
   {
-        // Copy constructor
-        // Copy the data and reference pointer
-        // and increment the reference count
+    // Copy constructor: Copy the data and reference pointer and
+    // increment the reference count.
     reference->addRef();
   }
 
   ~MinVRDatumPtr()
   {
-    // Destructor
-    // Decrement the reference count
-    // if reference become zero delete the data
+    // Destructor: Decrement the reference count.  If reference becomes
+    // zero, delete the data
     if(reference->release() == 0)
       {
         delete pData;

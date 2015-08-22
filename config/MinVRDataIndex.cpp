@@ -10,18 +10,15 @@ MinVRDataIndex::MinVRDataIndex() {
 }
 
 bool MinVRDataIndex::addValueInt(const std::string valName, int value) {
-  std::cout << "adding: " << valName << ": " << value << std::endl;
 
   MinVRDatumPtr obj = factory.CreateMinVRDatum(MVRINT, &value);
-  std::cout << "added " << obj.intVal()->getValue() << std::endl;
   return mindex.insert(MinVRDataMap::value_type(valName, obj)).second;
 }
 
 bool MinVRDataIndex::addValueDouble(const std::string valName, double value) {
-  std::cout << "adding: " << valName << ": " << value << std::endl;
 
   MinVRDatumPtr obj = factory.CreateMinVRDatum(MVRFLOAT, &value);
-  std::cout << "added " << obj.doubleVal()->getValue() << std::endl;
+  //std::cout << "added " << obj.doubleVal()->getValue() << std::endl;
   return mindex.insert(MinVRDataMap::value_type(valName, obj)).second;
 }
 
@@ -33,4 +30,24 @@ MinVRDatumPtr MinVRDataIndex::getValue(const std::string valName) {
     return it->second;
   }
 }
+
+std::string MinVRDataIndex::getDescription(const std::string valName) {
+  MinVRDataMap::iterator it = mindex.find(valName);
+  if (it == mindex.end()) {
+    throw std::runtime_error(std::string("never heard of ") + valName);
+  } else {
+    return it->second->getDescription() + " " + valName + ";";
+  }
+}
+
+std::string MinVRDataIndex::serialize(const std::string valName) {
+  MinVRDataMap::iterator it = mindex.find(valName);
+  if (it == mindex.end()) {
+    throw std::runtime_error(std::string("never heard of ") + valName);
+  } else {
+    return it->second->getDescription() + " " + valName + ";" +
+      it->second->serialize();
+  }
+}
+
 

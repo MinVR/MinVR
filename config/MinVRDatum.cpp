@@ -8,7 +8,9 @@ MinVRDatumInt::MinVRDatumInt(const int inVal) :
 
 
 std::string MinVRDatumInt::serialize() {
-  return std::string("hello");
+  char buffer[20];
+  sprintf(buffer, "%d", value);
+  return std::string(buffer);
 }
 
 void MinVRDatumInt::doSomething() const {
@@ -29,7 +31,9 @@ MinVRDatumDouble::MinVRDatumDouble(const double inVal) :
 
 
 std::string MinVRDatumDouble::serialize() {
-  return std::string("good-bye");
+  char buffer[20];
+  sprintf(buffer, "%f", value);
+  return std::string(buffer);
 }
 
 void MinVRDatumDouble::doSomething() const {

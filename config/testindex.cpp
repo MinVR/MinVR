@@ -32,6 +32,8 @@ int main() {
     } else {
       std::cout << "which gives->" << (p.doubleVal()->getValue()) << std::endl;
     }
+    std::cout << "description: " << index->getDescription(input) << std::endl;
+    std::cout << "serialization: " << index->serialize(input) << std::endl;
   }
 
 }
