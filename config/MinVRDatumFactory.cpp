@@ -5,11 +5,11 @@ MinVRDatumPtr MinVRDatumFactory::CreateMinVRDatum(int MinVRDatumId,
   // try to find the callback corresponding to the given shape id;
   // if no shape id found, throw exception
   CallbackMap::const_iterator it = m_callbacks.find(MinVRDatumId);
-  if(it == m_callbacks.end()) {
+  if (it == m_callbacks.end()) {
     throw std::runtime_error("unknown shape id");
   } else {
     // create the instance using the creator callback
-    return (it->second)(static_cast<void *>(pData));
+    return MinVRDatumPtr((it->second)(static_cast<void *>(pData)));
   }
 }
 

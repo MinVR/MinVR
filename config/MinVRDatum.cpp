@@ -16,7 +16,8 @@ void MinVRDatumInt::doSomething() const {
 }
 
 MinVRDatumPtr CreateMinVRDatumInt(void *pData) {
-  return new MinVRDatumInt(*static_cast<int *>(pData));
+  MinVRDatumInt *obj = new MinVRDatumInt(*static_cast<int *>(pData));
+  return MinVRDatumPtr(obj);
 }
 
 ////////////////////////////////////////////
@@ -36,7 +37,8 @@ void MinVRDatumDouble::doSomething() const {
 }
 
 MinVRDatumPtr CreateMinVRDatumDouble(void *pData) {
-  return new MinVRDatumDouble(*static_cast<double *>(pData));
+  MinVRDatumDouble *obj = new MinVRDatumDouble(*static_cast<double *>(pData));
+  return MinVRDatumPtr(obj);
 }
 
 

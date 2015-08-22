@@ -116,23 +116,44 @@ public:
   double getValue() { return value; };
 };
 
+// A convenient reference counter for the smart pointer for the MinVRDatum type.
+class RC {
+private:
+  int count; // Reference count
+
+public:
+  RC(int start) : count(start) {};
+
+  void addRef()
+  {
+    // Increment the reference count
+    count++;
+  }
+
+  int release()
+  {
+    // Decrement the reference count and
+    // return the reference count.
+    return --count;
+  }
+};
 
 // A smart pointer class, specialized to work with MinVRDatum.
 class MinVRDatumPtr {
 private:
   MinVRDatum*  pData;     // Pointer
-  int reference; // Reference count
+  RC* reference; // Reference count
 
 public:
-  MinVRDatumPtr() : pData(0), reference(1) {}
-  MinVRDatumPtr(MinVRDatum* pValue) : pData(pValue), reference(1) {}
+  MinVRDatumPtr() : pData(0) { reference = new RC(1); }
+  MinVRDatumPtr(MinVRDatum* pValue) : pData(pValue) { reference = new RC(1); }
 
   MinVRDatumPtr(const MinVRDatumPtr& sp) : pData(sp.pData), reference(sp.reference)
   {
         // Copy constructor
         // Copy the data and reference pointer
         // and increment the reference count
-    reference++;
+    reference->addRef();
   }
 
   ~MinVRDatumPtr()
@@ -140,7 +161,7 @@ public:
     // Destructor
     // Decrement the reference count
     // if reference become zero delete the data
-    if(--reference == 0)
+    if(reference->release() == 0)
       {
         delete pData;
       }
@@ -173,7 +194,7 @@ public:
       {
         // Decrement the old reference count
         // if reference become zero delete the old data
-        if(--reference == 0)
+        if(reference->release() == 0)
           {
             delete pData;
           }
@@ -182,7 +203,7 @@ public:
         // and increment the reference count
         pData = sp.pData;
         reference = sp.reference;
-        reference++;
+        reference->addRef();
       }
     return *this;
   }

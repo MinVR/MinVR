@@ -16,6 +16,7 @@ int main() {
   MinVRDatumPtr s1 = factory->CreateMinVRDatum(MVRINT, &i);
   MinVRDatumPtr s2 = factory->CreateMinVRDatum(MVRFLOAT, &f);
   std::cout << s1.intVal()->getValue() << std::endl;
+  std::cout << s2.doubleVal()->getValue() << std::endl;
   s2->doSomething();
   // will throw an error
   try {
