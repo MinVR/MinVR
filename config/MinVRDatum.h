@@ -19,6 +19,8 @@
 // use static_case<char>MINVRSEPARATOR where a char is needed.
 #define MINVRSEPARATOR "^"
 
+/// This is the list of data types we can handle.  This is step 4
+/// in the specialization instructions below.
 typedef enum
 {
   NONE          = 0,
@@ -35,22 +37,59 @@ typedef enum
 // (ok, arbitrary within a small range of types), and to serialize and
 // deserialize it into a query-able form suitable for transmission.
 // It holds a type and a value.  The idea is that all MinVR data types
-// can be addressed as a MinVRDatum object, for convenient loading in
-// a map or list. This class only holds a value; the names are held in
-// the MinVRIndex object.
+// can be addressed as a MinVRDatum object (well, technically as the
+// reference for a MinVRDatumPtr pointer object), for convenient
+// loading of heterogeneous types in a homogeneous way, such as in a
+// map or list. This class only holds a value; the names must be
+// recorded elsewhere.
 //
 // The data for each object is stored both in its native form, and as
 // a serialized data string.  It can be constructed from either form,
 // so the serialized string can be sent across the network and
 // reconstructed to another datum object on the other side.
-
-
-// This is the base class for all supported data types.  In addition
-// to supplying an entry for the virtual methods, the specializations
-// should also supply a value entry and a getValue() method for the
-// appropriate type.  These are not prototyped in the base class
-// because they are too variable across the classes.  It's on you to
-// keep track, not the compiler.
+//
+// To extend the collection of data types that can be modeled as a
+// MinVRDatum, follow these steps:
+//
+//   1. Create a specialization of the MinVRDatum class, and call it
+//      something like MinVRDatumInt or MinVRDatumDouble.  You will
+//      have to provide it with a private value member and a public
+//      getValue() method member.  There are not virtual members for
+//      these functions, since their signature differs.
+//
+//   2. Add a method to the MinVRDatumPtr that will return the new
+//      data type.  See intVal() and doubleVal() for models.
+//
+//   3. Add a "create" function for the factory to use.  Something
+//      like these:
+//
+//        MinVRDatumPtr CreateMinVRDatumInt(void *pData);
+//        MinVRDatumPtr CreateMinVRDatumDouble(void *pData);
+//
+//   4. Add an entry in the MVRTYPE_ID enum above.
+//
+//   5. Then add this number and the create function to the list of
+//      data types registered in the constructor for the
+//      MinVRDataIndex class.
+//
+//   6. Add a method to the MinVRDataIndex class that accepts one
+//      of the new data types, creates a MinVRDatum object for it,
+//      and adds a pointer to it to the data index.
+//
+//   6. For the configuration functionality, you will need to provide
+//      the parser somewhere to take the text from the configuration
+//      file and translate it into the value and name to be stored
+//      here.  This location and function are TBD.
+//
+//
+// MinVRDatum is the base class for all supported data types.  In
+// addition to supplying an entry for the virtual methods, the
+// specializations should also supply a value entry and a getValue()
+// method for the appropriate type.  These are not prototyped in the
+// base class because they are too variable across the classes and
+// templates don't quite seem to handle the range, unless there are
+// features of templates that I don't know about, which is probable.
+// So it's on you to keep track, not the compiler.
 class MinVRDatum {
  protected:
   MVRTYPE_ID type;
@@ -85,6 +124,9 @@ class MinVRDatum {
   virtual void doSomething() const = 0;
 };
 
+/////////// Specializations to handle specific data types.
+/////////// This is step 1 in the specialization instructions above.
+
 // This is the specialization for an integer.
 class MinVRDatumInt : public MinVRDatum {
 private:
@@ -117,12 +159,12 @@ public:
 };
 
 // A convenient reference counter for the smart pointer for the MinVRDatum type.
-class RC {
+class MinVRDatumPtrRC {
 private:
   int count; // Reference count
 
 public:
-  RC(int start) : count(start) {};
+  MinVRDatumPtrRC(int start) : count(start) {};
 
   void addRef()
   {
@@ -142,11 +184,13 @@ public:
 class MinVRDatumPtr {
 private:
   MinVRDatum*  pData;     // Pointer
-  RC* reference; // Reference count
+  MinVRDatumPtrRC* reference; // Reference count
 
 public:
-  MinVRDatumPtr() : pData(0) { reference = new RC(1); }
-  MinVRDatumPtr(MinVRDatum* pValue) : pData(pValue) { reference = new RC(1); }
+  MinVRDatumPtr() : pData(0) { reference = new MinVRDatumPtrRC(1); }
+  MinVRDatumPtr(MinVRDatum* pValue) : pData(pValue) {
+    reference = new MinVRDatumPtrRC(1);
+  }
 
   MinVRDatumPtr(const MinVRDatumPtr& sp) : pData(sp.pData), reference(sp.reference)
   {
@@ -177,16 +221,6 @@ public:
     return pData;
   }
 
-  MinVRDatumInt* intVal()
-  {
-    return static_cast<MinVRDatumInt*>(pData);
-  }
-
-  MinVRDatumDouble* doubleVal()
-  {
-    return static_cast<MinVRDatumDouble*>(pData);
-  }
-
   MinVRDatumPtr& operator = (const MinVRDatumPtr& sp)
   {
     // Assignment operator
@@ -207,10 +241,38 @@ public:
       }
     return *this;
   }
+
+  //////// Specialized accessors below.  See step 2 in the specialization
+  //////// instructions above.
+
+  // The power of this pointer is that you can reference any type as
+  // any other type.  This is probably more bug than feature, so we have
+  // type checks here, and throw an error if it doesn't match.
+  MinVRDatumInt* intVal()
+  {
+    if (pData->getType() == MVRINT) {
+      return static_cast<MinVRDatumInt*>(pData);
+    } else {
+      throw std::runtime_error("This datum is not an int.");
+    }
+  }
+
+  MinVRDatumDouble* doubleVal()
+  {
+    if (pData->getType() == MVRFLOAT) {
+      return static_cast<MinVRDatumDouble*>(pData);
+    } else {
+      throw std::runtime_error("This datum is not a float.");
+    }
+  }
+
+
+
+
 };
 
 // Each specialization needs a callback of the following form, to be
-// invoked by the factory.
+// invoked by the factory.  This is step 3 in the instructions above.
 MinVRDatumPtr CreateMinVRDatumInt(void *pData);
 MinVRDatumPtr CreateMinVRDatumDouble(void *pData);
 

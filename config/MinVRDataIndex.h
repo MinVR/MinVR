@@ -19,6 +19,8 @@ public:
 
   MinVRDatumPtr getValue(const std::string valName);
 
+  /// Step 6 of the data type addition instructions in MinVRDatum.h is
+  /// to add a specialized method here.
   bool addValueInt(const std::string valName, int value);
   bool addValueDouble(const std::string valName, double value);
 

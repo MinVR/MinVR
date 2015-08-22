@@ -28,9 +28,9 @@ int main() {
     MinVRDatumPtr p = index->getValue(input);
 
     if (p->getType() == MVRINT) {
-      std::cout << "which gives->" << (index->getValue(input).intVal()->getValue()) << std::endl;
+      std::cout << "which gives->" << (p.intVal()->getValue()) << std::endl;
     } else {
-      std::cout << "which gives->" << (index->getValue(input).doubleVal()->getValue()) << std::endl;
+      std::cout << "which gives->" << (p.doubleVal()->getValue()) << std::endl;
     }
   }
 
