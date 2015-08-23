@@ -78,9 +78,9 @@ typedef enum
 //      and adds a pointer to it to the data index.
 //
 //   7. For the configuration functionality, you will need to provide
-//      the parser somewhere to take the text from the configuration
-//      file and translate it into the value and name to be stored
-//      here.  This location and function are TBD.
+//      the parser to take the text from the configuration file and
+//      translate it into the value and name to be stored here.  This
+//      is in MinVRDataIndex::processValue().
 //
 //
 // MinVRDatum is the base class for all supported data types.  In
@@ -161,6 +161,20 @@ private:
 
 public:
   MinVRDatumString(const std::string inVal);
+
+  std::string serialize();
+
+  std::string getValue() { return value; };
+};
+
+// Specialization for a string
+class MinVRDatumContainer : public MinVRDatum {
+private:
+  // The actual data is stored here.
+  std::string value;
+
+public:
+  MinVRDatumContainer(const std::string inVal);
 
   std::string serialize();
 
@@ -298,6 +312,15 @@ public:
     }
   }
 
+  MinVRDatumContainer* containerVal()
+  {
+    if (pData->getType() == MVRCONTAINER) {
+      return static_cast<MinVRDatumContainer*>(pData);
+    } else {
+      throw std::runtime_error("This datum is not a container.");
+    }
+  }
+
 };
 
 // Each specialization needs a callback of the following form, to be
@@ -305,6 +328,7 @@ public:
 MinVRDatumPtr CreateMinVRDatumInt(void *pData);
 MinVRDatumPtr CreateMinVRDatumDouble(void *pData);
 MinVRDatumPtr CreateMinVRDatumString(void *pData);
+MinVRDatumPtr CreateMinVRDatumContainer(void *pData);
 
 
 #endif

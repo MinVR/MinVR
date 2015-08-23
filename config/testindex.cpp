@@ -25,6 +25,13 @@ int main() {
   index->addValueString(std::string("billy"), s1);
   index->addValueString(std::string("johnny"), s2);
 
+  std::string c1 = std::string("container1");
+  std::string c2 = std::string("container2");
+
+  index->addValueContainer(std::string("ted"), c1);
+  index->addValueContainer(std::string("eva"), c2);
+
+
   index->addValue(std::string("<flora type=\"int\">3274</flora><morton type=\"float\">34.5</morton>"));
 
   std::string input = "";
@@ -46,7 +53,11 @@ int main() {
       break;
 
     case MVRSTRING:
-      std::cout << "which gives->" << (p.stringVal()->getValue()) << std::endl;
+      std::cout << "which gives (S)->" << (p.stringVal()->getValue()) << std::endl;
+      break;
+
+    case MVRCONTAINER:
+      std::cout << "which gives (C)->" << (p.containerVal()->getValue()) << std::endl;
       break;
     }
 

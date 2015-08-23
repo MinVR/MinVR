@@ -54,6 +54,23 @@ MinVRDatumPtr CreateMinVRDatumString(void *pData) {
   return MinVRDatumPtr(obj);
 }
 
+////////////////////////////////////////////
+
+MinVRDatumContainer::MinVRDatumContainer(const std::string inVal) :
+  MinVRDatum(MVRCONTAINER), value(inVal) {
+  description = "container";
+};
+
+
+std::string MinVRDatumContainer::serialize() {
+  return getValue();
+}
+
+MinVRDatumPtr CreateMinVRDatumContainer(void *pData) {
+  MinVRDatumContainer *obj = new MinVRDatumContainer(*static_cast<std::string *>(pData));
+  return MinVRDatumPtr(obj);
+}
+
 
 
 /*

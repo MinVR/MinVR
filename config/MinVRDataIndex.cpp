@@ -8,6 +8,7 @@ MinVRDataIndex::MinVRDataIndex() {
   factory.RegisterMinVRDatum(MVRINT, CreateMinVRDatumInt);
   factory.RegisterMinVRDatum(MVRFLOAT, CreateMinVRDatumDouble);
   factory.RegisterMinVRDatum(MVRSTRING, CreateMinVRDatumString);
+  factory.RegisterMinVRDatum(MVRCONTAINER, CreateMinVRDatumContainer);
 
 
   mvrTypeMap[std::string("int")] = MVRINT;
@@ -37,6 +38,13 @@ bool MinVRDataIndex::addValueString(const std::string valName, std::string value
 
   MinVRDatumPtr obj = factory.CreateMinVRDatum(MVRSTRING, &value);
   //std::cout << "added " << obj.stringVal()->getValue() << std::endl;
+  return mindex.insert(MinVRDataMap::value_type(valName, obj)).second;
+}
+
+bool MinVRDataIndex::addValueContainer(const std::string valName, std::string value) {
+
+  MinVRDatumPtr obj = factory.CreateMinVRDatum(MVRCONTAINER, &value);
+  //std::cout << "added " << obj.containerVal()->getValue() << std::endl;
   return mindex.insert(MinVRDataMap::value_type(valName, obj)).second;
 }
 
@@ -96,24 +104,42 @@ bool MinVRDataIndex::processValue(const char* name,
 
   std::cout << "processing " << std::string(name) << std::string(type) << std::string(valueString) << std::endl;
 
+  // Step 7 of adding a data type is adding entries to this switch.
   switch (mvrTypeMap[std::string(type)]) {
   case MVRINT:
+    {
+      int iVal;
+      sscanf(valueString, "%d", &iVal);
 
-    int iVal;
-    sscanf(valueString, "%d", &iVal);
-
-    std::cout << "adding int " << std::string(name) << std::endl;
-    addValueInt(name, iVal);
-    break;
-
+      std::cout << "adding int " << std::string(name) << std::endl;
+      addValueInt(name, iVal);
+      break;
+    }
   case MVRFLOAT:
+    {
+      double fVal;
+      sscanf(valueString, "%lf", &fVal);
 
-    double fVal;
-    sscanf(valueString, "%lf", &fVal);
+      std::cout << "adding float " << std::string(name) << std::endl;
+      addValueDouble(name, fVal);
+      break;
+    }
+  case MVRSTRING:
+    {
+      std::string sVal = std::string(valueString);
 
-    std::cout << "adding float " << std::string(name) << std::endl;
-    addValueDouble(name, fVal);
-    break;
+      std::cout << "adding string " << std::string(name) << std::endl;
+      addValueString(name, sVal);
+      break;
+    }
+  case MVRCONTAINER:
+    {
+      std::string cVal = std::string(valueString);
+
+      std::cout << "adding container " << std::string(name) << std::endl;
+      addValueContainer(name, cVal);
+      break;
+    }
   }
 }
 

@@ -42,6 +42,7 @@ public:
   bool addValueInt(const std::string valName, int value);
   bool addValueDouble(const std::string valName, double value);
   bool addValueString(const std::string valName, std::string value);
+  bool addValueContainer(const std::string valName, std::string value);
 
 };
 
@@ -67,7 +68,7 @@ public:
 //     serialized form and invoke the appropriate MinVRDatum
 //     constructor. [DONE]
 //
-//   - Add a string data type to check on the add instructions.
+//   - Add a string data type to check on the add instructions. [DONE]
 //
 //   - Add the struct data type, a collection of primitive data types,
 //     or other structs.  The data inside the MinVRDatum for this
@@ -83,6 +84,7 @@ public:
 //     namespace, 'p' for print everything, 'a string' for add a
 //     variable to store, etc.
 //
-//   - Should be ready to work with the XML parser at this point.
+//   - Should be ready to work with the XML parser for entire files at
+//     this point.
 //
 //   - Add the vector types, and whatever else.
