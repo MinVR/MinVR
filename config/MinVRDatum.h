@@ -33,6 +33,7 @@ typedef enum
   MVRCONTAINER  = 7
 } MVRTYPE_ID;
 
+
 // This class is meant to hold a data object of some arbitrary type
 // (ok, arbitrary within a small range of types), and to serialize and
 // deserialize it into a query-able form suitable for transmission.

@@ -2,6 +2,8 @@
 #include <iostream>
 #include <stdexcept>
 #include <sstream>
+#include "Cxml.h"
+#include "element.h"
 #include "MinVRDataIndex.h"
 
 int main() {
@@ -17,6 +19,8 @@ int main() {
 
   index->addValueDouble(std::string("george"), f);
   index->addValueDouble(std::string("mary"), g);
+
+  index->addValue(std::string("<flora type=\"int\">3274</flora><morton type=\"float\">34.5</morton>"));
 
   std::string input = "";
 
