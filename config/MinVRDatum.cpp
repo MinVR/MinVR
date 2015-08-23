@@ -13,10 +13,6 @@ std::string MinVRDatumInt::serialize() {
   return std::string(buffer);
 }
 
-void MinVRDatumInt::doSomething() const {
-  std::cout << "Something with an int " << " (" << ")" << std::endl;
-}
-
 MinVRDatumPtr CreateMinVRDatumInt(void *pData) {
   MinVRDatumInt *obj = new MinVRDatumInt(*static_cast<int *>(pData));
   return MinVRDatumPtr(obj);
@@ -36,12 +32,25 @@ std::string MinVRDatumDouble::serialize() {
   return std::string(buffer);
 }
 
-void MinVRDatumDouble::doSomething() const {
-  std::cout << "Something with a double " << " (" << ")" << std::endl;
-}
-
 MinVRDatumPtr CreateMinVRDatumDouble(void *pData) {
   MinVRDatumDouble *obj = new MinVRDatumDouble(*static_cast<double *>(pData));
+  return MinVRDatumPtr(obj);
+}
+
+////////////////////////////////////////////
+
+MinVRDatumString::MinVRDatumString(const std::string inVal) :
+  MinVRDatum(MVRSTRING), value(inVal) {
+  description = "string";
+};
+
+
+std::string MinVRDatumString::serialize() {
+  return getValue();
+}
+
+MinVRDatumPtr CreateMinVRDatumString(void *pData) {
+  MinVRDatumString *obj = new MinVRDatumString(*static_cast<std::string *>(pData));
   return MinVRDatumPtr(obj);
 }
 

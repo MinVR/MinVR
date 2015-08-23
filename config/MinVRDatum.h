@@ -67,7 +67,7 @@ typedef enum
 //        MinVRDatumPtr CreateMinVRDatumInt(void *pData);
 //        MinVRDatumPtr CreateMinVRDatumDouble(void *pData);
 //
-//   4. Add an entry in the MVRTYPE_ID enum above.
+//   4. Add an entry in the MVRTYPE_ID enum above, if necessary.
 //
 //   5. Then add this number and the create function to the list of
 //      data types registered in the constructor for the
@@ -77,7 +77,7 @@ typedef enum
 //      of the new data types, creates a MinVRDatum object for it,
 //      and adds a pointer to it to the data index.
 //
-//   6. For the configuration functionality, you will need to provide
+//   7. For the configuration functionality, you will need to provide
 //      the parser somewhere to take the text from the configuration
 //      file and translate it into the value and name to be stored
 //      here.  This location and function are TBD.
@@ -121,8 +121,6 @@ class MinVRDatum {
   // serialized data.
   std::string getDescription() const { return description; };
   MVRTYPE_ID getType() { return type; };
-
-  virtual void doSomething() const = 0;
 };
 
 /////////// Specializations to handle specific data types.
@@ -137,7 +135,6 @@ private:
 public:
   MinVRDatumInt(const int inVal);
 
-  void doSomething() const;
   std::string serialize();
 
   int getValue() { return value; };
@@ -151,10 +148,23 @@ private:
 public:
   MinVRDatumDouble(const double inVal);
 
-  void doSomething() const;
   std::string serialize();
 
   double getValue() { return value; };
+};
+
+// Specialization for a string
+class MinVRDatumString : public MinVRDatum {
+private:
+  // The actual data is stored here.
+  std::string value;
+
+public:
+  MinVRDatumString(const std::string inVal);
+
+  std::string serialize();
+
+  std::string getValue() { return value; };
 };
 
 // A convenient reference counter for the smart pointer for the MinVRDatum type.
@@ -279,8 +289,14 @@ public:
     }
   }
 
-
-
+  MinVRDatumString* stringVal()
+  {
+    if (pData->getType() == MVRSTRING) {
+      return static_cast<MinVRDatumString*>(pData);
+    } else {
+      throw std::runtime_error("This datum is not a string.");
+    }
+  }
 
 };
 
@@ -288,6 +304,7 @@ public:
 // invoked by the factory.  This is step 3 in the instructions above.
 MinVRDatumPtr CreateMinVRDatumInt(void *pData);
 MinVRDatumPtr CreateMinVRDatumDouble(void *pData);
+MinVRDatumPtr CreateMinVRDatumString(void *pData);
 
 
 #endif

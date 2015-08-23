@@ -5,8 +5,10 @@
 // Step 5 of the specialization instructions (in MinVRDatum.h) is to
 // add an entry here to register the new data type.
 MinVRDataIndex::MinVRDataIndex() {
-  factory.RegisterMinVRDatum(MVRFLOAT, CreateMinVRDatumDouble);
   factory.RegisterMinVRDatum(MVRINT, CreateMinVRDatumInt);
+  factory.RegisterMinVRDatum(MVRFLOAT, CreateMinVRDatumDouble);
+  factory.RegisterMinVRDatum(MVRSTRING, CreateMinVRDatumString);
+
 
   mvrTypeMap[std::string("int")] = MVRINT;
   mvrTypeMap[std::string("float")] = MVRFLOAT;
@@ -28,6 +30,13 @@ bool MinVRDataIndex::addValueDouble(const std::string valName, double value) {
 
   MinVRDatumPtr obj = factory.CreateMinVRDatum(MVRFLOAT, &value);
   //std::cout << "added " << obj.doubleVal()->getValue() << std::endl;
+  return mindex.insert(MinVRDataMap::value_type(valName, obj)).second;
+}
+
+bool MinVRDataIndex::addValueString(const std::string valName, std::string value) {
+
+  MinVRDatumPtr obj = factory.CreateMinVRDatum(MVRSTRING, &value);
+  //std::cout << "added " << obj.stringVal()->getValue() << std::endl;
   return mindex.insert(MinVRDataMap::value_type(valName, obj)).second;
 }
 
