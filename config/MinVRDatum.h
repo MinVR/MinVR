@@ -3,6 +3,7 @@
 #define MINVR_DATUM_H
 
 #include <map>
+#include <list>
 #include <iostream>
 #include <stdexcept>
 #include <vector>
@@ -170,15 +171,15 @@ public:
 // Specialization for a string
 class MinVRDatumContainer : public MinVRDatum {
 private:
-  // The actual data is stored here.
-  std::string value;
+  // The actual data is stored here, a collection of names.
+  std::list<std::string> value;
 
 public:
-  MinVRDatumContainer(const std::string inVal);
+  MinVRDatumContainer(const std::list<std::string> inVal);
 
   std::string serialize();
 
-  std::string getValue() { return value; };
+  std::list<std::string> getValue() { return value; };
 };
 
 // A convenient reference counter for the smart pointer for the MinVRDatum type.

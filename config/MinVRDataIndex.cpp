@@ -41,7 +41,8 @@ bool MinVRDataIndex::addValueString(const std::string valName, std::string value
   return mindex.insert(MinVRDataMap::value_type(valName, obj)).second;
 }
 
-bool MinVRDataIndex::addValueContainer(const std::string valName, std::string value) {
+bool MinVRDataIndex::addValueContainer(const std::string valName,
+                                       std::list<std::string> value) {
 
   MinVRDatumPtr obj = factory.CreateMinVRDatum(MVRCONTAINER, &value);
   //std::cout << "added " << obj.containerVal()->getValue() << std::endl;
@@ -71,8 +72,34 @@ std::string MinVRDataIndex::serialize(const std::string valName) {
   if (it == mindex.end()) {
     throw std::runtime_error(std::string("never heard of ") + valName);
   } else {
-    return "<" + valName + " type=\"" + it->second->getDescription() + "\">" +
-      it->second->serialize() + "</" + valName + ">";
+
+    // This separates the valName on the slashes and puts the last
+    // part of it into trimName.
+    std::stringstream ss(valName);
+    std::string trimName;
+    while (std::getline(ss, trimName, '/')) {};
+
+    if (it->second->getType() != MVRCONTAINER) {
+
+      return "<" + trimName + " type=\"" + it->second->getDescription() + "\">" +
+        it->second->serialize() + "</" + trimName + ">";
+
+    } else {
+
+      std::string serialized;
+      serialized = "<" + trimName + " type=\"" + it->second->getDescription() + "\">";
+
+      std::list<std::string> nameList = it->second.containerVal()->getValue();
+      for (std::list<std::string>::iterator lt = nameList.begin();
+           lt != nameList.end(); lt++) {
+
+        // Recurse, and get the serialization of the member data value.
+        serialized += serialize(*lt);
+      };
+
+      serialized += "</" + trimName + ">";
+      return serialized;
+    }
   }
 }
 
@@ -89,7 +116,7 @@ bool MinVRDataIndex::addValue(const std::string serializedData) {
   xml->parse_string((char*)serializedData.c_str());
   element *xml_node = xml->get_root_element();
 
-  walkXML(xml_node);
+  walkXML(xml_node, std::string("XML_DOC"));
 }
 
 bool MinVRDataIndex::addValue(const std::string serializedData,
@@ -134,10 +161,7 @@ bool MinVRDataIndex::processValue(const char* name,
     }
   case MVRCONTAINER:
     {
-      std::string cVal = std::string(valueString);
-
-      std::cout << "adding container " << std::string(name) << std::endl;
-      addValueContainer(name, cVal);
+      throw std::runtime_error(std::string("empty containers not allowed"));
       break;
     }
   }
@@ -146,35 +170,55 @@ bool MinVRDataIndex::processValue(const char* name,
 //bool processValue(name, type, processedXMLNode);
 
 
-bool MinVRDataIndex::walkXML(element* node) {
+bool MinVRDataIndex::walkXML(element* node, std::string nameSpace) {
 
   char type[5] = "type";
 
-  std::cout << node->get_name();
-  if (node->get_attribute(type)) {
-    cout << " (" << node->get_attribute(type)->get_value() << ") ";
+  std::string qualifiedName;
+  std::list<std::string> childNames;
+
+  // The qualified name is the nameSpace/nodeName.  The root node is
+  // always 'XML_DOC' so we ignore that one.
+  if (!nameSpace.compare("XML_DOC")) {
+    qualifiedName = std::string(node->get_name());
+  } else {
+    qualifiedName = nameSpace + "/" + std::string(node->get_name());
   }
 
+  // This loops through the node children, if there are any.
   while (true) {
 
+    // If there is a value, submit this node to processValue.
+    // Container nodes should not be processed this way because they
+    // have children, not a value.  Or at least they should not, and
+    // the processValue method will throw an exception.
     if (node->get_value() != NULL &&
         node->get_value() != "") {
 
-      std::cout << node->get_value() << std::endl;
-      processValue(node->get_name(),
+      processValue(qualifiedName.c_str(),
                    node->get_attribute(type)->get_value(),
                    node->get_value());
 
-    } else {
-      std::cout << std::endl;
     }
+
+    // Pick the next child.
     element* child = node->get_next_child();
     if (child == NULL) {
 
+      // If this is a non-empty container that is not named XML_DOC,
+      // add it to the index.
+      if (childNames.size() > 0 && strcmp(node->get_name(), "XML_DOC")) {
+
+        addValueContainer(qualifiedName, childNames);
+      }
       return true;
     }
 
-    walkXML(child);
+    // Collect a child name on the container's child name list.
+    childNames.push_back(qualifiedName + "/" + child->get_name());
+
+    // And go walk its tree.
+    walkXML(child, qualifiedName);
   }
 }
 

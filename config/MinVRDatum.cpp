@@ -56,18 +56,22 @@ MinVRDatumPtr CreateMinVRDatumString(void *pData) {
 
 ////////////////////////////////////////////
 
-MinVRDatumContainer::MinVRDatumContainer(const std::string inVal) :
+MinVRDatumContainer::MinVRDatumContainer(const std::list<std::string> inVal) :
   MinVRDatum(MVRCONTAINER), value(inVal) {
   description = "container";
 };
 
-
+// For optimization and code maintainability reasons, the
+// responsibility for assembling the serialization of a container
+// falls to the index class, so this function is sort of a nop, filled
+// out just to keep the compiler happy.
 std::string MinVRDatumContainer::serialize() {
-  return getValue();
+  throw std::runtime_error(std::string("shouldn't call the serialize() method of a container object."));
+  return getDescription();
 }
 
 MinVRDatumPtr CreateMinVRDatumContainer(void *pData) {
-  MinVRDatumContainer *obj = new MinVRDatumContainer(*static_cast<std::string *>(pData));
+  MinVRDatumContainer *obj = new MinVRDatumContainer(*static_cast<std::list<std::string> *>(pData));
   return MinVRDatumPtr(obj);
 }
 

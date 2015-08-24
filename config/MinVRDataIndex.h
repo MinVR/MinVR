@@ -1,5 +1,7 @@
 #include <map>
+#include <list>
 #include <iostream>
+#include <string>
 #include <stdexcept>
 #include "Cxml.h"
 #include "element.h"
@@ -30,7 +32,7 @@ public:
                 const std::string nameSpace);
 
   bool printXML(element* node, int level);
-  bool walkXML(element* node);
+  bool walkXML(element* node, std::string nameSpace);
 
   bool processValue(const char* name,
                     const char* type,
@@ -42,7 +44,7 @@ public:
   bool addValueInt(const std::string valName, int value);
   bool addValueDouble(const std::string valName, double value);
   bool addValueString(const std::string valName, std::string value);
-  bool addValueContainer(const std::string valName, std::string value);
+  bool addValueContainer(const std::string valName, std::list<std::string> value);
 
 };
 

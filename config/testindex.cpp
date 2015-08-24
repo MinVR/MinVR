@@ -25,14 +25,19 @@ int main() {
   index->addValueString(std::string("billy"), s1);
   index->addValueString(std::string("johnny"), s2);
 
-  std::string c1 = std::string("container1");
-  std::string c2 = std::string("container2");
+  std::list<std::string> c1;
+  c1.push_back("billy");
+  c1.push_back("mary");
+
+  std::list<std::string> c2;
+  c2.push_back("henry");
+  c2.push_back("george");
 
   index->addValueContainer(std::string("ted"), c1);
   index->addValueContainer(std::string("eva"), c2);
 
 
-  index->addValue(std::string("<flora type=\"int\">3274</flora><morton type=\"float\">34.5</morton>"));
+  index->addValue(std::string("<bob type=\"container\"><flora type=\"int\">3274</flora><morton type=\"float\">34.5</morton></bob>"));
 
   std::string input = "";
 
@@ -45,11 +50,11 @@ int main() {
 
     switch (p->getType()) {
     case MVRINT:
-      std::cout << "which gives->" << (p.intVal()->getValue()) << std::endl;
+      std::cout << "which gives (I)->" << (p.intVal()->getValue()) << std::endl;
       break;
 
     case MVRFLOAT:
-      std::cout << "which gives->" << (p.doubleVal()->getValue()) << std::endl;
+      std::cout << "which gives (D)->" << (p.doubleVal()->getValue()) << std::endl;
       break;
 
     case MVRSTRING:
@@ -57,8 +62,17 @@ int main() {
       break;
 
     case MVRCONTAINER:
-      std::cout << "which gives (C)->" << (p.containerVal()->getValue()) << std::endl;
-      break;
+
+      {
+        std::cout << "which gives (C)->" << std::endl;
+
+        std::list<std::string> nameList = p.containerVal()->getValue();
+        for (std::list<std::string>::iterator nl = nameList.begin();
+             nl != nameList.end(); nl++) {
+          std::cout << "........" << *nl << std::endl;
+        }
+        break;
+      }
     }
 
 
