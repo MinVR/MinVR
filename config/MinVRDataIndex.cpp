@@ -21,6 +21,15 @@ MinVRDataIndex::MinVRDataIndex() {
 
 }
 
+std::list<std::string> MinVRDataIndex::getDataNames() {
+  std::list<std::string> outList;
+  for (std::map<std::string, MinVRDatumPtr>::iterator it = mindex.begin();
+       it != mindex.end(); it++) {
+    outList.push_back(it->first);
+  }
+  return outList;
+}
+
 bool MinVRDataIndex::addValueInt(const std::string valName, int value) {
 
   MinVRDatumPtr obj = factory.CreateMinVRDatum(MVRINT, &value);
@@ -79,21 +88,26 @@ std::string MinVRDataIndex::serialize(const std::string valName) {
     std::string trimName;
     while (std::getline(ss, trimName, '/')) {};
 
+    // If this is not a container, just spell out the XML with the serialized
+    // data inside.
     if (it->second->getType() != MVRCONTAINER) {
 
       return "<" + trimName + " type=\"" + it->second->getDescription() + "\">" +
         it->second->serialize() + "</" + trimName + ">";
 
     } else {
+      // If this is a container...
 
       std::string serialized;
+      //                      ... open the XML tag, with the type ...
       serialized = "<" + trimName + " type=\"" + it->second->getDescription() + "\">";
 
+      // ... loop through the children (recursively) ...
       std::list<std::string> nameList = it->second.containerVal()->getValue();
       for (std::list<std::string>::iterator lt = nameList.begin();
            lt != nameList.end(); lt++) {
 
-        // Recurse, and get the serialization of the member data value.
+        // ... recurse, and get the serialization of the member data value.
         serialized += serialize(*lt);
       };
 
@@ -103,12 +117,6 @@ std::string MinVRDataIndex::serialize(const std::string valName) {
   }
 }
 
-// The serialized data is stored as definition space name semicolon value.
-// So, an int looks like 'int nWindows;6'. A container looks like this:
-//
-//  '{int nWindows;float rCorner;} myContainer;6;3.456'
-//
-// screw that, let's use xml here, too.
 // an int should be <nWindows type="int">6</nWindows>
 // A container: <section id="myContainer"><nWindows type="int">6</nWindows>
 bool MinVRDataIndex::addValue(const std::string serializedData) {
@@ -129,7 +137,7 @@ bool MinVRDataIndex::processValue(const char* name,
                                   const char* valueString) {
   char buffer[50];
 
-  std::cout << "processing " << std::string(name) << std::string(type) << std::string(valueString) << std::endl;
+  std::cout << "Processing " << std::string(name) << " of type " << std::string(type) << " with value (" << std::string(valueString) << ")" << std::endl;
 
   // Step 7 of adding a data type is adding entries to this switch.
   switch (mvrTypeMap[std::string(type)]) {
@@ -161,7 +169,15 @@ bool MinVRDataIndex::processValue(const char* name,
     }
   case MVRCONTAINER:
     {
-      throw std::runtime_error(std::string("empty containers not allowed"));
+      // Check to see if this is just white space. If so, ignore. If
+      // not, throw an exception because we don't know what to do.
+      std::string stVal = std::string(valueString);
+      std::string::iterator end_pos = std::remove(stVal.begin(), stVal.end(), ' ');
+      stVal.erase(end_pos, stVal.end());
+
+      if (stVal.size() > 0) {
+        throw std::runtime_error(std::string("empty containers not allowed"));
+      }
       break;
     }
   }
@@ -249,15 +265,28 @@ bool MinVRDataIndex::printXML(element* node, int level) {
   }
 }
 
-  // char fmtBuf[50];
-  // sprintf(fmtBuf, "%%d", level);
+bool MinVRDataIndex::processXMLFile(std::string fileName) {
 
-  // element *child = rootNode->get_next_child();
-  // if (child == NULL)
-  //   {
-  //     if
+  std::string xml_string="";
+  std::cout << "Reading from file = " << fileName << std::endl;
+  ifstream file(fileName.c_str());
 
-  // char *outBuf;
-  // outbuf = (char *)malloc(50 +
+  if(file.is_open()) {
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    xml_string = buffer.rdbuf()->str();
+
+    Cxml *xml = new  Cxml();
+    xml->parse_string((char*)xml_string.c_str());
+
+    element *xml_node = xml->get_root_element();
+    walkXML(xml_node, std::string("XML_DOC"));
+    delete xml;
+
+  } else {
+    std::cout << "Error opening file " << fileName << std::endl;
+  }
+}
+
 
 
