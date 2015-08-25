@@ -125,6 +125,7 @@ bool MinVRDataIndex::addValue(const std::string serializedData) {
   element *xml_node = xml->get_root_element();
 
   walkXML(xml_node, std::string("XML_DOC"));
+  delete xml;
 }
 
 bool MinVRDataIndex::addValue(const std::string serializedData,
@@ -133,14 +134,14 @@ bool MinVRDataIndex::addValue(const std::string serializedData,
 }
 
 bool MinVRDataIndex::processValue(const char* name,
-                                  const char* type,
+                                  MVRTYPE_ID type,
                                   const char* valueString) {
   char buffer[50];
 
-  std::cout << "Processing " << std::string(name) << " of type " << std::string(type) << " with value (" << std::string(valueString) << ")" << std::endl;
+  std::cout << "Processing " << std::string(name) << " of type " << type << " with value (" << std::string(valueString) << ")" << std::endl;
 
   // Step 7 of adding a data type is adding entries to this switch.
-  switch (mvrTypeMap[std::string(type)]) {
+  switch (type) {
   case MVRINT:
     {
       int iVal;
@@ -183,8 +184,6 @@ bool MinVRDataIndex::processValue(const char* name,
   }
 }
 
-//bool processValue(name, type, processedXMLNode);
-
 
 bool MinVRDataIndex::walkXML(element* node, std::string nameSpace) {
 
@@ -211,8 +210,18 @@ bool MinVRDataIndex::walkXML(element* node, std::string nameSpace) {
     if (node->get_value() != NULL &&
         node->get_value() != "") {
 
+      MVRTYPE_ID typeId;
+
+      if (node->get_attribute(type) == NULL) {
+        typeId = inferType(std::string(node->get_value()));
+      } else { // what does map return if no match?
+        typeId = mvrTypeMap[std::string(node->get_attribute(type)->get_value())];
+      }
+
+      // check for typeId == 0
+
       processValue(qualifiedName.c_str(),
-                   node->get_attribute(type)->get_value(),
+                   typeId,
                    node->get_value());
 
     }
@@ -236,6 +245,15 @@ bool MinVRDataIndex::walkXML(element* node, std::string nameSpace) {
     // And go walk its tree.
     walkXML(child, qualifiedName);
   }
+}
+
+MVRTYPE_ID MinVRDataIndex::inferType(const std::string valueString) {
+
+  // if (value containsonly "[0-9]-.") return MVRFLOAT;
+  // if (value containsonly "[0-9]-") return MVRINT;
+  // if (value firstnonwhitespace "<") return MVRCONTAINER;
+  // else
+  return MVRSTRING;
 }
 
 bool MinVRDataIndex::printXML(element* node, int level) {

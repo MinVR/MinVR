@@ -38,47 +38,44 @@ int main() {
       elems.push_back(elem);
     }
 
-    for (std::vector<std::string>::iterator it = elems.begin();
-         it != elems.end(); it++) {
-      std::cout << "(" << *it << ")" ;
-    }
-    std::cout << std::endl;
-
+    ////// command: ? (help)
     if (elems[0].compare("?") == 0) {
       std::cout << "p print a value from the list" << std::endl;
       std::cout << "l get the list of data names" << std::endl;
       std::cout << "f <filename> read an XML file" << std::endl;
 
+    ////// command: f (open file)
     } else if (elems[0].compare("f") == 0) {
 
       index->processXMLFile(elems[1]);
 
+    ////// command: p (print value)
     } else if (elems[0].compare("p") == 0) {
 
       MinVRDatumPtr p = index->getValue(elems[1]);
 
       switch (p->getType()) {
       case MVRINT:
-        std::cout << "which gives (I)->" << (p.intVal()->getValue()) << std::endl;
+        std::cout << "an integer containing: " << (p.intVal()->getValue()) << std::endl;
         break;
 
       case MVRFLOAT:
-        std::cout << "which gives (D)->" << (p.doubleVal()->getValue()) << std::endl;
+        std::cout << "a float containing: " << (p.doubleVal()->getValue()) << std::endl;
         break;
 
       case MVRSTRING:
-        std::cout << "which gives (S)->" << (p.stringVal()->getValue()) << std::endl;
+        std::cout << "a string containing: " << (p.stringVal()->getValue()) << std::endl;
         break;
 
       case MVRCONTAINER:
 
         {
-          std::cout << "which gives (C)->" << std::endl;
+          std::cout << "a container containing: " << std::endl;
 
           std::list<std::string> nameList = p.containerVal()->getValue();
           for (std::list<std::string>::iterator nl = nameList.begin();
                nl != nameList.end(); nl++) {
-            std::cout << "........" << *nl << std::endl;
+            std::cout << "                        " << *nl << std::endl;
           }
           break;
         }
@@ -87,12 +84,16 @@ int main() {
       std::cout << "description: " << index->getDescription(elems[1]) << std::endl;
       std::cout << "serialization: " << index->serialize(elems[1]) << std::endl;
 
+    ////// command: l (list all values)
     } else if (elems[0].compare("l") == 0) {
       std::list<std::string> nameList = index->getDataNames();
       for (std::list<std::string>::iterator it = nameList.begin();
            it != nameList.end(); it++) {
         std::cout << *it << std::endl;
       }
+    ////// command: q (exit)
+    } else if (elems[0].compare("l") == 0) {
+      exit(0);
     }
 
 

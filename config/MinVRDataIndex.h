@@ -38,10 +38,10 @@ public:
   bool walkXML(element* node, std::string nameSpace);
   // A functional part of the walkXML apparatus.
   bool processValue(const char* name,
-                    const char* type,
+                    MVRTYPE_ID type,
                     const char* valueString);
   // Tries to guess a data type from the ASCII representation.
-  //MVRTYPE_ID inferType(const char* valueString);
+  MVRTYPE_ID inferType(const std::string valueString);
 
   // Process the contents of a given XML file into the index.
   bool processXMLFile(std::string fileName);
