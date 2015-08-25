@@ -43,6 +43,7 @@ int main() {
       std::cout << "p print a value from the list" << std::endl;
       std::cout << "l get the list of data names" << std::endl;
       std::cout << "f <filename> read an XML file" << std::endl;
+      std::cout << "f <filename> r" << std::endl;
 
     ////// command: f (open file)
     } else if (elems[0].compare("f") == 0) {
@@ -52,37 +53,43 @@ int main() {
     ////// command: p (print value)
     } else if (elems[0].compare("p") == 0) {
 
-      MinVRDatumPtr p = index->getValue(elems[1]);
+      try {
+        MinVRDatumPtr p = index->getValue(elems[1]);
 
-      switch (p->getType()) {
-      case MVRINT:
-        std::cout << "an integer containing: " << (p.intVal()->getValue()) << std::endl;
-        break;
-
-      case MVRFLOAT:
-        std::cout << "a float containing: " << (p.doubleVal()->getValue()) << std::endl;
-        break;
-
-      case MVRSTRING:
-        std::cout << "a string containing: " << (p.stringVal()->getValue()) << std::endl;
-        break;
-
-      case MVRCONTAINER:
-
-        {
-          std::cout << "a container containing: " << std::endl;
-
-          std::list<std::string> nameList = p.containerVal()->getValue();
-          for (std::list<std::string>::iterator nl = nameList.begin();
-               nl != nameList.end(); nl++) {
-            std::cout << "                        " << *nl << std::endl;
-          }
+        switch (p->getType()) {
+        case MVRINT:
+          std::cout << "an integer containing: " << (p.intVal()->getValue()) << std::endl;
           break;
-        }
-      }
 
-      std::cout << "description: " << index->getDescription(elems[1]) << std::endl;
-      std::cout << "serialization: " << index->serialize(elems[1]) << std::endl;
+        case MVRFLOAT:
+          std::cout << "a float containing: " << (p.doubleVal()->getValue()) << std::endl;
+          break;
+
+        case MVRSTRING:
+          std::cout << "a string containing: " << (p.stringVal()->getValue()) << std::endl;
+          break;
+
+        case MVRCONTAINER:
+
+          {
+            std::cout << "a container containing: " << std::endl;
+
+            std::list<std::string> nameList = p.containerVal()->getValue();
+            for (std::list<std::string>::iterator nl = nameList.begin();
+                 nl != nameList.end(); nl++) {
+              std::cout << "                        " << *nl << std::endl;
+            }
+            break;
+          }
+        }
+
+        std::cout << "description: " << index->getDescription(elems[1]) << std::endl;
+        std::cout << "serialization: " << index->serialize(elems[1]) << std::endl;
+      } catch (const std::exception& e) {
+
+        std::cout << "oops: " << e.what() << std::endl;
+
+      }
 
     ////// command: l (list all values)
     } else if (elems[0].compare("l") == 0) {
@@ -91,9 +98,22 @@ int main() {
            it != nameList.end(); it++) {
         std::cout << *it << std::endl;
       }
+    ////// command: a (something)
+    } else if (elems[0].compare("a") == 0) {
+
+      char* p;
+      int converted = strtol(elems[1].c_str(), &p, 10);
+      if (!*p) {
+        // use converted
+        std::cout << "good: " << elems[1] << " becomes " << converted << std::endl;
+      } else {
+        std::cout << "no good: " << elems[1] << std::endl;
+        // conversion failed because the input wasn't a number
+      }
+
     ////// command: q (exit)
-    } else if (elems[0].compare("l") == 0) {
-      exit(0);
+    } else if (elems[0].compare("q") == 0) {
+      return EXIT_SUCCESS;
     }
 
 

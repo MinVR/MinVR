@@ -184,7 +184,7 @@ bool MinVRDataIndex::processValue(const char* name,
   }
 }
 
-
+// This seems to read containers twice.  Do both instances wind up in memory?
 bool MinVRDataIndex::walkXML(element* node, std::string nameSpace) {
 
   char type[5] = "type";
@@ -207,23 +207,39 @@ bool MinVRDataIndex::walkXML(element* node, std::string nameSpace) {
     // Container nodes should not be processed this way because they
     // have children, not a value.  Or at least they should not, and
     // the processValue method will throw an exception.
-    if (node->get_value() != NULL &&
-        node->get_value() != "") {
+    if (node->get_value() != NULL) {
 
-      MVRTYPE_ID typeId;
+      // Check that the node value isn't just white space or empty.
+      std::string valueString = std::string(node->get_value());
+      //std::size_t firstChar = valueString.find_first_not_of(" \t\r\n");
+      int firstChar = valueString.find_first_not_of(" \t\r\n");
 
-      if (node->get_attribute(type) == NULL) {
-        typeId = inferType(std::string(node->get_value()));
-      } else { // what does map return if no match?
-        typeId = mvrTypeMap[std::string(node->get_attribute(type)->get_value())];
+      std::cout << node->get_name() << ">>" << node->get_value() << "<<" << firstChar << "<<" << strlen(node->get_name()) << std::endl;
+
+      if (node->get_attribute(type) != NULL) {
+        std::cout << ">>" << node->get_attribute(type)->get_value() << "<<" << std::endl;
+      } else {
+        std::cout << ">><<" << std::endl;
       }
 
-      // check for typeId == 0
+      //if (node->get_value() != "") {
+      if (firstChar >= 0) {
 
-      processValue(qualifiedName.c_str(),
-                   typeId,
-                   node->get_value());
+        MVRTYPE_ID typeId;
 
+        if (node->get_attribute(type) == NULL) {
+          std::cout << "inferring type for: " << node->get_name() << std::endl;
+          typeId = inferType(std::string(node->get_value()));
+        } else { // what does map return if no match?
+          typeId = mvrTypeMap[std::string(node->get_attribute(type)->get_value())];
+        }
+
+        // check for typeId == 0
+
+        processValue(qualifiedName.c_str(),
+                     typeId,
+                     node->get_value());
+      }
     }
 
     // Pick the next child.
@@ -233,7 +249,7 @@ bool MinVRDataIndex::walkXML(element* node, std::string nameSpace) {
       // If this is a non-empty container that is not named XML_DOC,
       // add it to the index.
       if (childNames.size() > 0 && strcmp(node->get_name(), "XML_DOC")) {
-
+        std::cout << "adding CONTAINER" << std::endl;
         addValueContainer(qualifiedName, childNames);
       }
       return true;
@@ -249,10 +265,27 @@ bool MinVRDataIndex::walkXML(element* node, std::string nameSpace) {
 
 MVRTYPE_ID MinVRDataIndex::inferType(const std::string valueString) {
 
-  // if (value containsonly "[0-9]-.") return MVRFLOAT;
-  // if (value containsonly "[0-9]-") return MVRINT;
-  // if (value firstnonwhitespace "<") return MVRCONTAINER;
-  // else
+  // Test for int
+  char *p;
+  int conInt = strtol(valueString.c_str(), &p, 10);
+  if (!*p) return MVRINT;
+
+  std::cout << "not an int" << std::endl;
+
+  double conFloat = strtod(valueString.c_str(), &p);
+  if (!*p) return MVRFLOAT;
+
+  std::cout << "not a float" << std::endl;
+
+  // Is it a container?
+  std::size_t firstChar = valueString.find_first_not_of(" \t\r\n");
+  if (firstChar != std::string::npos) {
+    if (valueString[firstChar] == '<') return MVRCONTAINER;
+  }
+
+  std::cout << "not a container" << std::endl;
+
+  // Not any of the above?  Probably a string.
   return MVRSTRING;
 }
 
