@@ -141,8 +141,9 @@ bool Cxml::get_node(char* xml_string)
             if(Current != NULL)                 // this node is set, navigate to a child of it
                 if(Current->get_name() != NULL) // this node is set, navigate to a child of it
                     Current = Current->add_child_element();
-            
+
             Current->set_name(szNodeNameBuff);
+            // If there's a space here, there must be an attribute coming.
             while(c == CSPACE)
             {
                 c = xml_string[++k];
@@ -156,31 +157,46 @@ bool Cxml::get_node(char* xml_string)
                 }
                 clean_str(szAttrNameBuff);
                 clean_str(szAttrValBuff);
+
+                // Get ready for a new attribute.
                 attribute* pA = new attribute();
+
+                // Accumulate characters until there is an equal sign, when
+                // we'll know the attribute name has been read.
                 while(c != CEQUAL)
-                {//loops until the attribute name has been entirely read
-                    if(c != CNEW && c != CTAB && c != CRET)
+                {
+                    if (c != CNEW && c != CTAB && c != CRET)
                         szAttrNameBuff = concat(szAttrNameBuff, c);
                     c = xml_string[++k];
                 }
+
+                // Is the attribute value in single or double quotes?
                 c = xml_string[++k];
-                if(c == CQUOTE || c == CDQUOTE)
+                if (c == CQUOTE || c == CDQUOTE)
                 {
                     cDelim = c;
                     c = xml_string[++k];
                 }
+
+                // Accumulate characters until the next delimiter, when
+                // we'll know the attribute value has been read.
                 while(c != cDelim && cDelim != 0)
-                {//loops until the attribute value has been entirely read
+                {
                     if(c != CNEW && c != CTAB && c != CRET)
                         szAttrValBuff = concat(szAttrValBuff, c);
                     c = xml_string[++k];
                 }
+
+                // Reset the delimiter indicator, and advance one character.
                 cDelim = 0;
                 c = xml_string[++k];
+
+                // Set the name and value of our new attribute.
                 pA->set_name(szAttrNameBuff);
                 pA->set_value(szAttrValBuff);
                 Current->add_attribute(pA);
-            }
+            } // Repeat if the next character is a space.
+
             if(c == CSLASH)
             {
                 Current = Current->get_parent();
