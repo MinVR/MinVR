@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<base type="container">
+
+  <CAVEViewer>
+    <name type="string">  CAVEViewerName</name>
+    <headTracked type="string">true</headTracked>
+    <viewDirection>1.0457</viewDirection>
+
+    <CAVEfront type="container">
+      <name type="string">CAVEfrontName</name>
+      <deviceMounted type="string">false</deviceMounted>
+      <origin type="float">48.2</origin>
+      <horizontalAxis type="int">102</horizontalAxis>
+    </CAVEfront>
+
+    <CAVErear type="container">
+      <name type="string">CAVErearName</name>
+      <deviceMounted type="string">false</deviceMounted>
+      <origin type="float">-48.1</origin>
+      <horizontalAxis type="int">107</horizontalAxis>
+    </CAVErear>
+  </CAVEViewer>
+</base>
+
+

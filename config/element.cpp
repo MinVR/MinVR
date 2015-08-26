@@ -7,7 +7,7 @@ element::element() : is_empty_attribute_list(true),
                    name_is_allocated(false),
                    is_comment(false),
                    m_name(NULL),
-                   m_parrent(NULL),
+                   m_parent(NULL),
                    is_pi(false)
 {
     m_element_iterator = m_element_list.begin();
@@ -20,7 +20,7 @@ element::element(element* node) : is_empty_attribute_list(true),
                                name_is_allocated(false),
                                is_comment(false),
                                m_name(NULL),
-                               m_parrent(NULL)
+                               m_parent(NULL)
 {
     if(node != NULL)
     {
@@ -63,13 +63,13 @@ bool element::add_attribute(char* the_attribute_name, char* the_value)
         return false;
     if(strlen(the_attribute_name) == 0)
         return false;
-    
+
     attribute* m_attribute = new attribute();
     m_attribute->set_name(the_attribute_name);
     if(the_value!=NULL)
         if(strlen(the_value)!= 0)
             m_attribute->set_value(the_value);
-    m_attribute_list.push_front(m_attribute);
+    m_attribute_list.push_back(m_attribute);
     m_attribute_iterator = m_attribute_list.begin();
     is_empty_attribute_list = false;
     return true;
@@ -79,7 +79,7 @@ bool element::add_attribute(attribute* ptr_attribute)
 {
     if(ptr_attribute == NULL)
         return false;
-    m_attribute_list.push_front(ptr_attribute);
+    m_attribute_list.push_back(ptr_attribute);
     m_attribute_iterator = m_attribute_list.begin();
     is_empty_attribute_list = false;
     return true;
@@ -154,9 +154,9 @@ element* element::add_child_element(element* child)
 {
     if(child == NULL)
         return NULL;
-    m_element_list.push_front(child);
-    i = m_element_list.begin();
-    return (*i);
+    m_element_list.push_back(child);
+    i = m_element_list.end();
+    return (*(--i));
 }
 
 bool element::set_name(const char* the_name)
@@ -180,20 +180,20 @@ bool element::set_name(const char* the_name)
 
 element* element::get_parent()
 {
-    return m_parrent;
+    return m_parent;
 }
 
-bool element::set_parrent(element* pnode)
+bool element::set_parent(element* pnode)
 {
     if(pnode == NULL)
         return false;
-    m_parrent = pnode;
+    m_parent = pnode;
     return true;
 }
 
 bool element::is_root()
 {
-    return (m_parrent == NULL);
+    return (m_parent == NULL);
 }
 
 char* element::get_name()
@@ -204,11 +204,11 @@ char* element::get_name()
 element* element::add_child_element()
 {
     element* child = new element();
-    child->set_parrent(this);
-    m_element_list.push_front(child);
-    i = m_element_list.begin();
+    child->set_parent(this);
+    m_element_list.push_back(child);
+    i = m_element_list.end();
     m_element_iterator = m_element_list.begin();
-    return (*i);
+    return (*(--i));
 }
 
 element* element::get_next_child()
@@ -221,6 +221,13 @@ element* element::get_next_child()
     }
     return NULL;
 }
+
+element* element::get_first_child()
+{
+  m_element_iterator = m_element_list.begin();
+  return (element*)*m_element_iterator;
+}
+
 
 element& element::operator=( element& the_element)
 {
