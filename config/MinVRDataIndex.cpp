@@ -4,7 +4,7 @@
 
 // Step 5 of the specialization instructions (in MinVRDatum.h) is to
 // add an entry here to register the new data type.
-MinVRDataIndex::MinVRDataIndex() {
+MinVRDataIndex::MinVRDataIndex() : overwrite(true) {
   factory.RegisterMinVRDatum(MVRINT, CreateMinVRDatumInt);
   factory.RegisterMinVRDatum(MVRFLOAT, CreateMinVRDatumDouble);
   factory.RegisterMinVRDatum(MVRSTRING, CreateMinVRDatumString);
@@ -41,8 +41,12 @@ bool MinVRDataIndex::addValueInt(const std::string valName, int value) {
     return mindex.insert(MinVRDataMap::value_type(valName, obj)).second;
 
   } else {
-
-    return it->second.intVal()->setValue(value);
+    // Overwrite value
+    if (overwrite) {
+      return it->second.intVal()->setValue(value);
+    } else {
+      return false;
+    }
   }
 }
 
@@ -57,8 +61,12 @@ bool MinVRDataIndex::addValueDouble(const std::string valName, double value) {
     return mindex.insert(MinVRDataMap::value_type(valName, obj)).second;
 
   } else {
-
-    return it->second.doubleVal()->setValue(value);
+    // Overwrite value
+    if (overwrite) {
+      return it->second.doubleVal()->setValue(value);
+    } else {
+      return false;
+    }
   }
 }
 
@@ -67,8 +75,9 @@ bool MinVRDataIndex::addValueString(const std::string valName, std::string value
   // Remove leading spaces.
   int valueBegin = value.find_first_not_of(" \t\n\r");
   if (valueBegin == value.size())
-    return false; // no content
+    return false; // no content. This should not happen. Or should it?
 
+  // ... and trailing.
   int valueEnd = value.find_last_not_of(" \t\n\r");
   int valueRange = valueEnd - valueBegin + 1;
 
@@ -83,8 +92,12 @@ bool MinVRDataIndex::addValueString(const std::string valName, std::string value
     return mindex.insert(MinVRDataMap::value_type(valName, obj)).second;
 
   } else {
-
-    return it->second.stringVal()->setValue(trimValue);
+    // Overwrite value
+    if (overwrite) {
+      return it->second.stringVal()->setValue(trimValue);
+    } else {
+      return false;
+    }
   }
 }
 
@@ -99,7 +112,7 @@ bool MinVRDataIndex::addValueContainer(const std::string valName,
     //std::cout << "added " << obj.containerVal()->getValue() << std::endl;
     return mindex.insert(MinVRDataMap::value_type(valName, obj)).second;
   } else {
-
+    // Add value to existing container.
     return it->second.containerVal()->addToValue(value);
   }
 }
@@ -184,7 +197,7 @@ bool MinVRDataIndex::processValue(const char* name,
                                   const char* valueString) {
   char buffer[50];
 
-  std::cout << "Processing " << std::string(name) << " of type " << type << " with value (" << std::string(valueString) << ")" << std::endl;
+  //  std::cout << "Processing " << std::string(name) << " of type " << type << " with value (" << std::string(valueString) << ")" << std::endl;
 
   // Step 7 of adding a data type is adding entries to this switch.
   switch (type) {
@@ -193,7 +206,7 @@ bool MinVRDataIndex::processValue(const char* name,
       int iVal;
       sscanf(valueString, "%d", &iVal);
 
-      std::cout << "adding int " << std::string(name) << std::endl;
+      //std::cout << "adding int " << std::string(name) << std::endl;
       addValueInt(name, iVal);
       break;
     }
@@ -202,7 +215,7 @@ bool MinVRDataIndex::processValue(const char* name,
       double fVal;
       sscanf(valueString, "%lf", &fVal);
 
-      std::cout << "adding float " << std::string(name) << std::endl;
+      //std::cout << "adding float " << std::string(name) << std::endl;
       addValueDouble(name, fVal);
       break;
     }
@@ -210,7 +223,7 @@ bool MinVRDataIndex::processValue(const char* name,
     {
       std::string sVal = std::string(valueString);
 
-      std::cout << "adding string " << std::string(name) << std::endl;
+      //std::cout << "adding string " << std::string(name) << std::endl;
       addValueString(name, sVal);
       break;
     }
@@ -260,13 +273,13 @@ bool MinVRDataIndex::walkXML(element* node, std::string nameSpace) {
       //std::size_t firstChar = valueString.find_first_not_of(" \t\r\n");
       int firstChar = valueString.find_first_not_of(" \t\r\n");
 
-      std::cout << node->get_name() << ">>" << node->get_value() << "<<" << firstChar << "<<" << strlen(node->get_name()) << std::endl;
+      //std::cout << node->get_name() << ">>" << node->get_value() << "<<" << firstChar << "<<" << strlen(node->get_name()) << std::endl;
 
-      if (node->get_attribute(type) != NULL) {
-        std::cout << ">>" << node->get_attribute(type)->get_value() << "<<" << std::endl;
-      } else {
-        std::cout << ">><<" << std::endl;
-      }
+      // if (node->get_attribute(type) != NULL) {
+      //   std::cout << ">>" << node->get_attribute(type)->get_value() << "<<" << std::endl;
+      // } else {
+      //   std::cout << ">><<" << std::endl;
+      // }
 
       //if (node->get_value() != "") {
       if (firstChar >= 0) {
@@ -274,7 +287,7 @@ bool MinVRDataIndex::walkXML(element* node, std::string nameSpace) {
         MVRTYPE_ID typeId;
 
         if (node->get_attribute(type) == NULL) {
-          std::cout << "inferring type for: " << node->get_name() << std::endl;
+          //std::cout << "inferring type for: " << node->get_name() << std::endl;
           typeId = inferType(std::string(node->get_value()));
         } else { // what does map return if no match?
           typeId = mvrTypeMap[std::string(node->get_attribute(type)->get_value())];
@@ -295,7 +308,7 @@ bool MinVRDataIndex::walkXML(element* node, std::string nameSpace) {
       // If this is a non-empty container that is not named XML_DOC,
       // add it to the index.
       if (childNames.size() > 0 && strcmp(node->get_name(), "XML_DOC")) {
-        std::cout << "adding CONTAINER" << std::endl;
+        //std::cout << "adding CONTAINER" << std::endl;
         addValueContainer(qualifiedName, childNames);
       }
       return true;

@@ -20,8 +20,16 @@ private:
   // This is just a convenience to map strings to object type numbers.
   std::map<std::string, MVRTYPE_ID> mvrTypeMap;
 
+  // If this is true, new values will overwrite old ones.  Otherwise,
+  // new values will just bounce off.  Except containers, who are
+  // always happy to receive new values and add to their existing
+  // list.
+  bool overwrite;
+
 public:
-  MinVRDataIndex ();
+  MinVRDataIndex();
+
+  void setOverwrite(const bool inVal) { overwrite = inVal; }
 
   MinVRDatumPtr getValue(const std::string valName);
   std::string getDescription(const std::string valName);
