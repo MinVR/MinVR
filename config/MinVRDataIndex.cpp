@@ -329,12 +329,12 @@ MVRTYPE_ID MinVRDataIndex::inferType(const std::string valueString) {
   int conInt = strtol(valueString.c_str(), &p, 10);
   if (!*p) return MVRINT;
 
-  std::cout << "not an int" << std::endl;
+  //std::cout << "not an int" << std::endl;
 
   double conFloat = strtod(valueString.c_str(), &p);
   if (!*p) return MVRFLOAT;
 
-  std::cout << "not a float" << std::endl;
+  //std::cout << "not a float" << std::endl;
 
   // Is it a container?
   std::size_t firstChar = valueString.find_first_not_of(" \t\r\n");
@@ -342,7 +342,7 @@ MVRTYPE_ID MinVRDataIndex::inferType(const std::string valueString) {
     if (valueString[firstChar] == '<') return MVRCONTAINER;
   }
 
-  std::cout << "not a container" << std::endl;
+  //std::cout << "not a container" << std::endl;
 
   // Not any of the above?  Probably a string.
   return MVRSTRING;

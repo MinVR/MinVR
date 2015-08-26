@@ -9,6 +9,7 @@
 int main() {
   MinVRDataIndex *index = new MinVRDataIndex;
 
+  // Set up some sample data names and values.
   int a = 4;
   int b = 6;
   double f = 3.1415926;
@@ -30,6 +31,7 @@ int main() {
   std::vector<std::string> elems;
   std::string elem;
   std::string line;
+  std::cout << "Try ? for commands." << std::endl;
   while ((std::cout << "> ") && std::getline(std::cin, line)) {
 
     elems.clear();
@@ -40,10 +42,11 @@ int main() {
 
     ////// command: ? (help)
     if (elems[0].compare("?") == 0) {
-      std::cout << "p print a value from the list" << std::endl;
       std::cout << "l get the list of data names" << std::endl;
+      std::cout << "p <name> print a value from the list" << std::endl;
       std::cout << "f <filename> read an XML file" << std::endl;
-      std::cout << "f <filename> r" << std::endl;
+      std::cout << "a <newname> <type> <value> add a primitive value" << std::endl;
+      std::cout << "q quit" << std::endl;
 
     ////// command: f (open file)
     } else if (elems[0].compare("f") == 0) {
@@ -101,22 +104,21 @@ int main() {
     ////// command: a (something)
     } else if (elems[0].compare("a") == 0) {
 
-      char* p;
-      int converted = strtol(elems[1].c_str(), &p, 10);
-      if (!*p) {
-        // use converted
-        std::cout << "good: " << elems[1] << " becomes " << converted << std::endl;
+      if (elems.size() < 4) {
+        std::cout << "try 'a harry int 27' (that is, do 'a <name> <type> <value>')" << std::endl;
       } else {
-        std::cout << "no good: " << elems[1] << std::endl;
-        // conversion failed because the input wasn't a number
+        std::string serialized = "<" + elems[1] + " type=\"" + elems[2] + "\">" + elems[3] + "</" + elems[1] + ">";
+        index->addValue(serialized);
       }
 
     ////// command: q (exit)
     } else if (elems[0].compare("q") == 0) {
       return EXIT_SUCCESS;
+
+    } else {
+
+      std::cout << "Was '" << elems[0] << "' meant to be a command? Try '?'." << std::endl;
     }
-
-
   }
 }
 
