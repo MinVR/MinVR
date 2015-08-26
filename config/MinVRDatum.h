@@ -57,7 +57,20 @@ typedef enum
 //      something like MinVRDatumInt or MinVRDatumDouble.  You will
 //      have to provide it with a private value member and a public
 //      getValue() method member.  There are not virtual members for
-//      these functions, since their signature differs.
+//      these functions, since their prototypes differ, and their
+//      implementations differ too much for templates.
+//
+//   1a. You will also need a setValue() function.  These objects are
+//       meant to be immutable, but when a new name-value pair has the
+//       same name as another pair it seems a shame to create an
+//       entirely new object to hold the new value when an
+//       already-existing one is right there.  So when it is
+//       appropriate for a new name to supplant the old, we can
+//       provide some small degree of optimization by just changing
+//       the value of the object.  So these objects are only sort of
+//       immutable in the sense that we're supposed to pretend they
+//       are, and so long as no one lets on, the secret will be safe.
+//       Ok?
 //
 //   2. Add a method to the MinVRDatumPtr that will return the new
 //      data type.  See intVal() and doubleVal() for models.
@@ -82,6 +95,12 @@ typedef enum
 //      the parser to take the text from the configuration file and
 //      translate it into the value and name to be stored here.  This
 //      is in MinVRDataIndex::processValue().
+//
+//   8. Part of that will be adding something to
+//      MinVRDataIndex::inferType to identify the new data type.  This
+//      is pretty free-form, but follow the models in there.  This is
+//      also not necessary, but if you don't do it, your data types
+//      will always require a 'type="XX"' attribute when specified.
 //
 //
 // MinVRDatum is the base class for all supported data types.  In
@@ -139,6 +158,7 @@ public:
   std::string serialize();
 
   int getValue() { return value; };
+  bool setValue(const int inVal);
 };
 
 // The specialization for a float.  (Or a 'double' in C++-speak.)
@@ -152,6 +172,7 @@ public:
   std::string serialize();
 
   double getValue() { return value; };
+  bool setValue(const double inVal);
 };
 
 // Specialization for a string
@@ -166,6 +187,7 @@ public:
   std::string serialize();
 
   std::string getValue() { return value; };
+  bool setValue(const std::string inVal);
 };
 
 // Specialization for a string
@@ -180,6 +202,7 @@ public:
   std::string serialize();
 
   std::list<std::string> getValue() { return value; };
+  bool addToValue(const std::list<std::string> inVal);
 };
 
 // A convenient reference counter for the smart pointer for the MinVRDatum type.

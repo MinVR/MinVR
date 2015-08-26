@@ -32,30 +32,76 @@ std::list<std::string> MinVRDataIndex::getDataNames() {
 
 bool MinVRDataIndex::addValueInt(const std::string valName, int value) {
 
-  MinVRDatumPtr obj = factory.CreateMinVRDatum(MVRINT, &value);
-  return mindex.insert(MinVRDataMap::value_type(valName, obj)).second;
+  // Check if the name is already in use.
+  MinVRDataMap::iterator it = mindex.find(valName);
+  if (it == mindex.end()) {
+
+    // No? Create it and stick it in index.
+    MinVRDatumPtr obj = factory.CreateMinVRDatum(MVRINT, &value);
+    return mindex.insert(MinVRDataMap::value_type(valName, obj)).second;
+
+  } else {
+
+    return it->second.intVal()->setValue(value);
+  }
 }
 
 bool MinVRDataIndex::addValueDouble(const std::string valName, double value) {
 
-  MinVRDatumPtr obj = factory.CreateMinVRDatum(MVRFLOAT, &value);
-  //std::cout << "added " << obj.doubleVal()->getValue() << std::endl;
-  return mindex.insert(MinVRDataMap::value_type(valName, obj)).second;
+  // Check if the name is already in use.
+  MinVRDataMap::iterator it = mindex.find(valName);
+  if (it == mindex.end()) {
+
+    MinVRDatumPtr obj = factory.CreateMinVRDatum(MVRFLOAT, &value);
+    //std::cout << "added " << obj.doubleVal()->getValue() << std::endl;
+    return mindex.insert(MinVRDataMap::value_type(valName, obj)).second;
+
+  } else {
+
+    return it->second.doubleVal()->setValue(value);
+  }
 }
 
 bool MinVRDataIndex::addValueString(const std::string valName, std::string value) {
 
-  MinVRDatumPtr obj = factory.CreateMinVRDatum(MVRSTRING, &value);
-  //std::cout << "added " << obj.stringVal()->getValue() << std::endl;
-  return mindex.insert(MinVRDataMap::value_type(valName, obj)).second;
+  // Remove leading spaces.
+  int valueBegin = value.find_first_not_of(" \t\n\r");
+  if (valueBegin == value.size())
+    return false; // no content
+
+  int valueEnd = value.find_last_not_of(" \t\n\r");
+  int valueRange = valueEnd - valueBegin + 1;
+
+  std::string trimValue = value.substr(valueBegin, valueRange);
+
+  // Check if the name is already in use.
+  MinVRDataMap::iterator it = mindex.find(valName);
+  if (it == mindex.end()) {
+
+    MinVRDatumPtr obj = factory.CreateMinVRDatum(MVRSTRING, &trimValue);
+    //std::cout << "added " << obj.stringVal()->getValue() << std::endl;
+    return mindex.insert(MinVRDataMap::value_type(valName, obj)).second;
+
+  } else {
+
+    return it->second.stringVal()->setValue(trimValue);
+  }
 }
 
 bool MinVRDataIndex::addValueContainer(const std::string valName,
                                        std::list<std::string> value) {
 
-  MinVRDatumPtr obj = factory.CreateMinVRDatum(MVRCONTAINER, &value);
-  //std::cout << "added " << obj.containerVal()->getValue() << std::endl;
-  return mindex.insert(MinVRDataMap::value_type(valName, obj)).second;
+  // Check if the name is already in use.
+  MinVRDataMap::iterator it = mindex.find(valName);
+  if (it == mindex.end()) {
+
+    MinVRDatumPtr obj = factory.CreateMinVRDatum(MVRCONTAINER, &value);
+    //std::cout << "added " << obj.containerVal()->getValue() << std::endl;
+    return mindex.insert(MinVRDataMap::value_type(valName, obj)).second;
+  } else {
+
+    return it->second.containerVal()->addToValue(value);
+  }
 }
 
 MinVRDatumPtr MinVRDataIndex::getValue(const std::string valName) {

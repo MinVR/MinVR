@@ -88,9 +88,15 @@ public:
 //     pointing at map entries in the main index. (I think) [DONE]
 //
 //   - Make testindex into an examination tool.  'p variable' for
-//     print its value and serialization, 'c name' for adopting a
-//     namespace, 'p' for print everything, 'a string' for add a
+//     print its value and serialization, 'p' for print everything,
+//     etc. [DONE]
+//
+//   - 'c name' for adopting a namespace, 'a string' for add a
 //     variable to store, etc.
+//
+//   - Need to support name conflicts by either overwriting the new
+//     value or throwing an exception or some other way of defending
+//     the old value.  User should be able to choose.
 //
 //   - Support nested names in the index, with "default directory"
 //     functionality.
