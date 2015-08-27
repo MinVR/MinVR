@@ -177,13 +177,20 @@ std::string MinVRDataIndex::serialize(const std::string valName) {
 }
 
 // an int should be <nWindows type="int">6</nWindows>
-// A container: <section id="myContainer"><nWindows type="int">6</nWindows>
 bool MinVRDataIndex::addValue(const std::string serializedData) {
   Cxml *xml = new Cxml();
   xml->parse_string((char*)serializedData.c_str());
   element *xml_node = xml->get_root_element();
+  element* child = xml_node->get_next_child();
 
-  walkXML(xml_node, std::string("XML_DOC"));
+  while (child != NULL) {
+
+    printXML(child, std::string(""));
+    walkXML(child, std::string(""));
+
+    child = xml_node->get_next_child();
+  }
+
   delete xml;
 }
 
@@ -251,13 +258,7 @@ bool MinVRDataIndex::walkXML(element* node, std::string nameSpace) {
   std::string qualifiedName;
   std::list<std::string> childNames;
 
-  // The qualified name is the nameSpace/nodeName.  The root node is
-  // always 'XML_DOC' so we ignore that one.
-  if (!nameSpace.compare("XML_DOC")) {
-    qualifiedName = std::string(node->get_name());
-  } else {
-    qualifiedName = nameSpace + "/" + std::string(node->get_name());
-  }
+  qualifiedName = nameSpace + "/" + std::string(node->get_name());
 
   // This loops through the node children, if there are any.
   while (true) {
@@ -348,31 +349,34 @@ MVRTYPE_ID MinVRDataIndex::inferType(const std::string valueString) {
   return MVRSTRING;
 }
 
-bool MinVRDataIndex::printXML(element* node, int level) {
+bool MinVRDataIndex::printXML(element* node, std::string prefix) {
 
-  char type[5] = "type";
-  std::cout << node->get_name();
-  if (node->get_attribute(type)) {
-    cout << " (" << node->get_attribute(type)->get_name() << ") ";
+  std::string newPrefix = prefix + std::string("| ");
+
+  std::cout << newPrefix << "Node: " << node->get_name() << std::endl;
+  if (node->get_value())
+    std::cout << newPrefix << "Value: >" << node->get_value() << "<" << std::endl;
+
+  attribute *attr = node->get_next_attribute();
+  while (attr != NULL) {
+    std::cout << newPrefix << "| | Attribute: " << attr->get_name() << std::endl;
+    if (attr->get_value())
+      std::cout << newPrefix << "| | Value: " << attr->get_value() << std::endl;
+
+    attr = node->get_next_attribute();
   }
 
-  while (true) {
+  element *child = node->get_next_child();
+  while (child != NULL) {
 
-    if (node->get_value() != NULL &&
-        node->get_value() != "") {
+    printXML(child, newPrefix);
 
-      std::cout << node->get_value() << std::endl;
-    } else {
-      std::cout << std::endl;
-    }
-    element* child = node->get_next_child();
-    if (child == NULL) {
-
-      return true;
-    }
-
-    printXML(child, level + 1);
+    child = node->get_next_child();
   }
+  node->reset_iterators();
+
+  return true;
+
 }
 
 bool MinVRDataIndex::processXMLFile(std::string fileName) {
@@ -390,7 +394,16 @@ bool MinVRDataIndex::processXMLFile(std::string fileName) {
     xml->parse_string((char*)xml_string.c_str());
 
     element *xml_node = xml->get_root_element();
-    walkXML(xml_node, std::string("XML_DOC"));
+    element *child = xml_node->get_next_child();
+
+    while (child != NULL) {
+
+      printXML(child, std::string(""));
+      walkXML(child, std::string(""));
+
+      child = xml_node->get_next_child();
+    }
+
     delete xml;
 
   } else {

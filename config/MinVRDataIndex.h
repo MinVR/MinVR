@@ -39,7 +39,7 @@ public:
   bool addValue(const std::string serializedData,
                 const std::string nameSpace);
 
-  bool printXML(element* node, int level);
+  bool printXML(element* node, std::string prefix);
 
   // Start from the root node of an XML document and process the
   // results into entries in the data index.
