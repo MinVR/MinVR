@@ -31,6 +31,7 @@ int main() {
   std::vector<std::string> elems;
   std::string elem;
   std::string line;
+  std::string nameSpace("");
   std::cout << "Try ? for commands." << std::endl;
   while ((std::cout << "> ") && std::getline(std::cin, line)) {
 
@@ -46,6 +47,7 @@ int main() {
       std::cout << "p <name> print a value from the list" << std::endl;
       std::cout << "f <filename> read an XML file" << std::endl;
       std::cout << "a <newname> <type> <value> add a primitive value" << std::endl;
+      std::cout << "c <namespace> set a default namespace" << std::endl;
       std::cout << "q quit" << std::endl;
 
     ////// command: f (open file)
@@ -53,11 +55,44 @@ int main() {
 
       index->processXMLFile(elems[1]);
 
+    ////// command: c (set namespace)
+    } else if (elems[0].compare("c") == 0) {
+
+      if (elems.size() > 1) {
+        nameSpace = elems[1];
+      } else {
+        nameSpace = "";
+      }
+
+    ////// command: z (use for testing)
+    } else if (elems[0].compare("z") == 0) {
+
+      std::cout << elems.size() << std::endl;
+
+      int N = elems.size();
+
+      while (N >= 1)
+        {
+
+          std::vector<std::string> nms(&elems[1], &elems[N]);
+          std::string out;
+          for (std::vector<std::string>::iterator it = nms.begin();
+               it != nms.end(); ++it)
+            {
+              out += "/" + *it;
+            }
+          std::cout << ">" << out << "<" << std::endl;
+          N -= 1;
+        }
+
+
+
+
     ////// command: p (print value)
     } else if (elems[0].compare("p") == 0) {
 
       try {
-        MinVRDatumPtr p = index->getValue(elems[1]);
+        MinVRDatumPtr p = index->getValue(elems[1], nameSpace);
 
         switch (p->getType()) {
         case MVRINT:
@@ -86,7 +121,7 @@ int main() {
           }
         }
 
-        std::cout << "description: " << index->getDescription(elems[1]) << std::endl;
+        std::cout << "description: " << index->getDescription(elems[1], nameSpace) << std::endl;
         std::cout << "serialization: " << index->serialize(elems[1]) << std::endl;
       } catch (const std::exception& e) {
 

@@ -1,12 +1,14 @@
 <?xml version="1.0"?>
 <base type="container">
 
+  <froobus>34</froobus>
   <CAVEViewer>
     <name type="string">  CAVEViewerName</name>
     <headTracked type="string">true</headTracked>
     <viewDirection>1.0457</viewDirection>
 
     <CAVEfront type="container">
+      <froobus>134</froobus>
       <name type="string">CAVEfrontName</name>
       <deviceMounted type="string">false</deviceMounted>
       <origin type="float">48.2</origin>

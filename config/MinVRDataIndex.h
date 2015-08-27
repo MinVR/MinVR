@@ -1,6 +1,7 @@
 #include <map>
 #include <list>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <stdexcept>
 #include "Cxml.h"
@@ -32,8 +33,14 @@ public:
   void setOverwrite(const bool inVal) { overwrite = inVal; }
 
   MinVRDatumPtr getValue(const std::string valName);
+  MinVRDatumPtr getValue(const std::string valName,
+                         const std::string nameSpace);
   std::string getDescription(const std::string valName);
+  std::string getDescription(const std::string valName,
+                             const std::string nameSpace);
   std::string serialize(const std::string valName);
+  std::string serialize(const std::string valName,
+                        const std::string nameSpace);
 
   bool addValue(const std::string serializedData);
   bool addValue(const std::string serializedData,
@@ -100,7 +107,7 @@ public:
 //     etc. [DONE]
 //
 //   - 'c name' for adopting a namespace, 'a string' for add a
-//     variable to store, etc.
+//     variable to store, etc. [DONE]
 //
 //   - Need to support name conflicts by either overwriting the new
 //     value or throwing an exception or some other way of defending
@@ -110,8 +117,9 @@ public:
 //     functionality.
 //
 //   - Should be ready to work with the XML parser for entire files at
-//     this point.
+//     this point. [DONE]
 //
-//   - Add the vector types, and whatever else.  Make the parser infer
-//     data types where possible, rather than relying on the type
-//     attribute.
+//   - Add the vector types, and whatever else.
+//
+//   - Make the parser infer data types where possible, rather than relying
+//     on the type attribute. [DONE]

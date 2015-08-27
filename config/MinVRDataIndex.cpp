@@ -126,14 +126,80 @@ MinVRDatumPtr MinVRDataIndex::getValue(const std::string valName) {
   }
 }
 
-std::string MinVRDataIndex::getDescription(const std::string valName) {
-  MinVRDataMap::iterator it = mindex.find(valName);
-  if (it == mindex.end()) {
-    throw std::runtime_error(std::string("never heard of ") + valName);
-  } else {
-    return it->second->getDescription() + " " + valName + ";";
+// This is the same as getValue(), except that it allows the caller to
+// 'inherit' values from higher-up namespaces.  Consider this example:
+//
+//  <stanley>
+//    <height>4.5</height>
+//    <blanche>
+//      <height>3.2</height>
+//    </blanche>
+//    <stella>
+//      <eyes>blue</eyes>
+//    </stella>
+//   </stanley>
+//
+//  If the default namespace is /stanley/blanche, and you ask for
+//  height, you'll get 3.2, while if the namespace is /stanley/stella,
+//  you'll get 4.5, since that value is inherited from the higher-up
+//  namespace.
+MinVRDatumPtr MinVRDataIndex::getValue(const std::string valName,
+                                       const std::string nameSpace) {
+  std::vector<std::string> elems;
+  std::string elem;
+  std::stringstream ss(nameSpace);
+  while (std::getline(ss, elem, '/')) {
+    elems.push_back(elem);
+    std::cout << "found: " << elem << std::endl;
   }
+
+  // We start from the longest name space and peel off the rightmost
+  // element each iteration until we find a match, or not.  This
+  // provides for the most local version of valName to prevail.  The
+  // last iteration creates an empty testSpace, on purpose.
+  for (int N = elems.size(); N > 0; --N) {
+
+    std::vector<std::string> names(&elems[0], &elems[N]);
+    std::string testSpace;
+
+    for (std::vector<std::string>::iterator it = names.begin();
+         it != names.end(); ++it) {
+
+      testSpace += *it + "/" ;
+    }
+
+    std::cout << "testing: " << testSpace + valName << std::endl;
+    MinVRDataMap::const_iterator it = mindex.find(testSpace + valName);
+    if (it != mindex.end()) {
+      return it->second;
+    }
+  }
+
+  throw std::runtime_error(std::string("never heard of ") + valName + std::string(" in any of the namespaces: ") + nameSpace);
+
 }
+
+std::string MinVRDataIndex::getDescription(const std::string valName) {
+  return ("<" + valName + " type=\"" + getValue(valName)->getDescription() + "\"/>");
+}
+
+std::string MinVRDataIndex::getDescription(const std::string valName,
+                                           const std::string nameSpace) {
+  return ("<" + valName +
+          " type=\"" + getValue(valName, nameSpace)->getDescription() +
+          "\"/>");
+}
+
+std::string MinVRDataIndex::serialize(const std::string valName,
+                                      const std::string nameSpace) {
+  MinVRDatumPtr dataPtr = getValue(valName, nameSpace);
+
+
+
+
+  return serialize(valName);
+}
+
 
 std::string MinVRDataIndex::serialize(const std::string valName) {
   MinVRDataMap::iterator it = mindex.find(valName);
