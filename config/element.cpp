@@ -228,6 +228,11 @@ element* element::get_first_child()
   return (element*)*m_element_iterator;
 }
 
+void element::reset_iterators()
+{
+  m_element_iterator = m_element_list.begin();
+  m_attribute_iterator = m_attribute_list.begin();
+}
 
 element& element::operator=( element& the_element)
 {
