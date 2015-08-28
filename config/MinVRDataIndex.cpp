@@ -126,7 +126,7 @@ MinVRDatumPtr MinVRDataIndex::getValue(const std::string valName) {
   }
 }
 
-// This is the same as getValue(), except that it allows the caller to
+// Combining the name and the namespace allows the caller to
 // 'inherit' values from higher-up namespaces.  Consider this example:
 //
 //  <stanley>
@@ -143,21 +143,26 @@ MinVRDatumPtr MinVRDataIndex::getValue(const std::string valName) {
 //  height, you'll get 3.2, while if the namespace is /stanley/stella,
 //  you'll get 4.5, since that value is inherited from the higher-up
 //  namespace.
-MinVRDatumPtr MinVRDataIndex::getValue(const std::string valName,
-                                       const std::string nameSpace) {
+std::string MinVRDataIndex::getName(const std::string valName,
+                                    const std::string nameSpace) {
+
+  // If the input valName begins with a "/", it is a fully qualified
+  // name already.  That is, it already includes the name space.
+  if (valName[0] == '/') return valName;
+
+  // Separate the name space into its constituent elements.
   std::vector<std::string> elems;
   std::string elem;
   std::stringstream ss(nameSpace);
   while (std::getline(ss, elem, '/')) {
     elems.push_back(elem);
-    std::cout << "found: " << elem << std::endl;
   }
 
   // We start from the longest name space and peel off the rightmost
   // element each iteration until we find a match, or not.  This
   // provides for the most local version of valName to prevail.  The
   // last iteration creates an empty testSpace, on purpose.
-  for (int N = elems.size(); N > 0; --N) {
+  for (int N = elems.size(); N >= 0; --N) {
 
     std::vector<std::string> names(&elems[0], &elems[N]);
     std::string testSpace;
@@ -168,15 +173,30 @@ MinVRDatumPtr MinVRDataIndex::getValue(const std::string valName,
       testSpace += *it + "/" ;
     }
 
-    std::cout << "testing: " << testSpace + valName << std::endl;
+    //std::cout << "testing: " << testSpace + valName << std::endl;
     MinVRDataMap::const_iterator it = mindex.find(testSpace + valName);
     if (it != mindex.end()) {
-      return it->second;
+      return it->first;
     }
   }
 
-  throw std::runtime_error(std::string("never heard of ") + valName + std::string(" in any of the namespaces: ") + nameSpace);
+  // If we are here, there is no matching name in the index.
+  return std::string("");
+}
 
+
+MinVRDatumPtr MinVRDataIndex::getValue(const std::string valName,
+                                       const std::string nameSpace) {
+
+  std::string qualifiedName = getName(valName, nameSpace);
+
+  //  std::cout << "qualified name: " << qualifiedName << std::endl;
+
+  if (qualifiedName.size() > 0) {
+    return getValue(qualifiedName);
+  } else {
+    throw std::runtime_error(std::string("never heard of ") + valName + std::string(" in any of the namespaces: ") + nameSpace);
+  }
 }
 
 std::string MinVRDataIndex::getDescription(const std::string valName) {
@@ -194,10 +214,15 @@ std::string MinVRDataIndex::serialize(const std::string valName,
                                       const std::string nameSpace) {
   MinVRDatumPtr dataPtr = getValue(valName, nameSpace);
 
+  std::string qualifiedName = getName(valName, nameSpace);
 
+  if (qualifiedName.size() > 0) {
+    //std::cout << qualifiedName << std::endl;
+    return serialize(qualifiedName);
+  } else {
 
-
-  return serialize(valName);
+    throw std::runtime_error(std::string("never heard of ") + valName + std::string(" in any of the namespaces: ") + nameSpace);
+  }
 }
 
 
@@ -251,7 +276,9 @@ bool MinVRDataIndex::addValue(const std::string serializedData) {
 
   while (child != NULL) {
 
+#ifdef DEBUG
     printXML(child, std::string(""));
+#endif
     walkXML(child, std::string(""));
 
     child = xml_node->get_next_child();
@@ -464,7 +491,9 @@ bool MinVRDataIndex::processXMLFile(std::string fileName) {
 
     while (child != NULL) {
 
+#ifdef DEBUG
       printXML(child, std::string(""));
+#endif
       walkXML(child, std::string(""));
 
       child = xml_node->get_next_child();
