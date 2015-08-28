@@ -66,6 +66,12 @@
 //  So p.intVal()->getValue() gets you an integer and
 //  p.floatVal()->getValue() gets you a double.
 //
+//  The data values in this system are meant to be immutable.
+//  However, they mostly just seem that way.  There are setter methods
+//  for them, used mainly as an optimization.  That is, rather than
+//  trash an object with the old value and create a new object with
+//  the new value, we just swap values.
+//
 //  This file should come with an exercz.cpp that does an ok job of
 //  illustrating some of the usage.  You can also use that program to
 //  learn about the namespace and name scoping concepts.  It's sort of
@@ -91,33 +97,56 @@ private:
   // This is just a convenience to map strings to object type numbers.
   std::map<std::string, MVRTYPE_ID> mvrTypeMap;
 
-  // If this is true, new values will overwrite old ones.  Otherwise,
-  // new values will just bounce off.  Except containers, who are
-  // always happy to receive new values and add to their existing
-  // list.
-  bool overwrite;
+  // If this is 1, new values will overwrite old ones.  For -1, new
+  // values will just bounce off.  And zero will cause an exception if
+  // an overwrite is attempted.  Except containers, who are always
+  // happy to receive new values and add to their existing list.  The
+  // default class constructor allows overwrites.
+  int overwrite;
 
 public:
   MinVRDataIndex();
 
-  void setOverwrite(const bool inVal) { overwrite = inVal; }
+  void setOverwrite(const int inVal) { overwrite = inVal; }
 
+  // Finds a name, given a namespace. Note that the name might be in a
+  // senior namespace to the one specified.  That is, if you have a
+  // value called flora, that exists inside a container called cora,
+  // but also in a subsidiary container called nora, then, well,
+  // here's the example:
+  //
+  // /cora/flora = 6
+  // /cora/nora/flora = 7
+  //
+  // If the namespace is /cora, the value of flora is 6, but if the
+  // namespace is /cora/nora, flora is 7.
   std::string getName(const std::string valName,
                       const std::string nameSpace);
+
+  // Returns a pointer to the value with a given name (and namespace)
   MinVRDatumPtr getValue(const std::string valName);
   MinVRDatumPtr getValue(const std::string valName,
                          const std::string nameSpace);
+
+  // The description of an index entry describes only the name and
+  // type, not the value.
   std::string getDescription(const std::string valName);
   std::string getDescription(const std::string valName,
                              const std::string nameSpace);
+
+  // This is the name, type, value, expressed as an XML fragment.
   std::string serialize(const std::string valName);
   std::string serialize(const std::string valName,
                         const std::string nameSpace);
 
+  // Takes a serialized bit of data and incorporates it into the data
+  // index.
   bool addValue(const std::string serializedData);
   bool addValue(const std::string serializedData,
                 const std::string nameSpace);
 
+  // Prints a vaguely tree-ish representation of an XML parse.  Just
+  // an aid to debugging, really.
   bool printXML(element* node, std::string prefix);
 
   // Start from the root node of an XML document and process the

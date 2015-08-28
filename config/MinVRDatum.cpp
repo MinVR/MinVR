@@ -100,10 +100,13 @@ MinVRDatumPtr CreateMinVRDatumContainer(void *pData) {
 }
 
 
+//  We should probably implement this for completeness sake.
+// std::ostream & operator<<(std::ostream &os, const MinVRDatum& p)
+// {
+//   return os << p.serialize();
+// }
+// std::ostream & operator<<(std::ostream &os, const MinVRDatumPtr& p)
+// {
+//   return os << p->serialize();
+// }
 
-/*
-std::ostream & operator<<(std::ostream &os, const MinVRDatum& p)
-{
-    return os << p.to_str();
-}
-*/

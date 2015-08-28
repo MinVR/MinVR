@@ -96,11 +96,12 @@ typedef enum
 //      translate it into the value and name to be stored here.  This
 //      is in MinVRDataIndex::processValue().
 //
-//   8. Part of that will be adding something to
+//   8. You should also consider adding something to
 //      MinVRDataIndex::inferType to identify the new data type.  This
 //      is pretty free-form, but follow the models in there.  This is
 //      also not necessary, but if you don't do it, your data types
-//      will always require a 'type="XX"' attribute when specified.
+//      will always require a 'type="XX"' attribute when specified,
+//      and may not give obvious errors if you don't do that.
 //
 //
 // MinVRDatum is the base class for all supported data types.  In
@@ -119,6 +120,8 @@ class MinVRDatum {
   // "string" or something like that.
   std::string description;
 
+  //friend std::ostream & operator<<(std::ostream &os, const MinVRDatum& p);
+
  public:
   // The constructor for the native storage form.
   MinVRDatum(const MVRTYPE_ID inType) : type(inType) {};
@@ -128,7 +131,8 @@ class MinVRDatum {
   // name from there.
   MinVRDatum(const std::string serializedData) {};
   // virtual destructor allows concrete types to implement their own
-  // destruction mechanisms
+  // destruction mechanisms.  Specifically, types that involve
+  // pointers should be careful to delete their objects.
   virtual ~MinVRDatum() {};
 
   // This produces the serialized version of the datum.  When packaged
@@ -244,10 +248,16 @@ public:
 //
 //    p.intVal()->getValue() Returns the integer value held in *p.
 //
+// However, p->getDescription() works fine, as will p->serialize(),
+// and other things that are actually part of the MinVRDatum core
+// class.
+//
 class MinVRDatumPtr {
 private:
   MinVRDatum*  pData;         // Pointer
   MinVRDatumPtrRC* reference; // Reference count
+
+  //friend std::ostream & operator<<(std::ostream &os, const MinVRDatumPtr& p);
 
 public:
   MinVRDatumPtr() : pData(0) { reference = new MinVRDatumPtrRC(1); }
@@ -287,15 +297,15 @@ public:
     // Assignment operator
     if (this != &sp) // Avoid self assignment
       {
-        // Decrement the old reference count
-        // if reference become zero delete the old data
+        // Decrement the old reference count.  If references become
+        // zero, delete the data.
         if(reference->release() == 0)
           {
             delete pData;
           }
 
-        // Copy the data and reference pointer
-        // and increment the reference count
+        // Copy the data and reference pointer and increment the
+        // reference count
         pData = sp.pData;
         reference = sp.reference;
         reference->addRef();
@@ -307,8 +317,10 @@ public:
   //////// instructions above.
 
   // The power of this pointer is that you can reference any type as
-  // any other type.  This is probably more bug than feature, so we have
-  // type checks here, and throw an error if it doesn't match.
+  // any other type.  This is probably more bug than feature, so we
+  // have type checks here, and throw an error if it doesn't match.
+  // This is also easier to use (my opinion) than trying to remember
+  // how to do the casts.
   MinVRDatumInt* intVal()
   {
     if (pData->getType() == MVRINT) {
