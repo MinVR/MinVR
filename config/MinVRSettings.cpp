@@ -5,10 +5,51 @@ const string keyword_delimiter_str="/";
 const char   keyword_delimiter_char = '/';
 
 const string MinVRSettings::id_str = "id";
+
+static void
+remove_surrounding_spaces(string& s,
+			  const string& sp = " \t[]\r")
+{
+    //string sp(" \t[]\r");
+  int i,j;
+  if (s.empty())
+    return;
+  i = s.find_first_not_of(sp);
+  if (i < 0)
+  {
+      // all spaces in here so get out
+      s="";
+      return;
+  }
+  s = s.substr(i);
+  j = s.find_last_not_of(sp);
+  if ( j>=0)
+    s.erase(j+1, s.size());
+}
+
+void 
+MinVRSettings::set_context(string context)
+{
+    context_id=context;
+    remove_surrounding_spaces(context_id);
+
+}
+
+string
+MinVRSettings::preppend(string& key)
+{
+    if (!context_id.empty() && (context_id.back()!='/'))
+      context_id+=string("/");
+
+    return context_id + key;
+ 
+}
+
 string    
 MinVRSettings::getValueString(string settingName)
 {
     map<string, TYPE_ID>::iterator i;
+    settingName=preppend(settingName);
     i = keyword_to_type.find(settingName);
     if (i == keyword_to_type.end())
     {
@@ -53,6 +94,7 @@ int
 MinVRSettings::getValueInt(string settingName)
 {
     map<string, TYPE_ID>::iterator i;
+    settingName=preppend(settingName);
     i = keyword_to_type.find(settingName);
     if (i == keyword_to_type.end())
     {
@@ -90,6 +132,7 @@ int
 MinVRSettings::getValueIntVector(string settingName,vector<int>& intValues)
 {
     map<string, TYPE_ID>::iterator i;
+    settingName=preppend(settingName);
     i = keyword_to_type.find(settingName);
     if (i == keyword_to_type.end())
     {
@@ -144,6 +187,7 @@ float
 MinVRSettings::getValueFloat(string settingName)
 {
     map<string, TYPE_ID>::iterator i;
+    settingName=preppend(settingName);
     i = keyword_to_type.find(settingName);
     if (i == keyword_to_type.end())
     {
@@ -181,6 +225,7 @@ int
 MinVRSettings::getValueFloatVector(string settingName,vector<float>& floatValues)
 {
     map<string, TYPE_ID>::iterator i;
+    settingName=preppend(settingName);
     i = keyword_to_type.find(settingName);
     if (i == keyword_to_type.end())
     {
@@ -310,26 +355,7 @@ MinVRSettings::setValueFloatVector(string settingName, const vector<float>& sett
     return SUCCESS;
 }
 
-static void
-remove_surrounding_spaces(string& s,
-			  const string& sp = " \t[]\r")
-{
-    //string sp(" \t[]\r");
-  int i,j;
-  if (s.empty())
-    return;
-  i = s.find_first_not_of(sp);
-  if (i < 0)
-  {
-      // all spaces in here so get out
-      s="";
-      return;
-  }
-  s = s.substr(i);
-  j = s.find_last_not_of(sp);
-  if ( j>=0)
-    s.erase(j+1, s.size());
-}
+
 
 string
 parse_begin_section(const string& first_column,

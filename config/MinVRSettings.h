@@ -52,6 +52,7 @@ class MinVRSettings
     deque<std::string> key_list;
     static const string id_str;
   protected:
+    string context_id;
     vector<int>   string_int_vec(const string& value_column);
     vector<float> string_float_vec(const string& value_column);
     
@@ -59,6 +60,8 @@ class MinVRSettings
     void fill_xml_tree(element* xml_node);
     int  readValuesNonXML(string settingFileName);
     int  readValuesXML(string settingFileName);
+
+    string preppend(string& key);
 
   public:
     MinVRSettings(){ } // Constructor need not do much
@@ -86,6 +89,10 @@ class MinVRSettings
 
     // Incorporate a collection of settings into this collection.
     int incorporateSettings(MinVRSettings settings);
+
+    // define depth of scoping- use syntax e.g. deep/deeper/deepest/ 
+    void set_context(string context);
+
 };
 
 

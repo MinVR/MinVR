@@ -73,6 +73,14 @@ int main(int argc,char** argv)
 	cout << "============XML test=========" << endl;
 	cout << "getValueString(CAVEViewer/headDeviceTransformation)=" << minvr_settings.getValueString("CAVEViewer/headDeviceTransformation") << endl;
 
+	// some experimental accesses
+	cout << "deviceMounted=" << minvr_settings.getValueString("deviceMounted")<< endl;
+	minvr_settings.set_context("screen1");
+	cout << "new context. deviceMounted=" << minvr_settings.getValueString("deviceMounted")<< endl;
+	minvr_settings.set_context("screen1/screen2");
+	cout << "final context. deviceMounted=" << minvr_settings.getValueString("deviceMounted")<< endl;
+	minvr_settings.set_context("");
+	cout << "cleared context. deviceMounted=" << minvr_settings.getValueString("deviceMounted")<< endl;
     }
     else
     {

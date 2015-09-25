@@ -77,11 +77,23 @@ Lead:  Dan O.
 
 ### config
 
-Overview:  Support for XML-based config files.
+Overview:  The config file parser is a class that supports parsing of three different types of configuration files:  XML-based config files, Vrui style cfg files (with the "begin section" and "endsection") and plain attribute-values text pairs.  The parser automatically determines the type of config files and parses its values which are then available for access.  For improved performance, raw data is parsed once for their type ( int , double, array, etc.) and stored in specialized containers defined by type for subsequent quick access.  Overall, see the driver program for the manner in which to use the parser. 
 
-Status:  ??
+Latest additions allow for scoping data in cfg files of the form: 
+       		 section screen1
+ 			section screen2
+				name screen2
+                        	..
+			endsection
+                        name screen1
+
+For example,  when the  call set_context("screen1/screen2") is made, the call getStringValue("name") returns "screen2".  See main.cpp for more examples. To exercise this and other functions, build main.cpp and run it with a variety of test files including test.txt. 
+ 
+
+Status:  Infrastructure has been created for scoping and block inheritance.  Accessor functions to support this infrastructure in the parser are under construction and test.  Further test for the XML and cfg files ought to be conducted.
 
 Lead:  Brown team.
+
 
 
 
