@@ -2,7 +2,15 @@
 #define VRNETINTERFACE_H
 
 #include <vector>
-#include "VREvent.h"
+#include <event/VREvent.h>
+
+#ifdef WINDOWS
+  #include <winsock2.h>
+  #include <windows.h>
+#else
+  #define SOCKET int
+#endif
+
 
 class VRNetInterface {
  public:
@@ -18,13 +26,13 @@ class VRNetInterface {
   void sendSwapBuffersRequest(int socketID);
   void sendSwapBuffersNow(int socketID);
   void sendInputEvents(int socketID, std::vector<VREvent> &inputEvents);
-  int sendall(int s, const unsigned char *buf, int len);
+  int sendall(SOCKET s, const unsigned char *buf, int len);
 
-  void waitForAndReceiveMessageHeader(int socketID, unsigned char messageID);
-  void waitForAndReceiveSwapBuffersRequest(int socketID);
-  void waitForAndReceiveSwapBuffersNow(int socketID);
-  void waitForAndReceiveInputEvents(int socketID, std::vector<VREvent> &inputEvents);
-  int receiveall(int s, unsigned char *buf, int len);
+  void waitForAndReceiveMessageHeader(SOCKET socketID, unsigned char messageID);
+  void waitForAndReceiveSwapBuffersRequest(SOCKET socketID);
+  void waitForAndReceiveSwapBuffersNow(SOCKET socketID);
+  void waitForAndReceiveInputEvents(SOCKET socketID, std::vector<VREvent> &inputEvents);
+  int receiveall(SOCKET s, unsigned char *buf, int len);
 };
 
 #endif

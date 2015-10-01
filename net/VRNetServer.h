@@ -16,7 +16,7 @@ class VRNetServer : public VRNetInterface {
 
  private:
 
-  std::vector<int> _clientSocketFDs;
+  std::vector<SOCKET> _clientSocketFDs;
 
 };
 

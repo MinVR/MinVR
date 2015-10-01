@@ -1,8 +1,8 @@
 #ifndef VRMATH_H
 #define VRMATH_H
 
-#include "ByteData.h"
-#include "ByteStream.h"
+#include <event/VRByteData.h>
+#include <event/VRByteStream.h>
 #include <iostream>
 
 
@@ -14,20 +14,20 @@ public:
 
   Vec3(float x, float y, float z) : _x(x), _y(y), _z(z) {}
 
-  Vec3(const ByteData &data) {
-    ByteStream bs(data);
+  Vec3(const VRByteData &data) {
+    VRByteStream bs(data);
     deserialize(bs);
   };
 
   virtual ~Vec3() {}
   
-  void serialize(ByteStream &bstream) {
+  void serialize(VRByteStream &bstream) {
     bstream.writeFloat(_x);
     bstream.writeFloat(_y);
     bstream.writeFloat(_z);
   }
 
-  void deserialize(ByteStream &bstream) {
+  void deserialize(VRByteStream &bstream) {
     _x = bstream.readFloat();
     _y = bstream.readFloat();
     _z = bstream.readFloat();
