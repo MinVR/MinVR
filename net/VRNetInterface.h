@@ -4,7 +4,7 @@
 #include <vector>
 #include <event/VREvent.h>
 
-#ifdef WINDOWS
+#ifdef WIN32
   #include <winsock2.h>
   #include <windows.h>
 #else
@@ -23,16 +23,16 @@ class VRNetInterface {
   static const unsigned char SWAP_BUFFERS_REQUEST_MSG;
   static const unsigned char SWAP_BUFFERS_NOW_MSG;
 
-  void sendSwapBuffersRequest(int socketID);
-  void sendSwapBuffersNow(int socketID);
-  void sendInputEvents(int socketID, std::vector<VREvent> &inputEvents);
-  int sendall(SOCKET s, const unsigned char *buf, int len);
+  static void sendSwapBuffersRequest(SOCKET socketID);
+  static void sendSwapBuffersNow(SOCKET socketID);
+  static void sendInputEvents(SOCKET socketID, std::vector<VREvent> &inputEvents);
+  static int sendall(SOCKET s, const unsigned char *buf, int len);
 
-  void waitForAndReceiveMessageHeader(SOCKET socketID, unsigned char messageID);
-  void waitForAndReceiveSwapBuffersRequest(SOCKET socketID);
-  void waitForAndReceiveSwapBuffersNow(SOCKET socketID);
-  void waitForAndReceiveInputEvents(SOCKET socketID, std::vector<VREvent> &inputEvents);
-  int receiveall(SOCKET s, unsigned char *buf, int len);
+  static void waitForAndReceiveMessageHeader(SOCKET socketID, unsigned char messageID);
+  static void waitForAndReceiveSwapBuffersRequest(SOCKET socketID);
+  static void waitForAndReceiveSwapBuffersNow(SOCKET socketID);
+  static void waitForAndReceiveInputEvents(SOCKET socketID, std::vector<VREvent> &inputEvents);
+  static int receiveall(SOCKET s, unsigned char *buf, int len);
 };
 
 #endif
