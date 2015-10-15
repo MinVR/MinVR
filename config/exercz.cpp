@@ -103,8 +103,6 @@ int main() {
         }
 
 
-
-
     ////// command: p (print value)
     } else if (elems[0].compare("p") == 0) {
 
@@ -113,15 +111,15 @@ int main() {
 
         switch (p->getType()) {
         case MVRINT:
-          std::cout << "an integer containing: " << (p.intVal()->getValue()) << std::endl;
+          std::cout << "an integer containing: " << ((int)p->getValue()) << std::endl;
           break;
 
         case MVRFLOAT:
-          std::cout << "a float containing: " << (p.doubleVal()->getValue()) << std::endl;
+          std::cout << "a float containing: " << ((double)p->getValue()) << std::endl;
           break;
 
         case MVRSTRING:
-          std::cout << "a string containing: " << (p.stringVal()->getValue()) << std::endl;
+          std::cout << "a string containing: " << ((std::string)p->getValue()) << std::endl;
           break;
 
         case MVRCONTAINER:
@@ -129,7 +127,7 @@ int main() {
           {
             std::cout << "a container containing: " << std::endl;
 
-            MVRContainer nameList = p.containerVal()->getValue();
+            MVRContainer nameList = p->getValue();
             for (MVRContainer::iterator nl = nameList.begin();
                  nl != nameList.end(); nl++) {
               std::cout << "                        " << *nl << std::endl;

@@ -150,7 +150,7 @@ std::string MinVRDataIndex::serialize(const std::string valName) {
       serialized = "<" + trimName + " type=\"" + it->second->getDescription() + "\">";
 
       // ... loop through the children (recursively) ...
-      MVRContainer nameList = it->second.containerVal()->getValue();
+      MVRContainer nameList = it->second->getValue();
       for (MVRContainer::iterator lt = nameList.begin();
            lt != nameList.end(); lt++) {
 

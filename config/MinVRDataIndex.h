@@ -238,7 +238,7 @@ public:
 //   - Make the parser infer data types where possible, rather than relying
 //     on the type attribute. [DONE]
 //
-//   - Add container typedef to MinVRDatum
+//   - Add container typedef to MinVRDatum [DONE]
 //
 //   - Add helper class to MinVRDatum, implement getValue()
 //
