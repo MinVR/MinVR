@@ -58,13 +58,13 @@
 //  3. Feed a file containing XML into processXMLFile().
 //
 //  Once an index has entries, they can be retrieved at your pleasure
-//  with getValue() or serialize().  The getValue() method returns a
+//  with getDatum() or serialize().  The getDatum() method returns a
 //  pointer to a MinVRDatum object, so can be used directly in your
 //  program.  I hate remembering how to spell the static_cast<>()
-//  options, so these are provided as a convenience in a bunch of
-//  methods to the pointer object, such as intVal() and floatVal().
-//  So p.intVal()->getValue() gets you an integer and
-//  p.floatVal()->getValue() gets you a double.
+//  options, so these are provided as a convenience via a helper class
+//  methods to the pointer objects.  So (int)p->getDatum() gets you an
+//  integer and (double)p->getDatum() gets you a double, so long as the
+//  relevant objects actually contain an integer and double.
 //
 //  The data values in this system are meant to be immutable.
 //  However, they mostly just seem that way.  There are setter methods
@@ -124,8 +124,8 @@ public:
                       const std::string nameSpace);
 
   // Returns a pointer to the value with a given name (and namespace)
-  MinVRDatumPtr getValue(const std::string valName);
-  MinVRDatumPtr getValue(const std::string valName,
+  MinVRDatumPtr getDatum(const std::string valName);
+  MinVRDatumPtr getDatum(const std::string valName,
                          const std::string nameSpace);
 
   // The description of an index entry describes only the name and
@@ -240,8 +240,11 @@ public:
 //
 //   - Add container typedef to MinVRDatum [DONE]
 //
-//   - Add helper class to MinVRDatum, implement getValue()
+//   - Add helper class to MinVRDatum, implement getValue() [DONE]
+//
+//    - Do something about MinVRDatum setValue() methods? Maybe
+//      comparable to the virtual getValue() methods? [NO, Users should not use]
 //
 //   - change MinVRDataIndex::getValue() to getDatum()
 //
-//   - Can we add a helper class
+//   - Can we add a helper class to data index?

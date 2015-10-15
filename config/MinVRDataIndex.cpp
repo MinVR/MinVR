@@ -91,7 +91,7 @@ std::string MinVRDataIndex::getName(const std::string valName,
 
 
 // Returns the data object for this name.
-MinVRDatumPtr MinVRDataIndex::getValue(const std::string valName) {
+MinVRDatumPtr MinVRDataIndex::getDatum(const std::string valName) {
   MinVRDataMap::const_iterator it = mindex.find(valName);
   if (it == mindex.end()) {
     throw std::runtime_error(std::string("never heard of ") + valName);
@@ -100,26 +100,26 @@ MinVRDatumPtr MinVRDataIndex::getValue(const std::string valName) {
   }
 }
 
-MinVRDatumPtr MinVRDataIndex::getValue(const std::string valName,
+MinVRDatumPtr MinVRDataIndex::getDatum(const std::string valName,
                                        const std::string nameSpace) {
 
   std::string qualifiedName = getName(valName, nameSpace);
 
   if (qualifiedName.size() > 0) {
-    return getValue(qualifiedName);
+    return getDatum(qualifiedName);
   } else {
     throw std::runtime_error(std::string("never heard of ") + valName + std::string(" in any of the namespaces: ") + nameSpace);
   }
 }
 
 std::string MinVRDataIndex::getDescription(const std::string valName) {
-  return ("<" + valName + " type=\"" + getValue(valName)->getDescription() + "\"/>");
+  return ("<" + valName + " type=\"" + getDatum(valName)->getDescription() + "\"/>");
 }
 
 std::string MinVRDataIndex::getDescription(const std::string valName,
                                            const std::string nameSpace) {
   return ("<" + valName +
-          " type=\"" + getValue(valName, nameSpace)->getDescription() +
+          " type=\"" + getDatum(valName, nameSpace)->getDescription() +
           "\"/>");
 }
 
@@ -166,7 +166,7 @@ std::string MinVRDataIndex::serialize(const std::string valName) {
 
 std::string MinVRDataIndex::serialize(const std::string valName,
                                       const std::string nameSpace) {
-  MinVRDatumPtr dataPtr = getValue(valName, nameSpace);
+  MinVRDatumPtr dataPtr = getDatum(valName, nameSpace);
 
   std::string qualifiedName = getName(valName, nameSpace);
 
@@ -429,7 +429,7 @@ bool MinVRDataIndex::addValueDouble(const std::string valName, double value) {
   if (it == mindex.end()) {
 
     MinVRDatumPtr obj = factory.CreateMinVRDatum(MVRFLOAT, &value);
-    //std::cout << "added " << obj.doubleVal()->getValue() << std::endl;
+    //std::cout << "added " << obj.doubleVal()->getDatum() << std::endl;
     return mindex.insert(MinVRDataMap::value_type(valName, obj)).second;
 
   } else {
@@ -462,7 +462,7 @@ bool MinVRDataIndex::addValueString(const std::string valName, std::string value
   if (it == mindex.end()) {
 
     MinVRDatumPtr obj = factory.CreateMinVRDatum(MVRSTRING, &trimValue);
-    //std::cout << "added " << obj.stringVal()->getValue() << std::endl;
+    //std::cout << "added " << obj.stringVal()->getDatum() << std::endl;
     return mindex.insert(MinVRDataMap::value_type(valName, obj)).second;
 
   } else {
@@ -485,7 +485,7 @@ bool MinVRDataIndex::addValueContainer(const std::string valName,
   if (it == mindex.end()) {
 
     MinVRDatumPtr obj = factory.CreateMinVRDatum(MVRCONTAINER, &value);
-    //std::cout << "added " << obj.containerVal()->getValue() << std::endl;
+    //std::cout << "added " << obj.containerVal()->getDatum() << std::endl;
     return mindex.insert(MinVRDataMap::value_type(valName, obj)).second;
   } else {
     // Add value to existing container.

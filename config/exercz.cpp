@@ -107,7 +107,7 @@ int main() {
     } else if (elems[0].compare("p") == 0) {
 
       try {
-        MinVRDatumPtr p = index->getValue(elems[1], nameSpace);
+        MinVRDatumPtr p = index->getDatum(elems[1], nameSpace);
 
         switch (p->getType()) {
         case MVRINT:
