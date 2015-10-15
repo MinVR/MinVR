@@ -16,7 +16,7 @@ class VRNetClient : public VRNetInterface {
 
  private:
 
-  int _socketFD;
+  SOCKET _socketFD;
 
 };
 

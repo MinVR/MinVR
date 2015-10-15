@@ -1,21 +1,7 @@
 
-#include "VREvent.h"
-#include "VRMath.h"
-#include "VREngine.h"
-#include "VRScene.h"
+#include <event/VREvent.h>
+#include <math/VRMath.h>
 #include <iostream>
-
-
-class MyVRScene : public VRScene {
-public:
-  MyVRScene() : frame(0) {}
-  void drawGraphics() {
-    std::cout << frame << ":  Drawing graphics..." << std::endl;
-    frame++;
-  }
-private:
-  int frame;
-};
 
 
 int main(int argc, char **argv) {
@@ -28,7 +14,7 @@ int main(int argc, char **argv) {
   v1.print();
   VREvent e1("event 1", v1);
 
-  // To get the data out, we can use the templated deserializeData method:
+  // To get the data out, we can use the templated getData method:
   Vec3 v2(e1.getData());
   v2.print();
 
@@ -60,7 +46,7 @@ int main(int argc, char **argv) {
 
 
   // Use a ByteStream to serialize a more complex datastructure through several write/serialize calls.
-  ByteStream bs;
+  VRByteStream bs;
   bs.writeInt(5);
   bs.writeInt(3);
   v3.serialize(bs);
@@ -75,20 +61,11 @@ int main(int argc, char **argv) {
   // Anythign that can be packed into ByteData can be used as a data type for events
   VREvent e5("event 5", bs.toByteData());
   
-  ByteStream bs2(e5.getData());
+  VRByteStream bs2(e5.getData());
   std::cout << bs2.readInt() << " " << bs2.readInt() << std::endl;
   Vec3 v5;
   v5.deserialize(bs2);
   v5.print();
   std::cout << bs2.readInt() << std::endl;
-  
-
-  VREngine *vrEngine = VREngine::fromCommandLineOptions(argc, argv);
-  VRScene *currentScene = new MyVRScene();
-  while (!currentScene->readyToClose()) {
-    vrEngine->mainloop(currentScene);    
-  }
-  vrEngine->shutdown();
-  delete vrEngine;  
 }
 

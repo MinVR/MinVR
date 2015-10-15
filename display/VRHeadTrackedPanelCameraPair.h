@@ -1,28 +1,27 @@
-#ifndef VRHEADTRACKEDPANEL_H
-#define VRHEADTRACKEDPANEL_H
+#ifndef VRHEADTRACKEDPANELCAMERAPAIR_H
+#define VRHEADTRACKEDPANELCAMERAPAIR_H
+
+#include "VRCameraPair.h"
 
 /**
 */
-class VRHeadTrackedPanel : public VRProjectionMethod {
+class VRHeadTrackedPanelCameraPair : public VRCameraPair {
 public:
 
-  VRHeadTrackedPanel(VRVec3 topLeft, VRVec3 topRight, VRVec3 botRight, VRVec3 botLeft, const std::string &headTrackingEventName);
-  virtual ~VRHeadTrackedPanel();
+  VRHeadTrackedPanelCameraPair(VRVec3 topLeft, VRVec3 topRight, VRVec3 botRight, VRVec3 botLeft, VRMat4 initialHeadTransform, const std::string &headTrackingEventName);
+  virtual ~VRHeadTrackedPanelCameraPair();
 
   virtual void handleUserInput(const std::vector<VREvent> &inputEvents);
 
-  virtual void applyProjection(ProjectionType type) {
+  virtual VRMat4 getProjectionMatrix(ProjectionType type) {
   	if (projectionType == LEFT_EYE_PROJECTION) {
       // calculate projection matrix based on latest head tracking data
-      _stereoGraphicsToolkit->setProjectionMatrix(m);
     }
     else if (projectionType == RIGHT_EYE_PROJECTION) {
       // calculate projection matrix based on latest head tracking data
-      _stereoGraphicsToolkit->setProjectionMatrix(m);
     }
     else {
       // calculate projection matrix based on latest head tracking data
-      _stereoGraphicsToolkit->setProjectionMatrix(m);
     }
   }
 

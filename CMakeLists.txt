@@ -40,108 +40,31 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # ================================================================================ 
  
- 
+
+
+# CMakeLists files in this project can refer to the root source directory of the 
+# project as ${MINVR_SOURCE_DIR} and to the root binary directory of the project 
+# as ${MINVR_BINARY_DIR}.
+
 cmake_minimum_required (VERSION 2.8.2) 
 project (MinVR)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "cmake/modules")
 
-if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set (CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/../install" CACHE PATH "default install path" FORCE )
-endif()
+# Use the root of the MinVR tree as an include dir, then include headers like this:
+# #include <event/VREvent.h>
 
-set(MINVR_VERSION_MAJOR "2")
-set(MINVR_VERSION_MINOR "0")
-set(MINVR_VERSION_PATCH "0")
-set(MINVR_VERSION_EXTRA "")
-set(MINVR_VERSION "${MINVR_VERSION_MAJOR}.${MINVR_VERSION_MINOR}")
-set(MINVR_VERSION_FULL "${MINVR_VERSION}.${MINVR_VERSION_PATCH}${MINVR_VERSION_EXTRA}")
-
-#This way will auto detect all source files in the directory,
-#while this will work, the preferred technique is to list out
-#sourcefiles individually.  This will allow cmake to automatically
-#rerun if a source file is added, which it will not do if you don't
-#list the explicit source files.
-#aux_source_directory(${CMAKE_SOURCE_DIR} SOURCEFILES})
-#This is how you specific source file individually
-
-set (HEADERFILES 
-  core/include/TestClass.h
-  ${EXTENDFILES}
-)
-set (SOURCEFILES 
-  core/source/TestClass.cpp
-)
-
-set (EXTENDFILES
-  extend/Plugin.h
-  extend/PluginFramework.h
-  extend/PluginInterface.h
-  extend/PluginManager.h
-  extend/SharedLibrary.h
-)
-
-set (HEADERFILES ${HEADERFILES} ${EXTENDFILES})
-
-source_group("Header Files" FILES ${HEADERFILES})
-
-############################################################
-#Start of library detection
-#Any libraries outside of your source should have a corresponding
-#find_package method should be used here.
-############################################################
+include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 
 
-
-############################################################
-#End external library searching
-############################################################
-
-set (CMAKE_VERBOSE_MAKEFILE TRUE)
-
-# Used for compiling in subdirectories of the project
-include_directories (
-  .
-  ..
-  core/include
-)
-
-############################################################
-#OS Specific flags should go here
-############################################################
-
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
-  set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
-endif()
-
-if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-  # Linux specific code
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11") 
-endif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-
-if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  # Windows specific code
-endif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-
-if (MSVC)
-	# Windows specific code
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
-	add_definitions(-DNOMINMAX)
-endif (MSVC)
-
-
-############################################################
-# Add POSTFIX info
-############################################################
+# Let's follow the convention of putting all of the libs in "build/lib" and all
+# of the exes in "build/bin".  To distingusih between debugging, release, and
+# other builds, we'll add a postfix to the name of the lib or exe that we generate.
 
 set(CMAKE_DEBUG_POSTFIX "d")
 set(CMAKE_RELEASE_POSTFIX "")
 set(CMAKE_RELWITHDEBINFO_POSTFIX "rd")
 set(CMAKE_MINSIZEREL_POSTFIX "s")
 
-#set the build postfix extension according to the current configuration
 if (CMAKE_BUILD_TYPE MATCHES "Release")
   set(CMAKE_BUILD_POSTFIX "${CMAKE_RELEASE_POSTFIX}")
 elseif (CMAKE_BUILD_TYPE MATCHES "MinSizeRel")
@@ -154,41 +77,33 @@ else()
   set(CMAKE_BUILD_POSTFIX "")
 endif()
 
-#------------------------------------------
-# Set output directories to lib, and bin
-#------------------------------------------
 make_directory(${CMAKE_BINARY_DIR}/lib)
 make_directory(${CMAKE_BINARY_DIR}/bin)
 set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 foreach (CONF ${CMAKE_CONFIGURATION_TYPES})
-	string (TOUPPER ${CONF} CONF)
-	set (CMAKE_RUNTIME_OUTPUT_DIRECTORY_${CONF} ${CMAKE_BINARY_DIR}/bin)
-	set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${CONF} ${CMAKE_BINARY_DIR}/lib)
-	set (CMAKE_LIBRARY_OUTPUT_DIRECTORY_${CONF} ${CMAKE_BINARY_DIR}/lib)
+  string (TOUPPER ${CONF} CONF)
+  set (CMAKE_RUNTIME_OUTPUT_DIRECTORY_${CONF} ${CMAKE_BINARY_DIR}/bin)
+  set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${CONF} ${CMAKE_BINARY_DIR}/lib)
+  set (CMAKE_LIBRARY_OUTPUT_DIRECTORY_${CONF} ${CMAKE_BINARY_DIR}/lib)
 endforeach(CONF CMAKE_CONFIGURATION_TYPES)
 
-############################################################
-#Finally add all the targets here
-############################################################
 
-#You can also add subprojects that are in subdirectories
-#These subdirectories must contain their own CMakeLists.txt
+# Recurse into the following subdirs to build the core MinVR set of libraries:
+# (Uncomment the lines below as we add .cpp files to those directories.)
 
-#add_subdirectory (some)
+#add_subdirectory (config)
+#add_subdirectory (display)
+#add_subdirectory (event)
+#add_subdirectory (math)
+add_subdirectory (net)
+#add_subdirectory (plugin)
 
-add_library ( ${PROJECT_NAME} ${HEADERFILES} ${SOURCEFILES} )
 
-#------------------------------------------
-# Install Target
-#------------------------------------------
+# Now, build some programs, such as tests, that depend upon the MinVR libraries:
 
-install( TARGETS ${PROJECT_NAME}
-         LIBRARY DESTINATION lib
-         ARCHIVE DESTINATION lib
-         RUNTIME DESTINATION bin)
-         
-install(FILES ${PROJECT_SOURCE_DIR}/LICENSE.txt DESTINATION ".")
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/core/include/ DESTINATION "include")
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/extend/ DESTINATION "include")
+add_subdirectory (tests/net)
+add_subdirectory (tests/eventdata)
+
+

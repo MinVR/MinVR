@@ -2,6 +2,16 @@
 #define VRSTEREOFORMATTER_H
 
 
+
+class VRStereoFormatter {
+public:
+  virtual int getNumRenderingPasses() = 0;
+  virtual void startRenderingPass(int passNum, VRRenderState &state) = 0;
+  virtual void endRenderingPass(int passNum, VRRenderState &state) = 0;
+};
+
+
+
 class VRMono : public VRStereoFormatter {
 public:
   VRMono() {}

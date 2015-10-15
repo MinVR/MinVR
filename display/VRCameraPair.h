@@ -1,13 +1,16 @@
-#ifndef VRCAMERARIG_H
-#define VRCAMERARIG_H
+#ifndef VRCAMERAPAIR_H
+#define VRCAMERAPAIR_H
 
 
 #include "VRStereoFormatter.h"
 #include "VREvent.h"
 
-/** Interface for different methods of handling head-tracked perspective projection for VR.
+/** A Camera class similar to many computer graphics libraries but recognizing that VR cameras should typically
+    be managed in pairs, with one camera for the left eye and one for the right.  In this abstraction, a single
+    transformation matrix can be used to define the position and orientation of the "head" (really the centerpoint)
+    between the two cameras), and an offset equal to the "eye separation" is used to separate the two cameras.
 */
-class VRCameraRig {
+class VRCameraPair {
 public:
 
   enum ProjectionType {
@@ -16,15 +19,19 @@ public:
     MONO_PROJECTION
   };
 
-  VRCameraRig();
-  virtual ~VRCameraRig();
+  VRCameraPair();
+  VRCameraPair(VRMat4 initialHeadTransform, float eyeSeparation);
+
+  virtual ~VRCameraPair();
 
   virtual void handleUserInput(const std::vector<VREvent> &inputEvents);
 
-  virtual float* getProjectionMatrix(ProjectionType projectionType);
+  virtual VRMat4 getProjectionMatrix(ProjectionType projectionType);
 
 private:
 
+  VRMat4 _headTransform;
+  float _eyeSeparation;
 
 };
 

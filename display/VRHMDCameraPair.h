@@ -1,15 +1,15 @@
-#ifndef VRHEADTRACKEDPANELCAMERAPAIR_H
-#define VRHEADTRACKEDPANELCAMERAPAIR_H
+#ifndef VRHMDCAMERAPAIR_H
+#define VRHMDCAMERAPAIR_H
 
 #include "VRCameraPair.h"
 
 /**
 */
-class VRHeadTrackedPanelCameraPair : public VRCameraPair {
+class VRHMDCameraPair : public VRCameraPair {
 public:
 
-  VRHeadTrackedPanelCameraPair(VRVec3 topLeft, VRVec3 topRight, VRVec3 botRight, VRVec3 botLeft, VRMat4 initialHeadTransform, const std::string &headTrackingEventName);
-  virtual ~VRHeadTrackedPanelCameraPair();
+  VRHMDCameraPair(float horizFieldOfView, float aspectRatio, VRMat4 initialHeadTransform, float eyeSeparation, const std::string &headTrackingEventName);
+  virtual ~VRHMDCameraPair();
 
   virtual void handleUserInput(const std::vector<VREvent> &inputEvents);
 

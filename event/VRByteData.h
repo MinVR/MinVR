@@ -1,14 +1,14 @@
 
-#ifndef BYTEDATA_H
-#define BYTEDATA_H
+#ifndef VRBYTEDATA_H
+#define VRBYTEDATA_H
 
 #include <cstddef>
 #include <string>
 
 
-/** ByteData
+/** VRByteData
  */
-class ByteData {
+class VRByteData {
 public:
 
   // Note: this isn't portable across systems. Not a problem, unless we want to pass byte data over a network or save/load files
@@ -22,15 +22,15 @@ public:
   // not sure if we need more than that... 
 
 
-  ByteData() : _byteArray(NULL), _size(0) {}
+  VRByteData() : _byteArray(NULL), _size(0) {}
 
-  ByteData(unsigned char *data, int size) {
+  VRByteData(unsigned char *data, int size) {
     _size = size;
     _byteArray = new unsigned char [_size];
     memcpy(_byteArray, data, _size);
   }
 
-  ByteData(const ByteData &other) {
+  VRByteData(const VRByteData &other) {
     _size = other._size;
     if (_size > 0) {
       _byteArray = new unsigned char [_size];
@@ -41,7 +41,7 @@ public:
     }
   }
 
-  ByteData& operator=(const ByteData &other) {
+  VRByteData& operator=(const VRByteData &other) {
     if (this != &other) {
       _size = other._size;
       if (_size > 0) {
@@ -55,19 +55,19 @@ public:
     return *this;
   }
 
-  ByteData(int i) {
+  VRByteData(int i) {
     _byteArray = new unsigned char [BYTEDATA_SIZEOFINT];
     _size = BYTEDATA_SIZEOFINT;
     packInt(_byteArray, i);
   }
 
-  ByteData(float f) {
+  VRByteData(float f) {
     _byteArray = new unsigned char [BYTEDATA_SIZEOFFLOAT];
     _size = BYTEDATA_SIZEOFFLOAT;
     packFloat(_byteArray, f);
   }
 
-  virtual ~ByteData() {
+  virtual ~VRByteData() {
     if (_byteArray) {
       delete [] _byteArray;
     }
@@ -76,7 +76,7 @@ public:
   
 
   /// This exposes the underlying byte array for fast reading of binary data, but be careful, the pointer will
-  /// no longer be valid after a call to setData(), an assignment to another ByteData object, or other operation
+  /// no longer be valid after a call to setData(), an assignment to another VRByteData object, or other operation
   /// that modifies the underlying byteArray.
   unsigned char * getByteArray() const { return _byteArray; }
   int getSize() const { return _size; }

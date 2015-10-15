@@ -6,6 +6,7 @@ _ReSharper*
 *.dir
 *.vcxproj*
 *.sln
+*.bak
 Win32
 Debug
 Release

@@ -3,8 +3,8 @@
 #define VREVENT_H
 
 #include <string>
-#include "ByteData.h"
-#include "ByteStream.h"
+#include <event/VRByteData.h>
+#include <event/VRByteStream.h>
 
 
 /** VREvent
@@ -12,11 +12,11 @@
 class VREvent {
 public:
 
-  VREvent(const std::string &name, const ByteData &data) : _name(name), _data(data) {}
+  VREvent(const std::string &name, const VRByteData &data) : _name(name), _data(data) {}
 
   template<typename SERIALIZABLE_TYPE>
   VREvent(const std::string &name, SERIALIZABLE_TYPE &object) : _name(name) {
-    ByteStream bs;
+    VRByteStream bs;
     object.serialize(bs);
     _data = bs.toByteData();
   }
@@ -29,14 +29,14 @@ public:
 
   /// For speed (to avoid copying the data) returns a const reference to the data. 
   /// Make sure to only use this reference while the VREvent is within scope.
-  const ByteData& getData() const { return _data; }
+  const VRByteData& getData() const { return _data; }
 
-  void serialize(ByteStream &bs) const {
+  void serialize(VRByteStream &bs) const {
     bs.writeString(_name);
     bs.writeByteData(_data);
   }
 
-  void deserialize(ByteStream &bs) {
+  void deserialize(VRByteStream &bs) {
     _name = bs.readString();
     _data = bs.readByteData();
   }
@@ -46,13 +46,13 @@ public:
   /// over the network.
   int getSizeInBytes() const {
     // dataSize = (bytes needed to store InputEvent's name string) + (bytes needed to store the InputEvent's data)
-    return (_name.length() + ByteData::BYTEDATA_SIZEOFINT) + (_data.getSize() + ByteData::BYTEDATA_SIZEOFINT);
+    return (_name.length() + VRByteData::BYTEDATA_SIZEOFINT) + (_data.getSize() + VRByteData::BYTEDATA_SIZEOFINT);
   }
 
 
 protected:
   std::string _name;
-  ByteData _data;
+  VRByteData _data;
 };
 
 
