@@ -112,6 +112,8 @@ int main() {
         switch (p->getType()) {
         case MVRINT:
           std::cout << "an integer containing: " << ((int)p->getValue()) << std::endl;
+
+          std::cout << "same as: " << (int)index->getValue(elems[1], nameSpace) << std::endl;
           break;
 
         case MVRFLOAT:

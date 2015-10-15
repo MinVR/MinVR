@@ -128,6 +128,36 @@ public:
   MinVRDatumPtr getDatum(const std::string valName,
                          const std::string nameSpace);
 
+  // The getValue function relies on the helper function defined with
+  // MinVRDatum.  Read about it there, but it is just a cute trick to
+  // allow programmers to access values directly from the index.  So
+  // access your values like this:
+  //
+  //   int p = index->getDatum(name, nameSpace)->getValue()
+  //
+  // or like this:
+  //
+  //   int p = index->getValue(name, nameSpace)
+  //
+  // It's your choice; the two are identical in overhead.  If you're
+  // really worried about overhead, you can do this instead:
+  //
+  //   int p = index->getValue(name, nameSpace)->getValueInt()
+  //
+  // This version does a kind of type checking, but also brings you
+  // the specialized MinVRDatum object which you might want for some
+  // other nefarious reason.
+  //
+  //   int p = index->getValue(name, nameSpace).intVal()->getValueInt()
+  //
+  MinVRDatumHelper<MinVRDatum> getValue(const std::string valName) {
+    return getDatum(valName)->getValue();
+  }
+  MinVRDatumHelper<MinVRDatum> getValue(const std::string valName,
+                                        const std::string nameSpace) {
+    return getDatum(valName, nameSpace)->getValue();
+  }
+
   // The description of an index entry describes only the name and
   // type, not the value.
   std::string getDescription(const std::string valName);

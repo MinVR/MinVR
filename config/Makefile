@@ -1,0 +1,24 @@
+
+ASOURCES=attribute.cpp Cxml.cpp element.cpp utils.cpp XML.cpp
+SOURCES=driver.cpp $(ASOURCES)
+MVRSOURCES=MinVRDatum.cpp MinVRDatum.h MinVRDatumFactory.cpp MinVRDatumFactory.h MinVRDataIndex.cpp MinVRDataIndex.h
+CFLAGS=-I/usr/include/malloc -ggdb -g3
+
+TISOURCES=testindex.cpp MinVRDatum.cpp MinVRDatumFactory.cpp MinVRDataIndex.cpp attribute.cpp Cxml.cpp element.cpp utils.cpp XML.cpp
+
+EXSOURCES=exercz.cpp $(MVRSOURCES) $(ASOURCES)
+
+TPSOURCES=testproxy.cpp
+
+exercz: $(EXSOURCES)
+	g++ $(CFLAGS) -o exercz $(EXSOURCES)
+
+testindex:   $(TISOURCES)
+	g++ $(CFLAGS) -o testindex $(TISOURCES)
+
+testproxy:   $(TPSOURCES)
+	g++ $(CFLAGS) -o testproxy $(TPSOURCES)
+
+xml_driver:  $(SOURCES)
+	g++ $(CFLAGS) -o driver driver.cpp attribute.cpp Cxml.cpp element.cpp utils.cpp XML.cpp
+

@@ -66,6 +66,8 @@ class MinVRDatumHelper {
 public:
   MinVRDatumHelper(T const* inDatum) : datum(inDatum) {};
 
+  // Adding a data type?  Add a corresponding redefinition of the
+  // appropriate type conversion operator here.
   operator int() const { return datum->getValueInt(); }
   operator double() const { return datum->getValueDouble(); }
   operator std::string() const { return datum->getValueString(); }
@@ -90,15 +92,14 @@ public:
 // To extend the collection of data types that can be modeled as a
 // MinVRDatum, follow these steps:
 //
-//   1. Create a specialization of the MinVRDatum class, and call it
+//   1a. Create a specialization of the MinVRDatum class, and call it
 //      something like MinVRDatumInt or MinVRDatumDouble.  You will
 //      have to provide it with a private value member and public
-//      getValue*() and getValue() method members.  There are not
-//      virtual members for these functions, since their prototypes
-//      differ, and their implementations differ too much for
-//      templates.
+//      getValue*() and getValue() method members.  (The latter are
+//      all the same, so that's no big deal.)  Add one to the list of
+//      virtual members for these functions, too.
 //
-//   1a. You will also need a setValue() function.  These objects are
+//   1b. You will also need a setValue() function.  These objects are
 //       meant to be immutable, but when a new name-value pair has the
 //       same name as another pair it seems a shame to create an
 //       entirely new object to hold the new value when an
@@ -108,7 +109,12 @@ public:
 //       the value of the object.  So these objects are only sort of
 //       immutable in the sense that we're supposed to pretend they
 //       are, and so long as no one lets on, the secret will be safe.
-//       Ok?
+//       Ok?  The syntax for using setValue() is annoying, so users
+//       shouldn't really be using it anyway.
+//
+//   1c. Add a conversion to the MinVRDatumHelper class.  You'll
+//       probably want to make your type a typedef if you haven't
+//       already.  Put it up there with MVRContainer.
 //
 //   2. Add a method to the MinVRDatumPtr that will return the new
 //      data type.  See intVal() and doubleVal() for models.
@@ -322,10 +328,11 @@ public:
 //
 //  <initialize p with integer data via an MinVRDatumInt object>
 //
-//    p->getValue()          Returns an error, since there is no
-//                           getValue() in the MinVRDatum object.
-//
 //    p.intVal()->getValue() Returns the integer value held in *p.
+//
+//    p->getValue()          Nicer syntax, gets you the same value,
+//                           so long as there is some kind of cast
+//                           or assignment to determine a type.
 //
 // However, p->getDescription() works fine, as will p->serialize(),
 // and other things that are actually part of the MinVRDatum core
