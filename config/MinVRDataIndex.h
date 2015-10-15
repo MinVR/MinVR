@@ -275,6 +275,6 @@ public:
 //    - Do something about MinVRDatum setValue() methods? Maybe
 //      comparable to the virtual getValue() methods? [NO, Users should not use]
 //
-//   - change MinVRDataIndex::getValue() to getDatum()
+//   - change MinVRDataIndex::getValue() to getDatum() [DONE]
 //
-//   - Can we add a helper class to data index?
+//   - Can we add a helper class to data index? [DONE]
