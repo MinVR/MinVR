@@ -67,9 +67,9 @@ MinVRDatumPtr CreateMinVRDatumString(void *pData) {
 
 ////////////////////////////////////////////
 
-MinVRDatumContainer::MinVRDatumContainer(const std::list<std::string> inVal) :
+MinVRDatumContainer::MinVRDatumContainer(const MVRContainer inVal) :
   MinVRDatum(MVRCONTAINER), value(inVal) {
-  description = "container";
+  description = "MVRContainer";
 };
 
 // For optimization and code maintainability reasons, the
@@ -81,11 +81,11 @@ std::string MinVRDatumContainer::serialize() {
   return getDescription();
 }
 
-bool MinVRDatumContainer::addToValue(const std::list<std::string> inVal) {
+bool MinVRDatumContainer::addToValue(const MVRContainer inVal) {
   std::list<std::string> inCopy = inVal;
 
   // Remove all duplicates from the input list.
-  for (std::list<std::string>::const_iterator it = value.begin();
+  for (MVRContainer::const_iterator it = value.begin();
 
        it != value.end(); ++it) {
     inCopy.remove(*it);
@@ -95,7 +95,7 @@ bool MinVRDatumContainer::addToValue(const std::list<std::string> inVal) {
 }
 
 MinVRDatumPtr CreateMinVRDatumContainer(void *pData) {
-  MinVRDatumContainer *obj = new MinVRDatumContainer(*static_cast<std::list<std::string> *>(pData));
+  MinVRDatumContainer *obj = new MinVRDatumContainer(*static_cast<MVRContainer *>(pData));
   return MinVRDatumPtr(obj);
 }
 

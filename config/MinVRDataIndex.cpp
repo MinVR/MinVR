@@ -17,7 +17,7 @@ MinVRDataIndex::MinVRDataIndex() : overwrite(1) {
   mvrTypeMap[std::string("vector<int>")] =  MVRVEC_INT;
   mvrTypeMap[std::string("vector<float>")] =  MVRVEC_FLOAT;
   mvrTypeMap[std::string("vector<string>")] =  MVRVEC_STRING;
-  mvrTypeMap[std::string("container")] =  MVRCONTAINER;
+  mvrTypeMap[std::string("MVRContainer")] =  MVRCONTAINER;
 
 }
 
@@ -150,8 +150,8 @@ std::string MinVRDataIndex::serialize(const std::string valName) {
       serialized = "<" + trimName + " type=\"" + it->second->getDescription() + "\">";
 
       // ... loop through the children (recursively) ...
-      std::list<std::string> nameList = it->second.containerVal()->getValue();
-      for (std::list<std::string>::iterator lt = nameList.begin();
+      MVRContainer nameList = it->second.containerVal()->getValue();
+      for (MVRContainer::iterator lt = nameList.begin();
            lt != nameList.end(); lt++) {
 
         // ... recurse, and get the serialization of the member data value.
@@ -478,7 +478,7 @@ bool MinVRDataIndex::addValueString(const std::string valName, std::string value
 }
 
 bool MinVRDataIndex::addValueContainer(const std::string valName,
-                                       std::list<std::string> value) {
+                                       MVRContainer value) {
 
   // Check if the name is already in use.
   MinVRDataMap::iterator it = mindex.find(valName);

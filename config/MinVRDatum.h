@@ -34,6 +34,8 @@ typedef enum
   MVRCONTAINER  = 7
 } MVRTYPE_ID;
 
+// An MVRContainer is actually a list of strings.
+typedef std::list<std::string> MVRContainer;
 
 // This class is meant to hold a data object of some arbitrary type
 // (ok, arbitrary within a small range of types), and to serialize and
@@ -194,19 +196,19 @@ public:
   bool setValue(const std::string inVal);
 };
 
-// Specialization for a string
+// Specialization for a container
 class MinVRDatumContainer : public MinVRDatum {
 private:
   // The actual data is stored here, a collection of names.
-  std::list<std::string> value;
+  MVRContainer value;
 
 public:
-  MinVRDatumContainer(const std::list<std::string> inVal);
+  MinVRDatumContainer(const MVRContainer inVal);
 
   std::string serialize();
 
-  std::list<std::string> getValue() { return value; };
-  bool addToValue(const std::list<std::string> inVal);
+  MVRContainer getValue() { return value; };
+  bool addToValue(const MVRContainer inVal);
 };
 
 // A convenient reference counter for the smart pointer for the MinVRDatum type.

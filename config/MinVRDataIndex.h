@@ -174,7 +174,7 @@ public:
   bool addValueInt(const std::string valName, int value);
   bool addValueDouble(const std::string valName, double value);
   bool addValueString(const std::string valName, std::string value);
-  bool addValueContainer(const std::string valName, std::list<std::string> value);
+  bool addValueContainer(const std::string valName, MVRContainer value);
 
 };
 
@@ -237,3 +237,11 @@ public:
 //
 //   - Make the parser infer data types where possible, rather than relying
 //     on the type attribute. [DONE]
+//
+//   - Add container typedef to MinVRDatum
+//
+//   - Add helper class to MinVRDatum, implement getValue()
+//
+//   - change MinVRDataIndex::getValue() to getDatum()
+//
+//   - Can we add a helper class

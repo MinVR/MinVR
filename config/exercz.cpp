@@ -129,8 +129,8 @@ int main() {
           {
             std::cout << "a container containing: " << std::endl;
 
-            std::list<std::string> nameList = p.containerVal()->getValue();
-            for (std::list<std::string>::iterator nl = nameList.begin();
+            MVRContainer nameList = p.containerVal()->getValue();
+            for (MVRContainer::iterator nl = nameList.begin();
                  nl != nameList.end(); nl++) {
               std::cout << "                        " << *nl << std::endl;
             }
@@ -148,8 +148,8 @@ int main() {
 
     ////// command: l (list all values)
     } else if (elems[0].compare("l") == 0) {
-      std::list<std::string> nameList = index->getDataNames();
-      for (std::list<std::string>::iterator it = nameList.begin();
+      MVRContainer nameList = index->getDataNames();
+      for (MVRContainer::iterator it = nameList.begin();
            it != nameList.end(); it++) {
         std::cout << *it << std::endl;
       }
