@@ -1,6 +1,8 @@
 
 #include <net/VRNetClient.h>
-
+#ifndef WIN32
+#include <unistd.h>
+#endif
 
 int main() {
   VRNetClient client("localhost", "3490");

@@ -1,6 +1,8 @@
 
 #include <net/VRNetServer.h>
-
+#ifndef WIN32
+#include <unistd.h>
+#endif
 
 int main() {
   VRNetServer server("3490", 1);
