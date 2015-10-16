@@ -47,7 +47,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 #include "SharedLibrary.h"
 #include "PluginInterface.h"
-#include "Plugin.h"
+#include "PluginFramework.h"
 
 namespace MinVR {
 
@@ -63,7 +63,7 @@ public:
 
 private:
 	std::vector<PluginInterface*> _interfaces;
-	std::vector<Plugin*> _plugins;
+	std::vector<FrameworkPlugin*> _plugins;
 	std::vector<SharedLibrary*> _libraries;
 };
 

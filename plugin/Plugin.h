@@ -44,17 +44,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define PLUGIN_H_
 
 #include "PluginFramework.h"
-#include "PluginInterface.h"
 #include <memory>
 
 namespace MinVR {
 
-class Plugin {
-public:
-	virtual ~Plugin() {}
-
-	virtual bool registerPlugin(PluginInterface* interface) = 0;
-	virtual bool unregisterPlugin(PluginInterface* interface) = 0;
+class Plugin : public FrameworkPlugin {
 };
 
 } /* namespace MinVR */

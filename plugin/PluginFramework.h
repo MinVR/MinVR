@@ -43,10 +43,27 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef PLUGINFRAMEWORK_H_
 #define PLUGINFRAMEWORK_H_
 
+#include "plugin/PluginInterface.h"
+
 namespace MinVR {
 
 #define PLUGIN_FRAMEWORK_VERSION 0
 
-}
+#if defined(WIN32)
+#define PLUGIN_API __declspec(dllexport)
+#else
+#define PLUGIN_API
+#endif
+
+class FrameworkPlugin {
+public:
+	virtual ~FrameworkPlugin() {}
+
+	virtual bool registerPlugin(PluginInterface* interface) = 0;
+	virtual bool unregisterPlugin(PluginInterface* interface) = 0;
+};
+
+} /* namespace MinVR */
+
 
 #endif /* PLUGINFRAMEWORK_H_ */

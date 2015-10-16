@@ -41,6 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ================================================================================ */
 
 #include "PluginManager.h"
+#include "Plugin.h"
 
 namespace MinVR {
 
@@ -91,14 +92,14 @@ void PluginManager::loadPlugin(const std::string& filePath, const std::string& n
 			return;
 		}
 
-		typedef Plugin* load_t();
+		typedef FrameworkPlugin* load_t();
 		load_t* loadPlugin = lib->loadSymbol<load_t>("loadPlugin");
 		if (loadPlugin == NULL)
 		{
 			return;
 		}
 
-		Plugin* plugin = loadPlugin();
+		FrameworkPlugin* plugin = loadPlugin();
 		int countRegistered = 0;
 		for (int f = 0; f < _interfaces.size(); f++)
 		{
