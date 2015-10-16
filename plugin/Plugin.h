@@ -47,7 +47,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "PluginInterface.h"
 #include <memory>
 
-namespace extend {
+namespace MinVR {
 
 typedef std::shared_ptr<class Plugin> PluginRef;
 
