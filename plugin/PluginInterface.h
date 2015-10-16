@@ -44,6 +44,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define PLUGININTERFACE_H_
 
 #include <string>
+#include <memory>
 
 namespace MinVR {
 

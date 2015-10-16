@@ -47,63 +47,25 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 #include "SharedLibrary.h"
 #include "PluginInterface.h"
+#include "Plugin.h"
 
 namespace MinVR {
 
 class PluginManager {
 public:
-	PluginManager(PluginInterface *interface);
+	PluginManager();
+	PluginManager(std::vector<PluginInterface*> interfaces);
 	virtual ~PluginManager();
 
-	void loadPlugin(const std::string& filePath);
+	void addInterface(PluginInterface* interface);
+
+	void loadPlugin(const std::string& filePath, const std::string& name);
 
 private:
-	PluginInterface *_interface;
-	std::vector<SharedLibraryRef> _plugins;
+	std::vector<PluginInterface*> _interfaces;
+	std::vector<Plugin*> _plugins;
+	std::vector<SharedLibrary*> _libraries;
 };
-
-PluginManager::PluginManager(PluginInterface *interface) : _interface(interface) {
-}
-
-PluginManager::~PluginManager() {
-}
-
-void PluginManager::loadPlugin(const std::string& filePath) {
-#if defined(WIN32)
-	std::string path = filePath + "/bin/" + name + ".dll";
-#elif defined(__APPLE__)
-	std::string path = filePath + "/lib/lib" + name + ".dylib";
-#else
-	std::string path = filePath + "/lib/lib" + name + ".so";
-#endif
-
-	SharedLibraryRef lib = SharedLibraryRef(new SharedLibrary(path));
-	if (lib->isLoaded())
-	{
-		typedef int version_t();
-		version_t* getVersion = lib->loadSymbol<version_t>("getPluginFrameworkVersion");
-		if (getVersion() != getPluginFrameworkVersion())
-		{
-			//MinVR::Logger::getInstance().assertMessage(false, "Cannot load plugin: " + path + " - Incorrect framework version");
-			return;
-		}
-
-		typedef Plugin* load_t();
-		load_t* loadPlugin = lib->loadSymbol<load_t>("loadPlugin");
-		if (loadPlugin == NULL)
-		{
-			return;
-		}
-		PluginRef plugin = PluginRef(loadPlugin());
-		if (!plugin->registerPlugin(_interface))
-		{
-			//MinVR::Logger::getInstance().assertMessage(false, "Failed registering plugin: " + path);
-			return;
-		}
-
-		_plugins.push_back(lib);
-	}
-}
 
 } /* namespace extend */
 

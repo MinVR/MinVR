@@ -2,7 +2,7 @@
 
 This file is part of the MinVR Open Source Project.
 
-File: extend/Plugin.h
+File: plugin/PluginManager.cpp
 
 Original Author(s) of this File:
 	Dan Orban, 2015, University of Minnesota
@@ -40,41 +40,86 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ================================================================================ */
 
-#ifndef PLUGIN_H_
-#define PLUGIN_H_
-
-#include "PluginFramework.h"
-#include "PluginInterface.h"
-#include <memory>
+#include "PluginManager.h"
 
 namespace MinVR {
 
-class Plugin {
-public:
-	virtual ~Plugin() {}
-
-	virtual bool registerPlugin(PluginInterface* interface) = 0;
-	virtual bool unregisterPlugin(PluginInterface* interface) = 0;
-};
-
-} /* namespace MinVR */
+PluginManager::PluginManager() : _interfaces() {
+}
 
 
-extern "C"
-{
-	int getPluginFrameworkVersion() {
-		return PLUGIN_FRAMEWORK_VERSION;
+PluginManager::PluginManager(std::vector<PluginInterface*> interfaces) : _interfaces(interfaces) {
+}
+
+PluginManager::~PluginManager() {
+	for (int f = 0; f < _plugins.size(); f++)
+	{
+		for (int i = 0; i < _interfaces.size(); i++)
+		{
+			_plugins[f]->unregisterPlugin(_interfaces[i]);
+			delete _plugins[f];
+		}
+	}
+
+	for (int f = 0; f < _libraries.size(); f++)
+	{
+		delete _libraries[f];
 	}
 }
 
-/*
+void PluginManager::addInterface(PluginInterface* interface) {
+	_interfaces.push_back(interface);
+}
 
-extern "C"
-{
-	minVR::PluginRef loadPlugin() {
-		return new minVR::Plugin();
+void PluginManager::loadPlugin(const std::string& filePath, const std::string& name) {
+#if defined(WIN32)
+	std::string path = filePath + "/bin/" + name + ".dll";
+#elif defined(__APPLE__)
+	std::string path = filePath + "/lib/lib" + name + ".dylib";
+#else
+	std::string path = filePath + "/lib/lib" + name + ".so";
+#endif
+
+	SharedLibrary* lib = new SharedLibrary(path);
+	if (lib->isLoaded())
+	{
+		typedef int version_t();
+		version_t* getVersion = lib->loadSymbol<version_t>("getPluginFrameworkVersion");
+		if (getVersion() != getPluginFrameworkVersion())
+		{
+			//MinVR::Logger::getInstance().assertMessage(false, "Cannot load plugin: " + path + " - Incorrect framework version");
+			return;
+		}
+
+		typedef Plugin* load_t();
+		load_t* loadPlugin = lib->loadSymbol<load_t>("loadPlugin");
+		if (loadPlugin == NULL)
+		{
+			return;
+		}
+
+		Plugin* plugin = loadPlugin();
+		int countRegistered = 0;
+		for (int f = 0; f < _interfaces.size(); f++)
+		{
+			if (plugin->registerPlugin(_interfaces[f]))
+			{
+				countRegistered++;
+			}
+		}
+
+		if (countRegistered > 0)
+		{
+			_plugins.push_back(plugin);
+			_libraries.push_back(lib);
+		}
+		else
+		{
+			delete plugin;
+			delete lib;
+		}
+
 	}
 }
-*/
 
-#endif /* PLUGIN_H_ */
+} /* namespace extend */

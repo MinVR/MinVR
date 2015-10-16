@@ -2,7 +2,7 @@
 
 This file is part of the MinVR Open Source Project.
 
-File: extend/Plugin.h
+File: extend/SharedLibrary.h
 
 Original Author(s) of this File:
 	Dan Orban, 2015, University of Minnesota
@@ -40,41 +40,91 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ================================================================================ */
 
-#ifndef PLUGIN_H_
-#define PLUGIN_H_
-
-#include "PluginFramework.h"
-#include "PluginInterface.h"
-#include <memory>
+#include "SharedLibrary.h"
 
 namespace MinVR {
 
-class Plugin {
-public:
-	virtual ~Plugin() {}
-
-	virtual bool registerPlugin(PluginInterface* interface) = 0;
-	virtual bool unregisterPlugin(PluginInterface* interface) = 0;
-};
-
-} /* namespace MinVR */
-
-
-extern "C"
-{
-	int getPluginFrameworkVersion() {
-		return PLUGIN_FRAMEWORK_VERSION;
+SharedLibrary::SharedLibrary(const std::string &filePath, bool autoLoad) : _filePath(filePath), _isLoaded(false) {
+	if (autoLoad)
+	{
+		load();
 	}
 }
 
-/*
+SharedLibrary::~SharedLibrary() {
+	unload();
+}
 
-extern "C"
-{
-	minVR::PluginRef loadPlugin() {
-		return new minVR::Plugin();
+void SharedLibrary::load() {
+	if (!_isLoaded)
+	{
+		const char* error;
+#if defined(WIN32)
+		_lib = LoadLibraryA(_filePath.c_str());
+#else
+		dlerror();
+		_lib = dlopen(_filePath.c_str(), RTLD_NOW);//RTLD_LAZY);
+		error = dlerror();
+#endif
+
+		if (!_lib) {
+			//MinVR::Logger::getInstance().assertMessage(false, "Could not load library: " + _filePath + " - " + error);
+			return;
+		}
+
+		_isLoaded = true;
 	}
 }
-*/
 
-#endif /* PLUGIN_H_ */
+void SharedLibrary::unload() {
+	if (_isLoaded)
+	{
+		const char* error;
+#if defined(WIN32)
+		BOOL result = FreeLibrary(_lib);
+#else
+		dlerror();
+		int result = dlclose(_lib);
+		error = dlerror();
+#endif
+		if(result != 0) {
+			//MinVR::Logger::getInstance().assertMessage(false, "Could not unload library: " + _filePath + " - " + error);
+			return;
+		}
+
+		_isLoaded = false;
+	}
+}
+
+void* SharedLibrary::loadSymbolInternal(const std::string &functionName) {
+	if (_isLoaded)
+	{
+#if defined(WIN32)
+		FARPROC symbol =GetProcAddress(_lib, functionName.c_str());
+		if (!symbol) {
+			//MinVR::Logger::getInstance().assertMessage(false, "Cannot load symbol: " + functionName + " - " + "");
+
+			return NULL;
+		}
+
+		return symbol;
+#else
+		void* symbol = (void*) dlsym(_lib, functionName.c_str());
+		const char* dlsym_error = dlerror();
+		if (dlsym_error) {
+			//MinVR::Logger::getInstance().assertMessage(false, "Cannot load symbol: " + functionName + " - " + dlsym_error);
+			dlerror();
+
+			return NULL;
+		}
+
+		return symbol;
+#endif
+
+	}
+
+	return NULL;
+}
+
+} /* namespace extend */
+
