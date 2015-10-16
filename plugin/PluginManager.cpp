@@ -58,8 +58,9 @@ PluginManager::~PluginManager() {
 		for (int i = 0; i < _interfaces.size(); i++)
 		{
 			_plugins[f]->unregisterPlugin(_interfaces[i]);
-			delete _plugins[f];
 		}
+
+		delete _plugins[f];
 	}
 
 	for (int f = 0; f < _libraries.size(); f++)

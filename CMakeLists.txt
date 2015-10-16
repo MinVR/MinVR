@@ -97,14 +97,14 @@ endforeach(CONF CMAKE_CONFIGURATION_TYPES)
 #add_subdirectory (display)
 #add_subdirectory (event)
 #add_subdirectory (math)
-#add_subdirectory (net)
+add_subdirectory (net)
 add_subdirectory (plugin)
 
 
 # Now, build some programs, such as tests, that depend upon the MinVR libraries:
 
-#add_subdirectory (tests/net)
-#add_subdirectory (tests/eventdata)
+add_subdirectory (tests/net)
+add_subdirectory (tests/eventdata)
 add_subdirectory (tests/plugin)
 
 

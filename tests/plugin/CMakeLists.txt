@@ -14,6 +14,8 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	set(LIBS_ALL dl)
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
+add_definitions(-DPLUGINPATH="${CMAKE_BINARY_DIR}")
+
 add_executable (test_pluginapp ${test_pluginapp_source_files})
 target_link_libraries (test_pluginapp VRPlugin ${LIBS_ALL})
 

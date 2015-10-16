@@ -9,18 +9,8 @@
 #include "plugin/Plugin.h"
 #include <iostream>
 #include "GraphicsInterface.h"
-
-class OpenGLGraphicsDriver : public GraphicsDriver
-{
-public:
-	void draw() { std::cout << "Render opengl" << std::endl; }
-};
-
-class D3DGraphicsDriver : public GraphicsDriver
-{
-public:
-	void draw() { std::cout << "Render D3D" << std::endl; }
-};
+#include "DeviceInterface.h"
+#include "TestPluginDrivers.h"
 
 class TestPlugin : public MinVR::Plugin {
 public:
@@ -35,10 +25,19 @@ public:
 		std::cout << "Registering TestPlugin with the following interface: " << interface->getName() << std::endl;
 		if (interface->getName() == "GraphicsInterface")
 		{
-			interface->getInterface<GraphicsInterface>()->addGraphicsDriver("opengl", new OpenGLGraphicsDriver());
-			interface->getInterface<GraphicsInterface>()->addGraphicsDriver("d3d", new D3DGraphicsDriver());
+			GraphicsInterface* graphicsInterface = interface->getInterface<GraphicsInterface>();
+			graphicsInterface->addGraphicsDriver("opengl", new OpenGLGraphicsDriver());
+			graphicsInterface->addGraphicsDriver("d3d", new D3DGraphicsDriver());
 			return true;
 		}
+		if (interface->getName() == "DeviceInterface")
+		{
+			DeviceInterface* deviceInterface = interface->getInterface<DeviceInterface>();
+			deviceInterface->addInputDeviceFactory(new VRPNFactory());
+			deviceInterface->addInputDeviceFactory(new TouchFactory());
+			return true;
+		}
+
 		return false;
 	}
 	PLUGIN_API bool unregisterPlugin(MinVR::PluginInterface *interface)
@@ -47,7 +46,6 @@ public:
 		return false;
 	}
 };
-
 
 extern "C"
 {
