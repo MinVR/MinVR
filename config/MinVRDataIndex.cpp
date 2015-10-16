@@ -4,7 +4,7 @@
 
 // Step 5 of the specialization instructions (in MinVRDatum.h) is to
 // add an entry here to register the new data type.
-MinVRDataIndex::MinVRDataIndex() : overwrite(1) {
+MinVRDataCollection::MinVRDataCollection() {
   factory.RegisterMinVRDatum(MVRINT, CreateMinVRDatumInt);
   factory.RegisterMinVRDatum(MVRFLOAT, CreateMinVRDatumDouble);
   factory.RegisterMinVRDatum(MVRSTRING, CreateMinVRDatumString);

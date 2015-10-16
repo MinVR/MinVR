@@ -9,6 +9,19 @@
 #include "MinVRDatum.h"
 #include "MinVRDatumFactory.h"
 
+// A collection of conveniences and useful functions for the data
+// index and data queue objects.
+class MinVRDataCollection {
+protected:
+  MinVRDatumFactory factory;
+
+  // This is just a convenience to map strings to object type numbers.
+  std::map<std::string, MVRTYPE_ID> mvrTypeMap;
+
+public:
+  MinVRDataCollection();
+};
+
 // This object maintains an index, a collection of names and pointers
 // to MinVRDatum objects, which can be used to simulate a dynamically
 // typed computing environment in C++, a strongly-typed system.  In
@@ -87,15 +100,11 @@
 //  possible and not rely on any external libraries.  It uses an XML
 //  reader, see those files for the original credit.
 //
-class MinVRDataIndex {
+  class MinVRDataIndex : MinVRDataCollection {
 private:
 
   typedef std::map<std::string, MinVRDatumPtr> MinVRDataMap;
   MinVRDataMap mindex;
-  MinVRDatumFactory factory;
-
-  // This is just a convenience to map strings to object type numbers.
-  std::map<std::string, MVRTYPE_ID> mvrTypeMap;
 
   // If this is 1, new values will overwrite old ones.  For -1, new
   // values will just bounce off.  And zero will cause an exception if
@@ -105,7 +114,7 @@ private:
   int overwrite;
 
 public:
-  MinVRDataIndex();
+    MinVRDataIndex() : overwrite(1) {};
 
   void setOverwrite(const int inVal) { overwrite = inVal; }
 
