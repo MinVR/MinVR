@@ -20,6 +20,33 @@ protected:
 
 public:
   MinVRDataCollection();
+
+  std::string serialize(const std::string trimName, MinVRDatumPtr pdata);
+  virtual std::string serialize(const std::string valName) = 0;
+
+  // Prints a vaguely tree-ish representation of an XML parse.  Just
+  // an aid to debugging, really.
+  bool printXML(element* node, std::string prefix);
+
+  // Tries to guess a data type from the ASCII representation.
+  MVRTYPE_ID inferType(const std::string valueString);
+
+  // Start from the root node of an XML document and process the
+  // results into entries in the data index.
+  bool walkXML(element* node, std::string nameSpace);
+  // A functional part of the walkXML apparatus.
+  bool processValue(const char* name,
+                    MVRTYPE_ID type,
+                    const char* valueString);
+
+  /// Step 6 of the data type addition instructions in MinVRDatum.h is
+  /// to add a specialized method here.
+  virtual bool addValueInt(const std::string valName, int value) = 0;
+  virtual bool addValueDouble(const std::string valName, double value) = 0;
+  virtual bool addValueString(const std::string valName, std::string value) = 0;
+  virtual bool addValueContainer(const std::string valName,
+                                 MVRContainer value) = 0;
+
 };
 
 // This object maintains an index, a collection of names and pointers
@@ -100,7 +127,7 @@ public:
 //  possible and not rely on any external libraries.  It uses an XML
 //  reader, see those files for the original credit.
 //
-  class MinVRDataIndex : MinVRDataCollection {
+class MinVRDataIndex : MinVRDataCollection {
 private:
 
   typedef std::map<std::string, MinVRDatumPtr> MinVRDataMap;
@@ -174,6 +201,7 @@ public:
                              const std::string nameSpace);
 
   // This is the name, type, value, expressed as an XML fragment.
+  using MinVRDataCollection::serialize;
   std::string serialize(const std::string valName);
   std::string serialize(const std::string valName,
                         const std::string nameSpace);
@@ -184,24 +212,11 @@ public:
   bool addValue(const std::string serializedData,
                 const std::string nameSpace);
 
-  // Prints a vaguely tree-ish representation of an XML parse.  Just
-  // an aid to debugging, really.
-  bool printXML(element* node, std::string prefix);
-
-  // Start from the root node of an XML document and process the
-  // results into entries in the data index.
-  bool walkXML(element* node, std::string nameSpace);
-  // A functional part of the walkXML apparatus.
-  bool processValue(const char* name,
-                    MVRTYPE_ID type,
-                    const char* valueString);
-  // Tries to guess a data type from the ASCII representation.
-  MVRTYPE_ID inferType(const std::string valueString);
-
   // Process the contents of a given XML file into the index.
   bool processXMLFile(std::string fileName);
 
-  // Returns a list of all the names in the map.
+  // Returns a list of all the names in the map.  Note this really is
+  // a list of strings, not a MVRContainer.
   std::list<std::string> getDataNames();
 
   // These are specialized set methods.  They seem a little unhip, but
