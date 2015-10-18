@@ -28,14 +28,15 @@ typedef enum
   MVRINT        = 1,
   MVRFLOAT      = 2,
   MVRSTRING     = 3,
-  MVRVEC_INT    = 4,
-  MVRVEC_FLOAT  = 5,
-  MVRVEC_STRING = 6,
+  MVRVECINT     = 4,
+  MVRVECFLOAT   = 5,
+  MVRVECSTRING  = 6,
   MVRCONTAINER  = 7
 } MVRTYPE_ID;
 
 // An MVRContainer is actually a list of strings.
 typedef std::list<std::string> MVRContainer;
+typedef std::vector<double> MVRVecFloat;
 
 // This class is a helper to avoid having to access values with
 // constructs like ptr.intVal()->getValue().  By using this helper
@@ -51,7 +52,7 @@ typedef std::list<std::string> MVRContainer;
 // and get a double back in return.  The idea is to absorb as much of
 // the pain of casts and type conversions and not force the programmer
 // to deal with it.  I know this isn't the C++ ethos, but hey, call me
-// a radical.
+// a dreamer.
 //
 // The template part of this is just there to avoid a circular
 // reference.  That is, the MinVRDatumPtr::getValue() will return one
@@ -72,6 +73,7 @@ public:
   operator double() const { return datum->getValueDouble(); }
   operator std::string() const { return datum->getValueString(); }
   operator MVRContainer() const { return datum->getValueContainer(); }
+  operator MVRVecFloat() const { return datum->getValueVecFloat(); }
 };
 
 // This class is meant to hold a data object of some arbitrary type
@@ -208,6 +210,9 @@ class MinVRDatum {
   virtual std::string getValueString() const {
     throw std::runtime_error("This datum is not a std::string.");
   }
+  virtual MVRVecFloat getValueVecFloat() const {
+    throw std::runtime_error("This datum is not a std::string.");
+  }
   virtual MVRContainer getValueContainer() const {
     throw std::runtime_error("This datum is not a container.");
   }
@@ -268,6 +273,25 @@ public:
 
   std::string getValueString() const { return value; };
   bool setValue(const std::string inVal);
+
+  MinVRDatumHelper<MinVRDatum> getValue() {
+    return MinVRDatumHelper<MinVRDatum>(this);
+  }
+};
+
+// Specialization for a vector of doubles
+class MinVRDatumVecFloat : public MinVRDatum {
+private:
+  // The actual data is stored here.
+  MVRVecFloat value;
+
+public:
+  MinVRDatumVecFloat(const std::vector<double> inVal);
+
+  std::string serialize();
+
+  MVRVecFloat getValueVecFloat() const { return value; };
+  bool setValue(const std::vector<double> inVal);
 
   MinVRDatumHelper<MinVRDatum> getValue() {
     return MinVRDatumHelper<MinVRDatum>(this);
@@ -434,6 +458,15 @@ public:
     }
   }
 
+  MinVRDatumVecFloat* vecFloatVal()
+  {
+    if (pData->getType() == MVRVECFLOAT) {
+      return static_cast<MinVRDatumVecFloat*>(pData);
+    } else {
+      throw std::runtime_error("This datum is not a string.");
+    }
+  }
+
   MinVRDatumContainer* containerVal()
   {
     if (pData->getType() == MVRCONTAINER) {
@@ -450,6 +483,7 @@ public:
 MinVRDatumPtr CreateMinVRDatumInt(void *pData);
 MinVRDatumPtr CreateMinVRDatumDouble(void *pData);
 MinVRDatumPtr CreateMinVRDatumString(void *pData);
+MinVRDatumPtr CreateMinVRDatumVecFloat(void *pData);
 MinVRDatumPtr CreateMinVRDatumContainer(void *pData);
 
 

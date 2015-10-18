@@ -6,15 +6,16 @@ MinVRDataCollection::MinVRDataCollection() {
   factory.RegisterMinVRDatum(MVRINT, CreateMinVRDatumInt);
   factory.RegisterMinVRDatum(MVRFLOAT, CreateMinVRDatumDouble);
   factory.RegisterMinVRDatum(MVRSTRING, CreateMinVRDatumString);
+  factory.RegisterMinVRDatum(MVRVECFLOAT, CreateMinVRDatumVecFloat);
   factory.RegisterMinVRDatum(MVRCONTAINER, CreateMinVRDatumContainer);
 
 
   mvrTypeMap[std::string("int")] = MVRINT;
   mvrTypeMap[std::string("float")] = MVRFLOAT;
   mvrTypeMap[std::string("string")] =  MVRSTRING;
-  mvrTypeMap[std::string("vector<int>")] =  MVRVEC_INT;
-  mvrTypeMap[std::string("vector<float>")] =  MVRVEC_FLOAT;
-  mvrTypeMap[std::string("vector<string>")] =  MVRVEC_STRING;
+  mvrTypeMap[std::string("vecint")] =  MVRVECINT;
+  mvrTypeMap[std::string("vecfloat")] =  MVRVECFLOAT;
+  mvrTypeMap[std::string("vecstring")] =  MVRVECSTRING;
   mvrTypeMap[std::string("MVRContainer")] =  MVRCONTAINER;
 
 }
@@ -77,6 +78,24 @@ bool MinVRDataCollection::processValue(const char* name,
       std::string sVal = std::string(valueString);
 
       addValue(name, sVal);
+      break;
+    }
+  case MVRVECFLOAT:
+    {
+
+      MVRVecFloat vVal;
+
+      // Separate the name space into its constituent elements.
+      std::string elem;
+      double fVal;
+      std::stringstream ss(valueString);
+      while (std::getline(ss, elem, '@')) {
+
+        sscanf(elem.c_str(), "%lf", &fVal);
+        vVal.push_back(fVal);
+      }
+
+      addValue(name, vVal);
       break;
     }
   case MVRCONTAINER:

@@ -44,6 +44,7 @@ public:
   virtual bool addValue(const std::string valName, int value) = 0;
   virtual bool addValue(const std::string valName, double value) = 0;
   virtual bool addValue(const std::string valName, std::string value) = 0;
+  virtual bool addValue(const std::string valName, MVRVecFloat value) = 0;
   virtual bool addValue(const std::string valName,
                         MVRContainer value) = 0;
 

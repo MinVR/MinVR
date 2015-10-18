@@ -180,6 +180,7 @@ public:
   bool addValue(const std::string valName, double value);
   bool addValue(const std::string valName, std::string value);
   bool addValue(const std::string valName, MVRContainer value);
+  bool addValue(const std::string valName, MVRVecFloat value);
 
 };
 

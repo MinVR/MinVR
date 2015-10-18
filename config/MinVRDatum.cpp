@@ -57,11 +57,42 @@ bool MinVRDatumString::setValue(const std::string inVal) {
 }
 
 std::string MinVRDatumString::serialize() {
-  return getValue();
+  return value;
 }
 
 MinVRDatumPtr CreateMinVRDatumString(void *pData) {
   MinVRDatumString *obj = new MinVRDatumString(*static_cast<std::string *>(pData));
+  return MinVRDatumPtr(obj);
+}
+
+////////////////////////////////////////////
+
+MinVRDatumVecFloat::MinVRDatumVecFloat(const std::vector<double> inVal) :
+  MinVRDatum(MVRVECFLOAT), value(inVal) {
+  description = "vecfloat";
+};
+
+bool MinVRDatumVecFloat::setValue(const std::vector<double> inVal) {
+  value = inVal;
+  return true;
+}
+
+std::string MinVRDatumVecFloat::serialize() {
+
+  std::string out;
+  char buffer[20];
+
+  for (MVRVecFloat::iterator it = value.begin(); it != value.end(); ++it) {
+    sprintf(buffer, "%f@", *it); // '@' is a separator
+    out += std::string(buffer);
+  }
+
+  return out;
+}
+
+MinVRDatumPtr CreateMinVRDatumVecFloat(void *pData) {
+  MinVRDatumVecFloat *obj =
+    new MinVRDatumVecFloat(*static_cast<MVRVecFloat *>(pData));
   return MinVRDatumPtr(obj);
 }
 

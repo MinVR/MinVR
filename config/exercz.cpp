@@ -46,6 +46,8 @@ int main() {
 
   index->addSerializedValue(std::string("<bob type=\"container\"><flora type=\"int\">3274</flora><morton type=\"float\">34.5</morton><cora type=\"container\"><flora type=\"int\">1234</flora><nora type=\"float\">23.45</nora></cora></bob>"));
 
+  index->addSerializedValue(std::string("<chester type=\"vecfloat\">32.7@44.56@22.3@78.2@99.134@</chester>"));
+
   queue->push(index->getDatum("billy")->serialize());
   queue->push(index->getDatum("george")->serialize());
   queue->printQueue();
@@ -129,6 +131,15 @@ int main() {
         case MVRSTRING:
           std::cout << "a string containing: " << ((std::string)p->getValue()) << std::endl;
           break;
+
+        case MVRVECFLOAT:
+          {
+            MVRVecFloat pdata = p->getValue();
+            for (MVRVecFloat::iterator it = pdata.begin(); it != pdata.end(); ++it) {
+              std::cout << "element: " << *it << std::endl;
+            }
+            break;
+          }
 
         case MVRCONTAINER:
 

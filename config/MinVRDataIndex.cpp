@@ -277,6 +277,28 @@ bool MinVRDataIndex::addValue(const std::string valName, std::string value) {
   }
 }
 
+bool MinVRDataIndex::addValue(const std::string valName, MVRVecFloat value) {
+
+  // Check if the name is already in use.
+  MinVRDataMap::iterator it = mindex.find(valName);
+  if (it == mindex.end()) {
+
+    // No? Create it and stick it in index.
+    MinVRDatumPtr obj = factory.CreateMinVRDatum(MVRVECFLOAT, &value);
+    return mindex.insert(MinVRDataMap::value_type(valName, obj)).second;
+
+  } else {
+    // Overwrite value
+    if (overwrite > 0) {
+      return it->second.vecFloatVal()->setValue(value);
+    } else if (overwrite < 0) {
+      return false;
+    } else {
+      throw std::runtime_error(std::string("overwriting values not allowed"));
+    }
+  }
+}
+
 bool MinVRDataIndex::addValue(const std::string valName,
                               MVRContainer value) {
 
