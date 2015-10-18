@@ -2,7 +2,7 @@
 
 This file is part of the MinVR Open Source Project.
 
-File: extend/PluginFramework.h
+File: TestPlugin.cpp
 
 Original Author(s) of this File:
 	Dan Orban, 2015, University of Minnesota
@@ -40,30 +40,50 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ================================================================================ */
 
-#ifndef PLUGINFRAMEWORK_H_
-#define PLUGINFRAMEWORK_H_
+#include "plugin/Plugin.h"
+#include <iostream>
+#include "GraphicsInterface.h"
+#include "DeviceInterface.h"
+#include "TestPluginDrivers.h"
 
-#include "plugin/PluginInterface.h"
-
-namespace MinVR {
-
-#define PLUGIN_FRAMEWORK_VERSION 0
-
-#if defined(WIN32)
-#define PLUGIN_API __declspec(dllexport)
-#else
-#define PLUGIN_API
-#endif
-
-class FrameworkPlugin {
+class TestPlugin : public MinVR::Plugin {
 public:
-	virtual ~FrameworkPlugin() {}
+	PLUGIN_API TestPlugin() {
+		std::cout << "TestPlugin created." << std::endl;
+	}
+	PLUGIN_API virtual ~TestPlugin() {
+		std::cout << "TestPlugin destroyed." << std::endl;
+	}
+	PLUGIN_API bool registerPlugin(MinVR::PluginInterface *interface)
+	{
+		std::cout << "Registering TestPlugin with the following interface: " << interface->getName() << std::endl;
+		if (interface->getName() == "GraphicsInterface")
+		{
+			GraphicsInterface* graphicsInterface = interface->getInterface<GraphicsInterface>();
+			graphicsInterface->addGraphicsDriver("opengl", new OpenGLGraphicsDriver());
+			graphicsInterface->addGraphicsDriver("d3d", new D3DGraphicsDriver());
+			return true;
+		}
+		if (interface->getName() == "DeviceInterface")
+		{
+			DeviceInterface* deviceInterface = interface->getInterface<DeviceInterface>();
+			deviceInterface->addInputDeviceFactory(new VRPNFactory());
+			deviceInterface->addInputDeviceFactory(new TouchFactory());
+			return true;
+		}
 
-	virtual bool registerPlugin(PluginInterface* interface) = 0;
-	virtual bool unregisterPlugin(PluginInterface* interface) = 0;
+		return false;
+	}
+	PLUGIN_API bool unregisterPlugin(MinVR::PluginInterface *interface)
+	{
+		std::cout << "Unregistering TestPlugin with the following interface: " << interface->getName() << std::endl;
+		return false;
+	}
 };
 
-} /* namespace MinVR */
-
-
-#endif /* PLUGINFRAMEWORK_H_ */
+extern "C"
+{
+	PLUGIN_API MinVR::Plugin* loadPlugin() {
+		return new TestPlugin();
+	}
+}

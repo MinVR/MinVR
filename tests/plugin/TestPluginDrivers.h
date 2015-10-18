@@ -2,7 +2,7 @@
 
 This file is part of the MinVR Open Source Project.
 
-File: extend/PluginFramework.h
+File: TestPluginDrivers.h
 
 Original Author(s) of this File:
 	Dan Orban, 2015, University of Minnesota
@@ -40,30 +40,59 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ================================================================================ */
 
-#ifndef PLUGINFRAMEWORK_H_
-#define PLUGINFRAMEWORK_H_
+#ifndef TESTPLUGINDRIVERS_H_
+#define TESTPLUGINDRIVERS_H_
 
-#include "plugin/PluginInterface.h"
-
-namespace MinVR {
-
-#define PLUGIN_FRAMEWORK_VERSION 0
-
-#if defined(WIN32)
-#define PLUGIN_API __declspec(dllexport)
-#else
-#define PLUGIN_API
-#endif
-
-class FrameworkPlugin {
+class OpenGLGraphicsDriver : public GraphicsDriver
+{
 public:
-	virtual ~FrameworkPlugin() {}
-
-	virtual bool registerPlugin(PluginInterface* interface) = 0;
-	virtual bool unregisterPlugin(PluginInterface* interface) = 0;
+	PLUGIN_API void draw() { std::cout << "Render opengl" << std::endl; }
 };
 
-} /* namespace MinVR */
+class D3DGraphicsDriver : public GraphicsDriver
+{
+public:
+	PLUGIN_API void draw() { std::cout << "Render D3D" << std::endl; }
+};
 
+class VRPNFactory : public InputDeviceFactory
+{
+public:
+	PLUGIN_API bool createDevice(std::string type, std::string parameters)
+	{
+		if (type == "VRPNButton")
+		{
+			std::cout << "Created VRPNButton" << std::endl;
+			return true;
+		}
+		else if (type == "VRPNTracker")
+		{
+			std::cout << "Created VRPNTracker" << std::endl;
+			return true;
+		}
 
-#endif /* PLUGINFRAMEWORK_H_ */
+		return false;
+	}
+};
+
+class TouchFactory : public InputDeviceFactory
+{
+public:
+	PLUGIN_API bool createDevice(std::string type, std::string parameters)
+	{
+		if (type == "TUIO")
+		{
+			std::cout << "Created TUIO device" << std::endl;
+			return true;
+		}
+		if (type == "Touch")
+		{
+			std::cout << "Created Touch device" << std::endl;
+			return true;
+		}
+
+		return false;
+	}
+};
+
+#endif /* TESTPLUGINDRIVERS_H_ */

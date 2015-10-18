@@ -44,15 +44,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define SHAREDLIBRARY_H_
 
 #include <string>
-#include <memory>
 
-#include <dlfcn.h>
+namespace MinVR {
 
-namespace extend {
-
-typedef void * HandleType;
-
-typedef std::shared_ptr<class SharedLibrary> SharedLibraryRef;
+#if defined(WIN32)
+	#include <Windows.h>
+	typedef HMODULE LibHandleType;
+#else
+	#include <dlfcn.h>
+	typedef void * LibHandleType;
+#endif
 
 class SharedLibrary {
 public:
@@ -79,67 +80,8 @@ protected:
 private:
 	std::string _filePath;
 	bool _isLoaded;
-	HandleType _lib;
+	LibHandleType _lib;
 };
-
-SharedLibrary::SharedLibrary(const std::string &filePath, bool autoLoad) : _filePath(filePath), _isLoaded(false) {
-	if (autoLoad)
-	{
-		load();
-	}
-}
-
-SharedLibrary::~SharedLibrary() {
-	unload();
-}
-
-void SharedLibrary::load() {
-	if (!_isLoaded)
-	{
-		_lib = dlopen(_filePath.c_str(), RTLD_NOW);//RTLD_LAZY);
-		if (!_lib) {
-			const char* error = dlerror();
-			//Logger::getInstance().assertMessage(false, "Could not load library: " + _filePath + " - " + error);
-			dlerror();
-			return;
-		}
-
-		_isLoaded = true;
-	}
-}
-
-void SharedLibrary::unload() {
-	if (_isLoaded)
-	{
-		int result = dlclose(_lib);
-		if(result != 0) {
-			const char* error = dlerror();
-			//Logger::getInstance().assertMessage(false, "Could not unload library: " + _filePath + " - " + error);
-			dlerror();
-			return;
-		}
-
-		_isLoaded = false;
-	}
-}
-
-void* SharedLibrary::loadSymbolInternal(const std::string &functionName) {
-	if (_isLoaded)
-	{
-		void* symbol = (void*) dlsym(_lib, functionName.c_str());
-		const char* dlsym_error = dlerror();
-		if (dlsym_error) {
-			//Logger::getInstance().assertMessage(false, "Cannot load symbol: " + functionName + " - " + dlsym_error);
-			dlerror();
-
-			return NULL;
-		}
-
-		return symbol;
-	}
-
-	return NULL;
-}
 
 } /* namespace extend */
 

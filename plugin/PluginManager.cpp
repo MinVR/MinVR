@@ -2,7 +2,7 @@
 
 This file is part of the MinVR Open Source Project.
 
-File: extend/PluginFramework.h
+File: plugin/PluginManager.cpp
 
 Original Author(s) of this File:
 	Dan Orban, 2015, University of Minnesota
@@ -40,30 +40,88 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ================================================================================ */
 
-#ifndef PLUGINFRAMEWORK_H_
-#define PLUGINFRAMEWORK_H_
-
-#include "plugin/PluginInterface.h"
+#include "PluginManager.h"
+#include "Plugin.h"
 
 namespace MinVR {
 
-#define PLUGIN_FRAMEWORK_VERSION 0
+PluginManager::PluginManager() : _interfaces() {
+}
 
+
+PluginManager::PluginManager(std::vector<PluginInterface*> interfaces) : _interfaces(interfaces) {
+}
+
+PluginManager::~PluginManager() {
+	for (int f = 0; f < _plugins.size(); f++)
+	{
+		for (int i = 0; i < _interfaces.size(); i++)
+		{
+			_plugins[f]->unregisterPlugin(_interfaces[i]);
+		}
+
+		delete _plugins[f];
+	}
+
+	for (int f = 0; f < _libraries.size(); f++)
+	{
+		delete _libraries[f];
+	}
+}
+
+void PluginManager::addInterface(PluginInterface* interface) {
+	_interfaces.push_back(interface);
+}
+
+void PluginManager::loadPlugin(const std::string& filePath, const std::string& name) {
 #if defined(WIN32)
-#define PLUGIN_API __declspec(dllexport)
+	std::string path = filePath + "/bin/" + name + ".dll";
+#elif defined(__APPLE__)
+	std::string path = filePath + "/lib/lib" + name + ".dylib";
 #else
-#define PLUGIN_API
+	std::string path = filePath + "/lib/lib" + name + ".so";
 #endif
 
-class FrameworkPlugin {
-public:
-	virtual ~FrameworkPlugin() {}
+	SharedLibrary* lib = new SharedLibrary(path);
+	if (lib->isLoaded())
+	{
+		typedef int version_t();
+		version_t* getVersion = lib->loadSymbol<version_t>("getPluginFrameworkVersion");
+		if (getVersion() != getPluginFrameworkVersion())
+		{
+			//MinVR::Logger::getInstance().assertMessage(false, "Cannot load plugin: " + path + " - Incorrect framework version");
+			return;
+		}
 
-	virtual bool registerPlugin(PluginInterface* interface) = 0;
-	virtual bool unregisterPlugin(PluginInterface* interface) = 0;
-};
+		typedef FrameworkPlugin* load_t();
+		load_t* loadPlugin = lib->loadSymbol<load_t>("loadPlugin");
+		if (loadPlugin == NULL)
+		{
+			return;
+		}
 
-} /* namespace MinVR */
+		FrameworkPlugin* plugin = loadPlugin();
+		int countRegistered = 0;
+		for (int f = 0; f < _interfaces.size(); f++)
+		{
+			if (plugin->registerPlugin(_interfaces[f]))
+			{
+				countRegistered++;
+			}
+		}
 
+		if (countRegistered > 0)
+		{
+			_plugins.push_back(plugin);
+			_libraries.push_back(lib);
+		}
+		else
+		{
+			delete plugin;
+			delete lib;
+		}
 
-#endif /* PLUGINFRAMEWORK_H_ */
+	}
+}
+
+} /* namespace extend */

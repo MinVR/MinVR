@@ -2,7 +2,7 @@
 
 This file is part of the MinVR Open Source Project.
 
-File: extend/PluginFramework.h
+File: DeviceInterface.h
 
 Original Author(s) of this File:
 	Dan Orban, 2015, University of Minnesota
@@ -40,30 +40,24 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ================================================================================ */
 
-#ifndef PLUGINFRAMEWORK_H_
-#define PLUGINFRAMEWORK_H_
+#ifndef DEVICEINTERFACE_H_
+#define DEVICEINTERFACE_H_
 
 #include "plugin/PluginInterface.h"
 
-namespace MinVR {
-
-#define PLUGIN_FRAMEWORK_VERSION 0
-
-#if defined(WIN32)
-#define PLUGIN_API __declspec(dllexport)
-#else
-#define PLUGIN_API
-#endif
-
-class FrameworkPlugin {
+class InputDeviceFactory
+{
 public:
-	virtual ~FrameworkPlugin() {}
-
-	virtual bool registerPlugin(PluginInterface* interface) = 0;
-	virtual bool unregisterPlugin(PluginInterface* interface) = 0;
+	virtual ~InputDeviceFactory() {}
+	virtual bool createDevice(std::string type, std::string parameters) = 0;
 };
 
-} /* namespace MinVR */
+class DeviceInterface : public MinVR::PluginInterface {
+public:
+	virtual void addInputDeviceFactory(InputDeviceFactory* factory) = 0;
 
+	std::string getName() { return "DeviceInterface"; }
+};
 
-#endif /* PLUGINFRAMEWORK_H_ */
+#endif /* DEVICEINTERFACE_H_ */
+

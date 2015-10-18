@@ -43,11 +43,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef PLUGININTERFACE_H_
 #define PLUGININTERFACE_H_
 
-namespace extend {
+#include <string>
+#include <memory>
+
+namespace MinVR {
 
 class PluginInterface {
 public:
 	virtual ~PluginInterface() {}
+
+	virtual std::string getName() = 0;
 
 	template<typename T>
 	inline T* getInterface()
@@ -56,6 +61,6 @@ public:
 	}
 };
 
-} /* namespace extend */
+}
 
 #endif /* PLUGININTERFACE_H_ */
