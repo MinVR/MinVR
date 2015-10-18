@@ -159,9 +159,9 @@ public:
 
   // Takes a serialized bit of data and incorporates it into the data
   // index.
-  bool addValue(const std::string serializedData);
-  bool addValue(const std::string serializedData,
-                const std::string nameSpace);
+  bool addSerializedValue(const std::string serializedData);
+  bool addSerializedValue(const std::string serializedData,
+                          const std::string nameSpace);
 
   // Process the contents of a given XML file into the index.
   bool processXMLFile(std::string fileName);
@@ -176,10 +176,10 @@ public:
 
   /// Step 6 of the data type addition instructions in MinVRDatum.h is
   /// to add a specialized method here.
-  bool addValueInt(const std::string valName, int value);
-  bool addValueDouble(const std::string valName, double value);
-  bool addValueString(const std::string valName, std::string value);
-  bool addValueContainer(const std::string valName, MVRContainer value);
+  bool addValue(const std::string valName, int value);
+  bool addValue(const std::string valName, double value);
+  bool addValue(const std::string valName, std::string value);
+  bool addValue(const std::string valName, MVRContainer value);
 
 };
 

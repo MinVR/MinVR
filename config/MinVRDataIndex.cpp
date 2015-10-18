@@ -141,13 +141,13 @@ std::string MinVRDataIndex::serialize(const std::string valName,
 
 
 // an int should be <nWindows type="int">6</nWindows>
-bool MinVRDataIndex::addValue(const std::string serializedData) {
+bool MinVRDataIndex::addSerializedValue(const std::string serializedData) {
 
-  return addValue(serializedData, std::string(""));
+  return addSerializedValue(serializedData, std::string(""));
 }
 
-bool MinVRDataIndex::addValue(const std::string serializedData,
-                              const std::string nameSpace) {
+bool MinVRDataIndex::addSerializedValue(const std::string serializedData,
+                                        const std::string nameSpace) {
   Cxml *xml = new Cxml();
   xml->parse_string((char*)serializedData.c_str());
   element *xml_node = xml->get_root_element();
@@ -200,7 +200,7 @@ bool MinVRDataIndex::processXMLFile(std::string fileName) {
   }
 }
 
-bool MinVRDataIndex::addValueInt(const std::string valName, int value) {
+bool MinVRDataIndex::addValue(const std::string valName, int value) {
 
   // Check if the name is already in use.
   MinVRDataMap::iterator it = mindex.find(valName);
@@ -222,7 +222,7 @@ bool MinVRDataIndex::addValueInt(const std::string valName, int value) {
   }
 }
 
-bool MinVRDataIndex::addValueDouble(const std::string valName, double value) {
+bool MinVRDataIndex::addValue(const std::string valName, double value) {
 
   // Check if the name is already in use.
   MinVRDataMap::iterator it = mindex.find(valName);
@@ -244,7 +244,7 @@ bool MinVRDataIndex::addValueDouble(const std::string valName, double value) {
   }
 }
 
-bool MinVRDataIndex::addValueString(const std::string valName, std::string value) {
+bool MinVRDataIndex::addValue(const std::string valName, std::string value) {
 
   // Remove leading spaces.
   int valueBegin = value.find_first_not_of(" \t\n\r");
@@ -277,8 +277,8 @@ bool MinVRDataIndex::addValueString(const std::string valName, std::string value
   }
 }
 
-bool MinVRDataIndex::addValueContainer(const std::string valName,
-                                       MVRContainer value) {
+bool MinVRDataIndex::addValue(const std::string valName,
+                              MVRContainer value) {
 
   // Check if the name is already in use.
   MinVRDataMap::iterator it = mindex.find(valName);

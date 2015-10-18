@@ -61,7 +61,7 @@ bool MinVRDataCollection::processValue(const char* name,
       int iVal;
       sscanf(valueString, "%d", &iVal);
 
-      addValueInt(name, iVal);
+      addValue(name, iVal);
       break;
     }
   case MVRFLOAT:
@@ -69,14 +69,14 @@ bool MinVRDataCollection::processValue(const char* name,
       double fVal;
       sscanf(valueString, "%lf", &fVal);
 
-      addValueDouble(name, fVal);
+      addValue(name, fVal);
       break;
     }
   case MVRSTRING:
     {
       std::string sVal = std::string(valueString);
 
-      addValueString(name, sVal);
+      addValue(name, sVal);
       break;
     }
   case MVRCONTAINER:
@@ -101,7 +101,7 @@ bool MinVRDataCollection::walkXML(element* node, std::string nameSpace) {
   char type[5] = "type";
 
   std::string qualifiedName;
-  std::list<std::string> childNames;
+  MVRContainer childNames;
 
   qualifiedName = nameSpace + "/" + std::string(node->get_name());
 
@@ -146,7 +146,7 @@ bool MinVRDataCollection::walkXML(element* node, std::string nameSpace) {
       // add it to the index.
       if (childNames.size() > 0 && strcmp(node->get_name(), "XML_DOC")) {
 
-        addValueContainer(qualifiedName, childNames);
+        addValue(qualifiedName, childNames);
       }
       return true;
     }

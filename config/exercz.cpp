@@ -5,6 +5,7 @@
 #include "Cxml.h"
 #include "element.h"
 #include "MinVRDataIndex.h"
+#include "MinVRDataQueue.h"
 
 #define HELPMESSAGE  std::cout << "l get the list of data names" << std::endl; \
       std::cout << "p <name> print a value from the list" << std::endl; \
@@ -24,6 +25,7 @@
 // it.
 int main() {
   MinVRDataIndex *index = new MinVRDataIndex;
+  MinVRDataQueue *queue = new MinVRDataQueue;
 
   // Set up some sample data names and values.
   int a = 4;
@@ -33,16 +35,20 @@ int main() {
   std::string s1 = std::string("wowie!");
   std::string s2 = std::string("shazam!");
 
-  index->addValueInt(std::string("henry"), a);
-  index->addValueInt(std::string("ralph"), b);
+  index->addValue(std::string("henry"), a);
+  index->addValue(std::string("ralph"), b);
 
-  index->addValueDouble(std::string("george"), f);
-  index->addValueDouble(std::string("mary"), g);
+  index->addValue(std::string("george"), f);
+  index->addValue(std::string("mary"), g);
 
-  index->addValueString(std::string("billy"), s1);
-  index->addValueString(std::string("johnny"), s2);
+  index->addValue(std::string("billy"), s1);
+  index->addValue(std::string("johnny"), s2);
 
-  index->addValue(std::string("<bob type=\"container\"><flora type=\"int\">3274</flora><morton type=\"float\">34.5</morton><cora type=\"container\"><flora type=\"int\">1234</flora><nora type=\"float\">23.45</nora></cora></bob>"));
+  index->addSerializedValue(std::string("<bob type=\"container\"><flora type=\"int\">3274</flora><morton type=\"float\">34.5</morton><cora type=\"container\"><flora type=\"int\">1234</flora><nora type=\"float\">23.45</nora></cora></bob>"));
+
+  queue->push(index->getDatum("billy")->serialize());
+  queue->push(index->getDatum("george")->serialize());
+  queue->printQueue();
 
   std::vector<std::string> elems;
   std::string elem;
@@ -160,7 +166,7 @@ int main() {
         std::cout << "try 'a harry int 27' (that is, do 'a <name> <type> <value>')" << std::endl;
       } else {
         std::string serialized = "<" + elems[1] + " type=\"" + elems[2] + "\">" + elems[3] + "</" + elems[1] + ">";
-        index->addValue(serialized);
+        index->addSerializedValue(serialized);
       }
 
     ////// command: q (exit)
