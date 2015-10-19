@@ -240,6 +240,8 @@ public:
 //     this point. [DONE]
 //
 //   - Add the vector types, and whatever else.  Boolean?
+//        vector<double> [DONE]
+//        matrix<double> [TBD]
 //
 //   - Make the parser infer data types where possible, rather than relying
 //     on the type attribute. [DONE]
@@ -254,3 +256,10 @@ public:
 //   - change MinVRDataIndex::getValue() to getDatum() [DONE]
 //
 //   - Can we add a helper class to data index? [DONE]
+//
+//   - Need a human-readable and a machine-readable (i.e. quicker)
+//     format for serialization. [TBD]
+//
+//   - The mvrTypeMap is clunky and is not attached to the MinVRDatum
+//     description field.  The mapping between type ID and description
+//     should appear only once, somewhere. [DONE]

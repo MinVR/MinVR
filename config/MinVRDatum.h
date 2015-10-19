@@ -24,7 +24,7 @@
 /// in the specialization instructions below.
 typedef enum
 {
-  NONE          = 0,
+  MVRNONE       = 0,
   MVRINT        = 1,
   MVRFLOAT      = 2,
   MVRSTRING     = 3,
@@ -33,6 +33,8 @@ typedef enum
   MVRVECSTRING  = 6,
   MVRCONTAINER  = 7
 } MVRTYPE_ID;
+
+#define MVRNTYPES 7
 
 // An MVRContainer is actually a list of strings.
 typedef std::list<std::string> MVRContainer;
@@ -98,7 +100,7 @@ public:
 //      something like MinVRDatumInt or MinVRDatumDouble.  You will
 //      have to provide it with a private value member and public
 //      getValue*() and getValue() method members.  (The latter are
-//      all the same, so that's no big deal.)  Add one to the list of
+//      all the same, so that's no big deal.)  Add an entry to the list of
 //      virtual members for these functions, too.
 //
 //   1b. You will also need a setValue() function.  These objects are
@@ -127,7 +129,8 @@ public:
 //        MinVRDatumPtr CreateMinVRDatumInt(void *pData);
 //        MinVRDatumPtr CreateMinVRDatumDouble(void *pData);
 //
-//   4. Add an entry in the MVRTYPE_ID enum above, if necessary.
+//   4. Add an entry in the MVRTYPE_ID enum above, if necessary, and
+//      the initialization of the MVRTypeMap in MinVRDatum.cpp.
 //
 //   5. Then add this number and the create function to the list of
 //      data types registered in the constructor for the
@@ -181,6 +184,15 @@ class MinVRDatum {
   // pointers should be careful to delete their objects.
   virtual ~MinVRDatum() {};
 
+  // This array is a mapping between MVRTYPE_ID and the string
+  // description of that type that will appear in serialized data.  It
+  // is here as a public member as a convenience for other classes
+  // that will need this mapping (e.g. MinVRDatumFactory and
+  // MinVRDataCollection).
+  typedef struct { std::string first; MVRTYPE_ID second; } MVRTypePair;
+  static const MVRTypePair MVRTypeMap[MVRNTYPES];
+  std::string initializeDescription(MVRTYPE_ID t);
+
   // This produces the serialized version of the datum.  When packaged
   // with the description and a name, this will be ready for
   // transmission across some connection to another process or another
@@ -188,7 +200,7 @@ class MinVRDatum {
   virtual std::string serialize() = 0;
 
   // The description of the datum is a part of the network-ready
-  // serialized data.
+  // serialized data.  It's in the 'type=""' part of the XML.
   std::string getDescription() const { return description; };
   MVRTYPE_ID getType() { return type; };
 

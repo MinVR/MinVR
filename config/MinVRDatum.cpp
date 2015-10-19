@@ -1,8 +1,34 @@
 #include "MinVRDatum.h"
 
+// This is the canonical list of how to spell the types given here.
+// The strings here will appear in the XML serialization, in the
+// 'type="XX"' part.  So you can change them here, and these changes
+// will be reflected throughout the code, but not in any config files
+// that use them.
+const MinVRDatum::MVRTypePair MinVRDatum::MVRTypeMap[MVRNTYPES] = {
+  {"none", MVRNONE},
+  {"int", MVRINT},
+  {"float", MVRFLOAT},
+  {"string", MVRSTRING},
+  {"vecfloat", MVRVECFLOAT},
+  {"MVRcontainer", MVRCONTAINER}
+};
+
+// This is just a convenience for initializing the description field
+// in each object.  Note that it has no error checking, so get the
+// MVRNTYPES correct, please.
+std::string MinVRDatum::initializeDescription(MVRTYPE_ID t) {
+  for (int i = 0; i < MVRNTYPES; i++) {
+    if (MVRTypeMap[i].second == t) {
+      return MVRTypeMap[i].first;
+    }
+  }
+}
+
+
 MinVRDatumInt::MinVRDatumInt(const int inVal) :
   MinVRDatum(MVRINT), value(inVal) {
-  description = "int";
+  description = initializeDescription(type);
 };
 
 bool MinVRDatumInt::setValue(const int inVal) {
@@ -25,7 +51,7 @@ MinVRDatumPtr CreateMinVRDatumInt(void *pData) {
 
 MinVRDatumDouble::MinVRDatumDouble(const double inVal) :
   MinVRDatum(MVRFLOAT), value(inVal) {
-  description = "float";
+  description = initializeDescription(type);
 };
 
 bool MinVRDatumDouble::setValue(const double inVal) {
@@ -48,7 +74,7 @@ MinVRDatumPtr CreateMinVRDatumDouble(void *pData) {
 
 MinVRDatumString::MinVRDatumString(const std::string inVal) :
   MinVRDatum(MVRSTRING), value(inVal) {
-  description = "string";
+  description = initializeDescription(type);
 };
 
 bool MinVRDatumString::setValue(const std::string inVal) {
@@ -69,7 +95,7 @@ MinVRDatumPtr CreateMinVRDatumString(void *pData) {
 
 MinVRDatumVecFloat::MinVRDatumVecFloat(const std::vector<double> inVal) :
   MinVRDatum(MVRVECFLOAT), value(inVal) {
-  description = "vecfloat";
+  description = initializeDescription(type);
 };
 
 bool MinVRDatumVecFloat::setValue(const std::vector<double> inVal) {
@@ -100,7 +126,7 @@ MinVRDatumPtr CreateMinVRDatumVecFloat(void *pData) {
 
 MinVRDatumContainer::MinVRDatumContainer(const MVRContainer inVal) :
   MinVRDatum(MVRCONTAINER), value(inVal) {
-  description = "MVRContainer";
+  description = initializeDescription(type);
 };
 
 // For optimization and code maintainability reasons, the

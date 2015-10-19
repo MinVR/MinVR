@@ -9,15 +9,13 @@ MinVRDataCollection::MinVRDataCollection() {
   factory.RegisterMinVRDatum(MVRVECFLOAT, CreateMinVRDatumVecFloat);
   factory.RegisterMinVRDatum(MVRCONTAINER, CreateMinVRDatumContainer);
 
-
-  mvrTypeMap[std::string("int")] = MVRINT;
-  mvrTypeMap[std::string("float")] = MVRFLOAT;
-  mvrTypeMap[std::string("string")] =  MVRSTRING;
-  mvrTypeMap[std::string("vecint")] =  MVRVECINT;
-  mvrTypeMap[std::string("vecfloat")] =  MVRVECFLOAT;
-  mvrTypeMap[std::string("vecstring")] =  MVRVECSTRING;
-  mvrTypeMap[std::string("MVRContainer")] =  MVRCONTAINER;
-
+  // We create a MinVRDatum object here just to have access to the
+  // typemap that is a static member of that class.  Copy it into a
+  // map<> for use over here in reading serialized data strings.
+  MinVRDatumInt *m = new MinVRDatumInt(0);
+  for (int i = 0; i < MVRNTYPES; i++) {
+    mvrTypeMap[std::string(m->MVRTypeMap[i].first)] = m->MVRTypeMap[i].second;
+  }
 }
 
 std::string MinVRDataCollection::serialize(const std::string trimName,
