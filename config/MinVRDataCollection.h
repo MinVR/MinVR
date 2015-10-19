@@ -39,8 +39,15 @@ public:
                     MVRTYPE_ID type,
                     const char* valueString);
 
-  /// Step 6 of the data type addition instructions in MinVRDatum.h is
-  /// to add a specialized method here.
+  int deserializeInt(const char* valueString);
+  double deserializeDouble(const char* valueString);
+  std::string deserializeString(const char* valueString);
+  MVRVecFloat deserializeVecFloat(const char* valueString);
+  // Don't need a deserializeContainer. That happens in walkXML().
+
+  /// Step 8 of the data type addition instructions in MinVRDatum.h is
+  /// to add a specialized method here.  Also add a deserialize method
+  /// above.
   virtual bool addValue(const std::string valName, int value) = 0;
   virtual bool addValue(const std::string valName, double value) = 0;
   virtual bool addValue(const std::string valName, std::string value) = 0;

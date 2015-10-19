@@ -1,6 +1,6 @@
 #include "MinVRDataCollection.h"
 
-// Step 5 of the specialization instructions (in MinVRDatum.h) is to
+// Step 7 of the specialization instructions (in MinVRDatum.h) is to
 // add an entry here to register the new data type.
 MinVRDataCollection::MinVRDataCollection() {
   factory.RegisterMinVRDatum(MVRINT, CreateMinVRDatumInt);
@@ -48,54 +48,65 @@ std::string MinVRDataCollection::serialize(const std::string trimName,
   }
 }
 
+int MinVRDataCollection::deserializeInt(const char* valueString) {
+  int iVal;
+  sscanf(valueString, "%d", &iVal);
+
+  return iVal;
+}
+
+double MinVRDataCollection::deserializeDouble(const char* valueString) {
+  double fVal;
+  sscanf(valueString, "%lf", &fVal);
+
+  return fVal;
+}
+
+std::string MinVRDataCollection::deserializeString(const char* valueString) {
+  return std::string(valueString);
+}
+
+MVRVecFloat MinVRDataCollection::deserializeVecFloat(const char* valueString) {
+
+  MVRVecFloat vVal;
+
+  // Separate the name space into its constituent elements.
+  std::string elem;
+  double fVal;
+  std::stringstream ss(valueString);
+  while (std::getline(ss, elem, '@')) {
+
+    sscanf(elem.c_str(), "%lf", &fVal);
+    vVal.push_back(fVal);
+  }
+
+  return vVal;
+}
+
 bool MinVRDataCollection::processValue(const char* name,
                                        MVRTYPE_ID type,
                                        const char* valueString) {
   char buffer[50];
 
-  // Step 7 of adding a data type is adding entries to this switch.
+  /// Step 9 of adding a data type is adding entries to this switch.
+  /// And the corresponding deserialize*() method.
   switch (type) {
   case MVRINT:
-    {
-      int iVal;
-      sscanf(valueString, "%d", &iVal);
+    addValue(name, deserializeInt(valueString));
+    break;
 
-      addValue(name, iVal);
-      break;
-    }
   case MVRFLOAT:
-    {
-      double fVal;
-      sscanf(valueString, "%lf", &fVal);
+    addValue(name, deserializeDouble(valueString));
+    break;
 
-      addValue(name, fVal);
-      break;
-    }
   case MVRSTRING:
-    {
-      std::string sVal = std::string(valueString);
+    addValue(name, deserializeString(valueString));
+    break;
 
-      addValue(name, sVal);
-      break;
-    }
   case MVRVECFLOAT:
-    {
+    addValue(name, deserializeVecFloat(valueString));
+    break;
 
-      MVRVecFloat vVal;
-
-      // Separate the name space into its constituent elements.
-      std::string elem;
-      double fVal;
-      std::stringstream ss(valueString);
-      while (std::getline(ss, elem, '@')) {
-
-        sscanf(elem.c_str(), "%lf", &fVal);
-        vVal.push_back(fVal);
-      }
-
-      addValue(name, vVal);
-      break;
-    }
   case MVRCONTAINER:
     {
       // Check to see if this is just white space. If so, ignore. If
@@ -176,7 +187,14 @@ bool MinVRDataCollection::walkXML(element* node, std::string nameSpace) {
   }
 }
 
+// This function examines a value string and tries to determine what
+// type it encodes.  It is used when the 'type=' attribute is missing.
+// This is really just part of trying to make the package easy to use
+// for configuration files.  For the serialize/deserialize pair, it's
+// not an issue.
 MVRTYPE_ID MinVRDataCollection::inferType(const std::string valueString) {
+/// Step 10 -- Add some functionality to this method to help identify
+/// your new data type.
 
   // Test for int
   char *p;

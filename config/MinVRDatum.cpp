@@ -4,14 +4,14 @@
 // The strings here will appear in the XML serialization, in the
 // 'type="XX"' part.  So you can change them here, and these changes
 // will be reflected throughout the code, but not in any config files
-// that use them.
+// that use them.  This is part of step 1 of adding a new type.
 const MinVRDatum::MVRTypePair MinVRDatum::MVRTypeMap[MVRNTYPES] = {
   {"none", MVRNONE},
   {"int", MVRINT},
   {"float", MVRFLOAT},
   {"string", MVRSTRING},
   {"vecfloat", MVRVECFLOAT},
-  {"MVRcontainer", MVRCONTAINER}
+  {"container", MVRCONTAINER}
 };
 
 // This is just a convenience for initializing the description field
@@ -31,6 +31,7 @@ MinVRDatumInt::MinVRDatumInt(const int inVal) :
   description = initializeDescription(type);
 };
 
+/// Step 4 in the adding a type instructions.
 bool MinVRDatumInt::setValue(const int inVal) {
   value = inVal;
   return true;

@@ -20,7 +20,7 @@
 // use static_case<char>MINVRSEPARATOR where a char is needed.
 #define MINVRSEPARATOR "^"
 
-/// This is the list of data types we can handle.  This is step 4
+/// This is the list of data types we can handle.  This is step 1
 /// in the specialization instructions below.
 typedef enum
 {
@@ -70,7 +70,8 @@ public:
   MinVRDatumHelper(T const* inDatum) : datum(inDatum) {};
 
   // Adding a data type?  Add a corresponding redefinition of the
-  // appropriate type conversion operator here.
+  // appropriate type conversion operator here.  Step 2 in the
+  // add-a-data-type instructions.
   operator int() const { return datum->getValueInt(); }
   operator double() const { return datum->getValueDouble(); }
   operator std::string() const { return datum->getValueString(); }
@@ -96,14 +97,21 @@ public:
 // To extend the collection of data types that can be modeled as a
 // MinVRDatum, follow these steps:
 //
-//   1a. Create a specialization of the MinVRDatum class, and call it
+//   1. Add an entry in the MVRTYPE_ID enum above, if necessary, and
+//      the initialization of the MVRTypeMap in MinVRDatum.cpp.
+//
+//   2.  Add a conversion to the MinVRDatumHelper class.  You'll
+//       probably want to make your type a typedef if you haven't
+//       already.  Put it up there with MVRContainer.
+//
+//   3. Create a specialization of the MinVRDatum class, and call it
 //      something like MinVRDatumInt or MinVRDatumDouble.  You will
 //      have to provide it with a private value member and public
 //      getValue*() and getValue() method members.  (The latter are
 //      all the same, so that's no big deal.)  Add an entry to the list of
 //      virtual members for these functions, too.
 //
-//   1b. You will also need a setValue() function.  These objects are
+//   4.  You will also need a setValue() function.  These objects are
 //       meant to be immutable, but when a new name-value pair has the
 //       same name as another pair it seems a shame to create an
 //       entirely new object to hold the new value when an
@@ -116,36 +124,27 @@ public:
 //       Ok?  The syntax for using setValue() is annoying, so users
 //       shouldn't really be using it anyway.
 //
-//   1c. Add a conversion to the MinVRDatumHelper class.  You'll
-//       probably want to make your type a typedef if you haven't
-//       already.  Put it up there with MVRContainer.
-//
-//   2. Add a method to the MinVRDatumPtr that will return the new
+//   5. Add a method to the MinVRDatumPtr that will return the new
 //      data type.  See intVal() and doubleVal() for models.
 //
-//   3. Add a "create" function for the factory to use.  Something
+//   6. Add a "create" function for the factory to use.  Something
 //      like these:
 //
 //        MinVRDatumPtr CreateMinVRDatumInt(void *pData);
 //        MinVRDatumPtr CreateMinVRDatumDouble(void *pData);
 //
-//   4. Add an entry in the MVRTYPE_ID enum above, if necessary, and
-//      the initialization of the MVRTypeMap in MinVRDatum.cpp.
-//
-//   5. Then add this number and the create function to the list of
+//   7. Then add this number and the create function to the list of
 //      data types registered in the constructor for the
 //      MinVRDataIndex class.
 //
-//   6. Add a method to the MinVRDataIndex class that accepts one
-//      of the new data types, creates a MinVRDatum object for it,
-//      and adds a pointer to it to the data index.
+//   8. Add an addValue() method to the MinVRDataIndex class that
+//      accepts one of the new data types, creates a MinVRDatum object
+//      for it, and adds a pointer to it in the data index.
 //
-//   7. For the configuration functionality, you will need to provide
-//      the parser to take the text from the configuration file and
-//      translate it into the value and name to be stored here.  This
-//      is in MinVRDataIndex::processValue().
+//   9. Write a deserialize*() method for MinVRDataCollection and find
+//      a place for it in the processValue() method of that object.
 //
-//   8. You should also consider adding something to
+//   10. You should also consider adding something to
 //      MinVRDataIndex::inferType to identify the new data type.  This
 //      is pretty free-form, but follow the models in there.  This is
 //      also not necessary, but if you don't do it, your data types
@@ -231,9 +230,9 @@ class MinVRDatum {
 };
 
 /////////// Specializations to handle specific data types.  This is
-/////////// step 1 in the specialization instructions above.  Note
+/////////// step 3 in the specialization instructions above.  Note
 /////////// that each one of these overrides one of the virtual
-/////////// accessors above.
+/////////// accessors above, so make sure that list is complete, too.
 
 // This is the specialization for an integer.
 class MinVRDatumInt : public MinVRDatum {
@@ -435,7 +434,7 @@ public:
     return *this;
   }
 
-  //////// Specialized accessors below.  See step 2 in the specialization
+  //////// Specialized accessors below.  See step 5 in the specialization
   //////// instructions above.
 
   // The power of this pointer is that you can reference any type as
@@ -491,7 +490,7 @@ public:
 };
 
 // Each specialization needs a callback of the following form, to be
-// invoked by the factory.  This is step 3 in the instructions above.
+// invoked by the factory.  This is step 6 in the instructions above.
 MinVRDatumPtr CreateMinVRDatumInt(void *pData);
 MinVRDatumPtr CreateMinVRDatumDouble(void *pData);
 MinVRDatumPtr CreateMinVRDatumString(void *pData);
