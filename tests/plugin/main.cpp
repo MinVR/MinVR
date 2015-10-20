@@ -2,7 +2,7 @@
 
 This file is part of the MinVR Open Source Project.
 
-File: extend/PluginFramework.h
+File: main.cpp
 
 Original Author(s) of this File:
 	Dan Orban, 2015, University of Minnesota
@@ -40,30 +40,78 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ================================================================================ */
 
-#ifndef PLUGINFRAMEWORK_H_
-#define PLUGINFRAMEWORK_H_
+#include <iostream>
+#include "plugin/PluginManager.h"
+#include <vector>
+#include "GraphicsInterface.h"
+#include "DeviceInterface.h"
 
-#include "plugin/PluginInterface.h"
+using namespace MinVR;
+using namespace std;
 
-namespace MinVR {
+void createDevice(string type, string parameters);
 
-#define PLUGIN_FRAMEWORK_VERSION 0
+std::vector<GraphicsDriver*> graphicsDrivers;
+std::vector<InputDeviceFactory*> deviceFactories;
 
-#if defined(WIN32)
-#define PLUGIN_API __declspec(dllexport)
-#else
-#define PLUGIN_API
-#endif
-
-class FrameworkPlugin {
+class App : public GraphicsInterface, public DeviceInterface
+{
 public:
-	virtual ~FrameworkPlugin() {}
-
-	virtual bool registerPlugin(PluginInterface* interface) = 0;
-	virtual bool unregisterPlugin(PluginInterface* interface) = 0;
+	void addGraphicsDriver(string name, GraphicsDriver* driver)
+	{
+		graphicsDrivers.push_back(driver);
+	}
+	void addInputDeviceFactory(InputDeviceFactory* factory)
+	{
+		deviceFactories.push_back(factory);
+	}
 };
 
-} /* namespace MinVR */
+int main(int argc, char **argv) {
+  cout << "Registering plugins..." << endl;
+  cout << "Plugin path: " << PLUGINPATH << endl;
 
+  App app;
 
-#endif /* PLUGINFRAMEWORK_H_ */
+  PluginManager pluginManager;
+  pluginManager.addInterface(dynamic_cast<GraphicsInterface*>(&app));
+  pluginManager.addInterface(dynamic_cast<DeviceInterface*>(&app));
+  pluginManager.loadPlugin(PLUGINPATH, "test_plugin");
+
+  for (int f = 0; f < graphicsDrivers.size(); f++)
+  {
+	  graphicsDrivers[f]->draw();
+  }
+
+  createDevice("VRPNButton", "1");
+  createDevice("VRPNButton", "2");
+  createDevice("VRPNButton", "3");
+  createDevice("VRPNTracker", "head");
+  createDevice("TUIO", "3333");
+  createDevice("Other", "");
+  createDevice("Other2", "");
+  createDevice("VRPNButton", "");
+
+  // cleanup drivers:
+  for (int f = 0; f < graphicsDrivers.size(); f++)
+  {
+	  delete graphicsDrivers[f];
+  }
+  for (int f = 0; f < deviceFactories.size(); f++)
+  {
+	  delete deviceFactories[f];
+  }
+}
+
+void createDevice(string type, string parameters)
+{
+	for (int f = 0; f < deviceFactories.size(); f++)
+	{
+		if (deviceFactories[f]->createDevice(type, parameters))
+		{
+			return;
+		}
+	}
+
+	cout << "Could not find device type: " << type << endl;
+}

@@ -44,18 +44,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define PLUGIN_H_
 
 #include "PluginFramework.h"
-#include "PluginInterface.h"
 #include <memory>
 
-namespace extend {
+namespace MinVR {
 
-typedef std::shared_ptr<class Plugin> PluginRef;
-
-class Plugin {
-public:
-	virtual ~Plugin() {}
-
-	virtual bool registerPlugin(PluginInterface *interface) = 0;
+class Plugin : public FrameworkPlugin {
 };
 
 } /* namespace MinVR */
@@ -72,8 +65,8 @@ extern "C"
 
 extern "C"
 {
-	extend::PluginRef loadPlugin() {
-		return extend::PluginRef(new extend::Plugin());
+	minVR::PluginRef loadPlugin() {
+		return new minVR::Plugin();
 	}
 }
 */

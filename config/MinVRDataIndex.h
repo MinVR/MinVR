@@ -1,13 +1,4 @@
-#include <map>
-#include <list>
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <stdexcept>
-#include "Cxml.h"
-#include "element.h"
-#include "MinVRDatum.h"
-#include "MinVRDatumFactory.h"
+#include "MinVRDataCollection.h"
 
 // This object maintains an index, a collection of names and pointers
 // to MinVRDatum objects, which can be used to simulate a dynamically
@@ -58,13 +49,13 @@
 //  3. Feed a file containing XML into processXMLFile().
 //
 //  Once an index has entries, they can be retrieved at your pleasure
-//  with getValue() or serialize().  The getValue() method returns a
+//  with getDatum() or serialize().  The getDatum() method returns a
 //  pointer to a MinVRDatum object, so can be used directly in your
 //  program.  I hate remembering how to spell the static_cast<>()
-//  options, so these are provided as a convenience in a bunch of
-//  methods to the pointer object, such as intVal() and floatVal().
-//  So p.intVal()->getValue() gets you an integer and
-//  p.floatVal()->getValue() gets you a double.
+//  options, so these are provided as a convenience via a helper class
+//  methods to the pointer objects.  So (int)p->getDatum() gets you an
+//  integer and (double)p->getDatum() gets you a double, so long as the
+//  relevant objects actually contain an integer and double.
 //
 //  The data values in this system are meant to be immutable.
 //  However, they mostly just seem that way.  There are setter methods
@@ -87,15 +78,11 @@
 //  possible and not rely on any external libraries.  It uses an XML
 //  reader, see those files for the original credit.
 //
-class MinVRDataIndex {
+class MinVRDataIndex : MinVRDataCollection {
 private:
 
   typedef std::map<std::string, MinVRDatumPtr> MinVRDataMap;
   MinVRDataMap mindex;
-  MinVRDatumFactory factory;
-
-  // This is just a convenience to map strings to object type numbers.
-  std::map<std::string, MVRTYPE_ID> mvrTypeMap;
 
   // If this is 1, new values will overwrite old ones.  For -1, new
   // values will just bounce off.  And zero will cause an exception if
@@ -105,7 +92,7 @@ private:
   int overwrite;
 
 public:
-  MinVRDataIndex();
+    MinVRDataIndex() : overwrite(1) {};
 
   void setOverwrite(const int inVal) { overwrite = inVal; }
 
@@ -124,9 +111,39 @@ public:
                       const std::string nameSpace);
 
   // Returns a pointer to the value with a given name (and namespace)
-  MinVRDatumPtr getValue(const std::string valName);
-  MinVRDatumPtr getValue(const std::string valName,
+  MinVRDatumPtr getDatum(const std::string valName);
+  MinVRDatumPtr getDatum(const std::string valName,
                          const std::string nameSpace);
+
+  // The getValue function relies on the helper function defined with
+  // MinVRDatum.  Read about it there, but it is just a cute trick to
+  // allow programmers to access values directly from the index.  So
+  // access your values like this:
+  //
+  //   int p = index->getDatum(name, nameSpace)->getValue()
+  //
+  // or like this:
+  //
+  //   int p = index->getValue(name, nameSpace)
+  //
+  // It's your choice; the two are identical in overhead.  If you're
+  // really worried about overhead, you can do this instead:
+  //
+  //   int p = index->getValue(name, nameSpace)->getValueInt()
+  //
+  // This version does a kind of type checking, but also brings you
+  // the specialized MinVRDatum object which you might want for some
+  // other nefarious reason.
+  //
+  //   int p = index->getValue(name, nameSpace).intVal()->getValueInt()
+  //
+  MinVRDatumHelper<MinVRDatum> getValue(const std::string valName) {
+    return getDatum(valName)->getValue();
+  }
+  MinVRDatumHelper<MinVRDatum> getValue(const std::string valName,
+                                        const std::string nameSpace) {
+    return getDatum(valName, nameSpace)->getValue();
+  }
 
   // The description of an index entry describes only the name and
   // type, not the value.
@@ -135,34 +152,22 @@ public:
                              const std::string nameSpace);
 
   // This is the name, type, value, expressed as an XML fragment.
+  using MinVRDataCollection::serialize;
   std::string serialize(const std::string valName);
   std::string serialize(const std::string valName,
                         const std::string nameSpace);
 
   // Takes a serialized bit of data and incorporates it into the data
   // index.
-  bool addValue(const std::string serializedData);
-  bool addValue(const std::string serializedData,
-                const std::string nameSpace);
-
-  // Prints a vaguely tree-ish representation of an XML parse.  Just
-  // an aid to debugging, really.
-  bool printXML(element* node, std::string prefix);
-
-  // Start from the root node of an XML document and process the
-  // results into entries in the data index.
-  bool walkXML(element* node, std::string nameSpace);
-  // A functional part of the walkXML apparatus.
-  bool processValue(const char* name,
-                    MVRTYPE_ID type,
-                    const char* valueString);
-  // Tries to guess a data type from the ASCII representation.
-  MVRTYPE_ID inferType(const std::string valueString);
+  bool addSerializedValue(const std::string serializedData);
+  bool addSerializedValue(const std::string serializedData,
+                          const std::string nameSpace);
 
   // Process the contents of a given XML file into the index.
   bool processXMLFile(std::string fileName);
 
-  // Returns a list of all the names in the map.
+  // Returns a list of all the names in the map.  Note this really is
+  // a list of strings, not a MVRContainer.
   std::list<std::string> getDataNames();
 
   // These are specialized set methods.  They seem a little unhip, but
@@ -171,10 +176,11 @@ public:
 
   /// Step 6 of the data type addition instructions in MinVRDatum.h is
   /// to add a specialized method here.
-  bool addValueInt(const std::string valName, int value);
-  bool addValueDouble(const std::string valName, double value);
-  bool addValueString(const std::string valName, std::string value);
-  bool addValueContainer(const std::string valName, std::list<std::string> value);
+  bool addValue(const std::string valName, int value);
+  bool addValue(const std::string valName, double value);
+  bool addValue(const std::string valName, std::string value);
+  bool addValue(const std::string valName, MVRContainer value);
+  bool addValue(const std::string valName, MVRVecFloat value);
 
 };
 
@@ -234,6 +240,26 @@ public:
 //     this point. [DONE]
 //
 //   - Add the vector types, and whatever else.  Boolean?
+//        vector<double> [DONE]
+//        matrix<double> [TBD]
 //
 //   - Make the parser infer data types where possible, rather than relying
 //     on the type attribute. [DONE]
+//
+//   - Add container typedef to MinVRDatum [DONE]
+//
+//   - Add helper class to MinVRDatum, implement getValue() [DONE]
+//
+//    - Do something about MinVRDatum setValue() methods? Maybe
+//      comparable to the virtual getValue() methods? [NO, Users should not use]
+//
+//   - change MinVRDataIndex::getValue() to getDatum() [DONE]
+//
+//   - Can we add a helper class to data index? [DONE]
+//
+//   - Need a human-readable and a machine-readable (i.e. quicker)
+//     format for serialization. [TBD]
+//
+//   - The mvrTypeMap is clunky and is not attached to the MinVRDatum
+//     description field.  The mapping between type ID and description
+//     should appear only once, somewhere. [DONE]

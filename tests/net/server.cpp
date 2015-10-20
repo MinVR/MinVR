@@ -9,7 +9,11 @@ int main() {
   while (1) {
     std::cout << "in draw loop " << i << std::endl;
     server.synchronizeInputEventsAcrossAllNodes(events);
-    sleep(2);
+    #ifdef WIN32
+	  Sleep(2000);
+    #else
+	  sleep(2);
+    #endif
     server.synchronizeSwapBuffersAcrossAllNodes();
     i++;
   }

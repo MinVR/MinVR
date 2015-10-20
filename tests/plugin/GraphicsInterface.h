@@ -2,7 +2,7 @@
 
 This file is part of the MinVR Open Source Project.
 
-File: extend/PluginFramework.h
+File: GraphicsInterface.h
 
 Original Author(s) of this File:
 	Dan Orban, 2015, University of Minnesota
@@ -40,30 +40,24 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ================================================================================ */
 
-#ifndef PLUGINFRAMEWORK_H_
-#define PLUGINFRAMEWORK_H_
+#ifndef GRAPHICSINTERFACE_H_
+#define GRAPHICSINTERFACE_H_
 
 #include "plugin/PluginInterface.h"
 
-namespace MinVR {
-
-#define PLUGIN_FRAMEWORK_VERSION 0
-
-#if defined(WIN32)
-#define PLUGIN_API __declspec(dllexport)
-#else
-#define PLUGIN_API
-#endif
-
-class FrameworkPlugin {
+class GraphicsDriver
+{
 public:
-	virtual ~FrameworkPlugin() {}
-
-	virtual bool registerPlugin(PluginInterface* interface) = 0;
-	virtual bool unregisterPlugin(PluginInterface* interface) = 0;
+	virtual ~GraphicsDriver() {}
+	virtual void draw() = 0;
 };
 
-} /* namespace MinVR */
+class GraphicsInterface : public MinVR::PluginInterface {
+public:
+	virtual void addGraphicsDriver(std::string name, GraphicsDriver* driver) = 0;
 
+	std::string getName() { return "GraphicsInterface"; }
+};
 
-#endif /* PLUGINFRAMEWORK_H_ */
+#endif /* GRAPHICSINTERFACE_H_ */
+

@@ -5,6 +5,7 @@
 #include "Cxml.h"
 #include "element.h"
 #include "MinVRDataIndex.h"
+#include "MinVRDataQueue.h"
 
 #define HELPMESSAGE  std::cout << "l get the list of data names" << std::endl; \
       std::cout << "p <name> print a value from the list" << std::endl; \
@@ -24,6 +25,7 @@
 // it.
 int main() {
   MinVRDataIndex *index = new MinVRDataIndex;
+  MinVRDataQueue *queue = new MinVRDataQueue;
 
   // Set up some sample data names and values.
   int a = 4;
@@ -33,16 +35,22 @@ int main() {
   std::string s1 = std::string("wowie!");
   std::string s2 = std::string("shazam!");
 
-  index->addValueInt(std::string("henry"), a);
-  index->addValueInt(std::string("ralph"), b);
+  index->addValue(std::string("henry"), a);
+  index->addValue(std::string("ralph"), b);
 
-  index->addValueDouble(std::string("george"), f);
-  index->addValueDouble(std::string("mary"), g);
+  index->addValue(std::string("george"), f);
+  index->addValue(std::string("mary"), g);
 
-  index->addValueString(std::string("billy"), s1);
-  index->addValueString(std::string("johnny"), s2);
+  index->addValue(std::string("billy"), s1);
+  index->addValue(std::string("johnny"), s2);
 
-  index->addValue(std::string("<bob type=\"container\"><flora type=\"int\">3274</flora><morton type=\"float\">34.5</morton><cora type=\"container\"><flora type=\"int\">1234</flora><nora type=\"float\">23.45</nora></cora></bob>"));
+  index->addSerializedValue(std::string("<bob type=\"container\"><flora type=\"int\">3274</flora><morton type=\"float\">34.5</morton><cora type=\"container\"><flora type=\"int\">1234</flora><nora type=\"float\">23.45</nora></cora></bob>"));
+
+  index->addSerializedValue(std::string("<chester type=\"vecfloat\">32.7@44.56@22.3@78.2@99.134@</chester>"));
+
+  queue->push(index->getDatum("billy")->serialize());
+  queue->push(index->getDatum("george")->serialize());
+  queue->printQueue();
 
   std::vector<std::string> elems;
   std::string elem;
@@ -103,34 +111,43 @@ int main() {
         }
 
 
-
-
     ////// command: p (print value)
     } else if (elems[0].compare("p") == 0) {
 
       try {
-        MinVRDatumPtr p = index->getValue(elems[1], nameSpace);
+        MinVRDatumPtr p = index->getDatum(elems[1], nameSpace);
 
         switch (p->getType()) {
         case MVRINT:
-          std::cout << "an integer containing: " << (p.intVal()->getValue()) << std::endl;
+          std::cout << "an integer containing: " << ((int)p->getValue()) << std::endl;
+
+          std::cout << "same as: " << (int)index->getValue(elems[1], nameSpace) << std::endl;
           break;
 
         case MVRFLOAT:
-          std::cout << "a float containing: " << (p.doubleVal()->getValue()) << std::endl;
+          std::cout << "a float containing: " << ((double)p->getValue()) << std::endl;
           break;
 
         case MVRSTRING:
-          std::cout << "a string containing: " << (p.stringVal()->getValue()) << std::endl;
+          std::cout << "a string containing: " << ((std::string)p->getValue()) << std::endl;
           break;
+
+        case MVRVECFLOAT:
+          {
+            MVRVecFloat pdata = p->getValue();
+            for (MVRVecFloat::iterator it = pdata.begin(); it != pdata.end(); ++it) {
+              std::cout << "element: " << *it << std::endl;
+            }
+            break;
+          }
 
         case MVRCONTAINER:
 
           {
             std::cout << "a container containing: " << std::endl;
 
-            std::list<std::string> nameList = p.containerVal()->getValue();
-            for (std::list<std::string>::iterator nl = nameList.begin();
+            MVRContainer nameList = p->getValue();
+            for (MVRContainer::iterator nl = nameList.begin();
                  nl != nameList.end(); nl++) {
               std::cout << "                        " << *nl << std::endl;
             }
@@ -148,8 +165,8 @@ int main() {
 
     ////// command: l (list all values)
     } else if (elems[0].compare("l") == 0) {
-      std::list<std::string> nameList = index->getDataNames();
-      for (std::list<std::string>::iterator it = nameList.begin();
+      MVRContainer nameList = index->getDataNames();
+      for (MVRContainer::iterator it = nameList.begin();
            it != nameList.end(); it++) {
         std::cout << *it << std::endl;
       }
@@ -160,7 +177,7 @@ int main() {
         std::cout << "try 'a harry int 27' (that is, do 'a <name> <type> <value>')" << std::endl;
       } else {
         std::string serialized = "<" + elems[1] + " type=\"" + elems[2] + "\">" + elems[3] + "</" + elems[1] + ">";
-        index->addValue(serialized);
+        index->addSerializedValue(serialized);
       }
 
     ////// command: q (exit)

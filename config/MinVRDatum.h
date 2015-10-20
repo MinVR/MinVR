@@ -24,16 +24,59 @@
 /// in the specialization instructions below.
 typedef enum
 {
-  NONE          = 0,
+  MVRNONE       = 0,
   MVRINT        = 1,
   MVRFLOAT      = 2,
   MVRSTRING     = 3,
-  MVRVEC_INT    = 4,
-  MVRVEC_FLOAT  = 5,
-  MVRVEC_STRING = 6,
+  MVRVECINT     = 4,
+  MVRVECFLOAT   = 5,
+  MVRVECSTRING  = 6,
   MVRCONTAINER  = 7
 } MVRTYPE_ID;
 
+#define MVRNTYPES 7
+
+// An MVRContainer is actually a list of strings.
+typedef std::list<std::string> MVRContainer;
+typedef std::vector<double> MVRVecFloat;
+
+// This class is a helper to avoid having to access values with
+// constructs like ptr.intVal()->getValue().  By using this helper
+// class, that redefines the type conversion operators, we can do
+// things like this:
+//
+//   int p = ptr->getValue();
+//
+// and have the getValue() function return a value of type int.  Or
+//
+//   double p = ptr->getValue();
+//
+// and get a double back in return.  The idea is to absorb as much of
+// the pain of casts and type conversions and not force the programmer
+// to deal with it.  I know this isn't the C++ ethos, but hey, call me
+// a dreamer.
+//
+// The template part of this is just there to avoid a circular
+// reference.  That is, the MinVRDatumPtr::getValue() will return one
+// of these values, that in turn depends on MinVRDatumPtr.  So we
+// define it as a template here, and fill out the values inside the
+// definition of MinVRDatumPtr.
+template <typename T>
+class MinVRDatumHelper {
+
+  T const* datum;
+
+public:
+  MinVRDatumHelper(T const* inDatum) : datum(inDatum) {};
+
+  // Adding a data type?  Add a corresponding redefinition of the
+  // appropriate type conversion operator here.
+  operator int() const { return datum->getValueInt(); }
+  operator double() const { return datum->getValueDouble(); }
+  operator std::string() const { return datum->getValueString(); }
+  operator MVRContainer() const { return datum->getValueContainer(); }
+  operator MVRVecFloat() const { return datum->getValueVecFloat(); }
+};
 
 // This class is meant to hold a data object of some arbitrary type
 // (ok, arbitrary within a small range of types), and to serialize and
@@ -53,14 +96,14 @@ typedef enum
 // To extend the collection of data types that can be modeled as a
 // MinVRDatum, follow these steps:
 //
-//   1. Create a specialization of the MinVRDatum class, and call it
+//   1a. Create a specialization of the MinVRDatum class, and call it
 //      something like MinVRDatumInt or MinVRDatumDouble.  You will
-//      have to provide it with a private value member and a public
-//      getValue() method member.  There are not virtual members for
-//      these functions, since their prototypes differ, and their
-//      implementations differ too much for templates.
+//      have to provide it with a private value member and public
+//      getValue*() and getValue() method members.  (The latter are
+//      all the same, so that's no big deal.)  Add an entry to the list of
+//      virtual members for these functions, too.
 //
-//   1a. You will also need a setValue() function.  These objects are
+//   1b. You will also need a setValue() function.  These objects are
 //       meant to be immutable, but when a new name-value pair has the
 //       same name as another pair it seems a shame to create an
 //       entirely new object to hold the new value when an
@@ -70,7 +113,12 @@ typedef enum
 //       the value of the object.  So these objects are only sort of
 //       immutable in the sense that we're supposed to pretend they
 //       are, and so long as no one lets on, the secret will be safe.
-//       Ok?
+//       Ok?  The syntax for using setValue() is annoying, so users
+//       shouldn't really be using it anyway.
+//
+//   1c. Add a conversion to the MinVRDatumHelper class.  You'll
+//       probably want to make your type a typedef if you haven't
+//       already.  Put it up there with MVRContainer.
 //
 //   2. Add a method to the MinVRDatumPtr that will return the new
 //      data type.  See intVal() and doubleVal() for models.
@@ -81,7 +129,8 @@ typedef enum
 //        MinVRDatumPtr CreateMinVRDatumInt(void *pData);
 //        MinVRDatumPtr CreateMinVRDatumDouble(void *pData);
 //
-//   4. Add an entry in the MVRTYPE_ID enum above, if necessary.
+//   4. Add an entry in the MVRTYPE_ID enum above, if necessary, and
+//      the initialization of the MVRTypeMap in MinVRDatum.cpp.
 //
 //   5. Then add this number and the create function to the list of
 //      data types registered in the constructor for the
@@ -135,6 +184,15 @@ class MinVRDatum {
   // pointers should be careful to delete their objects.
   virtual ~MinVRDatum() {};
 
+  // This array is a mapping between MVRTYPE_ID and the string
+  // description of that type that will appear in serialized data.  It
+  // is here as a public member as a convenience for other classes
+  // that will need this mapping (e.g. MinVRDatumFactory and
+  // MinVRDataCollection).
+  typedef struct { std::string first; MVRTYPE_ID second; } MVRTypePair;
+  static const MVRTypePair MVRTypeMap[MVRNTYPES];
+  std::string initializeDescription(MVRTYPE_ID t);
+
   // This produces the serialized version of the datum.  When packaged
   // with the description and a name, this will be ready for
   // transmission across some connection to another process or another
@@ -142,13 +200,40 @@ class MinVRDatum {
   virtual std::string serialize() = 0;
 
   // The description of the datum is a part of the network-ready
-  // serialized data.
+  // serialized data.  It's in the 'type=""' part of the XML.
   std::string getDescription() const { return description; };
   MVRTYPE_ID getType() { return type; };
+
+  // The generic getValue() method returns an object of the helper
+  // class above, which is then coerced into the type the user
+  // actually wants.
+  virtual MinVRDatumHelper<MinVRDatum> getValue() = 0;
+
+  // Less generic getValue methods.  One of these is to be overridden
+  // in each specialization of this class.  The others are here to
+  // prevent bad behavior, and throw an error if the programmer
+  // attempts to coerce a data type incorrectly.
+  virtual int getValueInt() const {
+    throw std::runtime_error("This datum is not an int.");
+  }
+  virtual double getValueDouble() const {
+    throw std::runtime_error("This datum is not a double.");
+  }
+  virtual std::string getValueString() const {
+    throw std::runtime_error("This datum is not a std::string.");
+  }
+  virtual MVRVecFloat getValueVecFloat() const {
+    throw std::runtime_error("This datum is not a std::string.");
+  }
+  virtual MVRContainer getValueContainer() const {
+    throw std::runtime_error("This datum is not a container.");
+  }
 };
 
-/////////// Specializations to handle specific data types.
-/////////// This is step 1 in the specialization instructions above.
+/////////// Specializations to handle specific data types.  This is
+/////////// step 1 in the specialization instructions above.  Note
+/////////// that each one of these overrides one of the virtual
+/////////// accessors above.
 
 // This is the specialization for an integer.
 class MinVRDatumInt : public MinVRDatum {
@@ -161,8 +246,12 @@ public:
 
   std::string serialize();
 
-  int getValue() { return value; };
+  int getValueInt() const { return value; };
   bool setValue(const int inVal);
+
+  MinVRDatumHelper<MinVRDatum> getValue() {
+    return MinVRDatumHelper<MinVRDatum>(this);
+  }
 };
 
 // The specialization for a float.  (Or a 'double' in C++-speak.)
@@ -175,8 +264,12 @@ public:
 
   std::string serialize();
 
-  double getValue() { return value; };
+  double getValueDouble() const { return value; };
   bool setValue(const double inVal);
+
+  MinVRDatumHelper<MinVRDatum> getValue() {
+    return MinVRDatumHelper<MinVRDatum>(this);
+  }
 };
 
 // Specialization for a string
@@ -190,24 +283,52 @@ public:
 
   std::string serialize();
 
-  std::string getValue() { return value; };
+  std::string getValueString() const { return value; };
   bool setValue(const std::string inVal);
+
+  MinVRDatumHelper<MinVRDatum> getValue() {
+    return MinVRDatumHelper<MinVRDatum>(this);
+  }
 };
 
-// Specialization for a string
-class MinVRDatumContainer : public MinVRDatum {
+// Specialization for a vector of doubles
+class MinVRDatumVecFloat : public MinVRDatum {
 private:
-  // The actual data is stored here, a collection of names.
-  std::list<std::string> value;
+  // The actual data is stored here.
+  MVRVecFloat value;
 
 public:
-  MinVRDatumContainer(const std::list<std::string> inVal);
+  MinVRDatumVecFloat(const std::vector<double> inVal);
 
   std::string serialize();
 
-  std::list<std::string> getValue() { return value; };
-  bool addToValue(const std::list<std::string> inVal);
+  MVRVecFloat getValueVecFloat() const { return value; };
+  bool setValue(const std::vector<double> inVal);
+
+  MinVRDatumHelper<MinVRDatum> getValue() {
+    return MinVRDatumHelper<MinVRDatum>(this);
+  }
 };
+
+// Specialization for a container
+class MinVRDatumContainer : public MinVRDatum {
+private:
+  // The actual data is stored here, a collection of names.
+  MVRContainer value;
+
+public:
+  MinVRDatumContainer(const MVRContainer inVal);
+
+  std::string serialize();
+
+  MVRContainer getValueContainer() const { return value; };
+  bool addToValue(const MVRContainer inVal);
+
+  MinVRDatumHelper<MinVRDatum> getValue() {
+    return MinVRDatumHelper<MinVRDatum>(this);
+  }
+};
+
 
 // A convenient reference counter for the smart pointer for the MinVRDatum type.
 class MinVRDatumPtrRC {
@@ -243,10 +364,11 @@ public:
 //
 //  <initialize p with integer data via an MinVRDatumInt object>
 //
-//    p->getValue()          Returns an error, since there is no
-//                           getValue() in the MinVRDatum object.
-//
 //    p.intVal()->getValue() Returns the integer value held in *p.
+//
+//    p->getValue()          Nicer syntax, gets you the same value,
+//                           so long as there is some kind of cast
+//                           or assignment to determine a type.
 //
 // However, p->getDescription() works fine, as will p->serialize(),
 // and other things that are actually part of the MinVRDatum core
@@ -348,6 +470,15 @@ public:
     }
   }
 
+  MinVRDatumVecFloat* vecFloatVal()
+  {
+    if (pData->getType() == MVRVECFLOAT) {
+      return static_cast<MinVRDatumVecFloat*>(pData);
+    } else {
+      throw std::runtime_error("This datum is not a string.");
+    }
+  }
+
   MinVRDatumContainer* containerVal()
   {
     if (pData->getType() == MVRCONTAINER) {
@@ -364,6 +495,7 @@ public:
 MinVRDatumPtr CreateMinVRDatumInt(void *pData);
 MinVRDatumPtr CreateMinVRDatumDouble(void *pData);
 MinVRDatumPtr CreateMinVRDatumString(void *pData);
+MinVRDatumPtr CreateMinVRDatumVecFloat(void *pData);
 MinVRDatumPtr CreateMinVRDatumContainer(void *pData);
 
 
