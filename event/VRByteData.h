@@ -119,8 +119,12 @@ public:
     }
   }
 
-
-
+  /// return 0 for big endian, 1 for little endian.
+  /// http://stackoverflow.com/questions/12791864/c-program-to-check-little-vs-big-endian
+  static bool isLittleEndian() {
+    volatile uint32_t i=0x01234567;
+    return (*((uint8_t*)(&i))) == 0x67;
+  }
 
   /// Helper Functions -- these assume storage is already allocated, all they do is pack/unpack at a particular location in memory.
   /// TODO: To make these portable for multiple architectures connected over a network, need to check endedness of the system
@@ -128,7 +132,11 @@ public:
   static void packInt(unsigned char *bytePtr, int toPack) {
     unsigned char *p = (unsigned char *) &toPack;
     for (int i=0;i<BYTEDATA_SIZEOFINT;i++) {
-      bytePtr[i] = p[BYTEDATA_SIZEOFINT - i - 1];
+      int index = i;
+      if (isLittleEndian()) {
+        index = BYTEDATA_SIZEOFINT - i - 1;
+      }
+      bytePtr[i] = p[index];
     }
   }
 
@@ -136,7 +144,11 @@ public:
     int toReturn = 0;
     unsigned char *p = (unsigned char *) &toReturn;
     for (int i=0;i<BYTEDATA_SIZEOFINT;i++) {
-      p[i] = bytePtr[BYTEDATA_SIZEOFINT - i - 1];
+      int index = i;
+      if (isLittleEndian()) {
+        index = BYTEDATA_SIZEOFINT - i - 1;
+      }
+      p[i] = bytePtr[index];
     }
     return toReturn;
   }
@@ -144,7 +156,11 @@ public:
   static void packFloat(unsigned char *bytePtr, float toPack) {
     unsigned char *p = (unsigned char *) &toPack;
     for (int i=0;i<BYTEDATA_SIZEOFFLOAT;i++) {
-      bytePtr[i] = p[BYTEDATA_SIZEOFFLOAT - i - 1];
+      int index = i;
+      if (isLittleEndian()) {
+        index = BYTEDATA_SIZEOFFLOAT - i - 1;
+      }
+      bytePtr[i] = p[index];
     }
   }
 
@@ -152,7 +168,11 @@ public:
     float toReturn = 0;
     unsigned char *p = (unsigned char *) &toReturn;
     for (int i=0;i<BYTEDATA_SIZEOFFLOAT;i++) {
-      p[i] = bytePtr[BYTEDATA_SIZEOFFLOAT - i - 1];
+      int index = i;
+      if (isLittleEndian()) {
+        index = BYTEDATA_SIZEOFFLOAT - i - 1;
+      }
+      p[i] = bytePtr[index];
     }
     return toReturn;
   }

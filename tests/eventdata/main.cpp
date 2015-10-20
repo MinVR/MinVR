@@ -10,18 +10,18 @@ int main(int argc, char **argv) {
 
   // Using the templated constructor for VREvent, we can create an event with any arbitrary data object
   // as long as that object implements the method:  void serialize(ByteData &data);
-  Vec3 v1(1,2,3);
-  v1.print();
+  VRVector3 v1(1,2,3);
+  std::cout << v1 << std::endl;
   VREvent e1("event 1", v1);
 
   // To get the data out, we can use the templated getData method:
-  Vec3 v2(e1.getData());
-  v2.print();
+  VRVector3 v2(e1.getData());
+  std::cout << v2 << std::endl;
 
   // Or, if the type implements a constructor that takes a ByteData argument, then we can get the data this way.
   // Here, there is an implicit call to the constructor: Vec3(const ByteData &data);
-  Vec3 v3 = e1.getData();
-  v3.print();
+  VRVector3 v3 = e1.getData();
+  std::cout << v3 << std::endl;
 
 
   // EVENTS FOR BUILTIN TYPES:
@@ -53,9 +53,9 @@ int main(int argc, char **argv) {
   bs.writeInt(1);
 
   std::cout << bs.readInt() << " " << bs.readInt() << std::endl;
-  Vec3 v4;
+  VRVector3 v4;
   v4.deserialize(bs);
-  v4.print();
+  std::cout << v4 << std::endl;
   std::cout << bs.readInt() << std::endl;
 
   // Anythign that can be packed into ByteData can be used as a data type for events
@@ -63,9 +63,9 @@ int main(int argc, char **argv) {
   
   VRByteStream bs2(e5.getData());
   std::cout << bs2.readInt() << " " << bs2.readInt() << std::endl;
-  Vec3 v5;
+  VRVector3 v5;
   v5.deserialize(bs2);
-  v5.print();
+  std::cout << v5 << std::endl;
   std::cout << bs2.readInt() << std::endl;
 }
 

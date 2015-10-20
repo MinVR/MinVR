@@ -90,6 +90,12 @@ foreach (CONF ${CMAKE_CONFIGURATION_TYPES})
 endforeach(CONF CMAKE_CONFIGURATION_TYPES)
 
 
+file (GLOB srcfiles ${CMAKE_CURRENT_SOURCE_DIR}/tests/net/*.cpp)
+source_group ("tests" FILES ${srcfiles})
+
+
+
+
 # Recurse into the following subdirs to build the core MinVR set of libraries:
 # (Uncomment the lines below as we add .cpp files to those directories.)
 
