@@ -23,6 +23,10 @@
 // into memory.  The system supports an XML format for transmission
 // and storage.
 //
+// The XML parser used here is based on the "Simple C++ XML Parser"
+// from the CodeProject article by "BratilaRazvan", 2010.
+// see: http://www.codeproject.com/Articles/111243/Simple-Cplusplus-XML-Parser
+//
 // Tom Sgouros 8/29/2015
 //
 // To use:

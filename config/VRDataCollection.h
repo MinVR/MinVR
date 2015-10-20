@@ -8,8 +8,7 @@
 #include <sstream>
 #include <string>
 #include <stdexcept>
-#include "Cxml.h"
-#include "element.h"
+#include "Cxml/Cxml.h"
 #include "VRDatum.h"
 #include "VRDatumFactory.h"
 

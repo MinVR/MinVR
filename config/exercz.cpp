@@ -2,8 +2,6 @@
 #include <iostream>
 #include <stdexcept>
 #include <sstream>
-#include "Cxml.h"
-#include "element.h"
 #include "VRDataIndex.h"
 #include "VRDataQueue.h"
 

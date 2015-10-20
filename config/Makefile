@@ -1,5 +1,5 @@
 
-ASOURCES=attribute.cpp Cxml.cpp element.cpp utils.cpp XML.cpp
+ASOURCES=Cxml/attribute.cpp Cxml/Cxml.cpp Cxml/element.cpp Cxml/utils.cpp Cxml/XML.cpp
 SOURCES=driver.cpp $(ASOURCES)
 MVRSOURCES=VRDatum.h VRDatum.cpp VRDatumFactory.h VRDatumFactory.cpp VRDataCollection.h VRDataCollection.cpp VRDataIndex.h VRDataIndex.cpp
 CFLAGS=-I/usr/include/malloc -ggdb -g3
