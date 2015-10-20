@@ -1,14 +1,17 @@
-#include "MinVRDataCollection.h"
+// -*-c++-*-
+#ifndef MINVR_DATAINDEX_H
+#define MINVR_DATAINDEX_H
+#include "VRDataCollection.h"
 
 // This object maintains an index, a collection of names and pointers
-// to MinVRDatum objects, which can be used to simulate a dynamically
+// to VRDatum objects, which can be used to simulate a dynamically
 // typed computing environment in C++, a strongly-typed system.  In
 // this system, values have types, not variables.  All variables, of
 // whatever type, are equivalent.  There is a container type, which
 // can include an arbitrary collection of any other variables.
 //
 // The precise collection of types currently implemented is somewhat
-// random, but the MinVRDatum.h file contains instructions for
+// random, but the VRDatum.h file contains instructions for
 // extending the system to any C++ type, including the STL types,
 // whatever, go wild.  It supports the concept of a 'namespace' and
 // scoping of its value names, so names within a container type can
@@ -50,7 +53,7 @@
 //
 //  Once an index has entries, they can be retrieved at your pleasure
 //  with getDatum() or serialize().  The getDatum() method returns a
-//  pointer to a MinVRDatum object, so can be used directly in your
+//  pointer to a VRDatum object, so can be used directly in your
 //  program.  I hate remembering how to spell the static_cast<>()
 //  options, so these are provided as a convenience via a helper class
 //  methods to the pointer objects.  So (int)p->getDatum() gets you an
@@ -69,20 +72,20 @@
 //  like an interpreter for some primitive language environment whose
 //  only functions are assigning variables and reading them.
 //
-//  The system encompasses the MinVRDataIndex class, whose job it is
-//  to track a set of names and corresponding MinVRDatumPtr objects,
-//  smart pointers to MinVRDatum objects, that hold a type and value.
-//  There is also a MinVRDatumFactory object, whose only use is
-//  creating the specializations of the MinVRDatum object for each of
+//  The system encompasses the VRDataIndex class, whose job it is
+//  to track a set of names and corresponding VRDatumPtr objects,
+//  smart pointers to VRDatum objects, that hold a type and value.
+//  There is also a VRDatumFactory object, whose only use is
+//  creating the specializations of the VRDatum object for each of
 //  the supported data types.  It's all meant to be as portable as
 //  possible and not rely on any external libraries.  It uses an XML
 //  reader, see those files for the original credit.
 //
-class MinVRDataIndex : MinVRDataCollection {
+class VRDataIndex : VRDataCollection {
 private:
 
-  typedef std::map<std::string, MinVRDatumPtr> MinVRDataMap;
-  MinVRDataMap mindex;
+  typedef std::map<std::string, VRDatumPtr> VRDataMap;
+  VRDataMap mindex;
 
   // If this is 1, new values will overwrite old ones.  For -1, new
   // values will just bounce off.  And zero will cause an exception if
@@ -92,7 +95,7 @@ private:
   int overwrite;
 
 public:
-    MinVRDataIndex() : overwrite(1) {};
+    VRDataIndex() : overwrite(1) {};
 
   void setOverwrite(const int inVal) { overwrite = inVal; }
 
@@ -111,12 +114,12 @@ public:
                       const std::string nameSpace);
 
   // Returns a pointer to the value with a given name (and namespace)
-  MinVRDatumPtr getDatum(const std::string valName);
-  MinVRDatumPtr getDatum(const std::string valName,
+  VRDatumPtr getDatum(const std::string valName);
+  VRDatumPtr getDatum(const std::string valName,
                          const std::string nameSpace);
 
   // The getValue function relies on the helper function defined with
-  // MinVRDatum.  Read about it there, but it is just a cute trick to
+  // VRDatum.  Read about it there, but it is just a cute trick to
   // allow programmers to access values directly from the index.  So
   // access your values like this:
   //
@@ -132,15 +135,15 @@ public:
   //   int p = index->getValue(name, nameSpace)->getValueInt()
   //
   // This version does a kind of type checking, but also brings you
-  // the specialized MinVRDatum object which you might want for some
+  // the specialized VRDatum object which you might want for some
   // other nefarious reason.
   //
   //   int p = index->getValue(name, nameSpace).intVal()->getValueInt()
   //
-  MinVRDatumHelper<MinVRDatum> getValue(const std::string valName) {
+  VRDatumHelper<VRDatum> getValue(const std::string valName) {
     return getDatum(valName)->getValue();
   }
-  MinVRDatumHelper<MinVRDatum> getValue(const std::string valName,
+  VRDatumHelper<VRDatum> getValue(const std::string valName,
                                         const std::string nameSpace) {
     return getDatum(valName, nameSpace)->getValue();
   }
@@ -152,7 +155,7 @@ public:
                              const std::string nameSpace);
 
   // This is the name, type, value, expressed as an XML fragment.
-  using MinVRDataCollection::serialize;
+  using VRDataCollection::serialize;
   std::string serialize(const std::string valName);
   std::string serialize(const std::string valName,
                         const std::string nameSpace);
@@ -174,7 +177,7 @@ public:
   // it's because I find this easier than remembering how to spell the
   // pointers and casts.
 
-  /// Step 6 of the data type addition instructions in MinVRDatum.h is
+  /// Step 6 of the data type addition instructions in VRDatum.h is
   /// to add a specialized method here.
   bool addValue(const std::string valName, int value);
   bool addValue(const std::string valName, double value);
@@ -189,27 +192,27 @@ public:
 // pointers to more-or-less arbitrary data types, yay.  On the to-do
 // list:
 //
-//   - Write the serialize method, at the MinVRDatum level, where
-//     it only encodes the value, and at the MinVRDataIndex level,
-//     where you add the type description (also from MinVRDatum),
+//   - Write the serialize method, at the VRDatum level, where
+//     it only encodes the value, and at the VRDataIndex level,
+//     where you add the type description (also from VRDatum),
 //     the name (from the index) and the value. [DONE]
 //
-//   - MinVRDatum constructors that work from the serialized form
+//   - VRDatum constructors that work from the serialized form
 //        int george 6
 //         ^    ^    ^
 //         |    |    |
-//         |    |    handled in MinVRDatum
-//         |    handled in MinVRDataIndex
-//         handled in MinVRDataIndex (choice of Datum specialization) [DONE]
+//         |    |    handled in VRDatum
+//         |    handled in VRDataIndex
+//         handled in VRDataIndex (choice of Datum specialization) [DONE]
 //
-//   - Add the interpreters to MinVRDataIndex to read the whole
-//     serialized form and invoke the appropriate MinVRDatum
+//   - Add the interpreters to VRDataIndex to read the whole
+//     serialized form and invoke the appropriate VRDatum
 //     constructor. [DONE]
 //
 //   - Add a string data type to check on the add instructions. [DONE]
 //
 //   - Add the struct data type, a collection of primitive data types,
-//     or other structs.  The data inside the MinVRDatum for this
+//     or other structs.  The data inside the VRDatum for this
 //     container type is just going to be a vector of map iterators,
 //     pointing at map entries in the main index. (I think) [DONE]
 //
@@ -246,20 +249,21 @@ public:
 //   - Make the parser infer data types where possible, rather than relying
 //     on the type attribute. [DONE]
 //
-//   - Add container typedef to MinVRDatum [DONE]
+//   - Add container typedef to VRDatum [DONE]
 //
-//   - Add helper class to MinVRDatum, implement getValue() [DONE]
+//   - Add helper class to VRDatum, implement getValue() [DONE]
 //
-//    - Do something about MinVRDatum setValue() methods? Maybe
+//    - Do something about VRDatum setValue() methods? Maybe
 //      comparable to the virtual getValue() methods? [NO, Users should not use]
 //
-//   - change MinVRDataIndex::getValue() to getDatum() [DONE]
+//   - change VRDataIndex::getValue() to getDatum() [DONE]
 //
 //   - Can we add a helper class to data index? [DONE]
 //
 //   - Need a human-readable and a machine-readable (i.e. quicker)
 //     format for serialization. [TBD]
 //
-//   - The mvrTypeMap is clunky and is not attached to the MinVRDatum
+//   - The mvrTypeMap is clunky and is not attached to the VRDatum
 //     description field.  The mapping between type ID and description
 //     should appear only once, somewhere. [DONE]
+#endif

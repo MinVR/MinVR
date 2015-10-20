@@ -5,7 +5,7 @@
 #include <map>
 #include <iostream>
 #include <stdexcept>
-#include "MinVRDatum.h"
+#include "VRDatum.h"
 
 // This factory architecture was suggested by Andrei Alexandrescu in
 // his book "Modern C++ Design" --- read it to get the full
@@ -13,24 +13,24 @@
 // example
 
 // This class is where we parse the serialized data and create the
-// appropriate MinVRDatum to hold that information.
+// appropriate VRDatum to hold that information.
 
-class MinVRDatumFactory {
+class VRDatumFactory {
 public:
   // This typedef allows us to "name" arbitrary functions which take no
-  // arguments and return a pointer to a MinVRDatum instance
-  typedef MinVRDatumPtr (*CreateMinVRDatumCallback)(void *pData);
+  // arguments and return a pointer to a VRDatum instance
+  typedef VRDatumPtr (*CreateVRDatumCallback)(void *pData);
 
-  MinVRDatumPtr CreateMinVRDatum(int MinVRDatumId, void *pData);
+  VRDatumPtr CreateVRDatum(int VRDatumId, void *pData);
 
-  bool RegisterMinVRDatum(int MinVRDatumId,
-                          CreateMinVRDatumCallback Creator);
+  bool RegisterVRDatum(int VRDatumId,
+                          CreateVRDatumCallback Creator);
 
-  bool UnRegisterMinVRDatum(int MinVRDatumId);
+  bool UnRegisterVRDatum(int VRDatumId);
 
 private:
   // the typedef simplifies the implementation
-  typedef std::map<int, CreateMinVRDatumCallback> CallbackMap;
+  typedef std::map<int, CreateVRDatumCallback> CallbackMap;
   // the callbacks are stored in a map int->callback (see typedef
   // above)
   CallbackMap m_callbacks;

@@ -1,3 +1,7 @@
+// -*-c++-*-
+#ifndef MINVR_DATACOLLECTION_H
+#define MINVR_DATACOLLECTION_H
+
 #include <map>
 #include <list>
 #include <iostream>
@@ -6,22 +10,22 @@
 #include <stdexcept>
 #include "Cxml.h"
 #include "element.h"
-#include "MinVRDatum.h"
-#include "MinVRDatumFactory.h"
+#include "VRDatum.h"
+#include "VRDatumFactory.h"
 
 // A collection of conveniences and useful functions for the data
 // index and data queue objects.
-class MinVRDataCollection {
+class VRDataCollection {
 protected:
-  MinVRDatumFactory factory;
+  VRDatumFactory factory;
 
   // This is just a convenience to map strings to object type numbers.
   std::map<std::string, MVRTYPE_ID> mvrTypeMap;
 
 public:
-  MinVRDataCollection();
+  VRDataCollection();
 
-  std::string serialize(const std::string trimName, MinVRDatumPtr pdata);
+  std::string serialize(const std::string trimName, VRDatumPtr pdata);
   virtual std::string serialize(const std::string valName) = 0;
 
   // Prints a vaguely tree-ish representation of an XML parse.  Just
@@ -45,7 +49,7 @@ public:
   MVRVecFloat deserializeVecFloat(const char* valueString);
   // Don't need a deserializeContainer. That happens in walkXML().
 
-  /// Step 8 of the data type addition instructions in MinVRDatum.h is
+  /// Step 8 of the data type addition instructions in VRDatum.h is
   /// to add a specialized method here.  Also add a deserialize method
   /// above.
   virtual bool addValue(const std::string valName, int value) = 0;
@@ -57,3 +61,4 @@ public:
 
 };
 
+#endif

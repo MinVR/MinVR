@@ -4,27 +4,27 @@
 
 #include <deque>
 
-// This object maintains a queue (FILO) of serialized MinVRDatum objects.
-// See the MinVRDataIndex object for more about these objects and
+// This object maintains a queue (FILO) of serialized VRDatum objects.
+// See the VRDataIndex object for more about these objects and
 // their types as part of a system of named data values.  Over here,
 // we don't care so much about names, as about times of creation, and
 // quick assembly and disassembly into serialized data.
 //
 // Use this queue for sending data to some other process, or receiving
 // it.  The transmission format is the same XML format as in the
-// MinVRDataIndex description.
+// VRDataIndex description.
 //
 // Tom Sgouros 10/16/2015
 //
 //
-class MinVRDataQueue {
+class VRDataQueue {
 private:
 
   typedef std::deque<std::string> MVRDataList;
   MVRDataList mqueue;
 
 public:
-  MinVRDataQueue() {};
+  VRDataQueue() {};
 
   // Returns a pointer to the object at the head of the queue.
   std::string getSerializedDatum() { return mqueue.front(); }

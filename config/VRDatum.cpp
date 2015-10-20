@@ -1,11 +1,11 @@
-#include "MinVRDatum.h"
+#include "VRDatum.h"
 
 // This is the canonical list of how to spell the types given here.
 // The strings here will appear in the XML serialization, in the
 // 'type="XX"' part.  So you can change them here, and these changes
 // will be reflected throughout the code, but not in any config files
 // that use them.  This is part of step 1 of adding a new type.
-const MinVRDatum::MVRTypePair MinVRDatum::MVRTypeMap[MVRNTYPES] = {
+const VRDatum::MVRTypePair VRDatum::MVRTypeMap[MVRNTYPES] = {
   {"none", MVRNONE},
   {"int", MVRINT},
   {"float", MVRFLOAT},
@@ -17,7 +17,7 @@ const MinVRDatum::MVRTypePair MinVRDatum::MVRTypeMap[MVRNTYPES] = {
 // This is just a convenience for initializing the description field
 // in each object.  Note that it has no error checking, so get the
 // MVRNTYPES correct, please.
-std::string MinVRDatum::initializeDescription(MVRTYPE_ID t) {
+std::string VRDatum::initializeDescription(MVRTYPE_ID t) {
   for (int i = 0; i < MVRNTYPES; i++) {
     if (MVRTypeMap[i].second == t) {
       return MVRTypeMap[i].first;
@@ -26,85 +26,85 @@ std::string MinVRDatum::initializeDescription(MVRTYPE_ID t) {
 }
 
 
-MinVRDatumInt::MinVRDatumInt(const int inVal) :
-  MinVRDatum(MVRINT), value(inVal) {
+VRDatumInt::VRDatumInt(const int inVal) :
+  VRDatum(MVRINT), value(inVal) {
   description = initializeDescription(type);
 };
 
 /// Step 4 in the adding a type instructions.
-bool MinVRDatumInt::setValue(const int inVal) {
+bool VRDatumInt::setValue(const int inVal) {
   value = inVal;
   return true;
 }
 
-std::string MinVRDatumInt::serialize() {
+std::string VRDatumInt::serialize() {
   char buffer[20];
   sprintf(buffer, "%d", value);
   return std::string(buffer);
 }
 
-MinVRDatumPtr CreateMinVRDatumInt(void *pData) {
-  MinVRDatumInt *obj = new MinVRDatumInt(*static_cast<int *>(pData));
-  return MinVRDatumPtr(obj);
+VRDatumPtr CreateVRDatumInt(void *pData) {
+  VRDatumInt *obj = new VRDatumInt(*static_cast<int *>(pData));
+  return VRDatumPtr(obj);
 }
 
 ////////////////////////////////////////////
 
-MinVRDatumDouble::MinVRDatumDouble(const double inVal) :
-  MinVRDatum(MVRFLOAT), value(inVal) {
+VRDatumDouble::VRDatumDouble(const double inVal) :
+  VRDatum(MVRFLOAT), value(inVal) {
   description = initializeDescription(type);
 };
 
-bool MinVRDatumDouble::setValue(const double inVal) {
+bool VRDatumDouble::setValue(const double inVal) {
   value = inVal;
   return true;
 }
 
-std::string MinVRDatumDouble::serialize() {
+std::string VRDatumDouble::serialize() {
   char buffer[20];
   sprintf(buffer, "%f", value);
   return std::string(buffer);
 }
 
-MinVRDatumPtr CreateMinVRDatumDouble(void *pData) {
-  MinVRDatumDouble *obj = new MinVRDatumDouble(*static_cast<double *>(pData));
-  return MinVRDatumPtr(obj);
+VRDatumPtr CreateVRDatumDouble(void *pData) {
+  VRDatumDouble *obj = new VRDatumDouble(*static_cast<double *>(pData));
+  return VRDatumPtr(obj);
 }
 
 ////////////////////////////////////////////
 
-MinVRDatumString::MinVRDatumString(const std::string inVal) :
-  MinVRDatum(MVRSTRING), value(inVal) {
+VRDatumString::VRDatumString(const std::string inVal) :
+  VRDatum(MVRSTRING), value(inVal) {
   description = initializeDescription(type);
 };
 
-bool MinVRDatumString::setValue(const std::string inVal) {
+bool VRDatumString::setValue(const std::string inVal) {
   value = inVal;
   return true;
 }
 
-std::string MinVRDatumString::serialize() {
+std::string VRDatumString::serialize() {
   return value;
 }
 
-MinVRDatumPtr CreateMinVRDatumString(void *pData) {
-  MinVRDatumString *obj = new MinVRDatumString(*static_cast<std::string *>(pData));
-  return MinVRDatumPtr(obj);
+VRDatumPtr CreateVRDatumString(void *pData) {
+  VRDatumString *obj = new VRDatumString(*static_cast<std::string *>(pData));
+  return VRDatumPtr(obj);
 }
 
 ////////////////////////////////////////////
 
-MinVRDatumVecFloat::MinVRDatumVecFloat(const std::vector<double> inVal) :
-  MinVRDatum(MVRVECFLOAT), value(inVal) {
+VRDatumVecFloat::VRDatumVecFloat(const std::vector<double> inVal) :
+  VRDatum(MVRVECFLOAT), value(inVal) {
   description = initializeDescription(type);
 };
 
-bool MinVRDatumVecFloat::setValue(const std::vector<double> inVal) {
+bool VRDatumVecFloat::setValue(const std::vector<double> inVal) {
   value = inVal;
   return true;
 }
 
-std::string MinVRDatumVecFloat::serialize() {
+std::string VRDatumVecFloat::serialize() {
 
   std::string out;
   char buffer[20];
@@ -117,16 +117,16 @@ std::string MinVRDatumVecFloat::serialize() {
   return out;
 }
 
-MinVRDatumPtr CreateMinVRDatumVecFloat(void *pData) {
-  MinVRDatumVecFloat *obj =
-    new MinVRDatumVecFloat(*static_cast<MVRVecFloat *>(pData));
-  return MinVRDatumPtr(obj);
+VRDatumPtr CreateVRDatumVecFloat(void *pData) {
+  VRDatumVecFloat *obj =
+    new VRDatumVecFloat(*static_cast<MVRVecFloat *>(pData));
+  return VRDatumPtr(obj);
 }
 
 ////////////////////////////////////////////
 
-MinVRDatumContainer::MinVRDatumContainer(const MVRContainer inVal) :
-  MinVRDatum(MVRCONTAINER), value(inVal) {
+VRDatumContainer::VRDatumContainer(const MVRContainer inVal) :
+  VRDatum(MVRCONTAINER), value(inVal) {
   description = initializeDescription(type);
 };
 
@@ -134,12 +134,12 @@ MinVRDatumContainer::MinVRDatumContainer(const MVRContainer inVal) :
 // responsibility for assembling the serialization of a container
 // falls to the index class, so this function is sort of a nop, filled
 // out just to keep the compiler happy.
-std::string MinVRDatumContainer::serialize() {
+std::string VRDatumContainer::serialize() {
   throw std::runtime_error(std::string("shouldn't call the serialize() method of a container object."));
   return getDescription();
 }
 
-bool MinVRDatumContainer::addToValue(const MVRContainer inVal) {
+bool VRDatumContainer::addToValue(const MVRContainer inVal) {
   std::list<std::string> inCopy = inVal;
 
   // Remove all duplicates from the input list.
@@ -152,18 +152,18 @@ bool MinVRDatumContainer::addToValue(const MVRContainer inVal) {
   return true;
 }
 
-MinVRDatumPtr CreateMinVRDatumContainer(void *pData) {
-  MinVRDatumContainer *obj = new MinVRDatumContainer(*static_cast<MVRContainer *>(pData));
-  return MinVRDatumPtr(obj);
+VRDatumPtr CreateVRDatumContainer(void *pData) {
+  VRDatumContainer *obj = new VRDatumContainer(*static_cast<MVRContainer *>(pData));
+  return VRDatumPtr(obj);
 }
 
 
 //  We should probably implement this for completeness sake.
-// std::ostream & operator<<(std::ostream &os, const MinVRDatum& p)
+// std::ostream & operator<<(std::ostream &os, const VRDatum& p)
 // {
 //   return os << p.serialize();
 // }
-// std::ostream & operator<<(std::ostream &os, const MinVRDatumPtr& p)
+// std::ostream & operator<<(std::ostream &os, const VRDatumPtr& p)
 // {
 //   return os << p->serialize();
 // }

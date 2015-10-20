@@ -1,10 +1,10 @@
-#include "MinVRDataIndex.h"
+#include "VRDataIndex.h"
 
 // Just returns a list of the data names. For implementing an 'ls'
 // command, or something like it.
-std::list<std::string> MinVRDataIndex::getDataNames() {
+std::list<std::string> VRDataIndex::getDataNames() {
   std::list<std::string> outList;
-  for (std::map<std::string, MinVRDatumPtr>::iterator it = mindex.begin();
+  for (std::map<std::string, VRDatumPtr>::iterator it = mindex.begin();
        it != mindex.end(); it++) {
     outList.push_back(it->first);
   }
@@ -28,7 +28,7 @@ std::list<std::string> MinVRDataIndex::getDataNames() {
 //  height, you'll get 3.2, while if the namespace is /stanley/stella,
 //  you'll get 4.5, since that value is inherited from the higher-up
 //  namespace.
-std::string MinVRDataIndex::getName(const std::string valName,
+std::string VRDataIndex::getName(const std::string valName,
                                     const std::string nameSpace) {
 
   // If the input valName begins with a "/", it is a fully qualified
@@ -58,7 +58,7 @@ std::string MinVRDataIndex::getName(const std::string valName,
       testSpace += *it + "/" ;
     }
 
-    MinVRDataMap::const_iterator it = mindex.find(testSpace + valName);
+    VRDataMap::const_iterator it = mindex.find(testSpace + valName);
     if (it != mindex.end()) {
       return it->first;
     }
@@ -70,8 +70,8 @@ std::string MinVRDataIndex::getName(const std::string valName,
 
 
 // Returns the data object for this name.
-MinVRDatumPtr MinVRDataIndex::getDatum(const std::string valName) {
-  MinVRDataMap::const_iterator it = mindex.find(valName);
+VRDatumPtr VRDataIndex::getDatum(const std::string valName) {
+  VRDataMap::const_iterator it = mindex.find(valName);
   if (it == mindex.end()) {
     throw std::runtime_error(std::string("never heard of ") + valName);
   } else {
@@ -79,7 +79,7 @@ MinVRDatumPtr MinVRDataIndex::getDatum(const std::string valName) {
   }
 }
 
-MinVRDatumPtr MinVRDataIndex::getDatum(const std::string valName,
+VRDatumPtr VRDataIndex::getDatum(const std::string valName,
                                        const std::string nameSpace) {
 
   std::string qualifiedName = getName(valName, nameSpace);
@@ -91,11 +91,11 @@ MinVRDatumPtr MinVRDataIndex::getDatum(const std::string valName,
   }
 }
 
-std::string MinVRDataIndex::getDescription(const std::string valName) {
+std::string VRDataIndex::getDescription(const std::string valName) {
   return ("<" + valName + " type=\"" + getDatum(valName)->getDescription() + "\"/>");
 }
 
-std::string MinVRDataIndex::getDescription(const std::string valName,
+std::string VRDataIndex::getDescription(const std::string valName,
                                            const std::string nameSpace) {
   // This separates the valName on the slashes and puts the last
   // part of it into trimName.
@@ -108,8 +108,8 @@ std::string MinVRDataIndex::getDescription(const std::string valName,
           "\"/>");
 }
 
-std::string MinVRDataIndex::serialize(const std::string valName) {
-  MinVRDataMap::iterator it = mindex.find(valName);
+std::string VRDataIndex::serialize(const std::string valName) {
+  VRDataMap::iterator it = mindex.find(valName);
   if (it == mindex.end()) {
     throw std::runtime_error(std::string("never heard of ") + valName);
   } else {
@@ -124,9 +124,9 @@ std::string MinVRDataIndex::serialize(const std::string valName) {
   }
 }
 
-std::string MinVRDataIndex::serialize(const std::string valName,
+std::string VRDataIndex::serialize(const std::string valName,
                                       const std::string nameSpace) {
-  MinVRDatumPtr dataPtr = getDatum(valName, nameSpace);
+  VRDatumPtr dataPtr = getDatum(valName, nameSpace);
 
   std::string qualifiedName = getName(valName, nameSpace);
 
@@ -141,12 +141,12 @@ std::string MinVRDataIndex::serialize(const std::string valName,
 
 
 // an int should be <nWindows type="int">6</nWindows>
-bool MinVRDataIndex::addSerializedValue(const std::string serializedData) {
+bool VRDataIndex::addSerializedValue(const std::string serializedData) {
 
   return addSerializedValue(serializedData, std::string(""));
 }
 
-bool MinVRDataIndex::addSerializedValue(const std::string serializedData,
+bool VRDataIndex::addSerializedValue(const std::string serializedData,
                                         const std::string nameSpace) {
   Cxml *xml = new Cxml();
   xml->parse_string((char*)serializedData.c_str());
@@ -166,7 +166,7 @@ bool MinVRDataIndex::addSerializedValue(const std::string serializedData,
   delete xml;
 }
 
-bool MinVRDataIndex::processXMLFile(std::string fileName) {
+bool VRDataIndex::processXMLFile(std::string fileName) {
 
   std::string xml_string="";
   std::cout << "Reading from file = " << fileName << std::endl;
@@ -200,15 +200,15 @@ bool MinVRDataIndex::processXMLFile(std::string fileName) {
   }
 }
 
-bool MinVRDataIndex::addValue(const std::string valName, int value) {
+bool VRDataIndex::addValue(const std::string valName, int value) {
 
   // Check if the name is already in use.
-  MinVRDataMap::iterator it = mindex.find(valName);
+  VRDataMap::iterator it = mindex.find(valName);
   if (it == mindex.end()) {
 
     // No? Create it and stick it in index.
-    MinVRDatumPtr obj = factory.CreateMinVRDatum(MVRINT, &value);
-    return mindex.insert(MinVRDataMap::value_type(valName, obj)).second;
+    VRDatumPtr obj = factory.CreateVRDatum(MVRINT, &value);
+    return mindex.insert(VRDataMap::value_type(valName, obj)).second;
 
   } else {
     // Overwrite value
@@ -222,15 +222,15 @@ bool MinVRDataIndex::addValue(const std::string valName, int value) {
   }
 }
 
-bool MinVRDataIndex::addValue(const std::string valName, double value) {
+bool VRDataIndex::addValue(const std::string valName, double value) {
 
   // Check if the name is already in use.
-  MinVRDataMap::iterator it = mindex.find(valName);
+  VRDataMap::iterator it = mindex.find(valName);
   if (it == mindex.end()) {
 
-    MinVRDatumPtr obj = factory.CreateMinVRDatum(MVRFLOAT, &value);
+    VRDatumPtr obj = factory.CreateVRDatum(MVRFLOAT, &value);
     //std::cout << "added " << obj.doubleVal()->getDatum() << std::endl;
-    return mindex.insert(MinVRDataMap::value_type(valName, obj)).second;
+    return mindex.insert(VRDataMap::value_type(valName, obj)).second;
 
   } else {
     // Overwrite value
@@ -244,7 +244,7 @@ bool MinVRDataIndex::addValue(const std::string valName, double value) {
   }
 }
 
-bool MinVRDataIndex::addValue(const std::string valName, std::string value) {
+bool VRDataIndex::addValue(const std::string valName, std::string value) {
 
   // Remove leading spaces.
   int valueBegin = value.find_first_not_of(" \t\n\r");
@@ -258,12 +258,12 @@ bool MinVRDataIndex::addValue(const std::string valName, std::string value) {
   std::string trimValue = value.substr(valueBegin, valueRange);
 
   // Check if the name is already in use.
-  MinVRDataMap::iterator it = mindex.find(valName);
+  VRDataMap::iterator it = mindex.find(valName);
   if (it == mindex.end()) {
 
-    MinVRDatumPtr obj = factory.CreateMinVRDatum(MVRSTRING, &trimValue);
+    VRDatumPtr obj = factory.CreateVRDatum(MVRSTRING, &trimValue);
     //std::cout << "added " << obj.stringVal()->getDatum() << std::endl;
-    return mindex.insert(MinVRDataMap::value_type(valName, obj)).second;
+    return mindex.insert(VRDataMap::value_type(valName, obj)).second;
 
   } else {
     // Overwrite value
@@ -277,15 +277,15 @@ bool MinVRDataIndex::addValue(const std::string valName, std::string value) {
   }
 }
 
-bool MinVRDataIndex::addValue(const std::string valName, MVRVecFloat value) {
+bool VRDataIndex::addValue(const std::string valName, MVRVecFloat value) {
 
   // Check if the name is already in use.
-  MinVRDataMap::iterator it = mindex.find(valName);
+  VRDataMap::iterator it = mindex.find(valName);
   if (it == mindex.end()) {
 
     // No? Create it and stick it in index.
-    MinVRDatumPtr obj = factory.CreateMinVRDatum(MVRVECFLOAT, &value);
-    return mindex.insert(MinVRDataMap::value_type(valName, obj)).second;
+    VRDatumPtr obj = factory.CreateVRDatum(MVRVECFLOAT, &value);
+    return mindex.insert(VRDataMap::value_type(valName, obj)).second;
 
   } else {
     // Overwrite value
@@ -299,16 +299,16 @@ bool MinVRDataIndex::addValue(const std::string valName, MVRVecFloat value) {
   }
 }
 
-bool MinVRDataIndex::addValue(const std::string valName,
+bool VRDataIndex::addValue(const std::string valName,
                               MVRContainer value) {
 
   // Check if the name is already in use.
-  MinVRDataMap::iterator it = mindex.find(valName);
+  VRDataMap::iterator it = mindex.find(valName);
   if (it == mindex.end()) {
 
-    MinVRDatumPtr obj = factory.CreateMinVRDatum(MVRCONTAINER, &value);
+    VRDatumPtr obj = factory.CreateVRDatum(MVRCONTAINER, &value);
     //std::cout << "added " << obj.containerVal()->getDatum() << std::endl;
-    return mindex.insert(MinVRDataMap::value_type(valName, obj)).second;
+    return mindex.insert(VRDataMap::value_type(valName, obj)).second;
   } else {
     // Add value to existing container.
     return it->second.containerVal()->addToValue(value);

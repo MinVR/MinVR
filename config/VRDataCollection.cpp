@@ -1,25 +1,25 @@
-#include "MinVRDataCollection.h"
+#include "VRDataCollection.h"
 
-// Step 7 of the specialization instructions (in MinVRDatum.h) is to
+// Step 7 of the specialization instructions (in VRDatum.h) is to
 // add an entry here to register the new data type.
-MinVRDataCollection::MinVRDataCollection() {
-  factory.RegisterMinVRDatum(MVRINT, CreateMinVRDatumInt);
-  factory.RegisterMinVRDatum(MVRFLOAT, CreateMinVRDatumDouble);
-  factory.RegisterMinVRDatum(MVRSTRING, CreateMinVRDatumString);
-  factory.RegisterMinVRDatum(MVRVECFLOAT, CreateMinVRDatumVecFloat);
-  factory.RegisterMinVRDatum(MVRCONTAINER, CreateMinVRDatumContainer);
+VRDataCollection::VRDataCollection() {
+  factory.RegisterVRDatum(MVRINT, CreateVRDatumInt);
+  factory.RegisterVRDatum(MVRFLOAT, CreateVRDatumDouble);
+  factory.RegisterVRDatum(MVRSTRING, CreateVRDatumString);
+  factory.RegisterVRDatum(MVRVECFLOAT, CreateVRDatumVecFloat);
+  factory.RegisterVRDatum(MVRCONTAINER, CreateVRDatumContainer);
 
-  // We create a MinVRDatum object here just to have access to the
+  // We create a VRDatum object here just to have access to the
   // typemap that is a static member of that class.  Copy it into a
   // map<> for use over here in reading serialized data strings.
-  MinVRDatumInt *m = new MinVRDatumInt(0);
+  VRDatumInt *m = new VRDatumInt(0);
   for (int i = 0; i < MVRNTYPES; i++) {
     mvrTypeMap[std::string(m->MVRTypeMap[i].first)] = m->MVRTypeMap[i].second;
   }
 }
 
-std::string MinVRDataCollection::serialize(const std::string trimName,
-                                           MinVRDatumPtr pdata ) {
+std::string VRDataCollection::serialize(const std::string trimName,
+                                           VRDatumPtr pdata ) {
   // If this is not a container, just spell out the XML with the serialized
   // data inside.
   if (pdata->getType() != MVRCONTAINER) {
@@ -48,25 +48,25 @@ std::string MinVRDataCollection::serialize(const std::string trimName,
   }
 }
 
-int MinVRDataCollection::deserializeInt(const char* valueString) {
+int VRDataCollection::deserializeInt(const char* valueString) {
   int iVal;
   sscanf(valueString, "%d", &iVal);
 
   return iVal;
 }
 
-double MinVRDataCollection::deserializeDouble(const char* valueString) {
+double VRDataCollection::deserializeDouble(const char* valueString) {
   double fVal;
   sscanf(valueString, "%lf", &fVal);
 
   return fVal;
 }
 
-std::string MinVRDataCollection::deserializeString(const char* valueString) {
+std::string VRDataCollection::deserializeString(const char* valueString) {
   return std::string(valueString);
 }
 
-MVRVecFloat MinVRDataCollection::deserializeVecFloat(const char* valueString) {
+MVRVecFloat VRDataCollection::deserializeVecFloat(const char* valueString) {
 
   MVRVecFloat vVal;
 
@@ -83,7 +83,7 @@ MVRVecFloat MinVRDataCollection::deserializeVecFloat(const char* valueString) {
   return vVal;
 }
 
-bool MinVRDataCollection::processValue(const char* name,
+bool VRDataCollection::processValue(const char* name,
                                        MVRTYPE_ID type,
                                        const char* valueString) {
   char buffer[50];
@@ -124,7 +124,7 @@ bool MinVRDataCollection::processValue(const char* name,
 }
 
 // This seems to read containers twice.  Do both instances wind up in memory?
-bool MinVRDataCollection::walkXML(element* node, std::string nameSpace) {
+bool VRDataCollection::walkXML(element* node, std::string nameSpace) {
 
   char type[5] = "type";
 
@@ -192,7 +192,7 @@ bool MinVRDataCollection::walkXML(element* node, std::string nameSpace) {
 // This is really just part of trying to make the package easy to use
 // for configuration files.  For the serialize/deserialize pair, it's
 // not an issue.
-MVRTYPE_ID MinVRDataCollection::inferType(const std::string valueString) {
+MVRTYPE_ID VRDataCollection::inferType(const std::string valueString) {
 /// Step 10 -- Add some functionality to this method to help identify
 /// your new data type.
 
@@ -214,7 +214,7 @@ MVRTYPE_ID MinVRDataCollection::inferType(const std::string valueString) {
   return MVRSTRING;
 }
 
-bool MinVRDataCollection::printXML(element* node, std::string prefix) {
+bool VRDataCollection::printXML(element* node, std::string prefix) {
 
   std::string newPrefix = prefix + std::string("| ");
 

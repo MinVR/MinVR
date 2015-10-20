@@ -1,10 +1,10 @@
 
 ASOURCES=attribute.cpp Cxml.cpp element.cpp utils.cpp XML.cpp
 SOURCES=driver.cpp $(ASOURCES)
-MVRSOURCES=MinVRDatum.h MinVRDatum.cpp MinVRDatumFactory.h MinVRDatumFactory.cpp MinVRDataCollection.h MinVRDataCollection.cpp MinVRDataIndex.h MinVRDataIndex.cpp
+MVRSOURCES=VRDatum.h VRDatum.cpp VRDatumFactory.h VRDatumFactory.cpp VRDataCollection.h VRDataCollection.cpp VRDataIndex.h VRDataIndex.cpp
 CFLAGS=-I/usr/include/malloc -ggdb -g3
 
-TISOURCES=testindex.cpp MinVRDatum.cpp MinVRDatumFactory.cpp MinVRDataIndex.cpp attribute.cpp Cxml.cpp element.cpp utils.cpp XML.cpp
+TISOURCES=testindex.cpp VRDatum.cpp VRDatumFactory.cpp VRDataIndex.cpp attribute.cpp Cxml.cpp element.cpp utils.cpp XML.cpp
 
 EXSOURCES=exercz.cpp $(MVRSOURCES) $(ASOURCES)
 

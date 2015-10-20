@@ -4,8 +4,8 @@
 #include <sstream>
 #include "Cxml.h"
 #include "element.h"
-#include "MinVRDataIndex.h"
-#include "MinVRDataQueue.h"
+#include "VRDataIndex.h"
+#include "VRDataQueue.h"
 
 #define HELPMESSAGE  std::cout << "l get the list of data names" << std::endl; \
       std::cout << "p <name> print a value from the list" << std::endl; \
@@ -16,7 +16,7 @@
       std::cout << "? print this message." << std::endl;
 
 // This is just a test program meant to be a vague illustration of the
-// use of the MinVRDataIndex type system.  The program is essentially
+// use of the VRDataIndex type system.  The program is essentially
 // a really dumb interpreter with a few commands implemented, such as
 // look at a program, read a data file, add a data value and change
 // the namespace.  Use the operation of the program to learn about
@@ -24,8 +24,8 @@
 // data index. It's just hacked together, so don't read too much into
 // it.
 int main() {
-  MinVRDataIndex *index = new MinVRDataIndex;
-  MinVRDataQueue *queue = new MinVRDataQueue;
+  VRDataIndex *index = new VRDataIndex;
+  VRDataQueue *queue = new VRDataQueue;
 
   // Set up some sample data names and values.
   int a = 4;
@@ -115,7 +115,7 @@ int main() {
     } else if (elems[0].compare("p") == 0) {
 
       try {
-        MinVRDatumPtr p = index->getDatum(elems[1], nameSpace);
+        VRDatumPtr p = index->getDatum(elems[1], nameSpace);
 
         switch (p->getType()) {
         case MVRINT:
