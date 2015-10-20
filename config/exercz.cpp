@@ -35,27 +35,27 @@ int main() {
   std::string s1 = std::string("wowie!");
   std::string s2 = std::string("shazam!");
 
-  index->addValue(std::string("henry"), a);
-  index->addValue(std::string("ralph"), b);
+  index->addValue(std::string("/henry"), a);
+  index->addValue(std::string("/ralph"), b);
 
-  index->addValue(std::string("george"), f);
-  index->addValue(std::string("mary"), g);
+  index->addValue(std::string("/george"), f);
+  index->addValue(std::string("/mary"), g);
 
-  index->addValue(std::string("billy"), s1);
-  index->addValue(std::string("johnny"), s2);
+  index->addValue(std::string("/billy"), s1);
+  index->addValue(std::string("/johnny"), s2);
 
   index->addSerializedValue(std::string("<bob type=\"container\"><flora type=\"int\">3274</flora><morton type=\"float\">34.5</morton><cora type=\"container\"><flora type=\"int\">1234</flora><nora type=\"float\">23.45</nora></cora></bob>"));
 
   index->addSerializedValue(std::string("<chester type=\"vecfloat\">32.7@44.56@22.3@78.2@99.134@</chester>"));
 
-  queue->push(index->getDatum("billy")->serialize());
-  queue->push(index->getDatum("george")->serialize());
-  queue->printQueue();
-
   std::vector<std::string> elems;
   std::string elem;
   std::string line;
-  std::string nameSpace("");
+  std::string nameSpace("/");
+
+  queue->push(index->getDatum("billy", nameSpace)->serialize());
+  queue->push(index->getDatum("george", nameSpace)->serialize());
+  queue->printQueue();
 
   HELPMESSAGE
 
