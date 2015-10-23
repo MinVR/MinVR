@@ -51,12 +51,12 @@ public:
   /// Step 8 of the data type addition instructions in VRDatum.h is
   /// to add a specialized method here.  Also add a deserialize method
   /// above.
-  virtual bool addValue(const std::string valName, int value) = 0;
-  virtual bool addValue(const std::string valName, double value) = 0;
-  virtual bool addValue(const std::string valName, std::string value) = 0;
-  virtual bool addValue(const std::string valName, MVRVecFloat value) = 0;
-  virtual bool addValue(const std::string valName,
-                        MVRContainer value) = 0;
+  virtual std::string addValue(const std::string valName, int value) = 0;
+  virtual std::string addValue(const std::string valName, double value) = 0;
+  virtual std::string addValue(const std::string valName, std::string value) = 0;
+  virtual std::string addValue(const std::string valName, MVRVecFloat value) = 0;
+  virtual std::string addValue(const std::string valName,
+                               MVRContainer value) = 0;
 
 };
 

@@ -10,10 +10,7 @@
 // whatever type, are equivalent.  There is a container type, which
 // can include an arbitrary collection of any other variables.
 //
-// The precise collection of types currently implemented is somewhat
-// random, but the VRDatum.h file contains instructions for
-// extending the system to any C++ type, including the STL types,
-// whatever, go wild.  It supports the concept of a 'namespace' and
+// It supports the concept of a 'namespace' and
 // scoping of its value names, so names within a container type can
 // override names higher in the tree hierarchy.  See the getName()
 // function for a little more explanation.
@@ -28,6 +25,12 @@
 // see: http://www.codeproject.com/Articles/111243/Simple-Cplusplus-XML-Parser
 //
 // Tom Sgouros 8/29/2015
+//
+// p.s. The precise collection of types currently implemented is
+// somewhat random, but the VRDatum.h file contains instructions for
+// extending the system to any C++ type, including the STL types,
+// whatever, go wild.  This may not be important to actually using the
+// system, read on for those instructions.
 //
 // To use:
 //
@@ -56,19 +59,45 @@
 //  3. Feed a file containing XML into processXMLFile().
 //
 //  Once an index has entries, they can be retrieved at your pleasure
-//  with getDatum() or serialize().  The getDatum() method returns a
-//  pointer to a VRDatum object, so can be used directly in your
-//  program.  I hate remembering how to spell the static_cast<>()
-//  options, so these are provided as a convenience via a helper class
-//  methods to the pointer objects.  So (int)p->getDatum() gets you an
-//  integer and (double)p->getDatum() gets you a double, so long as the
-//  relevant objects actually contain an integer and double.
+//  with getValue() and serialize().  The getValue() method returns
+//  a pointer an object that can be used directly in your program.  I
+//  hate remembering how to spell the static_cast<>() options, so
+//  these are provided as a convenience via a helper class methods to
+//  the pointer objects.  So (int)p->getValue() gets you an integer
+//  and (double)p->getValue() gets you a double. (So long as the
+//  relevant objects actually contain an integer and double, otherwise
+//  you get an error.)
 //
-//  The data values in this system are meant to be immutable.
-//  However, they mostly just seem that way.  There are setter methods
-//  for them, used mainly as an optimization.  That is, rather than
-//  trash an object with the old value and create a new object with
-//  the new value, we just swap values.
+//  To use, do this:
+//
+//    VRDataIndex *index = new VRDataIndex;
+//    int a = 4;
+//    index->addValue(std::string("/george", a);
+//
+//  This incorporates an integer value of 4 into the index with the
+//  name "george" that appears at the root (global) level.
+//
+//  When you want to refer to the value you put in, do this:
+//
+//    int p = index->getValue("/george");
+//
+//  or
+//
+//    int p = index->getValue("george", "/");
+//
+//  Where the second argument is the "namespace", which is arranged
+//  vaguely like a directory structure, with slashes (/) separating
+//  the names.  You can also do this:
+//
+//    std::string s = index->serialize("/george")
+//
+//    VRDataIndex *newIndex = new VRDataIndex;
+//    newIndex->addSerializedValue(s);
+//    int b = newIndex->getValue("/george");
+//
+//  The b variable now comtains the same value as a, with the same
+//  name.
+//
 //
 //  This file should come with an exercz.cpp that does an ok job of
 //  illustrating some of the usage.  You can also use that program to
@@ -183,11 +212,11 @@ public:
 
   /// Step 6 of the data type addition instructions in VRDatum.h is
   /// to add a specialized method here.
-  bool addValue(const std::string valName, int value);
-  bool addValue(const std::string valName, double value);
-  bool addValue(const std::string valName, std::string value);
-  bool addValue(const std::string valName, MVRContainer value);
-  bool addValue(const std::string valName, MVRVecFloat value);
+  std::string addValue(const std::string valName, int value);
+  std::string addValue(const std::string valName, double value);
+  std::string addValue(const std::string valName, std::string value);
+  std::string addValue(const std::string valName, MVRContainer value);
+  std::string addValue(const std::string valName, MVRVecFloat value);
 
 };
 
@@ -270,4 +299,15 @@ public:
 //   - The mvrTypeMap is clunky and is not attached to the VRDatum
 //     description field.  The mapping between type ID and description
 //     should appear only once, somewhere. [DONE]
+//
+//   Need to simplify the process of adding data types.
+//
+//   - Make CreateVRDatum functions into templates?
+//
+//   - Make VRDatumPtr::intVal(), etc, into templates.
+//
+//   - After those are done, the VRDataIndex::addValue() methods can
+//     probably be template-ized, too.
+//
+//   -
 #endif

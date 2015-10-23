@@ -200,7 +200,7 @@ bool VRDataIndex::processXMLFile(std::string fileName) {
   }
 }
 
-bool VRDataIndex::addValue(const std::string valName, int value) {
+std::string VRDataIndex::addValue(const std::string valName, int value) {
 
   // Check if the name is already in use.
   VRDataMap::iterator it = mindex.find(valName);
@@ -208,43 +208,43 @@ bool VRDataIndex::addValue(const std::string valName, int value) {
 
     // No? Create it and stick it in index.
     VRDatumPtr obj = factory.CreateVRDatum(MVRINT, &value);
-    return mindex.insert(VRDataMap::value_type(valName, obj)).second;
+    mindex.insert(VRDataMap::value_type(valName, obj));
 
   } else {
     // Overwrite value
     if (overwrite > 0) {
-      return it->second.intVal()->setValue(value);
-    } else if (overwrite < 0) {
-      return false;
-    } else {
+      it->second.intVal()->setValue(value);
+    } else if (overwrite == 0) {
       throw std::runtime_error(std::string("overwriting values not allowed"));
     }
   }
+
+  return valName;
+
 }
 
-bool VRDataIndex::addValue(const std::string valName, double value) {
+std::string VRDataIndex::addValue(const std::string valName, double value) {
 
   // Check if the name is already in use.
   VRDataMap::iterator it = mindex.find(valName);
   if (it == mindex.end()) {
 
     VRDatumPtr obj = factory.CreateVRDatum(MVRFLOAT, &value);
-    //std::cout << "added " << obj.doubleVal()->getDatum() << std::endl;
-    return mindex.insert(VRDataMap::value_type(valName, obj)).second;
+    mindex.insert(VRDataMap::value_type(valName, obj));
+    return valName;
 
   } else {
     // Overwrite value
     if (overwrite > 0) {
-      return it->second.doubleVal()->setValue(value);
-    } else if (overwrite < 0) {
-      return false;
-    } else {
+      it->second.doubleVal()->setValue(value);
+    } else if (overwrite == 0) {
       throw std::runtime_error(std::string("overwriting values not allowed"));
     }
   }
+  return valName;
 }
 
-bool VRDataIndex::addValue(const std::string valName, std::string value) {
+std::string VRDataIndex::addValue(const std::string valName, std::string value) {
 
   // Remove leading spaces.
   int valueBegin = value.find_first_not_of(" \t\n\r");
@@ -262,22 +262,21 @@ bool VRDataIndex::addValue(const std::string valName, std::string value) {
   if (it == mindex.end()) {
 
     VRDatumPtr obj = factory.CreateVRDatum(MVRSTRING, &trimValue);
-    //std::cout << "added " << obj.stringVal()->getDatum() << std::endl;
-    return mindex.insert(VRDataMap::value_type(valName, obj)).second;
+    mindex.insert(VRDataMap::value_type(valName, obj));
+    return valName;
 
   } else {
     // Overwrite value
     if (overwrite > 0) {
-      return it->second.stringVal()->setValue(trimValue);
-    } else if (overwrite < 0) {
-      return false;
-    } else {
+      it->second.stringVal()->setValue(trimValue);
+    } else if (overwrite == 0) {
       throw std::runtime_error(std::string("overwriting values not allowed"));
     }
   }
+  return valName;
 }
 
-bool VRDataIndex::addValue(const std::string valName, MVRVecFloat value) {
+std::string VRDataIndex::addValue(const std::string valName, MVRVecFloat value) {
 
   // Check if the name is already in use.
   VRDataMap::iterator it = mindex.find(valName);
@@ -285,22 +284,24 @@ bool VRDataIndex::addValue(const std::string valName, MVRVecFloat value) {
 
     // No? Create it and stick it in index.
     VRDatumPtr obj = factory.CreateVRDatum(MVRVECFLOAT, &value);
-    return mindex.insert(VRDataMap::value_type(valName, obj)).second;
+    mindex.insert(VRDataMap::value_type(valName, obj));
+    return valName;
 
   } else {
     // Overwrite value
     if (overwrite > 0) {
-      return it->second.vecFloatVal()->setValue(value);
-    } else if (overwrite < 0) {
-      return false;
-    } else {
+      it->second.vecFloatVal()->setValue(value);
+    } else if (overwrite == 0) {
       throw std::runtime_error(std::string("overwriting values not allowed"));
     }
   }
+  return valName;
 }
 
-bool VRDataIndex::addValue(const std::string valName,
-                              MVRContainer value) {
+
+// 10/21 This doesn't seem right to me.
+std::string VRDataIndex::addValue(const std::string valName,
+                                  MVRContainer value) {
 
   // Check if the name is already in use.
   VRDataMap::iterator it = mindex.find(valName);
@@ -308,11 +309,13 @@ bool VRDataIndex::addValue(const std::string valName,
 
     VRDatumPtr obj = factory.CreateVRDatum(MVRCONTAINER, &value);
     //std::cout << "added " << obj.containerVal()->getDatum() << std::endl;
-    return mindex.insert(VRDataMap::value_type(valName, obj)).second;
+    mindex.insert(VRDataMap::value_type(valName, obj));
+
   } else {
     // Add value to existing container.
-    return it->second.containerVal()->addToValue(value);
+    it->second.containerVal()->addToValue(value);
   }
+  return valName;
 }
 
 
