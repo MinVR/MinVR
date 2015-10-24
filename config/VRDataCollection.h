@@ -45,7 +45,7 @@ public:
   int deserializeInt(const char* valueString);
   double deserializeDouble(const char* valueString);
   std::string deserializeString(const char* valueString);
-  MVRVecFloat deserializeVecFloat(const char* valueString);
+  MVRArrayDouble deserializeArrayDouble(const char* valueString);
   // Don't need a deserializeContainer. That happens in walkXML().
 
   /// Step 8 of the data type addition instructions in VRDatum.h is
@@ -54,7 +54,7 @@ public:
   virtual std::string addValue(const std::string valName, int value) = 0;
   virtual std::string addValue(const std::string valName, double value) = 0;
   virtual std::string addValue(const std::string valName, std::string value) = 0;
-  virtual std::string addValue(const std::string valName, MVRVecFloat value) = 0;
+  virtual std::string addValue(const std::string valName, MVRArrayDouble value) = 0;
   virtual std::string addValue(const std::string valName,
                                MVRContainer value) = 0;
 

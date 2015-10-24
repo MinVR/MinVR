@@ -4,9 +4,9 @@
 // add an entry here to register the new data type.
 VRDataCollection::VRDataCollection() {
   factory.RegisterVRDatum(MVRINT, CreateVRDatumInt);
-  factory.RegisterVRDatum(MVRFLOAT, CreateVRDatumDouble);
+  factory.RegisterVRDatum(MVRDOUBLE, CreateVRDatumDouble);
   factory.RegisterVRDatum(MVRSTRING, CreateVRDatumString);
-  factory.RegisterVRDatum(MVRVECFLOAT, CreateVRDatumVecFloat);
+  factory.RegisterVRDatum(MVRARRAYDOUBLE, CreateVRDatumArrayDouble);
   factory.RegisterVRDatum(MVRCONTAINER, CreateVRDatumContainer);
 
   // We create a VRDatum object here just to have access to the
@@ -66,9 +66,9 @@ std::string VRDataCollection::deserializeString(const char* valueString) {
   return std::string(valueString);
 }
 
-MVRVecFloat VRDataCollection::deserializeVecFloat(const char* valueString) {
+MVRArrayDouble VRDataCollection::deserializeArrayDouble(const char* valueString) {
 
-  MVRVecFloat vVal;
+  MVRArrayDouble vVal;
 
   // Separate the name space into its constituent elements.
   std::string elem;
@@ -95,7 +95,7 @@ bool VRDataCollection::processValue(const char* name,
     addValue(name, deserializeInt(valueString));
     break;
 
-  case MVRFLOAT:
+  case MVRDOUBLE:
     addValue(name, deserializeDouble(valueString));
     break;
 
@@ -103,8 +103,8 @@ bool VRDataCollection::processValue(const char* name,
     addValue(name, deserializeString(valueString));
     break;
 
-  case MVRVECFLOAT:
-    addValue(name, deserializeVecFloat(valueString));
+  case MVRARRAYDOUBLE:
+    addValue(name, deserializeArrayDouble(valueString));
     break;
 
   case MVRCONTAINER:
@@ -201,8 +201,8 @@ MVRTYPE_ID VRDataCollection::inferType(const std::string valueString) {
   int conInt = strtol(valueString.c_str(), &p, 10);
   if (!*p) return MVRINT;
 
-  double conFloat = strtod(valueString.c_str(), &p);
-  if (!*p) return MVRFLOAT;
+  double conDouble = strtod(valueString.c_str(), &p);
+  if (!*p) return MVRDOUBLE;
 
   // Is it a container?
   std::size_t firstChar = valueString.find_first_not_of(" \t\r\n");

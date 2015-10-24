@@ -37,7 +37,7 @@
 // Create an index object, and add values to the store in one of three ways.
 //
 //  1. You can add data with the specialized add functions, such as
-//     addValueInt(), addValueFloat(), etc.  These take a name and a
+//     addValueInt(), addValueDouble(), etc.  These take a name and a
 //     value and park them in the index.
 //
 //  2. You can feed some serialized data to one of the addValue()
@@ -48,7 +48,7 @@
 //
 //     <bob type="container">
 //        <flora type="int">42</flora>
-//        <pi type="float">3.1415926</pi>
+//        <pi type="double">3.1415926</pi>
 //     </bob>
 //
 //     The type attributes are usually superfluous, since the code can
@@ -216,7 +216,7 @@ public:
   std::string addValue(const std::string valName, double value);
   std::string addValue(const std::string valName, std::string value);
   std::string addValue(const std::string valName, MVRContainer value);
-  std::string addValue(const std::string valName, MVRVecFloat value);
+  std::string addValue(const std::string valName, MVRArrayDouble value);
 
 };
 

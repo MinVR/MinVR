@@ -26,19 +26,22 @@ typedef enum
 {
   MVRNONE       = 0,
   MVRINT        = 1,
-  MVRFLOAT      = 2,
+  MVRDOUBLE      = 2,
   MVRSTRING     = 3,
-  MVRVECINT     = 4,
-  MVRVECFLOAT   = 5,
-  MVRVECSTRING  = 6,
+  MVRARRAYINT     = 4,
+  MVRARRAYDOUBLE   = 5,
+  MVRARRAYSTRING  = 6,
   MVRCONTAINER  = 7
 } MVRTYPE_ID;
 
 #define MVRNTYPES 7
 
+typedef int MVRInt;
+typedef double MVRDouble;
+typedef std::string MVRString;
 // An MVRContainer is actually a list of strings.
 typedef std::list<std::string> MVRContainer;
-typedef std::vector<double> MVRVecFloat;
+typedef std::vector<double> MVRArrayDouble;
 
 // This class is a helper to avoid having to access values with
 // constructs like ptr.intVal()->getValue().  By using this helper
@@ -76,7 +79,7 @@ public:
   operator double() const { return datum->getValueDouble(); }
   operator std::string() const { return datum->getValueString(); }
   operator MVRContainer() const { return datum->getValueContainer(); }
-  operator MVRVecFloat() const { return datum->getValueVecFloat(); }
+  operator MVRArrayDouble() const { return datum->getValueArrayDouble(); }
 };
 
 // This class is meant to hold a data object of some arbitrary type
@@ -221,7 +224,7 @@ class VRDatum {
   virtual std::string getValueString() const {
     throw std::runtime_error("This datum is not a std::string.");
   }
-  virtual MVRVecFloat getValueVecFloat() const {
+  virtual MVRArrayDouble getValueArrayDouble() const {
     throw std::runtime_error("This datum is not a std::string.");
   }
   virtual MVRContainer getValueContainer() const {
@@ -253,7 +256,7 @@ public:
   }
 };
 
-// The specialization for a float.  (Or a 'double' in C++-speak.)
+// The specialization for a double.
 class VRDatumDouble : public VRDatum {
 private:
   double value;
@@ -291,17 +294,17 @@ public:
 };
 
 // Specialization for a vector of doubles
-class VRDatumVecFloat : public VRDatum {
+class VRDatumArrayDouble : public VRDatum {
 private:
   // The actual data is stored here.
-  MVRVecFloat value;
+  MVRArrayDouble value;
 
 public:
-  VRDatumVecFloat(const std::vector<double> inVal);
+  VRDatumArrayDouble(const std::vector<double> inVal);
 
   std::string serialize();
 
-  MVRVecFloat getValueVecFloat() const { return value; };
+  MVRArrayDouble getValueArrayDouble() const { return value; };
   bool setValue(const std::vector<double> inVal);
 
   VRDatumHelper<VRDatum> getValue() {
@@ -453,10 +456,10 @@ public:
 
   VRDatumDouble* doubleVal()
   {
-    if (pData->getType() == MVRFLOAT) {
+    if (pData->getType() == MVRDOUBLE) {
       return static_cast<VRDatumDouble*>(pData);
     } else {
-      throw std::runtime_error("This datum is not a float.");
+      throw std::runtime_error("This datum is not a double.");
     }
   }
 
@@ -469,12 +472,12 @@ public:
     }
   }
 
-  VRDatumVecFloat* vecFloatVal()
+  VRDatumArrayDouble* arrayDoubleVal()
   {
-    if (pData->getType() == MVRVECFLOAT) {
-      return static_cast<VRDatumVecFloat*>(pData);
+    if (pData->getType() == MVRARRAYDOUBLE) {
+      return static_cast<VRDatumArrayDouble*>(pData);
     } else {
-      throw std::runtime_error("This datum is not a string.");
+      throw std::runtime_error("This datum is not an array of doubles.");
     }
   }
 
@@ -494,7 +497,7 @@ public:
 VRDatumPtr CreateVRDatumInt(void *pData);
 VRDatumPtr CreateVRDatumDouble(void *pData);
 VRDatumPtr CreateVRDatumString(void *pData);
-VRDatumPtr CreateVRDatumVecFloat(void *pData);
+VRDatumPtr CreateVRDatumArrayDouble(void *pData);
 VRDatumPtr CreateVRDatumContainer(void *pData);
 
 

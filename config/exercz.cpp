@@ -42,9 +42,9 @@ int main() {
   index->addValue(std::string("/billy"), s1);
   index->addValue(std::string("/johnny"), s2);
 
-  index->addSerializedValue(std::string("<bob type=\"container\"><flora type=\"int\">3274</flora><morton type=\"float\">34.5</morton><cora type=\"container\"><flora type=\"int\">1234</flora><nora type=\"float\">23.45</nora></cora></bob>"));
+  index->addSerializedValue(std::string("<bob type=\"container\"><flora type=\"int\">3274</flora><morton type=\"double\">34.5</morton><cora type=\"container\"><flora type=\"int\">1234</flora><nora type=\"double\">23.45</nora></cora></bob>"));
 
-  index->addSerializedValue(std::string("<chester type=\"vecfloat\">32.7@44.56@22.3@78.2@99.134@</chester>"));
+  index->addSerializedValue(std::string("<chester type=\"arraydouble\">32.7@44.56@22.3@78.2@99.134@</chester>"));
 
   std::vector<std::string> elems;
   std::string elem;
@@ -122,18 +122,18 @@ int main() {
           std::cout << "same as: " << (int)index->getValue(elems[1], nameSpace) << std::endl;
           break;
 
-        case MVRFLOAT:
-          std::cout << "a float containing: " << ((double)p->getValue()) << std::endl;
+        case MVRDOUBLE:
+          std::cout << "a double containing: " << ((double)p->getValue()) << std::endl;
           break;
 
         case MVRSTRING:
           std::cout << "a string containing: " << ((std::string)p->getValue()) << std::endl;
           break;
 
-        case MVRVECFLOAT:
+        case MVRARRAYDOUBLE:
           {
-            MVRVecFloat pdata = p->getValue();
-            for (MVRVecFloat::iterator it = pdata.begin(); it != pdata.end(); ++it) {
+            MVRArrayDouble pdata = p->getValue();
+            for (MVRArrayDouble::iterator it = pdata.begin(); it != pdata.end(); ++it) {
               std::cout << "element: " << *it << std::endl;
             }
             break;

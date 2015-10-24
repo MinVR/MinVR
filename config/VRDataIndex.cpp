@@ -229,7 +229,7 @@ std::string VRDataIndex::addValue(const std::string valName, double value) {
   VRDataMap::iterator it = mindex.find(valName);
   if (it == mindex.end()) {
 
-    VRDatumPtr obj = factory.CreateVRDatum(MVRFLOAT, &value);
+    VRDatumPtr obj = factory.CreateVRDatum(MVRDOUBLE, &value);
     mindex.insert(VRDataMap::value_type(valName, obj));
     return valName;
 
@@ -276,21 +276,21 @@ std::string VRDataIndex::addValue(const std::string valName, std::string value) 
   return valName;
 }
 
-std::string VRDataIndex::addValue(const std::string valName, MVRVecFloat value) {
+std::string VRDataIndex::addValue(const std::string valName, MVRArrayDouble value) {
 
   // Check if the name is already in use.
   VRDataMap::iterator it = mindex.find(valName);
   if (it == mindex.end()) {
 
     // No? Create it and stick it in index.
-    VRDatumPtr obj = factory.CreateVRDatum(MVRVECFLOAT, &value);
+    VRDatumPtr obj = factory.CreateVRDatum(MVRARRAYDOUBLE, &value);
     mindex.insert(VRDataMap::value_type(valName, obj));
     return valName;
 
   } else {
     // Overwrite value
     if (overwrite > 0) {
-      it->second.vecFloatVal()->setValue(value);
+      it->second.arrayDoubleVal()->setValue(value);
     } else if (overwrite == 0) {
       throw std::runtime_error(std::string("overwriting values not allowed"));
     }

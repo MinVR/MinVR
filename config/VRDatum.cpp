@@ -8,9 +8,9 @@
 const VRDatum::MVRTypePair VRDatum::MVRTypeMap[MVRNTYPES] = {
   {"none", MVRNONE},
   {"int", MVRINT},
-  {"float", MVRFLOAT},
+  {"double", MVRDOUBLE},
   {"string", MVRSTRING},
-  {"vecfloat", MVRVECFLOAT},
+  {"arraydouble", MVRARRAYDOUBLE},
   {"container", MVRCONTAINER}
 };
 
@@ -51,7 +51,7 @@ VRDatumPtr CreateVRDatumInt(void *pData) {
 ////////////////////////////////////////////
 
 VRDatumDouble::VRDatumDouble(const double inVal) :
-  VRDatum(MVRFLOAT), value(inVal) {
+  VRDatum(MVRDOUBLE), value(inVal) {
   description = initializeDescription(type);
 };
 
@@ -94,22 +94,22 @@ VRDatumPtr CreateVRDatumString(void *pData) {
 
 ////////////////////////////////////////////
 
-VRDatumVecFloat::VRDatumVecFloat(const std::vector<double> inVal) :
-  VRDatum(MVRVECFLOAT), value(inVal) {
+VRDatumArrayDouble::VRDatumArrayDouble(const std::vector<double> inVal) :
+  VRDatum(MVRARRAYDOUBLE), value(inVal) {
   description = initializeDescription(type);
 };
 
-bool VRDatumVecFloat::setValue(const std::vector<double> inVal) {
+bool VRDatumArrayDouble::setValue(const std::vector<double> inVal) {
   value = inVal;
   return true;
 }
 
-std::string VRDatumVecFloat::serialize() {
+std::string VRDatumArrayDouble::serialize() {
 
   std::string out;
   char buffer[20];
 
-  for (MVRVecFloat::iterator it = value.begin(); it != value.end(); ++it) {
+  for (MVRArrayDouble::iterator it = value.begin(); it != value.end(); ++it) {
     sprintf(buffer, "%f@", *it); // '@' is a separator
     out += std::string(buffer);
   }
@@ -117,9 +117,9 @@ std::string VRDatumVecFloat::serialize() {
   return out;
 }
 
-VRDatumPtr CreateVRDatumVecFloat(void *pData) {
-  VRDatumVecFloat *obj =
-    new VRDatumVecFloat(*static_cast<MVRVecFloat *>(pData));
+VRDatumPtr CreateVRDatumArrayDouble(void *pData) {
+  VRDatumArrayDouble *obj =
+    new VRDatumArrayDouble(*static_cast<MVRArrayDouble *>(pData));
   return VRDatumPtr(obj);
 }
 
