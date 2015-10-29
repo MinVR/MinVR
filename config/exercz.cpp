@@ -5,11 +5,13 @@
 #include "VRDataIndex.h"
 #include "VRDataQueue.h"
 
-#define HELPMESSAGE  std::cout << "l get the list of data names" << std::endl; \
+#define HELPMESSAGE  std::cout << "ls get the list of data names" << std::endl; \
       std::cout << "p <name> print a value from the list" << std::endl; \
-      std::cout << "f <filename> read an XML file" << std::endl; \
-      std::cout << "a <newname> <type> <value> add a primitive value" << std::endl; \
-      std::cout << "c <namespace> set a default namespace (use 'none' for blank)" << std::endl; \
+      std::cout << "file <filename> read an XML file" << std::endl; \
+      std::cout << "add <newname> <type> <value> add a primitive value" << std::endl; \
+      std::cout << "put <name> <containername> add something to a container" << std::endl; \
+      std::cout << "cd <namespace> set a default namespace (use 'none' for blank)" << std::endl; \
+      std::cout << "set <name1> = <name2> set name1 equal to name2" << std::endl; \
       std::cout << "q quit" << std::endl; \
       std::cout << "? print this message." << std::endl;
 
@@ -69,13 +71,13 @@ int main() {
     if (elems[0].compare("?") == 0) {
       HELPMESSAGE
 
-    ////// command: f (open file)
-    } else if (elems[0].compare("f") == 0) {
+    ////// command: file (open file)
+    } else if (elems[0].compare("file") == 0) {
 
       index->processXMLFile(elems[1]);
 
-    ////// command: c (set namespace)
-    } else if (elems[0].compare("c") == 0) {
+    ////// command: cd (set namespace)
+    } else if (elems[0].compare("cd") == 0) {
 
       if (elems.size() > 1) {
         if (elems[1].compare("none") == 0) {
@@ -87,6 +89,20 @@ int main() {
         std::cout << "using namespace: " << nameSpace << std::endl;
       }
 
+    ////// command: put
+    } else if (elems[0].compare("put") == 0) {
+
+      if (elems.size() < 3) {
+        std::cout << "usage: put <name> <containername>" << std::endl;
+      } else {
+
+        VRDatumPtr input = index->getDatum(elems[1], nameSpace);
+        VRDatumPtr container = index->getDatum(elems[2], nameSpace);
+
+        //        index->addValue(elems[1],
+        //container->add(input);
+
+      }
     ////// command: z (undocumented in help; use for testing)
     } else if (elems[0].compare("z") == 0) {
 
@@ -162,17 +178,17 @@ int main() {
       }
 
     ////// command: l (list all values)
-    } else if (elems[0].compare("l") == 0) {
+    } else if (elems[0].compare("ls") == 0) {
       MVRContainer nameList = index->getDataNames();
       for (MVRContainer::iterator it = nameList.begin();
            it != nameList.end(); it++) {
         std::cout << *it << std::endl;
       }
-    ////// command: a (something)
-    } else if (elems[0].compare("a") == 0) {
+    ////// command: add (add something)
+    } else if (elems[0].compare("add") == 0) {
 
       if (elems.size() < 4) {
-        std::cout << "try 'a harry int 27' (that is, do 'a <name> <type> <value>')" << std::endl;
+        std::cout << "try 'add harry int 27' (that is, do 'add <name> <type> <value>')" << std::endl;
       } else {
         std::string serialized = "<" + elems[1] + " type=\"" + elems[2] + "\">" + elems[3] + "</" + elems[1] + ">";
         index->addSerializedValue(serialized);
