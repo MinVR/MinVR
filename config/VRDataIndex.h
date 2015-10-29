@@ -128,28 +128,30 @@ private:
   int overwrite;
 
 public:
-    VRDataIndex() : overwrite(1) {};
+  VRDataIndex() : overwrite(1) {};
 
   void setOverwrite(const int inVal) { overwrite = inVal; }
 
-  // Finds a name, given a namespace. Note that the name might be in a
-  // senior namespace to the one specified.  That is, if you have a
-  // value called flora, that exists inside a container called cora,
-  // but also in a subsidiary container called nora, then, well,
-  // here's the example:
+  // Finds an entry in the data index, given a name and
+  // namespace. Note that the name might be in a senior namespace to
+  // the one specified.  That is, if you have a value called flora,
+  // that exists inside a container called cora, but also in a
+  // subsidiary container called nora, then, well, here's the example:
   //
   // /cora/flora = 6
   // /cora/nora/flora = 7
   //
   // If the namespace is /cora, the value of flora is 6, but if the
   // namespace is /cora/nora, flora is 7.
+  VRDataMap::const_iterator getEntry(const std::string valName,
+                                     const std::string nameSpace);
   std::string getName(const std::string valName,
                       const std::string nameSpace);
 
   // Returns a pointer to the value with a given name (and namespace)
   VRDatumPtr getDatum(const std::string valName);
   VRDatumPtr getDatum(const std::string valName,
-                         const std::string nameSpace);
+                      const std::string nameSpace);
 
   // The getValue function relies on the helper function defined with
   // VRDatum.  Read about it there, but it is just a cute trick to
@@ -205,6 +207,7 @@ public:
   // Returns a list of all the names in the map.  Note this really is
   // a list of strings, not a MVRContainer.
   std::list<std::string> getDataNames();
+  std::list<std::string> getDataNames(const std::string containerName);
 
   // These are specialized set methods.  They seem a little unhip, but
   // it's because I find this easier than remembering how to spell the
@@ -299,6 +302,10 @@ public:
 //   - The mvrTypeMap is clunky and is not attached to the VRDatum
 //     description field.  The mapping between type ID and description
 //     should appear only once, somewhere. [DONE]
+//
+//   - Improve (and test) adding values to containers.  Values should be
+//     added as VRDatum objects, or just a 'mv' command that moves an
+//     existing object from one namespace in the index to another.
 //
 //   Need to simplify the process of adding data types.
 //

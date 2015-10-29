@@ -11,6 +11,18 @@ std::list<std::string> VRDataIndex::getDataNames() {
   return outList;
 }
 
+std::list<std::string> VRDataIndex::getDataNames(const std::string containerName) {
+  std::list<std::string> outList;
+  for (std::map<std::string, VRDatumPtr>::iterator it = mindex.begin();
+       it != mindex.end(); it++) {
+
+
+    outList.push_back(it->first);
+  }
+  return outList;
+}
+
+
 // Combining the name and the namespace allows the caller to
 // 'inherit' values from higher-up namespaces.  Consider this example:
 //
@@ -28,46 +40,66 @@ std::list<std::string> VRDataIndex::getDataNames() {
 //  height, you'll get 3.2, while if the namespace is /stanley/stella,
 //  you'll get 4.5, since that value is inherited from the higher-up
 //  namespace.
-std::string VRDataIndex::getName(const std::string valName,
-                                    const std::string nameSpace) {
+VRDataIndex::VRDataMap::const_iterator
+VRDataIndex::getEntry(const std::string valName,
+                      const std::string nameSpace) {
 
   // If the input valName begins with a "/", it is a fully qualified
   // name already.  That is, it already includes the name space.
-  if (valName[0] == '/') return valName;
 
-  // Separate the name space into its constituent elements.
-  std::vector<std::string> elems;
-  std::string elem;
-  std::stringstream ss(nameSpace);
-  while (std::getline(ss, elem, '/')) {
-    elems.push_back(elem);
-  }
+  VRDataMap::const_iterator outIt;
 
-  // We start from the longest name space and peel off the rightmost
-  // element each iteration until we find a match, or not.  This
-  // provides for the most local version of valName to prevail.  The
-  // last iteration creates an empty testSpace, on purpose.
-  for (int N = elems.size(); N >= 0; --N) {
+  if (valName[0] == '/') {
 
-    std::vector<std::string> names(&elems[0], &elems[N]);
-    std::string testSpace;
+    return mindex.find(valName);
 
-    for (std::vector<std::string>::iterator it = names.begin();
-         it != names.end(); ++it) {
+  } else {
 
-      testSpace += *it + "/" ;
+    // Separate the name space into its constituent elements.
+    std::vector<std::string> elems;
+    std::string elem;
+    std::stringstream ss(nameSpace);
+    while (std::getline(ss, elem, '/')) {
+      elems.push_back(elem);
     }
 
-    VRDataMap::const_iterator it = mindex.find(testSpace + valName);
-    if (it != mindex.end()) {
-      return it->first;
-    }
-  }
+    // We start from the longest name space and peel off the rightmost
+    // element each iteration until we find a match, or not.  This
+    // provides for the most local version of valName to prevail.  The
+    // last iteration creates an empty testSpace, on purpose.
+    for (int N = elems.size(); N >= 0; --N) {
 
-  // If we are here, there is no matching name in the index.
-  return std::string("");
+      std::vector<std::string> names(&elems[0], &elems[N]);
+      std::string testSpace;
+
+      for (std::vector<std::string>::iterator it = names.begin();
+           it != names.end(); ++it) {
+
+        testSpace += *it + "/" ;
+      }
+
+      outIt = mindex.find(testSpace + valName);
+      if (outIt != mindex.end()) {
+        return outIt;
+      }
+    }
+
+    // If we are here, there is no matching name in the index.
+    return mindex.end();
+  }
 }
 
+std::string VRDataIndex::getName(const std::string valName,
+                                 const std::string nameSpace) {
+
+  VRDataMap::const_iterator p = getEntry(valName, nameSpace);
+
+  if (p == mindex.end()) {
+    return std::string("");
+  } else {
+    return p->first;
+  }
+}
 
 // Returns the data object for this name.
 VRDatumPtr VRDataIndex::getDatum(const std::string valName) {
@@ -80,7 +112,7 @@ VRDatumPtr VRDataIndex::getDatum(const std::string valName) {
 }
 
 VRDatumPtr VRDataIndex::getDatum(const std::string valName,
-                                       const std::string nameSpace) {
+                                 const std::string nameSpace) {
 
   std::string qualifiedName = getName(valName, nameSpace);
 
