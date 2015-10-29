@@ -114,63 +114,76 @@ VRDatumPtr VRDataIndex::getDatum(const std::string valName) {
 VRDatumPtr VRDataIndex::getDatum(const std::string valName,
                                  const std::string nameSpace) {
 
-  std::string qualifiedName = getName(valName, nameSpace);
+  VRDataMap::const_iterator p = getEntry(valName, nameSpace);
 
-  if (qualifiedName.size() > 0) {
-    return getDatum(qualifiedName);
-  } else {
+  if (p == mindex.end()) {
     throw std::runtime_error(std::string("never heard of ") + valName + std::string(" in any of the namespaces: ") + nameSpace);
+  } else {
+    return p->second;
   }
 }
 
-std::string VRDataIndex::getDescription(const std::string valName) {
-  return ("<" + valName + " type=\"" + getDatum(valName)->getDescription() + "\"/>");
+std::string VRDataIndex::getTrimName(const std::string valName,
+                                     const std::string nameSpace) {
+
+  return getTrimName(nameSpace + valName);
 }
 
-std::string VRDataIndex::getDescription(const std::string valName,
-                                           const std::string nameSpace) {
+std::string VRDataIndex::getTrimName(const std::string valName) {
+
+
   // This separates the valName on the slashes and puts the last
   // part of it into trimName.
   std::stringstream ss(valName);
   std::string trimName;
   while (std::getline(ss, trimName, '/')) {};
 
-  return ("<" + trimName +
+  return trimName;
+}
+
+
+std::string VRDataIndex::getDescription(const std::string valName) {
+  return ("<" + getTrimName(valName) + " type=\"" + getDatum(valName)->getDescription() + "\"/>");
+}
+
+std::string VRDataIndex::getDescription(const std::string valName,
+                                        const std::string nameSpace) {
+
+  return ("<" + getTrimName(valName, nameSpace) +
           " type=\"" + getDatum(valName, nameSpace)->getDescription() +
           "\"/>");
 }
 
 std::string VRDataIndex::serialize(const std::string valName) {
-  VRDataMap::iterator it = mindex.find(valName);
-  if (it == mindex.end()) {
-    throw std::runtime_error(std::string("never heard of ") + valName);
+
+  VRDataMap::const_iterator it = getEntry(valName, "");
+
+  if (it != mindex.end()) {
+
+    return serialize(getTrimName(it->first), it->second);
+
   } else {
 
-    // This separates the valName on the slashes and puts the last
-    // part of it into trimName.
-    std::stringstream ss(valName);
-    std::string trimName;
-    while (std::getline(ss, trimName, '/')) {};
+    throw std::runtime_error(std::string("never heard of ") + valName);
 
-    return serialize(trimName, it->second);
   }
 }
 
 std::string VRDataIndex::serialize(const std::string valName,
-                                      const std::string nameSpace) {
-  VRDatumPtr dataPtr = getDatum(valName, nameSpace);
+                                   const std::string nameSpace) {
 
-  std::string qualifiedName = getName(valName, nameSpace);
+  VRDataMap::const_iterator it = getEntry(valName, nameSpace);
 
-  if (qualifiedName.size() > 0) {
+  if (it != mindex.end()) {
 
-    return serialize(qualifiedName);
+    return serialize(getTrimName(it->first), it->second);
+
   } else {
 
-    throw std::runtime_error(std::string("never heard of ") + valName + std::string(" in any of the namespaces: ") + nameSpace);
+    throw std::runtime_error(std::string("never heard of ") + valName + std::string(" in the namespace: ") + nameSpace);
+
   }
 }
-
 
 // an int should be <nWindows type="int">6</nWindows>
 bool VRDataIndex::addSerializedValue(const std::string serializedData) {

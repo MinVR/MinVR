@@ -153,6 +153,13 @@ public:
   VRDatumPtr getDatum(const std::string valName,
                       const std::string nameSpace);
 
+  // Just a utility to return the tail end of the fully qualified name.
+  // i.e. trimName("cora/flora", "/bob/nora") is "flora".  This does not
+  // look in the index at all, just manipulates strings.
+  std::string getTrimName(const std::string valName,
+                          const std::string nameSpace);
+  std::string getTrimName(const std::string valName);
+
   // The getValue function relies on the helper function defined with
   // VRDatum.  Read about it there, but it is just a cute trick to
   // allow programmers to access values directly from the index.  So
