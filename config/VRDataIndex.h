@@ -143,8 +143,15 @@ public:
   //
   // If the namespace is /cora, the value of flora is 6, but if the
   // namespace is /cora/nora, flora is 7.
-  VRDataMap::const_iterator getEntry(const std::string valName,
+
+  // Returns an iterator pointing to an entry in the DataMap.  The
+  // return value is a pair<string, VRDatumPtr>, so it->first is the
+  // name and it->second is the datum object.
+  VRDataMap::iterator getEntry(const std::string valName,
                                      const std::string nameSpace);
+  VRDataMap::iterator getEntry(const std::string valName);
+
+  // Returns the fully qualified name of the value.
   std::string getName(const std::string valName,
                       const std::string nameSpace);
 
@@ -159,6 +166,12 @@ public:
   std::string getTrimName(const std::string valName,
                           const std::string nameSpace);
   std::string getTrimName(const std::string valName);
+
+  // Another utility, meant to pull a name apart on the slashes.
+  std::vector<std::string> explodeName(const std::string fullName);
+
+  // Still another utility, for safety's sake.
+  std::string validateNameSpace(const std::string nameSpace);
 
   // The getValue function relies on the helper function defined with
   // VRDatum.  Read about it there, but it is just a cute trick to
@@ -186,7 +199,7 @@ public:
     return getDatum(valName)->getValue();
   }
   VRDatumHelper<VRDatum> getValue(const std::string valName,
-                                        const std::string nameSpace) {
+                                  const std::string nameSpace) {
     return getDatum(valName, nameSpace)->getValue();
   }
 
@@ -212,7 +225,8 @@ public:
   bool processXMLFile(std::string fileName);
 
   // Returns a list of all the names in the map.  Note this really is
-  // a list of strings, not a MVRContainer.
+  // a list of strings, not a MVRContainer.  (No difference, really,
+  // but we want to keep them semantically separate.)
   std::list<std::string> getDataNames();
   std::list<std::string> getDataNames(const std::string containerName);
 
@@ -225,8 +239,25 @@ public:
   std::string addValue(const std::string valName, int value);
   std::string addValue(const std::string valName, double value);
   std::string addValue(const std::string valName, std::string value);
-  std::string addValue(const std::string valName, MVRContainer value);
   std::string addValue(const std::string valName, MVRArrayDouble value);
+
+  // There is a semantic difference between addValue() for a primitive
+  // value and addValue() for a container.  One creates an object of
+  // the name and value given.  The second (for containers) adds the
+  // contents of the given container value to the container of the
+  // given name.
+  std::string addValue(const std::string valName, MVRContainer value);
+  // Adds an empty container.
+  std::string addValue(const std::string valName);
+
+  void rmValue(const std::string valName, const std::string nameSpace);
+  void rmValue(const std::string valName);
+
+  //  std::string replaceValue(const std::string containerName,
+  //                         const MVRContainer newContents);
+
+  // Mostly just for debug purposes.
+  void printWholeKitAndKaboodle();
 
 };
 

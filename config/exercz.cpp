@@ -96,6 +96,8 @@ int main() {
         std::cout << "usage: put <name> <containername>" << std::endl;
       } else {
 
+
+
         VRDatumPtr input = index->getDatum(elems[1], nameSpace);
         VRDatumPtr container = index->getDatum(elems[2], nameSpace);
 
@@ -103,6 +105,12 @@ int main() {
         //container->add(input);
 
       }
+
+    ////// command: px
+    } else if (elems[0].compare("px") == 0) {
+
+      index->printWholeKitAndKaboodle();
+
     ////// command: z (undocumented in help; use for testing)
     } else if (elems[0].compare("z") == 0) {
 
@@ -191,7 +199,7 @@ int main() {
         std::cout << "try 'add harry int 27' (that is, do 'add <name> <type> <value>')" << std::endl;
       } else {
         std::string serialized = "<" + elems[1] + " type=\"" + elems[2] + "\">" + elems[3] + "</" + elems[1] + ">";
-        index->addSerializedValue(serialized);
+        index->addSerializedValue(serialized, nameSpace);
       }
 
     ////// command: q (exit)

@@ -4,24 +4,58 @@
 // command, or something like it.
 std::list<std::string> VRDataIndex::getDataNames() {
   std::list<std::string> outList;
-  for (std::map<std::string, VRDatumPtr>::iterator it = mindex.begin();
-       it != mindex.end(); it++) {
+  for (VRDataMap::iterator it = mindex.begin(); it != mindex.end(); it++) {
     outList.push_back(it->first);
   }
   return outList;
 }
 
+//
 std::list<std::string> VRDataIndex::getDataNames(const std::string containerName) {
   std::list<std::string> outList;
-  for (std::map<std::string, VRDatumPtr>::iterator it = mindex.begin();
-       it != mindex.end(); it++) {
+  for (VRDataMap::iterator it = mindex.begin(); it != mindex.end(); it++) {
 
-
-    outList.push_back(it->first);
+    // XXX THIS IS NOT RIGHT -- comparison should be for beginning of string.
+    if (it->first.compare(containerName)) {
+      outList.push_back(it->first);
+    }
   }
   return outList;
 }
 
+// Breaks up a name into its constituent parts, on the slashes.
+std::vector<std::string> VRDataIndex::explodeName(const std::string fullName) {
+
+  std::vector<std::string> elems;
+  std::string elem;
+  std::stringstream ss(fullName);
+  while (std::getline(ss, elem, '/')) {
+    elems.push_back(elem);
+  }
+
+  return elems;
+}
+
+// Check a few things:
+//   1. Namespace begins with a "/"
+//   2. Namespace references an actually existing container.
+//   3. Namespace ends with a "/" so valNames can just be appended.
+std::string VRDataIndex::validateNameSpace(const std::string nameSpace) {
+
+  std::string out = nameSpace;
+
+  if (out[0] != '/') {
+    out = "/" + nameSpace;
+  }
+
+  if (mindex.find(out) == mindex.end()) {
+
+    throw("Can't find a namespace called " + nameSpace);
+
+  }
+
+  return out + "/";
+}
 
 // Combining the name and the namespace allows the caller to
 // 'inherit' values from higher-up namespaces.  Consider this example:
@@ -40,14 +74,14 @@ std::list<std::string> VRDataIndex::getDataNames(const std::string containerName
 //  height, you'll get 3.2, while if the namespace is /stanley/stella,
 //  you'll get 4.5, since that value is inherited from the higher-up
 //  namespace.
-VRDataIndex::VRDataMap::const_iterator
+VRDataIndex::VRDataMap::iterator
 VRDataIndex::getEntry(const std::string valName,
                       const std::string nameSpace) {
 
   // If the input valName begins with a "/", it is a fully qualified
   // name already.  That is, it already includes the name space.
 
-  VRDataMap::const_iterator outIt;
+  VRDataMap::iterator outIt;
 
   if (valName[0] == '/') {
 
@@ -56,17 +90,13 @@ VRDataIndex::getEntry(const std::string valName,
   } else {
 
     // Separate the name space into its constituent elements.
-    std::vector<std::string> elems;
-    std::string elem;
-    std::stringstream ss(nameSpace);
-    while (std::getline(ss, elem, '/')) {
-      elems.push_back(elem);
-    }
+    std::vector<std::string> elems = explodeName(nameSpace);
 
     // We start from the longest name space and peel off the rightmost
     // element each iteration until we find a match, or not.  This
     // provides for the most local version of valName to prevail.  The
-    // last iteration creates an empty testSpace, on purpose.
+    // last iteration creates an empty testSpace, on purpose, to test
+    // the root level nameSpace.
     for (int N = elems.size(); N >= 0; --N) {
 
       std::vector<std::string> names(&elems[0], &elems[N]);
@@ -89,10 +119,16 @@ VRDataIndex::getEntry(const std::string valName,
   }
 }
 
+VRDataIndex::VRDataMap::iterator
+VRDataIndex::getEntry(const std::string valName) {
+
+  return getEntry(valName, "");
+}
+
 std::string VRDataIndex::getName(const std::string valName,
                                  const std::string nameSpace) {
 
-  VRDataMap::const_iterator p = getEntry(valName, nameSpace);
+  VRDataMap::iterator p = getEntry(valName, nameSpace);
 
   if (p == mindex.end()) {
     return std::string("");
@@ -114,7 +150,7 @@ VRDatumPtr VRDataIndex::getDatum(const std::string valName) {
 VRDatumPtr VRDataIndex::getDatum(const std::string valName,
                                  const std::string nameSpace) {
 
-  VRDataMap::const_iterator p = getEntry(valName, nameSpace);
+  VRDataMap::iterator p = getEntry(valName, nameSpace);
 
   if (p == mindex.end()) {
     throw std::runtime_error(std::string("never heard of ") + valName + std::string(" in any of the namespaces: ") + nameSpace);
@@ -149,14 +185,16 @@ std::string VRDataIndex::getDescription(const std::string valName) {
 std::string VRDataIndex::getDescription(const std::string valName,
                                         const std::string nameSpace) {
 
-  return ("<" + getTrimName(valName, nameSpace) +
-          " type=\"" + getDatum(valName, nameSpace)->getDescription() +
+  std::string ns = validateNameSpace(nameSpace);
+
+  return ("<" + getTrimName(valName, ns) +
+          " type=\"" + getDatum(valName, ns)->getDescription() +
           "\"/>");
 }
 
 std::string VRDataIndex::serialize(const std::string valName) {
 
-  VRDataMap::const_iterator it = getEntry(valName, "");
+  VRDataMap::iterator it = getEntry(valName, "");
 
   if (it != mindex.end()) {
 
@@ -172,7 +210,7 @@ std::string VRDataIndex::serialize(const std::string valName) {
 std::string VRDataIndex::serialize(const std::string valName,
                                    const std::string nameSpace) {
 
-  VRDataMap::const_iterator it = getEntry(valName, nameSpace);
+  VRDataMap::iterator it = getEntry(valName, nameSpace);
 
   if (it != mindex.end()) {
 
@@ -344,7 +382,6 @@ std::string VRDataIndex::addValue(const std::string valName, MVRArrayDouble valu
 }
 
 
-// 10/21 This doesn't seem right to me.
 std::string VRDataIndex::addValue(const std::string valName,
                                   MVRContainer value) {
 
@@ -363,5 +400,87 @@ std::string VRDataIndex::addValue(const std::string valName,
   return valName;
 }
 
+std::string VRDataIndex::addValue(const std::string valName) {
+
+  // Check if the name is already in use.
+  VRDataMap::iterator it = mindex.find(valName);
+  if (it == mindex.end()) {
+
+    MVRContainer v ;
+    VRDatumPtr obj = factory.CreateVRDatum(MVRCONTAINER, &v);
+    //std::cout << "added " << obj.containerVal()->getDatum() << std::endl;
+    mindex.insert(VRDataMap::value_type(valName, obj));
+
+  }
+  return valName;
+}
+
+
+
+// Removes a value from the index. If this is a container, we must also
+// remove the member values.
+void VRDataIndex::rmValue(const std::string valName, const std::string nameSpace) {
+
+  VRDataMap::iterator it = getEntry(valName, nameSpace);
+
+  // If this is a container, remove the contents of the container.
+  if (it->second->getType() == MVRCONTAINER) {
+
+    MVRContainer value = it->second->getValue();
+
+    for (MVRContainer::iterator vit = value.begin(); vit != value.end(); vit++) {
+      rmValue(*vit, it->first + "/");
+    }
+  }
+
+  // If this value is *in* a container, edit that container's list.
+  std::vector<std::string> elems = explodeName(it->first);
+
+  // Construct the name of the parent container.
+  std::string parent;
+  for (int i = 0; i < elems.size() - 1; i++) {
+    parent += "/" + elems[i];
+  }
+
+  // If we're not at the root level, edit the appropriate container.
+  if (! parent.compare("/")) {
+    VRDataMap::iterator pit = getEntry(parent);
+
+    pit->second.containerVal()->removeValue(elems[elems.size() - 1]);
+
+  }
+}
+
+void VRDataIndex::rmValue(const std::string valName) {
+
+  rmValue(valName, "");
+}
+
+void VRDataIndex::printWholeKitAndKaboodle() {
+
+  // Should sort mindex here.
+
+  int i;
+  for (VRDataMap::iterator it = mindex.begin(); it != mindex.end(); ++it) {
+
+    std::vector<std::string> elems = explodeName( it->first );
+
+    for (i = 0; i < elems.size() - 1; i++) std::cout << " | ";
+    std::cout << elems.back();
+
+    if (it->second->getType() == MVRCONTAINER) {
+
+      std::cout << std::endl;
+
+    } else {
+
+      std::string out = serialize(elems.back(), it->second);
+      if (out.size() > 50) {
+        out = out.substr(0,49) + "...";
+      }
+      std::cout << " = " << out << std::endl;
+    }
+  }
+}
 
 

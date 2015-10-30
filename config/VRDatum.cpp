@@ -144,12 +144,22 @@ bool VRDatumContainer::addToValue(const MVRContainer inVal) {
 
   // Remove all duplicates from the input list.
   for (MVRContainer::const_iterator it = value.begin();
-
        it != value.end(); ++it) {
+
     inCopy.remove(*it);
+
   }
   value.splice(value.end(), inCopy);
   return true;
+}
+
+// This simply removes an entry from a container.  The corresponding
+// name should be removed from the VRDataIndex, but that's an
+// independent step.  Note that there are no error checks, so get the
+// name right before deleting.
+bool VRDatumContainer::removeValue(const std::string rmVal) {
+
+  value.remove(rmVal);
 }
 
 VRDatumPtr CreateVRDatumContainer(void *pData) {

@@ -325,6 +325,7 @@ public:
 
   MVRContainer getValueContainer() const { return value; };
   bool addToValue(const MVRContainer inVal);
+  bool removeValue(const std::string rmVal);
 
   VRDatumHelper<VRDatum> getValue() {
     return VRDatumHelper<VRDatum>(this);
