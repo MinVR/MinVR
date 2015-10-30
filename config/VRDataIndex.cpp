@@ -15,8 +15,7 @@ std::list<std::string> VRDataIndex::getDataNames(const std::string containerName
   std::list<std::string> outList;
   for (VRDataMap::iterator it = mindex.begin(); it != mindex.end(); it++) {
 
-    // XXX THIS IS NOT RIGHT -- comparison should be for beginning of string.
-    if (it->first.compare(containerName)) {
+    if (it->first.compare(0, containerName.size(), containerName) == 0) {
       outList.push_back(it->first);
     }
   }
@@ -48,13 +47,21 @@ std::string VRDataIndex::validateNameSpace(const std::string nameSpace) {
     out = "/" + nameSpace;
   }
 
-  if (mindex.find(out) == mindex.end()) {
+  // If out is only one character, it's a '/' and we're done.
+  if (out.size() > 1) {
 
-    throw("Can't find a namespace called " + nameSpace);
+    if (mindex.find(out) == mindex.end()) {
+
+      throw("Can't find a namespace called " + nameSpace);
+
+    }
+
+
+    if (out[ out.size() - 1 ] != '/') out += '/';
 
   }
 
-  return out + "/";
+  return out;
 }
 
 // Combining the name and the namespace allows the caller to
@@ -443,7 +450,7 @@ void VRDataIndex::rmValue(const std::string valName, const std::string nameSpace
   }
 
   // If we're not at the root level, edit the appropriate container.
-  if (! parent.compare("/")) {
+  if (! parent.compare("/") == 0) {
     VRDataMap::iterator pit = getEntry(parent);
 
     pit->second.containerVal()->removeValue(elems[elems.size() - 1]);

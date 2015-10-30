@@ -6,12 +6,12 @@
 #include "VRDataQueue.h"
 
 #define HELPMESSAGE  std::cout << "ls get the list of data names" << std::endl; \
+      std::cout << "px - show namespaces / containers " << std::endl; \
       std::cout << "p <name> print a value from the list" << std::endl; \
       std::cout << "file <filename> read an XML file" << std::endl; \
       std::cout << "add <newname> <type> <value> add a primitive value" << std::endl; \
-      std::cout << "put <name> <containername> add something to a container" << std::endl; \
-      std::cout << "cd <namespace> set a default namespace (use 'none' for blank)" << std::endl; \
-      std::cout << "set <name1> = <name2> set name1 equal to name2" << std::endl; \
+      std::cout << "add <name> container   - create a container" << std::endl; \
+      std::cout << "cd <namespace> set a default namespace" << std::endl; \
       std::cout << "q quit" << std::endl; \
       std::cout << "? print this message." << std::endl;
 
@@ -80,30 +80,11 @@ int main() {
     } else if (elems[0].compare("cd") == 0) {
 
       if (elems.size() > 1) {
-        if (elems[1].compare("none") == 0) {
-          nameSpace = std::string("");
-        } else {
-          nameSpace = elems[1];
-        }
+
+        nameSpace = elems[1];
+
       } else {
         std::cout << "using namespace: " << nameSpace << std::endl;
-      }
-
-    ////// command: put
-    } else if (elems[0].compare("put") == 0) {
-
-      if (elems.size() < 3) {
-        std::cout << "usage: put <name> <containername>" << std::endl;
-      } else {
-
-
-
-        VRDatumPtr input = index->getDatum(elems[1], nameSpace);
-        VRDatumPtr container = index->getDatum(elems[2], nameSpace);
-
-        //        index->addValue(elems[1],
-        //container->add(input);
-
       }
 
     ////// command: px
@@ -187,7 +168,7 @@ int main() {
 
     ////// command: l (list all values)
     } else if (elems[0].compare("ls") == 0) {
-      MVRContainer nameList = index->getDataNames();
+      MVRContainer nameList = index->getDataNames(nameSpace);
       for (MVRContainer::iterator it = nameList.begin();
            it != nameList.end(); it++) {
         std::cout << *it << std::endl;
@@ -195,11 +176,40 @@ int main() {
     ////// command: add (add something)
     } else if (elems[0].compare("add") == 0) {
 
-      if (elems.size() < 4) {
-        std::cout << "try 'add harry int 27' (that is, do 'add <name> <type> <value>')" << std::endl;
+      if ((elems.size() == 4) || (elems.size() == 3)) {
+
+        std::string ns = index->validateNameSpace(nameSpace);
+
+        if (elems[2].compare("container") == 0) {
+          index->addValue(ns + elems[1]);
+        } else {
+
+          if (elems[2].compare("int") == 0) {
+
+            int iVal;
+            sscanf(elems[3].c_str(), "%d", &iVal);
+            index->addValue(ns + elems[1], iVal);
+
+          } else if (elems[2].compare("double") == 0) {
+
+            double dVal;
+            sscanf(elems[3].c_str(), "%lf", &dVal);
+            index->addValue(ns + elems[1], dVal);
+
+          } else if (elems[2].compare("string") == 0) {
+
+            index->addValue(ns + elems[1], elems[3]);
+
+          } else {
+
+            std::cout << "can't handle that data type." << std::endl;
+
+          }
+        }
+        //        std::string serialized = "<" + elems[1] + " type=\"" + elems[2] + "\">" + elems[3] + "</" + elems[1] + ">";
+        //        index->addSerializedValue(serialized, nameSpace);
       } else {
-        std::string serialized = "<" + elems[1] + " type=\"" + elems[2] + "\">" + elems[3] + "</" + elems[1] + ">";
-        index->addSerializedValue(serialized, nameSpace);
+        std::cout << "try 'add harry int 27' (that is, do 'add <name> <type> <value>' \n or 'add <name> container')" << std::endl;
       }
 
     ////// command: q (exit)
