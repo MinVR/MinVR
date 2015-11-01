@@ -81,7 +81,7 @@ int main() {
 
       if (elems.size() > 1) {
 
-        nameSpace = elems[1];
+        nameSpace = index->validateNameSpace(elems[1]);
 
       } else {
         std::cout << "using namespace: " << nameSpace << std::endl;
@@ -178,27 +178,38 @@ int main() {
 
       if ((elems.size() == 4) || (elems.size() == 3)) {
 
-        std::string ns = index->validateNameSpace(nameSpace);
+        // Make a list of data values to add to the parent container.
+        // In this case, the list will have only one value, but it
+        // could have more.
+        MVRContainer c;
+        c.push_back(nameSpace + elems[1]);
+
+        std::cout << "nameSpace: " << nameSpace << " c: " << c.front() << std::endl;
 
         if (elems[2].compare("container") == 0) {
-          index->addValue(ns + elems[1]);
+          index->addValue(nameSpace + elems[1]);
         } else {
 
           if (elems[2].compare("int") == 0) {
 
             int iVal;
             sscanf(elems[3].c_str(), "%d", &iVal);
-            index->addValue(ns + elems[1], iVal);
+            // Add the value to the index.
+            index->addValue(nameSpace + elems[1], iVal);
+            // Add it to the parent container.
+            if (nameSpace.size() > 1) index->addValue(nameSpace.substr(0,nameSpace.size() - 1), c);
 
           } else if (elems[2].compare("double") == 0) {
 
             double dVal;
             sscanf(elems[3].c_str(), "%lf", &dVal);
-            index->addValue(ns + elems[1], dVal);
+            index->addValue(nameSpace + elems[1], dVal);
+            if (nameSpace.size() > 1) index->addValue(nameSpace.substr(0,nameSpace.size() - 1), c);
 
           } else if (elems[2].compare("string") == 0) {
 
-            index->addValue(ns + elems[1], elems[3]);
+            index->addValue(nameSpace + elems[1], elems[3]);
+            if (nameSpace.size() > 1) index->addValue(nameSpace.substr(0,nameSpace.size() - 1), c);
 
           } else {
 

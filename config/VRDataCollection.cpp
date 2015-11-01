@@ -126,12 +126,14 @@ bool VRDataCollection::processValue(const char* name,
 // This seems to read containers twice.  Do both instances wind up in memory?
 bool VRDataCollection::walkXML(element* node, std::string nameSpace) {
 
+  std::cout << "walkXML sees nameSpace: " << nameSpace << std::endl;
+
   char type[5] = "type";
 
   std::string qualifiedName;
   MVRContainer childNames;
 
-  qualifiedName = nameSpace + "/" + std::string(node->get_name());
+  qualifiedName = nameSpace + std::string(node->get_name());
 
   // This loops through the node children, if there are any.
   while (true) {
@@ -183,7 +185,7 @@ bool VRDataCollection::walkXML(element* node, std::string nameSpace) {
     childNames.push_back(qualifiedName + "/" + child->get_name());
 
     // And go walk its tree.
-    walkXML(child, qualifiedName);
+    walkXML(child, qualifiedName + "/");
   }
 }
 

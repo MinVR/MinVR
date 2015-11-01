@@ -12,13 +12,13 @@
 //
 // It supports the concept of a 'namespace' and
 // scoping of its value names, so names within a container type can
-// override names higher in the tree hierarchy.  See the getName()
-// function for a little more explanation.
+// override names higher in the tree hierarchy.
 //
 // Data values can be easily serialized for transport over a network,
 // and deserialized, for receiving them, and interning the new values
 // into memory.  The system supports an XML format for transmission
 // and storage.
+//
 //
 // The XML parser used here is based on the "Simple C++ XML Parser"
 // from the CodeProject article by "BratilaRazvan", 2010.
@@ -26,11 +26,42 @@
 //
 // Tom Sgouros 8/29/2015
 //
-// p.s. The precise collection of types currently implemented is
+//
+// More about using the system.
+//
+// Containers define a namespace as well as hold a bunch of objects
+// inside them.  The two are very closely related, but are
+// conceptually distinct.  From a user's point of view, a namespace is
+// a string that starts and ends with a '/' and may or may not have
+// some text in the middle.  Here are some possible namespaces:
+//
+//       /perry/
+//       /freida/mary/
+//       /     <- the root namespace that all VRDataIndex objects have.
+//       /homer/henry/martha/
+//
+// A container object is simply an object that "contains" other
+// values.  Those objects can be primitive VRDatum objects, or they
+// can also be containers themselves.  The container object contains a
+// list of the (absolute) names of the objects it contains.  Here are
+// some possible names of containers:
+//
+//       /peter   which might contain  /peter/harold
+//                                     /peter/norma
+//                                and  /peter/flora
+//
+// Note that the container lists the absolute name.  When the
+// container is serialized, the serialized version contains only the
+// relative names.
+//
+//
+//
+// The precise collection of types currently implemented is
 // somewhat random, but the VRDatum.h file contains instructions for
 // extending the system to any C++ type, including the STL types,
 // whatever, go wild.  This may not be important to actually using the
 // system, read on for those instructions.
+//
 //
 // To use:
 //
@@ -38,9 +69,11 @@
 //
 //  1. You can add data with the specialized add functions, such as
 //     addValueInt(), addValueDouble(), etc.  These take a name and a
-//     value and park them in the index.
+//     value and park them in the index.  The addValue() with a single
+//     argument adds a container and you can subsequently add items to
+//     it.
 //
-//  2. You can feed some serialized data to one of the addValue()
+//  2. You can feed some serialized data to the addSerializedValue()
 //     functions.  This is just string data, that looks something like
 //     this:
 //
@@ -172,6 +205,9 @@ public:
 
   // Still another utility, for safety's sake.
   std::string validateNameSpace(const std::string nameSpace);
+
+  // Returns the container name, derived from a long, fully-qualified, name.
+  std::string getNameSpace(const std::string fullName);
 
   // The getValue function relies on the helper function defined with
   // VRDatum.  Read about it there, but it is just a cute trick to

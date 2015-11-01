@@ -22,7 +22,10 @@ std::list<std::string> VRDataIndex::getDataNames(const std::string containerName
   return outList;
 }
 
-// Breaks up a name into its constituent parts, on the slashes.
+// Breaks up a name into its constituent parts, on the slashes.  Note
+// that the first element of the return is blank.  This is on purpose,
+// since that is more or less the top-level container's name.  But beware
+// that feature when you're using the function.
 std::vector<std::string> VRDataIndex::explodeName(const std::string fullName) {
 
   std::vector<std::string> elems;
@@ -43,26 +46,63 @@ std::string VRDataIndex::validateNameSpace(const std::string nameSpace) {
 
   std::string out = nameSpace;
 
-  if (out[0] != '/') {
-    out = "/" + nameSpace;
-  }
+  std::cout << "input ns: " << out;
+
+  if (out[ 0 ] != '/') out = "/" + nameSpace;
+  if (out[ out.size() - 1 ] != '/') out += '/';
+
+  std::cout << "adjusted ns slashes: " << out;
 
   // If out is only one character, it's a '/' and we're done.
   if (out.size() > 1) {
 
-    if (mindex.find(out) == mindex.end()) {
+    // Otherwise look for it in the index and throw an error if
+    // it isn't there.
+    if (mindex.find(out.substr(0, out.size() - 1)) == mindex.end()) {
 
-      throw("Can't find a namespace called " + nameSpace);
+        std::cout << "out.." << out.substr(0, out.size() - 1)  <<std::endl;
+        throw("Can't find a namespace called " + nameSpace);
 
     }
-
-
-    if (out[ out.size() - 1 ] != '/') out += '/';
-
   }
 
   return out;
 }
+
+// Returns the container name, derived from a long, fully-qualified, name.
+std::string VRDataIndex::getNameSpace(const std::string fullName) {
+
+  std::vector<std::string> elems = explodeName(fullName);
+
+  std::cout << "inside..." << std::endl;
+  std::cout << "processing: " << fullName << std::endl;
+  std::cout << "elements: ";
+  for (int i = 0; i < elems.size(); i++) std::cout << i << ":" << elems[i] << "," ;
+  std::cout << std::endl;
+
+  std::string out;
+
+  if (elems.size() > 1) {
+
+    elems.pop_back();
+
+    for (std::vector<std::string>::iterator it = elems.begin();
+         it != elems.end(); ++it) {
+
+      out += *it + std::string("/");
+    }
+
+  } else {
+
+    // There is no container beside the root.
+
+    out = "/";
+  }
+
+  return out;
+}
+
+
 
 // Combining the name and the namespace allows the caller to
 // 'inherit' values from higher-up namespaces.  Consider this example:
@@ -169,7 +209,7 @@ VRDatumPtr VRDataIndex::getDatum(const std::string valName,
 std::string VRDataIndex::getTrimName(const std::string valName,
                                      const std::string nameSpace) {
 
-  return getTrimName(nameSpace + valName);
+  return getTrimName(validateNameSpace(nameSpace) + valName);
 }
 
 std::string VRDataIndex::getTrimName(const std::string valName) {
@@ -186,17 +226,15 @@ std::string VRDataIndex::getTrimName(const std::string valName) {
 
 
 std::string VRDataIndex::getDescription(const std::string valName) {
-  return ("<" + getTrimName(valName) + " type=\"" + getDatum(valName)->getDescription() + "\"/>");
+  return ("<" + getTrimName(valName) + " type=\"" +
+          getDatum(valName)->getDescription() + "\"/>");
 }
 
 std::string VRDataIndex::getDescription(const std::string valName,
                                         const std::string nameSpace) {
 
-  std::string ns = validateNameSpace(nameSpace);
-
-  return ("<" + getTrimName(valName, ns) +
-          " type=\"" + getDatum(valName, ns)->getDescription() +
-          "\"/>");
+  return ("<" + getTrimName(valName, nameSpace) + " type=\"" +
+          getDatum(valName, nameSpace)->getDescription() + "\"/>");
 }
 
 std::string VRDataIndex::serialize(const std::string valName) {
@@ -237,7 +275,8 @@ bool VRDataIndex::addSerializedValue(const std::string serializedData) {
 }
 
 bool VRDataIndex::addSerializedValue(const std::string serializedData,
-                                        const std::string nameSpace) {
+                                     const std::string nameSpace) {
+
   Cxml *xml = new Cxml();
   xml->parse_string((char*)serializedData.c_str());
   element *xml_node = xml->get_root_element();
@@ -246,9 +285,9 @@ bool VRDataIndex::addSerializedValue(const std::string serializedData,
   while (child != NULL) {
 
 #ifdef DEBUG
-    printXML(child, nameSpace);
+    printXML(child, validateNameSpace(nameSpace));
 #endif
-    walkXML(child, nameSpace);
+    walkXML(child, validateNameSpace(nameSpace));
 
     child = xml_node->get_next_child();
   }
@@ -300,6 +339,13 @@ std::string VRDataIndex::addValue(const std::string valName, int value) {
     VRDatumPtr obj = factory.CreateVRDatum(MVRINT, &value);
     mindex.insert(VRDataMap::value_type(valName, obj));
 
+    // Add this value to the parent container, if any.
+    MVRContainer cValue;
+    cValue.push_back(valName);
+    std::string ns = getNameSpace(valName);
+    // The parent container is the namespace minus the trailing /.
+    if (ns.compare("/") != 0) addValue(ns.substr(0,ns.size()-1), cValue);
+
   } else {
     // Overwrite value
     if (overwrite > 0) {
@@ -321,7 +367,13 @@ std::string VRDataIndex::addValue(const std::string valName, double value) {
 
     VRDatumPtr obj = factory.CreateVRDatum(MVRDOUBLE, &value);
     mindex.insert(VRDataMap::value_type(valName, obj));
-    return valName;
+
+    // Add this value to the parent container, if any.
+    MVRContainer cValue;
+    cValue.push_back(valName);
+    std::string ns = getNameSpace(valName);
+    // The parent container is the namespace minus the trailing /.
+    if (ns.compare("/") != 0) addValue(ns.substr(0,ns.size()-1), cValue);
 
   } else {
     // Overwrite value
@@ -353,7 +405,13 @@ std::string VRDataIndex::addValue(const std::string valName, std::string value) 
 
     VRDatumPtr obj = factory.CreateVRDatum(MVRSTRING, &trimValue);
     mindex.insert(VRDataMap::value_type(valName, obj));
-    return valName;
+
+    // Add this value to the parent container, if any.
+    MVRContainer cValue;
+    cValue.push_back(valName);
+    std::string ns = getNameSpace(valName);
+    // The parent container is the namespace minus the trailing /.
+    if (ns.compare("/") != 0) addValue(ns.substr(0,ns.size()-1), cValue);
 
   } else {
     // Overwrite value
@@ -375,7 +433,13 @@ std::string VRDataIndex::addValue(const std::string valName, MVRArrayDouble valu
     // No? Create it and stick it in index.
     VRDatumPtr obj = factory.CreateVRDatum(MVRARRAYDOUBLE, &value);
     mindex.insert(VRDataMap::value_type(valName, obj));
-    return valName;
+
+    // Add this value to the parent container, if any.
+    MVRContainer cValue;
+    cValue.push_back(valName);
+    std::string ns = getNameSpace(valName);
+    // The parent container is the namespace minus the trailing /.
+    if (ns.compare("/") != 0) addValue(ns.substr(0,ns.size()-1), cValue);
 
   } else {
     // Overwrite value
@@ -392,6 +456,9 @@ std::string VRDataIndex::addValue(const std::string valName, MVRArrayDouble valu
 std::string VRDataIndex::addValue(const std::string valName,
                                   MVRContainer value) {
 
+  // If the container to add to is the root, ignore.
+  if (valName.compare("/") == 0) return valName;
+
   // Check if the name is already in use.
   VRDataMap::iterator it = mindex.find(valName);
   if (it == mindex.end()) {
@@ -399,6 +466,13 @@ std::string VRDataIndex::addValue(const std::string valName,
     VRDatumPtr obj = factory.CreateVRDatum(MVRCONTAINER, &value);
     //std::cout << "added " << obj.containerVal()->getDatum() << std::endl;
     mindex.insert(VRDataMap::value_type(valName, obj));
+
+    // Add this value to the parent container, if any.
+    MVRContainer cValue;
+    cValue.push_back(valName);
+    std::string ns = getNameSpace(valName);
+    // The parent container is the namespace minus the trailing /.
+    if (ns.compare("/") != 0) addValue(ns.substr(0,ns.size()-1), cValue);
 
   } else {
     // Add value to existing container.
@@ -425,7 +499,8 @@ std::string VRDataIndex::addValue(const std::string valName) {
 
 
 // Removes a value from the index. If this is a container, we must also
-// remove the member values.
+// remove the member values.  This functionality is really just for
+// testing.  I don't expect actual applications to use it.
 void VRDataIndex::rmValue(const std::string valName, const std::string nameSpace) {
 
   VRDataMap::iterator it = getEntry(valName, nameSpace);
@@ -472,7 +547,7 @@ void VRDataIndex::printWholeKitAndKaboodle() {
 
     std::vector<std::string> elems = explodeName( it->first );
 
-    for (i = 0; i < elems.size() - 1; i++) std::cout << " | ";
+    for (i = 0; i < ((int)elems.size() - 1); i++) std::cout << " | ";
     std::cout << elems.back();
 
     if (it->second->getType() == MVRCONTAINER) {

@@ -8,10 +8,15 @@ TISOURCES=testindex.cpp VRDatum.cpp VRDatumFactory.cpp VRDataIndex.cpp attribute
 
 EXSOURCES=exercz.cpp $(MVRSOURCES) $(ASOURCES)
 
+SAMPSOURCES=sample.cpp $(MVRSOURCES) $(ASOURCES)
+
 TPSOURCES=testproxy.cpp
 
 exercz: $(EXSOURCES)
 	g++ $(CFLAGS) -o exercz $(EXSOURCES)
+
+sample: $(SAMPSOURCES)
+	g++ $(CFLAGS) -o sample $(SAMPSOURCES)
 
 testindex:   $(TISOURCES)
 	g++ $(CFLAGS) -o testindex $(TISOURCES)
