@@ -283,12 +283,6 @@ public:
   // Adds an empty container.
   std::string addValue(const std::string valName);
 
-  void rmValue(const std::string valName, const std::string nameSpace);
-  void rmValue(const std::string valName);
-
-  //  std::string replaceValue(const std::string containerName,
-  //                         const MVRContainer newContents);
-
   // A utility to make sure a namespace is spelled right, potentially
   // useful to users, so made public.
   std::string validateNameSpace(const std::string nameSpace);

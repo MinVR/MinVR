@@ -492,47 +492,6 @@ std::string VRDataIndex::addValue(const std::string valName) {
 }
 
 
-
-// Removes a value from the index. If this is a container, we must also
-// remove the member values.  This functionality is really just for
-// testing.  I don't expect actual applications to use it.
-void VRDataIndex::rmValue(const std::string valName, const std::string nameSpace) {
-
-  VRDataMap::iterator it = getEntry(valName, nameSpace);
-
-  // If this is a container, remove the contents of the container.
-  if (it->second->getType() == MVRCONTAINER) {
-
-    MVRContainer value = it->second->getValue();
-
-    for (MVRContainer::iterator vit = value.begin(); vit != value.end(); vit++) {
-      rmValue(*vit, it->first + "/");
-    }
-  }
-
-  // If this value is *in* a container, edit that container's list.
-  std::vector<std::string> elems = explodeName(it->first);
-
-  // Construct the name of the parent container.
-  std::string parent;
-  for (int i = 0; i < elems.size() - 1; i++) {
-    parent += "/" + elems[i];
-  }
-
-  // If we're not at the root level, edit the appropriate container.
-  if (! parent.compare("/") == 0) {
-    VRDataMap::iterator pit = getEntry(parent);
-
-    pit->second.containerVal()->removeValue(elems[elems.size() - 1]);
-
-  }
-}
-
-void VRDataIndex::rmValue(const std::string valName) {
-
-  rmValue(valName, "");
-}
-
 void VRDataIndex::printStructure() {
 
   // Should sort mindex here.
