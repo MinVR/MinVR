@@ -46,12 +46,8 @@ std::string VRDataIndex::validateNameSpace(const std::string nameSpace) {
 
   std::string out = nameSpace;
 
-  std::cout << "input ns: " << out;
-
   if (out[ 0 ] != '/') out = "/" + nameSpace;
   if (out[ out.size() - 1 ] != '/') out += '/';
-
-  std::cout << "adjusted ns slashes: " << out;
 
   // If out is only one character, it's a '/' and we're done.
   if (out.size() > 1) {
@@ -60,7 +56,6 @@ std::string VRDataIndex::validateNameSpace(const std::string nameSpace) {
     // it isn't there.
     if (mindex.find(out.substr(0, out.size() - 1)) == mindex.end()) {
 
-        std::cout << "out.." << out.substr(0, out.size() - 1)  <<std::endl;
         throw("Can't find a namespace called " + nameSpace);
 
     }
@@ -73,13 +68,6 @@ std::string VRDataIndex::validateNameSpace(const std::string nameSpace) {
 std::string VRDataIndex::getNameSpace(const std::string fullName) {
 
   std::vector<std::string> elems = explodeName(fullName);
-
-  std::cout << "inside..." << std::endl;
-  std::cout << "processing: " << fullName << std::endl;
-  std::cout << "elements: ";
-  for (int i = 0; i < elems.size(); i++) std::cout << i << ":" << elems[i] << "," ;
-  std::cout << std::endl;
-
   std::string out;
 
   if (elems.size() > 1) {
@@ -295,7 +283,7 @@ bool VRDataIndex::addSerializedValue(const std::string serializedData,
   delete xml;
 }
 
-bool VRDataIndex::processXMLFile(std::string fileName) {
+bool VRDataIndex::processXMLFile(std::string fileName, std::string nameSpace) {
 
   std::string xml_string="";
   std::cout << "Reading from file = " << fileName << std::endl;
@@ -315,9 +303,9 @@ bool VRDataIndex::processXMLFile(std::string fileName) {
     while (child != NULL) {
 
 #ifdef DEBUG
-      printXML(child, std::string(""));
+      printXML(child, nameSpace);
 #endif
-      walkXML(child, std::string(""));
+      walkXML(child, nameSpace);
 
       child = xml_node->get_next_child();
     }
@@ -492,6 +480,13 @@ std::string VRDataIndex::addValue(const std::string valName) {
     //std::cout << "added " << obj.containerVal()->getDatum() << std::endl;
     mindex.insert(VRDataMap::value_type(valName, obj));
 
+    // Add this value to the parent container, if any.
+    MVRContainer cValue;
+    cValue.push_back(valName);
+    std::string ns = getNameSpace(valName);
+    // The parent container is the namespace minus the trailing /.
+    if (ns.compare("/") != 0) addValue(ns.substr(0,ns.size()-1), cValue);
+
   }
   return valName;
 }
@@ -538,7 +533,7 @@ void VRDataIndex::rmValue(const std::string valName) {
   rmValue(valName, "");
 }
 
-void VRDataIndex::printWholeKitAndKaboodle() {
+void VRDataIndex::printStructure() {
 
   // Should sort mindex here.
 

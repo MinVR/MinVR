@@ -5,13 +5,13 @@
 #include "VRDataIndex.h"
 #include "VRDataQueue.h"
 
-#define HELPMESSAGE  std::cout << "ls get the list of data names" << std::endl; \
+#define HELPMESSAGE  std::cout << "ls - get the list of data names" << std::endl; \
       std::cout << "px - show namespaces / containers " << std::endl; \
-      std::cout << "p <name> print a value from the list" << std::endl; \
-      std::cout << "file <filename> read an XML file" << std::endl; \
-      std::cout << "add <newname> <type> <value> add a primitive value" << std::endl; \
-      std::cout << "add <name> container   - create a container" << std::endl; \
-      std::cout << "cd <namespace> set a default namespace" << std::endl; \
+      std::cout << "p <name> - print a value from the list" << std::endl; \
+      std::cout << "file <filename> - read an XML file" << std::endl; \
+      std::cout << "add <newname> <type> <value> - add a primitive value" << std::endl; \
+      std::cout << "add <name> container  - create a container" << std::endl; \
+      std::cout << "cd [<namespace>] - set or show the default namespace" << std::endl; \
       std::cout << "q quit" << std::endl; \
       std::cout << "? print this message." << std::endl;
 
@@ -25,37 +25,32 @@
 // it.
 int main() {
   VRDataIndex *index = new VRDataIndex;
-  VRDataQueue *queue = new VRDataQueue;
 
   // Set up some sample data names and values.
   int a = 4;
   int b = 6;
   double f = 3.1415926;
   double g = 2.71828;
-  std::string s1 = std::string("wowie!");
-  std::string s2 = std::string("shazam!");
+  std::string s1 = "wowie!";
+  std::string s2 = "shazam!";
 
-  index->addValue(std::string("/henry"), a);
-  index->addValue(std::string("/ralph"), b);
+  index->addValue("/henry", a);
+  index->addValue("/ralph", b);
 
-  index->addValue(std::string("/george"), f);
-  index->addValue(std::string("/mary"), g);
+  index->addValue("/george", f);
+  index->addValue("/mary", g);
 
-  index->addValue(std::string("/billy"), s1);
-  index->addValue(std::string("/johnny"), s2);
+  index->addValue("/billy", s1);
+  index->addValue("/johnny", s2);
 
-  index->addSerializedValue(std::string("<bob type=\"container\"><flora type=\"int\">3274</flora><morton type=\"double\">34.5</morton><cora type=\"container\"><flora type=\"int\">1234</flora><nora type=\"double\">23.45</nora></cora></bob>"));
+  index->addSerializedValue("<bob type=\"container\"><flora type=\"int\">3274</flora><morton type=\"double\">34.5</morton><cora type=\"container\"><flora type=\"int\">1234</flora><nora type=\"double\">23.45</nora></cora></bob>");
 
-  index->addSerializedValue(std::string("<chester type=\"arraydouble\">32.7@44.56@22.3@78.2@99.134@</chester>"));
+  index->addSerializedValue("<chester type=\"arraydouble\">32.7@44.56@22.3@78.2@99.134@</chester>");
 
   std::vector<std::string> elems;
   std::string elem;
   std::string line;
   std::string nameSpace("/");
-
-  queue->push(index->getDatum("billy", nameSpace)->serialize());
-  queue->push(index->getDatum("george", nameSpace)->serialize());
-  queue->printQueue();
 
   HELPMESSAGE
 
@@ -74,14 +69,27 @@ int main() {
     ////// command: file (open file)
     } else if (elems[0].compare("file") == 0) {
 
-      index->processXMLFile(elems[1]);
+      index->processXMLFile(elems[1], nameSpace);
 
     ////// command: cd (set namespace)
     } else if (elems[0].compare("cd") == 0) {
 
       if (elems.size() > 1) {
 
-        nameSpace = index->validateNameSpace(elems[1]);
+        try {
+
+          if (elems[1][0] != '/') {
+
+            nameSpace = index->validateNameSpace(nameSpace + elems[1]);
+
+          } else {
+
+            nameSpace = index->validateNameSpace(elems[1]);
+          }
+        } catch (const std::exception& e) {
+
+          std::cout << "oops: " << e.what() << std::endl;
+        }
 
       } else {
         std::cout << "using namespace: " << nameSpace << std::endl;
@@ -90,7 +98,7 @@ int main() {
     ////// command: px
     } else if (elems[0].compare("px") == 0) {
 
-      index->printWholeKitAndKaboodle();
+      index->printStructure();
 
     ////// command: z (undocumented in help; use for testing)
     } else if (elems[0].compare("z") == 0) {
@@ -118,6 +126,11 @@ int main() {
     } else if (elems[0].compare("p") == 0) {
 
       try {
+
+        // This illustrates one way to get the data out of the index.
+        // You can also do something like this:
+        //
+        //  int ip = index->getValue("henry", "/")
         VRDatumPtr p = index->getDatum(elems[1], nameSpace);
 
         switch (p->getType()) {
@@ -217,8 +230,6 @@ int main() {
 
           }
         }
-        //        std::string serialized = "<" + elems[1] + " type=\"" + elems[2] + "\">" + elems[3] + "</" + elems[1] + ">";
-        //        index->addSerializedValue(serialized, nameSpace);
       } else {
         std::cout << "try 'add harry int 27' (that is, do 'add <name> <type> <value>' \n or 'add <name> container')" << std::endl;
       }

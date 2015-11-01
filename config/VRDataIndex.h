@@ -160,6 +160,19 @@ private:
   // default class constructor allows overwrites.
   int overwrite;
 
+  // Just a utility to return the tail end of the fully qualified name.
+  // i.e. trimName("cora/flora", "/bob/nora") is "flora".  This does not
+  // look in the index at all, just manipulates strings.
+  std::string getTrimName(const std::string valName,
+                          const std::string nameSpace);
+  std::string getTrimName(const std::string valName);
+
+  // Another utility, meant to pull a name apart on the slashes.
+  std::vector<std::string> explodeName(const std::string fullName);
+
+  // Returns the namespace, derived from a long, fully-qualified, name.
+  std::string getNameSpace(const std::string fullName);
+
 public:
   VRDataIndex() : overwrite(1) {};
 
@@ -192,22 +205,6 @@ public:
   VRDatumPtr getDatum(const std::string valName);
   VRDatumPtr getDatum(const std::string valName,
                       const std::string nameSpace);
-
-  // Just a utility to return the tail end of the fully qualified name.
-  // i.e. trimName("cora/flora", "/bob/nora") is "flora".  This does not
-  // look in the index at all, just manipulates strings.
-  std::string getTrimName(const std::string valName,
-                          const std::string nameSpace);
-  std::string getTrimName(const std::string valName);
-
-  // Another utility, meant to pull a name apart on the slashes.
-  std::vector<std::string> explodeName(const std::string fullName);
-
-  // Still another utility, for safety's sake.
-  std::string validateNameSpace(const std::string nameSpace);
-
-  // Returns the container name, derived from a long, fully-qualified, name.
-  std::string getNameSpace(const std::string fullName);
 
   // The getValue function relies on the helper function defined with
   // VRDatum.  Read about it there, but it is just a cute trick to
@@ -258,7 +255,7 @@ public:
                           const std::string nameSpace);
 
   // Process the contents of a given XML file into the index.
-  bool processXMLFile(std::string fileName);
+  bool processXMLFile(std::string fileName, std::string nameSpace);
 
   // Returns a list of all the names in the map.  Note this really is
   // a list of strings, not a MVRContainer.  (No difference, really,
@@ -292,8 +289,12 @@ public:
   //  std::string replaceValue(const std::string containerName,
   //                         const MVRContainer newContents);
 
+  // A utility to make sure a namespace is spelled right, potentially
+  // useful to users, so made public.
+  std::string validateNameSpace(const std::string nameSpace);
+
   // Mostly just for debug purposes.
-  void printWholeKitAndKaboodle();
+  void printStructure();
 
 };
 
@@ -377,9 +378,7 @@ public:
 //     description field.  The mapping between type ID and description
 //     should appear only once, somewhere. [DONE]
 //
-//   - Improve (and test) adding values to containers.  Values should be
-//     added as VRDatum objects, or just a 'mv' command that moves an
-//     existing object from one namespace in the index to another.
+//   - Improve (and test) adding values to containers. [DONE]
 //
 //   Need to simplify the process of adding data types.
 //
