@@ -1,24 +1,24 @@
 <?xml version="1.0"?>
 <base grok="norgy">
-    <section id="CAVEViewer">
+    <CAVEViewer>
         <name>CAVEViewerName</name>
         <headTracked>true</headTracked>
         <viewDirection>(0.0, -1.0, 0.0)</viewDirection>
 
-        <section id="CAVEfront">
+        <CAVEfront>
           <name>CAVEfrontName</name>
           <deviceMounted>false</deviceMounted>
           <origin>(-48.0, -48.0, -48.0)</origin>
           <horizontalAxis>(1.0, 0.0, 0.0)</horizontalAxis>
-        </section>
+        </CAVEfront>
 
-        <section id="CAVErear">
+        <CAVErear>
           <name>CAVErearName</name>
           <deviceMounted>false</deviceMounted>
           <origin>(-48.0, -48.0, -48.0)</origin>
           <horizontalAxis>(0.0, 0.0, 1.0)</horizontalAxis>
-        </section>
-    </section>
+        </CAVErear>
+      </CAVEViewer>
 </base>
 
 

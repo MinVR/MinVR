@@ -1,19 +1,25 @@
-# cmake -DCMAKE_BUILD_TYPE=Debug -G "Unix Makefiles" ..
 cmake_minimum_required(VERSION 2.8)
-project("MinVRSettings")
+project("MinVR2/config")
 
+add_executable(exercz exercz.cpp
+  VRDatum.h VRDatum.cpp
+  VRDatumFactory.h VRDatumFactory.cpp
+  VRDataCollection.h VRDataCollection.cpp
+  VRDataIndex.h VRDataIndex.cpp
+  Cxml/attribute.cpp
+  Cxml/Cxml.cpp
+  Cxml/element.cpp
+  Cxml/utils.cpp
+  Cxml/XML.cpp)
 
-add_executable(settings_driver main.cpp
-                               MinVRSettings.cpp
-			       attribute.cpp
-                               Cxml.cpp
-                               element.cpp
-                               utils.cpp
-                               XML.cpp)
+add_executable(sample sample.cpp
+  VRDatum.h VRDatum.cpp
+  VRDatumFactory.h VRDatumFactory.cpp
+  VRDataCollection.h VRDataCollection.cpp
+  VRDataIndex.h VRDataIndex.cpp
+  Cxml/attribute.cpp
+  Cxml/Cxml.cpp
+  Cxml/element.cpp
+  Cxml/utils.cpp
+  Cxml/XML.cpp)
 
-add_executable(xml_driver driver.cpp
-                          attribute.cpp
-                          Cxml.cpp
-                          element.cpp
-                          utils.cpp
-                          XML.cpp)

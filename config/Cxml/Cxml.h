@@ -2,7 +2,7 @@
 #define CXML_H
 
 #include "utils.h"
-
+#include <stdlib.h>
 
 class Cxml
 {
