@@ -67,11 +67,10 @@
 //
 // Create an index object, and add values to the store in one of three ways.
 //
-//  1. You can add data with the specialized add functions, such as
-//     addValueInt(), addValueDouble(), etc.  These take a name and a
-//     value and park them in the index.  The addValue() with a single
-//     argument adds a container and you can subsequently add items to
-//     it.
+//  1. You can add data with the specialized addValue() functions.
+//     These take a name and a value and park them in the index.  The
+//     addValue() with a single argument adds a container and you can
+//     subsequently add items to it.
 //
 //  2. You can feed some serialized data to the addSerializedValue()
 //     functions.  This is just string data, that looks something like
@@ -105,7 +104,7 @@
 //
 //    VRDataIndex *index = new VRDataIndex;
 //    int a = 4;
-//    index->addValue(std::string("/george", a);
+//    index->addValue("/george", a);
 //
 //  This incorporates an integer value of 4 into the index with the
 //  name "george" that appears at the root (global) level.
