@@ -26,6 +26,8 @@ private:
 public:
   VRDataQueue() {};
 
+  bool notEmpty() { return (bool)mqueue.size(); }
+
   // Returns a pointer to the object at the head of the queue.
   std::string getSerializedDatum() { return mqueue.front(); }
 
