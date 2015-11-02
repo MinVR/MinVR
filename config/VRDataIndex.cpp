@@ -281,6 +281,7 @@ bool VRDataIndex::addSerializedValue(const std::string serializedData,
   }
 
   delete xml;
+  return true;
 }
 
 bool VRDataIndex::processXMLFile(std::string fileName, std::string nameSpace) {
@@ -315,6 +316,7 @@ bool VRDataIndex::processXMLFile(std::string fileName, std::string nameSpace) {
   } else {
     std::cout << "Error opening file " << fileName << std::endl;
   }
+  return true;
 }
 
 std::string VRDataIndex::addValue(const std::string valName, int value) {
@@ -379,7 +381,7 @@ std::string VRDataIndex::addValue(const std::string valName, std::string value) 
   // Remove leading spaces.
   int valueBegin = value.find_first_not_of(" \t\n\r");
   if (valueBegin == value.size())
-    return false; // no content. This should not happen. Or should it?
+    return ""; // no content. This should not happen. Or should it?
 
   // ... and trailing.
   int valueEnd = value.find_last_not_of(" \t\n\r");

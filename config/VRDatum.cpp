@@ -23,6 +23,7 @@ std::string VRDatum::initializeDescription(MVRTYPE_ID t) {
       return MVRTypeMap[i].first;
     }
   }
+  return MVRTypeMap[0].first; // Should never reach here.
 }
 
 
@@ -157,10 +158,10 @@ bool VRDatumContainer::addToValue(const MVRContainer inVal) {
 // name should be removed from the VRDataIndex, but that's an
 // independent step.  Note that there are no error checks, so get the
 // name right before deleting.
-bool VRDatumContainer::removeValue(const std::string rmVal) {
+// bool VRDatumContainer::removeValue(const std::string rmVal) {
 
-  value.remove(rmVal);
-}
+//   value.remove(rmVal);
+// }
 
 VRDatumPtr CreateVRDatumContainer(void *pData) {
   VRDatumContainer *obj = new VRDatumContainer(*static_cast<MVRContainer *>(pData));

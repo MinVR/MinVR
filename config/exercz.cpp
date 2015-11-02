@@ -169,6 +169,13 @@ int main() {
             }
             break;
           }
+
+	case MVRNONE:
+	case MVRARRAYINT:
+	case MVRARRAYSTRING:
+	  {
+	    break;
+	  }	     
         }
 
         std::cout << "description: " << index->getDescription(elems[1], nameSpace) << std::endl;

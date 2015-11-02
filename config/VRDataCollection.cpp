@@ -120,7 +120,14 @@ bool VRDataCollection::processValue(const char* name,
       }
       break;
     }
+  case MVRNONE:
+  case MVRARRAYINT:
+  case MVRARRAYSTRING:
+    {
+      break;
+    }	     
   }
+  return true;
 }
 
 // This seems to read containers twice.  Do both instances wind up in memory?
