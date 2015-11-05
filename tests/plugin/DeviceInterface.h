@@ -57,6 +57,9 @@ public:
 	virtual void addInputDeviceFactory(InputDeviceFactory* factory) = 0;
 
 	std::string getName() { return "DeviceInterface"; }
+	const std::type_info& getType() { return typeid(DeviceInterface); }
+	int getMinVersion() { return getVersion(); }
+	static int getVersion() { return 0; }
 };
 
 #endif /* DEVICEINTERFACE_H_ */

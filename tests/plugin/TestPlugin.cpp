@@ -46,6 +46,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "DeviceInterface.h"
 #include "TestPluginDrivers.h"
 
+
 class TestPlugin : public MinVR::Plugin {
 public:
 	PLUGIN_API TestPlugin() {
@@ -57,16 +58,18 @@ public:
 	PLUGIN_API bool registerPlugin(MinVR::PluginInterface *interface)
 	{
 		std::cout << "Registering TestPlugin with the following interface: " << interface->getName() << std::endl;
-		if (interface->getName() == "GraphicsInterface")
+
+		GraphicsInterface* graphicsInterface = interface->getInterface<GraphicsInterface>();
+		if (graphicsInterface != NULL)
 		{
-			GraphicsInterface* graphicsInterface = interface->getInterface<GraphicsInterface>();
 			graphicsInterface->addGraphicsDriver("opengl", new OpenGLGraphicsDriver());
 			graphicsInterface->addGraphicsDriver("d3d", new D3DGraphicsDriver());
 			return true;
 		}
-		if (interface->getName() == "DeviceInterface")
+
+		DeviceInterface* deviceInterface = interface->getInterface<DeviceInterface>();
+		if (deviceInterface != NULL)
 		{
-			DeviceInterface* deviceInterface = interface->getInterface<DeviceInterface>();
 			deviceInterface->addInputDeviceFactory(new VRPNFactory());
 			deviceInterface->addInputDeviceFactory(new TouchFactory());
 			return true;
@@ -77,7 +80,8 @@ public:
 	PLUGIN_API bool unregisterPlugin(MinVR::PluginInterface *interface)
 	{
 		std::cout << "Unregistering TestPlugin with the following interface: " << interface->getName() << std::endl;
-		return false;
+
+		return true;
 	}
 };
 

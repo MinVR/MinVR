@@ -45,6 +45,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <string>
 #include <memory>
+#include <iostream>
+#include <typeinfo>
 
 namespace MinVR {
 
@@ -53,10 +55,23 @@ public:
 	virtual ~PluginInterface() {}
 
 	virtual std::string getName() = 0;
+	virtual const std::type_info& getType() = 0;
+	virtual int getMinVersion() = 0;
 
 	template<typename T>
 	inline T* getInterface()
 	{
+		if (getType() != typeid(T))
+		{
+			return NULL;
+		}
+
+		if (this->getMinVersion() > T::getVersion())
+		{
+			std::cout << "Cannot use plugin for interface " << getName() << " as the minimum version is " << this->getMinVersion() << " but found " << T::getVersion() << std::endl;
+			return NULL;
+		}
+
 		return dynamic_cast<T*>(this);
 	}
 };
