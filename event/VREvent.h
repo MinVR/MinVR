@@ -3,8 +3,7 @@
 #define VREVENT_H
 
 #include <string>
-#include <event/VRByteData.h>
-#include <event/VRByteStream.h>
+#include <data/VRDataIndex.h>
 
 
 /** VREvent
@@ -12,47 +11,32 @@
 class VREvent {
 public:
 
-  VREvent(const std::string &name, const VRByteData &data) : _name(name), _data(data) {}
+  VREvent(const std::string &eventName, const VRDataIndex &dataIndex);
+  /// Creates an empty event
+  VREvent();
 
-  template<typename SERIALIZABLE_TYPE>
-  VREvent(const std::string &name, SERIALIZABLE_TYPE &object) : _name(name) {
-    VRByteStream bs;
-    object.serialize(bs);
-    _data = bs.toByteData();
-  }
+  virtual ~VREvent();
 
-  VREvent() {}
-
-  virtual ~VREvent() {}
-
+  /// Returns the name of the VREvent, not be to confused with the name(s) of specific VRAnyCoreType objects stored
+  /// inside the _dataIndex.  For example, an event named "Mouse_Move" can have a datum named "Postion" and
+  /// another datum named "Velocity", etc.  This method returns the event name (e.g., "Mouse_Move").  Use
+  /// getDataIndex->getDataNames() to get "Position" and "Velocity", etc.
   std::string getName() const { return _name; }
+  void setName(const std::string &name) { _name = name; }
 
-  /// For speed (to avoid copying the data) returns a const reference to the data. 
-  /// Make sure to only use this reference while the VREvent is within scope.
-  const VRByteData& getData() const { return _data; }
+  /// Access event data through the dataIndex object
+  VRDataIndex* getDataIndex() { return &_dataIndex; }
 
-  void serialize(VRByteStream &bs) const {
-    bs.writeString(_name);
-    bs.writeByteData(_data);
-  }
+  /// Serialize the event in an XML format
+  std::string toXML();
 
-  void deserialize(VRByteStream &bs) {
-    _name = bs.readString();
-    _data = bs.readByteData();
-  }
+  /// A static constructor that creates a new VREvent from XML format data
+  static VREvent fromXML(const std::string &xml);
 
-  /// If the way that VREvent's are serialized is changed, this function must be updated as well.  This is used
-  /// by VRNetInterface to calculate the size of buffer needed to serialize an array of VREvents to send them
-  /// over the network.
-  int getSizeInBytes() const {
-    // dataSize = (bytes needed to store InputEvent's name string) + (bytes needed to store the InputEvent's data)
-    return (_name.length() + VRByteData::BYTEDATA_SIZEOFINT) + (_data.getSize() + VRByteData::BYTEDATA_SIZEOFINT);
-  }
-
-
+  
 protected:
   std::string _name;
-  VRByteData _data;
+  VRDataIndex _dataIndex;
 };
 
 

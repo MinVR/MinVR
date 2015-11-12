@@ -100,9 +100,10 @@ source_group ("tests" FILES ${srcfiles})
 # (Uncomment the lines below as we add .cpp files to those directories.)
 
 #add_subdirectory (config)
+add_subdirectory (data)
 #add_subdirectory (display)
-#add_subdirectory (event)
-#add_subdirectory (math)
+add_subdirectory (event)
+add_subdirectory (math)
 add_subdirectory (net)
 add_subdirectory (plugin)
 
