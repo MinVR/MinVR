@@ -1,6 +1,7 @@
 #include <net/VRNetInterface.h>
 
 #include <event/VRByteStream.h>
+#include <data/XMLUtils.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,6 +26,10 @@ const unsigned char VRNetInterface::INPUT_EVENTS_MSG = 1;
 const unsigned char VRNetInterface::SWAP_BUFFERS_REQUEST_MSG = 2;
 const unsigned char VRNetInterface::SWAP_BUFFERS_NOW_MSG = 3;
 
+// assuming 32-bit ints, note that VRNetInterface::pack/unpackint() use the int32_t type
+const unsigned char VRNetInterface::VRNET_SIZEOFINT = 4;
+
+
 void 
 VRNetInterface::sendSwapBuffersRequest(SOCKET socketID) {
   // this message consists only of a 1-byte header
@@ -42,36 +47,27 @@ VRNetInterface::sendInputEvents(SOCKET socketID, std::vector<VREvent> &inputEven
   // 1. send 1-byte message header
   sendall(socketID, &INPUT_EVENTS_MSG, 1);
   
-  // determine size of message data in bytes = size of all input events + one int to store the number of input events
-  int dataSize = 0;
+  // 2. create an XML-formatted string to hold all the inputEvents
+  std::string xmlEvents = "<VREventList num=\"" + XMLUtils::intToString(inputEvents.size()) + "\">";
   for (std::vector<VREvent>::iterator itr=inputEvents.begin(); itr<inputEvents.end(); itr++) {
-    dataSize += itr->getSizeInBytes();
+    xmlEvents += itr->toXML();
   }
-  dataSize += VRByteData::BYTEDATA_SIZEOFINT;
+  xmlEvents += "</VREventList>";
   
-  // 2. send the size of the message data so receive will know how many bytes to expect
-  unsigned char buf[VRByteData::BYTEDATA_SIZEOFINT];
-  VRByteData::packInt(buf, dataSize);
-  sendall(socketID, buf, VRByteData::BYTEDATA_SIZEOFINT);
+  // 3. send the size of the message data so receive will know how many bytes to expect
+  unsigned char buf[VRNET_SIZEOFINT];
+  packInt(buf, xmlEvents.size());
+  sendall(socketID, buf, VRNET_SIZEOFINT);
   
-  // 3. pack all the input events data and send these bytes
-  VRByteStream bs(dataSize);
-  bs.writeInt(inputEvents.size());
-  for (std::vector<VREvent>::iterator itr=inputEvents.begin(); itr<inputEvents.end(); itr++) {
-    itr->serialize(bs);
-  }
-  sendall(socketID, bs.getByteArray(), bs.getSize());
-  
-  if (dataSize != bs.getSize()) {
-    std::cerr << "problem: datasize calculated incorrectly:" << dataSize << " " << bs.getSize() << std::endl;
-  }
+  // 4. send the chars that make up xmlEvents string
+  sendall(socketID, (const unsigned char*)xmlEvents.c_str(), xmlEvents.size());
 }
 
 
 int 
 VRNetInterface::sendall(SOCKET s, const unsigned char *buf, int len) {
   int total = 0;        // how many bytes we've sent
-  int bytesleft = len; // how many we have left to send
+  int bytesleft = len;  // how many we have left to send
   int n;    
   while (total < len) {
     n = send(s, buf+total, bytesleft, 0);
@@ -119,31 +115,35 @@ VRNetInterface::waitForAndReceiveInputEvents(SOCKET socketID, std::vector<VREven
   waitForAndReceiveMessageHeader(socketID, INPUT_EVENTS_MSG);
   
   // 2. receive int that tells us the size of the data portion of the message in bytes
-  unsigned char buf1[VRByteData::BYTEDATA_SIZEOFINT];
-  int status = receiveall(socketID, buf1, VRByteData::BYTEDATA_SIZEOFINT);
+  unsigned char buf1[VRNET_SIZEOFINT];
+  int status = receiveall(socketID, buf1, VRNET_SIZEOFINT);
   if (status == -1) {
     std::cerr << "NetInterface error: receiveall failed." << std::endl;
     exit(1);
   }
-  int dataSize = VRByteData::unpackInt(buf1);
+  int dataSize = unpackInt(buf1);
   
   // 3. receive dataSize bytes, then decode these as InputEvents
-  unsigned char *buf2 = new unsigned char[dataSize];
+  unsigned char *buf2 = new unsigned char[dataSize+1];
   status = receiveall(socketID, buf2, dataSize);
   if (status == -1) {
     std::cerr << "NetInterface error: receiveall failed." << std::endl;
     exit(1);
   }
-  // the first few bytes are an int telling us how many events to expect
-  int numEvents = VRByteData::unpackInt(buf2);
-  // create a bytestream out of the remaining bytes
-  VRByteStream bs(buf2 + VRByteData::BYTEDATA_SIZEOFINT, dataSize - VRByteData::BYTEDATA_SIZEOFINT);
-  delete [] buf2;
+  
+  buf2[dataSize] = '\0';
+  std::string xmlEventList = (char*)buf2;
+  
+  std::map<std::string, std::string> props;
+  std::string xmlEvents, leftover;
+  XMLUtils::getXMLField(xmlEventList, "VREventList", props, xmlEvents, leftover);
+  int numEvents = 0;
+  XMLUtils::retypeString(props["num"], numEvents);
   for (int i=0; i<numEvents; i++) {
-    std::cout << i << std::endl;
-    VREvent e;
-    e.deserialize(bs);
+    std::string xmlRemaining;
+    VREvent e = VREvent::fromXML(xmlEvents, xmlRemaining);
     inputEvents.push_back(e);
+    xmlEvents = xmlRemaining;
   }
 }
 

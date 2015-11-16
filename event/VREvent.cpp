@@ -15,16 +15,19 @@ VREvent::~VREvent() {
 std::string VREvent::toXML() {
   std::map<std::string, std::string> props;
   props["name"] = _name;
-  return writeXMLField("VREvent", props, _dataIndex.toXML());
+  return XMLUtils::writeXMLField("VREvent", props, _dataIndex.toXML());
 }
 
 
-VREvent VREvent::fromXML(const std::string &xml) {
+VREvent VREvent::fromXML(const std::string &xml, std::string &leftoverInput) {
   std::map<std::string, std::string> props;
   std::string dataIndexXML;
-  std::string leftover;
-  getXMLField(xml, "VREvent", props, dataIndexXML, leftover);
+  XMLUtils::getXMLField(xml, "VREvent", props, dataIndexXML, leftoverInput);
   
   return VREvent(props["name"], VRDataIndex::fromXML(dataIndexXML));
 }
 
+VREvent VREvent::fromXML(const std::string &xml) {
+  std::string leftoverInput;
+  return fromXML(xml, leftoverInput);
+}

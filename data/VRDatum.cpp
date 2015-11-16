@@ -112,7 +112,7 @@ bool VRDatumIntArray::setValue(const VRIntArray inVal) {
 std::string VRDatumIntArray::getValueAsString() {
 
   std::string out;
-  char buffer[20];
+  char buffer[1024];
 
   for (VRIntArray::iterator it = value.begin(); it != value.end(); ++it) {
     sprintf(buffer, "%d@", *it); // '@' is a separator

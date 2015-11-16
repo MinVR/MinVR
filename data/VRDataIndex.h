@@ -193,12 +193,15 @@ public:
 
   /// **** Access to the value stored under the specified name
 
-  /// The return type VRDatum is a wrapper class that can hold any of the
-  /// VRCoreTypes.  VRDatum can be cast to any of the VRCoreTypes. So,
+  /// The return type VRAnyCoreType is a wrapper that can hold any of the
+  /// VRCoreTypes.  VRAnyCoreType can be cast to any of the VRCoreTypes. So,
   /// common usage examples for this function are:
   ///   VRInt i = dataIndex->getValue("MyInteger");
   ///   VRDouble d = dataIndex->getValue("MyDouble");
-  /// 
+  /// The same syntax can be used with custom classes that are not VRCoreTypes if
+  /// they implement a constructor that takes a VRAnyCoreType as an argument.
+  /// All of the classes in VRMath do this.  So, we can write:
+  ///   VRVector3 v = dataIndex->getValue("MyHeading");
   VRAnyCoreType getValue(const std::string fullName) {
     return getDatumPtr(getTrimName(fullName), getNameSpace(fullName))->getValue();
   }

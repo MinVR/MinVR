@@ -1,24 +1,21 @@
 
 #include <net/VRNetClient.h>
-#include <event/VRByteData.h>
+#include <event/VREvent.h>
+#include <math/VRMath.h>
 
 
 int main() {
-  
-  if (VRByteData::isLittleEndian()) {
-    std::cout << "little endian machine" << std::endl;
-  }
-  else {
-    std::cout << "big endian machine" << std::endl;
-  }
-  
-  
   VRNetClient client("localhost", "3490");
   int i = 0;
-  std::vector<VREvent> events;
   while (1) {
     std::cout << "in draw loop " << i << std::endl;
+    
+    std::vector<VREvent> events;
     client.synchronizeInputEventsAcrossAllNodes(events);
+    for (std::vector<VREvent>::iterator it=events.begin(); it<events.end(); ++it) {
+      std::cout << it->toXML() << std::endl;
+    }
+    
     #ifdef WIN32
 	  Sleep(2000);
     #else

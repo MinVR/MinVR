@@ -32,7 +32,8 @@ public:
 
   /// A static constructor that creates a new VREvent from XML format data
   static VREvent fromXML(const std::string &xml);
-
+  /// A static constructor that creates a new VREvent from XML format data
+  static VREvent fromXML(const std::string &xml, std::string &leftoverInput);
   
 protected:
   std::string _name;

@@ -10,7 +10,7 @@ VRDataIndex VRDataIndex::fromXML(const std::string &xmlString) {
   // this will strip the opening <VRDataIndex> and closing </VRDataIndex> out of
   // the xmlString, and return the inner matter in the dataXML variable, which
   // is what the VRDataIndex::addDataFromXML() method expects.
-  getXMLField(xmlString, "VRDataIndex", props, dataXML, leftover);
+  XMLUtils::getXMLField(xmlString, "VRDataIndex", props, dataXML, leftover);
   
   VRDataIndex di;
   di.addDataFromXML(dataXML);

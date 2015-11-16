@@ -42,7 +42,7 @@ std::string trimWhitespace(const std::string &s) {
 }
 
 
-bool getXMLField(const std::string &input, const std::string &fieldName,
+bool XMLUtils::getXMLField(const std::string &input, const std::string &fieldName,
                  std::map<std::string, std::string> &propertiesAndValues,
                  std::string &fieldData,
 	               std::string &leftoverInput) {
@@ -122,7 +122,7 @@ bool getXMLField(const std::string &input, const std::string &fieldName,
 
 
 
-std::string writeXMLField(const std::string &fieldName,
+std::string XMLUtils::writeXMLField(const std::string &fieldName,
                           const std::map<std::string, std::string> &propertiesAndValues,
                           const std::string &fieldData) {
   std::string s;

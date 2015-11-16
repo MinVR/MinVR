@@ -22,6 +22,8 @@ class VRNetInterface {
   static const unsigned char INPUT_EVENTS_MSG;
   static const unsigned char SWAP_BUFFERS_REQUEST_MSG;
   static const unsigned char SWAP_BUFFERS_NOW_MSG;
+  
+  static const unsigned char VRNET_SIZEOFINT;
 
   static void sendSwapBuffersRequest(SOCKET socketID);
   static void sendSwapBuffersNow(SOCKET socketID);
@@ -33,6 +35,39 @@ class VRNetInterface {
   static void waitForAndReceiveSwapBuffersNow(SOCKET socketID);
   static void waitForAndReceiveInputEvents(SOCKET socketID, std::vector<VREvent> &inputEvents);
   static int receiveall(SOCKET s, unsigned char *buf, int len);
+  
+  
+  /// return 0 for big endian, 1 for little endian.
+  /// http://stackoverflow.com/questions/12791864/c-program-to-check-little-vs-big-endian
+  static bool isLittleEndian() {
+    volatile uint32_t i=0x01234567;
+    return (*((uint8_t*)(&i))) == 0x67;
+  }
+  
+  static void packInt(unsigned char *bytePtr, int32_t toPack) {
+    unsigned char *p = (unsigned char *) &toPack;
+    for (int i=0;i<VRNET_SIZEOFINT;i++) {
+      int index = i;
+      if (isLittleEndian()) {
+        index = VRNET_SIZEOFINT - i - 1;
+      }
+      bytePtr[i] = p[index];
+    }
+  }
+  
+  static int32_t unpackInt(unsigned char *bytePtr) {
+    int toReturn = 0;
+    unsigned char *p = (unsigned char *) &toReturn;
+    for (int i=0;i<VRNET_SIZEOFINT;i++) {
+      int index = i;
+      if (isLittleEndian()) {
+        index = VRNET_SIZEOFINT - i - 1;
+      }
+      p[i] = bytePtr[index];
+    }
+    return toReturn;
+  }
+
 };
 
 #endif
