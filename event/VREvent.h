@@ -2,6 +2,7 @@
 #ifndef VREVENT_H
 #define VREVENT_H
 
+#include <cstring>
 #include <string>
 #include <data/VRDataIndex.h>
 
