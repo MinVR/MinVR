@@ -49,6 +49,9 @@
 cmake_minimum_required (VERSION 2.8.2) 
 project (MinVR)
 
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set (CMAKE_INSTALL_PREFIX "${${PROJECT_NAME}_SOURCE_DIR}/build/install" CACHE PATH "default install path" FORCE )
+endif()
 
 # Use the root of the MinVR tree as an include dir, then include headers like this:
 # #include <event/VREvent.h>
@@ -114,4 +117,9 @@ add_subdirectory (tests/net)
 add_subdirectory (tests/eventdata)
 add_subdirectory (tests/plugin)
 
+option(MINVR_PLUS "If enabled, plus plugins will be installed" OFF)
 
+if(MINVR_PLUS)
+	message("Plus!")
+	add_subdirectory (contrib)
+endif(MINVR_PLUS)
