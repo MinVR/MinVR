@@ -55,11 +55,11 @@ public:
 	PLUGIN_API virtual ~TestPlugin() {
 		std::cout << "TestPlugin destroyed." << std::endl;
 	}
-	PLUGIN_API bool registerPlugin(MinVR::PluginInterface *interface)
+	PLUGIN_API bool registerPlugin(MinVR::PluginInterface *iface)
 	{
-		std::cout << "Registering TestPlugin with the following interface: " << interface->getName() << std::endl;
+		std::cout << "Registering TestPlugin with the following interface: " << iface->getName() << std::endl;
 
-		GraphicsInterface* graphicsInterface = interface->getInterface<GraphicsInterface>();
+		GraphicsInterface* graphicsInterface = iface->getInterface<GraphicsInterface>();
 		if (graphicsInterface != NULL)
 		{
 			graphicsInterface->addGraphicsDriver("opengl", new OpenGLGraphicsDriver());
@@ -67,7 +67,7 @@ public:
 			return true;
 		}
 
-		DeviceInterface* deviceInterface = interface->getInterface<DeviceInterface>();
+		DeviceInterface* deviceInterface = iface->getInterface<DeviceInterface>();
 		if (deviceInterface != NULL)
 		{
 			deviceInterface->addInputDeviceFactory(new VRPNFactory());
@@ -77,9 +77,9 @@ public:
 
 		return false;
 	}
-	PLUGIN_API bool unregisterPlugin(MinVR::PluginInterface *interface)
+	PLUGIN_API bool unregisterPlugin(MinVR::PluginInterface *iface)
 	{
-		std::cout << "Unregistering TestPlugin with the following interface: " << interface->getName() << std::endl;
+		std::cout << "Unregistering TestPlugin with the following interface: " << iface->getName() << std::endl;
 
 		return true;
 	}
