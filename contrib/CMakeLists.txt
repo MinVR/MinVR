@@ -11,7 +11,7 @@ include(ExternalProject)
 set(MinVRExtensions_PREFIX "${MinVRExtensions_checkout_Dir}")
 set(MinVRExtensions_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/plugins")
 
-set(MinVRExtensions_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${MinVRExtensions_INSTALL_DIR} -DMinVR_INCLUDE_DIRS=${PROJECT_SOURCE_DIR}/.. )
+set(MinVRExtensions_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${MinVRExtensions_INSTALL_DIR} -DMinVR_INCLUDE_DIRS=${PROJECT_SOURCE_DIR}/.. -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
 set(MinVRExtensions_DIR "${MinVRExtensions_INSTALL_DIR}")
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
