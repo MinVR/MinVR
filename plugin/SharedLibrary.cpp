@@ -41,6 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ================================================================================ */
 
 #include "SharedLibrary.h"
+#include <iostream>
 
 namespace MinVR {
 
@@ -69,6 +70,7 @@ void SharedLibrary::load() {
 
 		if (!_lib) {
 			//MinVR::Logger::getInstance().assertMessage(false, "Could not load library: " + _filePath + " - " + error);
+			std::cout << "Could not load library: " + _filePath + " - " + error << std::endl;
 			return;
 		}
 

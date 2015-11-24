@@ -63,6 +63,10 @@ endif
 
 DIRNAME=$(shell basename `pwd`)
 
+ifneq ($(PLUS),'')
+	PLUS=OFF
+endif
+
 all: gen
 
 gen:
@@ -71,14 +75,17 @@ gen:
 	mkdir -p ./build/Release
 	mkdir -p ./build/Debug
 	mkdir -p ../$(DIRNAME)_eclipse
-	cd ./build/Release; cmake -DCMAKE_BUILD_TYPE=Release ../../
-	cd ./build/Debug; cmake -DCMAKE_BUILD_TYPE=Debug ../../
-	cd ../$(DIRNAME)_eclipse; cmake -DCMAKE_BUILD_TYPE=Debug $(CURDIR) -G "Eclipse CDT4 - Unix Makefiles" -DCMAKE_ECLIPSE_VERSION=4.3
+	cd ./build/Release; cmake -DCMAKE_BUILD_TYPE=Release ../../ -DMINVR_PLUS=$(PLUS)
+	cd ./build/Debug; cmake -DCMAKE_BUILD_TYPE=Debug ../../ -DMINVR_PLUS=$(PLUS)
+	cd ../$(DIRNAME)_eclipse; cmake -DCMAKE_BUILD_TYPE=Debug $(CURDIR) -G "Eclipse CDT4 - Unix Makefiles" -DCMAKE_ECLIPSE_VERSION=4.3  -DMINVR_PLUS=$(PLUS)
     else ifeq ($(ARCH), WIN32)
-	cd ./build; cmake ../ -G "Visual Studio 12 Win64"
+	cd ./build; cmake ../ -G "Visual Studio 12 Win64" -DMINVR_PLUS=$(PLUS)
     else ifeq ($(ARCH), OSX)
-	cd ./build; cmake ../ -G Xcode
+	cd ./build; cmake ../ -G Xcode -DMINVR_PLUS=$(PLUS)
     endif
+
+plus:
+	$(MAKE) PLUS="ON" gen
 
 debug:
     ifeq ($(ARCH), linux)

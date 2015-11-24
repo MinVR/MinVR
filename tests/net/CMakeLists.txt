@@ -3,8 +3,8 @@
 project (test_net)
 
 add_executable (test_netclient client.cpp)
-target_link_libraries (test_netclient VRData VREvent VRMath VRNet)
+target_link_libraries (test_netclient VREvent VRData VRMath VRNet)
 
 add_executable (test_netserver server.cpp)
-target_link_libraries (test_netserver VRData VREvent VRMath VRNet)
+target_link_libraries (test_netserver VREvent VRData  VRMath VRNet)
 

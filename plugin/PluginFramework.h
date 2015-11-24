@@ -59,8 +59,8 @@ class FrameworkPlugin {
 public:
 	virtual ~FrameworkPlugin() {}
 
-	virtual bool registerPlugin(PluginInterface* interface) = 0;
-	virtual bool unregisterPlugin(PluginInterface* interface) = 0;
+	virtual bool registerPlugin(PluginInterface* iface) = 0;
+	virtual bool unregisterPlugin(PluginInterface* iface) = 0;
 };
 
 } /* namespace MinVR */

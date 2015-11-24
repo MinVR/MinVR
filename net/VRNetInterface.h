@@ -9,6 +9,7 @@
   #include <windows.h>
 #else
   #define SOCKET int
+  #include "stdint.h"
 #endif
 
 

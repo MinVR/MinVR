@@ -2,7 +2,7 @@
 
 This file is part of the MinVR Open Source Project.
 
-File: GraphicsInterface.h
+File: TestPlugin.cpp
 
 Original Author(s) of this File:
 	Dan Orban, 2015, University of Minnesota
@@ -40,24 +40,54 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ================================================================================ */
 
-#ifndef GRAPHICSINTERFACE_H_
-#define GRAPHICSINTERFACE_H_
+#include "plugin/Plugin.h"
+#include <iostream>
+#include "GraphicsInterface.h"
+#include "DeviceInterface.h"
+#include "TestPluginDrivers.h"
 
-#include "plugin/PluginInterface.h"
 
-class GraphicsDriver
+class TestPlugin : public MinVR::Plugin {
+public:
+	PLUGIN_API TestPlugin() {
+		std::cout << "TestPlugin created." << std::endl;
+	}
+	PLUGIN_API virtual ~TestPlugin() {
+		std::cout << "TestPlugin destroyed." << std::endl;
+	}
+	PLUGIN_API bool registerPlugin(MinVR::PluginInterface *iface)
+	{
+		std::cout << "Registering TestPlugin with the following interface: " << iface->getName() << std::endl;
+
+		GraphicsInterface* graphicsInterface = iface->getInterface<GraphicsInterface>();
+		if (graphicsInterface != NULL)
+		{
+			graphicsInterface->addGraphicsDriver("opengl", new OpenGLGraphicsDriver());
+			graphicsInterface->addGraphicsDriver("d3d", new D3DGraphicsDriver());
+			return true;
+		}
+
+		DeviceInterface* deviceInterface = iface->getInterface<DeviceInterface>();
+		if (deviceInterface != NULL)
+		{
+			deviceInterface->addInputDeviceFactory(new VRPNFactory());
+			deviceInterface->addInputDeviceFactory(new TouchFactory());
+			return true;
+		}
+
+		return false;
+	}
+	PLUGIN_API bool unregisterPlugin(MinVR::PluginInterface *iface)
+	{
+		std::cout << "Unregistering TestPlugin with the following interface: " << iface->getName() << std::endl;
+
+		return true;
+	}
+};
+
+extern "C"
 {
-public:
-	virtual ~GraphicsDriver() {}
-	virtual void draw() = 0;
-};
-
-class GraphicsInterface : public MinVR::PluginInterface {
-public:
-	virtual void addGraphicsDriver(std::string name, GraphicsDriver* driver) = 0;
-
-	std::string getName() { return "GraphicsInterface"; }
-};
-
-#endif /* GRAPHICSINTERFACE_H_ */
-
+	PLUGIN_API MinVR::Plugin* loadPlugin() {
+		return new TestPlugin();
+	}
+}
