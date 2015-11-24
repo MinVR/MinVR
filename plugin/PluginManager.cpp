@@ -69,8 +69,8 @@ PluginManager::~PluginManager() {
 	}
 }
 
-void PluginManager::addInterface(PluginInterface* interface) {
-	_interfaces.push_back(interface);
+void PluginManager::addInterface(PluginInterface* iface) {
+	_interfaces.push_back(iface);
 }
 
 void PluginManager::loadPlugin(const std::string& filePath, const std::string& name) {

@@ -57,7 +57,7 @@ public:
 	PluginManager(std::vector<PluginInterface*> interfaces);
 	virtual ~PluginManager();
 
-	void addInterface(PluginInterface* interface);
+	void addInterface(PluginInterface* iface);
 
 	void loadPlugin(const std::string& filePath, const std::string& name);
 
