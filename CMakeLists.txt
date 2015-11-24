@@ -98,8 +98,10 @@ endforeach(CONF CMAKE_CONFIGURATION_TYPES)
 file (GLOB srcfiles ${CMAKE_CURRENT_SOURCE_DIR}/tests/net/*.cpp)
 source_group ("tests" FILES ${srcfiles})
 
-
-
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+  # Linux specific code
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC") 
+endif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 # Recurse into the following subdirs to build the core MinVR set of libraries:
 # (Uncomment the lines below as we add .cpp files to those directories.)
