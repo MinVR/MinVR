@@ -37,6 +37,7 @@ class VRNetInterface {
   static int receiveall(SOCKET s, unsigned char *buf, int len);
   
   
+public:
   /// return 0 for big endian, 1 for little endian.
   /// http://stackoverflow.com/questions/12791864/c-program-to-check-little-vs-big-endian
   static bool isLittleEndian() {
@@ -48,7 +49,7 @@ class VRNetInterface {
     unsigned char *p = (unsigned char *) &toPack;
     for (int i=0;i<VRNET_SIZEOFINT;i++) {
       int index = i;
-      if (isLittleEndian()) {
+      if (!isLittleEndian()) {
         index = VRNET_SIZEOFINT - i - 1;
       }
       bytePtr[i] = p[index];
@@ -60,7 +61,7 @@ class VRNetInterface {
     unsigned char *p = (unsigned char *) &toReturn;
     for (int i=0;i<VRNET_SIZEOFINT;i++) {
       int index = i;
-      if (isLittleEndian()) {
+      if (!isLittleEndian()) {
         index = VRNET_SIZEOFINT - i - 1;
       }
       p[i] = bytePtr[index];

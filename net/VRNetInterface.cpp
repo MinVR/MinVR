@@ -123,16 +123,20 @@ VRNetInterface::waitForAndReceiveInputEvents(SOCKET socketID, std::vector<VREven
   }
   int dataSize = unpackInt(buf1);
   
+  std::cout << "dataSize = " << dataSize << std::endl;
+  
   // 3. receive dataSize bytes, then decode these as InputEvents
   unsigned char *buf2 = new unsigned char[dataSize+1];
   status = receiveall(socketID, buf2, dataSize);
-  if (status == -1) {
+  if ((status == -1) || (status != dataSize)) {
     std::cerr << "NetInterface error: receiveall failed." << std::endl;
     exit(1);
   }
   
   buf2[dataSize] = '\0';
-  std::string xmlEventList = (char*)buf2;
+  std::string xmlEventList = std::string(reinterpret_cast<const char *>(buf2));
+  
+  std::cout << "xml = " << xmlEventList << std::endl;
   
   std::map<std::string, std::string> props;
   std::string xmlEvents, leftover;
