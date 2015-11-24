@@ -45,6 +45,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 #include "event/VREvent.h"
 #include "event/VRInputDevice.h"
+#include "data/XMLUtils.h"
+
+#include <sstream>
+#include <fstream>
 
 #if defined(WIN32)
 #include <Windows.h>
@@ -93,6 +97,63 @@ int main(int argc, char **argv) {
 	  {
 		  cout << pluginDirs[f] << " " << (config == "d" ? "Debug" : "Release") << endl;
 		  pluginManager.loadPlugin(string(PLUGINPATH) + "/" + pluginDirs[f], pluginDirs[f] + config);
+	  }
+  }
+
+  std::string xml_string="";
+  std::string fileName = string(PLUGINPATH) + "/MinVR_TUIO/share/vrsetup/tuio-devices.xml";
+  ifstream file(fileName.c_str());
+  std::cout << "Reading from file = " << fileName << std::endl;
+
+  std::vector<VRInputDevice*> devices;
+
+  if(file.is_open()) {
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    xml_string = buffer.rdbuf()->str();
+    //cout << xml_string << endl;
+
+    std::map<std::string, std::string> props;
+    std::string dataIndexXML;
+    std::string leftoverInput;
+    if (XMLUtils::getXMLField(xml_string, "VRInputDevices", props, dataIndexXML, leftoverInput))
+    {
+    	props = std::map<std::string, std::string>();
+    	while(XMLUtils::getXMLField(dataIndexXML, "VRInputDevice", props, dataIndexXML, leftoverInput))
+    	{
+    		std::string type = props["type"];
+    		std::string name = props["name"];
+    		//cout << dataIndexXML << endl;
+
+    		for (int f = 0; f < inputDeviceDrivers.size(); f++)
+    		{
+    			VRDataIndex di;
+    			di.addDataFromXML(dataIndexXML);
+    			VRInputDevice* device = inputDeviceDrivers[f]->create(type, name, di);
+    			if (device)
+    			{
+    				devices.push_back(device);
+    			}
+    			else
+    			{
+    				std::cout << "Cannot find." << std::endl;
+    			}
+    		}
+
+    	}
+    }
+  }
+
+  while(true)
+  {
+	  for (int f = 0; f < devices.size(); f++)
+	  {
+		  std::vector<VREvent> events;
+		  devices[f]->appendNewInputEventsSinceLastCall(events);
+		  //delete devices[f];
+		  for (std::vector<VREvent>::iterator it=events.begin(); it<events.end(); ++it) {
+		        std::cout << it->toXML() << std::endl;
+		  }
 	  }
   }
 

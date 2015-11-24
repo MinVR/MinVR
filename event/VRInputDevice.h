@@ -19,6 +19,11 @@ class VRInputDeviceDriver {
 public:
 	virtual ~VRInputDeviceDriver() {}
 
+	VRInputDevice* create(const std::string &type, const std::string& name)
+	{
+		static VRDataIndex di;
+		return create(type, name, di);
+	}
 	virtual VRInputDevice* create(const std::string &type, const std::string& name, VRDataIndex &config) = 0;
 };
 
