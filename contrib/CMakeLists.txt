@@ -20,7 +20,7 @@ endif()
    
 ExternalProject_add(MinVRExtensions
 		PREFIX ${MinVRExtensions_PREFIX}
-		GIT_REPOSITORY https://github.com/dtorban/MinVRExtensions.git
+		GIT_REPOSITORY https://github.com/ivlab/MinVRExtensions.git
 		GIT_TAG minvr2
 		INSTALL_DIR ${MinVRExtensions_INSTALL_DIR}
 		CMAKE_ARGS ${MinVRExtensions_CMAKE_ARGS}
