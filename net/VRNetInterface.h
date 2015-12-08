@@ -7,6 +7,9 @@
 #ifdef WIN32
   #include <winsock2.h>
   #include <windows.h>
+	#include <stdint.h>
+	//typedef int int32_t;
+	//typedef unsigned int uint32_t;
 #else
   #define SOCKET int
   #include "stdint.h"

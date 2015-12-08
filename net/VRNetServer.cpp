@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef WINDOWS
+#ifdef WIN32
   #include <ws2tcpip.h>
   #pragma comment (lib, "Ws2_32.lib")
   #pragma comment (lib, "Mswsock.lib")
@@ -24,14 +24,17 @@
   #include <signal.h>
 #endif
 
+using namespace std;
 
 #define PORT "3490"  // the port users will be connecting to
 
 #define BACKLOG 100	 // how many pending connections queue will hold
 
+#ifndef WIN32
 void sigchld_handler(int s) {
-  while(waitpid(-1, NULL, WNOHANG) > 0);
+	while (waitpid(-1, NULL, WNOHANG) > 0);
 }
+#endif
 
 // get sockaddr, IPv4 or IPv6:
 void *get_in_addr(struct sockaddr *sa) {
@@ -46,7 +49,7 @@ void *get_in_addr(struct sockaddr *sa) {
 VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients) 
 {
 
-#ifdef WINDOWS  // Winsock implementation
+#ifdef WIN32  // Winsock implementation
 
   WSADATA wsaData;
 
@@ -56,8 +59,7 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
   struct addrinfo hints, *servinfo, *p;
   struct sockaddr_storage their_addr; // connector's address information
   socklen_t sin_size;
-  struct sigaction sa;
-  int yes=1;
+  const char yes = 1;
   char s[INET6_ADDRSTRLEN];
   int rv;
   
@@ -250,14 +252,14 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
 VRNetServer::~VRNetServer()
 {
   for (std::vector<SOCKET>::iterator i=_clientSocketFDs.begin(); i < _clientSocketFDs.end(); i++) {
-    #ifdef WINDOWS
+	#ifdef WIN32
       closesocket(*i);
     #else
       close(*i);
     #endif
   }
 
-#ifdef WINDOWS
+#ifdef WIN32
   WSACleanup();
 #endif
 }

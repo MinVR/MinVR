@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef WINDOWS
+#ifdef WIN32
   #include <ws2tcpip.h>
   #pragma comment (lib, "Ws2_32.lib")
   #pragma comment (lib, "Mswsock.lib")
@@ -70,7 +70,11 @@ VRNetInterface::sendall(SOCKET s, const unsigned char *buf, int len) {
   int bytesleft = len;  // how many we have left to send
   int n;    
   while (total < len) {
-    n = send(s, buf+total, bytesleft, 0);
+#ifdef WIN32
+	  n = send(s, (char *)(buf + total), bytesleft, 0);
+#else
+	  n = send(s, buf + total, bytesleft, 0);
+#endif
     if (n == -1) { break; }
     total += n;
     bytesleft -= n;
@@ -157,7 +161,11 @@ VRNetInterface::receiveall(SOCKET s, unsigned char *buf, int len) {
   int bytesleft = len; // how many we have left to receive
   int n;    
   while (total < len) {
-    n = recv(s, buf+total, bytesleft, 0);
+#ifdef WIN32
+	  n = recv(s, (char *)(buf + total), bytesleft, 0);
+#else
+	  n = recv(s, buf + total, bytesleft, 0);
+#endif
     if (n == -1) { break; }
     total += n;
     bytesleft -= n;
