@@ -123,7 +123,7 @@ VRNetInterface::waitForAndReceiveInputEvents(SOCKET socketID, std::vector<VREven
   }
   int dataSize = unpackInt(buf1);
   
-  std::cout << "dataSize = " << dataSize << std::endl;
+  //std::cout << "dataSize = " << dataSize << std::endl;
   
   // 3. receive dataSize bytes, then decode these as InputEvents
   unsigned char *buf2 = new unsigned char[dataSize+1];
@@ -136,7 +136,7 @@ VRNetInterface::waitForAndReceiveInputEvents(SOCKET socketID, std::vector<VREven
   buf2[dataSize] = '\0';
   std::string xmlEventList = std::string(reinterpret_cast<const char *>(buf2));
   
-  std::cout << "xml = " << xmlEventList << std::endl;
+  //std::cout << "xml = " << xmlEventList << std::endl;
   
   std::map<std::string, std::string> props;
   std::string xmlEvents, leftover;

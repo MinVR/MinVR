@@ -46,6 +46,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "event/VREvent.h"
 #include "event/VRInputDevice.h"
 #include "data/XMLUtils.h"
+#include "net/VRNetServer.h"
 
 #include <sstream>
 #include <fstream>
@@ -190,17 +191,23 @@ int main(int argc, char **argv) {
     }
   }
 
+  VRNetServer server("3490", 1);
+
   while(true)
   {
+	  std::vector<VREvent> events;
+
 	  for (int f = 0; f < devices.size(); f++)
 	  {
-		  std::vector<VREvent> events;
 		  devices[f]->appendNewInputEventsSinceLastCall(events);
 		  //delete devices[f];
-		  for (std::vector<VREvent>::iterator it=events.begin(); it<events.end(); ++it) {
+		 /* for (std::vector<VREvent>::iterator it=events.begin(); it<events.end(); ++it) {
 		        std::cout << it->toXML() << std::endl;
-		  }
+		  }*/
 	  }
+
+	  server.synchronizeInputEventsAcrossAllNodes(events);
+	  server.synchronizeSwapBuffersAcrossAllNodes();
   }
 
   for (int f = 0; f < inputDeviceDrivers.size(); f++)

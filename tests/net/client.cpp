@@ -21,7 +21,7 @@ int main() {
     #ifdef WIN32
 	  Sleep(2000);
     #else
-      sleep(2);
+      //sleep(2);
     #endif
 	client.synchronizeSwapBuffersAcrossAllNodes();
     i++;

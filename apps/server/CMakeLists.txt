@@ -14,6 +14,6 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 add_definitions(-DPLUGINPATH="${CMAKE_INSTALL_PREFIX}/plugins")
 
 add_executable (minvr_server ${minvr_server_source_files})
-target_link_libraries (minvr_server VREvent VRData VRPlugin ${LIBS_ALL})
+target_link_libraries (minvr_server VRNet VREvent VRData VRPlugin ${LIBS_ALL})
 
 
