@@ -4,7 +4,7 @@ project (VRPlus)
 
 
 #-----------------Extensions--------------------------
-set(MinVRExtensions_checkout_Dir ${CMAKE_BINARY_DIR}/ext)
+set(MinVRExtensions_checkout_Dir ${PROJECT_SOURCE_DIR}/plugins/MinVRExtensions)
 make_directory(${MinVRExtensions_checkout_Dir})
 include(ExternalProject)
 

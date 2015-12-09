@@ -108,6 +108,13 @@ int main(int argc, char **argv) {
     std::stringstream buffer;
     buffer << file.rdbuf();
     xml_string = buffer.rdbuf()->str();
+      
+    VRDataIndex di2;
+      di2.addDataFromXML(xml_string);
+      std::list<std::string> names = di2.getNames("/Config/Plugins/");
+      for (std::list<std::string>::iterator it = names.begin(); it != names.end(); it++) {
+          cout << *it << endl;
+      }
 
 
     std::map<std::string, std::string> props;
