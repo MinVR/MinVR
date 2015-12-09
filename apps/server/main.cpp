@@ -91,24 +91,12 @@ int main(int argc, char **argv) {
   PluginManager pluginManager;
   pluginManager.addInterface(dynamic_cast<VRInputDeviceInterface*>(&app));
 
-  std::vector<std::string> pluginDirs = listDirectory(PLUGINPATH, true);
-
   string config = "";
 #ifdef MinVR_DEBUG
   config = "d";
 #endif
-/*
-  for (int f = 0; f < pluginDirs.size(); f++)
-  {
-	  if (pluginDirs[f][0] != '.')
-	  {
-		  cout << pluginDirs[f] << " " << (config == "d" ? "Debug" : "Release") << endl;
-		  pluginManager.loadPlugin(string(PLUGINPATH) + "/" + pluginDirs[f], pluginDirs[f] + config);
-	  }
-  }
-*/
+
   std::string xml_string="";
-  //std::string fileName = string(PLUGINPATH) + "/MinVR_TUIO/share/vrsetup/tuio-devices.xml";
   std::string fileName = argv[1];
   ifstream file(fileName.c_str());
   std::cout << "Reading from file = " << fileName << std::endl;
@@ -119,18 +107,28 @@ int main(int argc, char **argv) {
     std::stringstream buffer;
     buffer << file.rdbuf();
     xml_string = buffer.rdbuf()->str();
-    //cout << xml_string << endl;
 
-    std::vector<std::string> plugins;
-    bool allPlugins = false;
 
     std::map<std::string, std::string> props;
     std::string dataIndexXML;
     std::string leftoverInput;
-    if (XMLUtils::getXMLField(xml_string, "Plugins", props, dataIndexXML, leftoverInput))
+
+    while (XMLUtils::getXMLField(xml_string, "Plugins", props, dataIndexXML, leftoverInput))
     {
+    	std::string pluginPath = std::string(PLUGINPATH);
+    	if (props.find("path") != props.end())
+    	{
+    		pluginPath = props["path"];
+    	}
+
+        std::vector<std::string> plugins;
+        bool allPlugins = false;
+
+        std::vector<std::string> pluginDirs = listDirectory(pluginPath, true);
+
     	props = std::map<std::string, std::string>();
-    	while(XMLUtils::getXMLField(dataIndexXML, "Plugin", props, dataIndexXML, leftoverInput))
+    	string innerLeftOverXML;
+    	while(XMLUtils::getXMLField(dataIndexXML, "Plugin", props, dataIndexXML, innerLeftOverXML))
     	{
     		std::string plugin = dataIndexXML;
     		plugins.push_back(plugin);
@@ -138,28 +136,30 @@ int main(int argc, char **argv) {
     		{
     			allPlugins = true;
     		}
-    		/*std::cout << plugin << std::endl;
-    		pluginManager.loadPlugin(string(PLUGINPATH) + "/" + plugin, plugin + config);*/
+
+    		dataIndexXML = innerLeftOverXML;
     	}
-    }
 
-    if (allPlugins)
-    {
-    	plugins.clear();
-        for (int f = 0; f < pluginDirs.size(); f++)
+        if (allPlugins)
         {
-        	if (pluginDirs[f][0] != '.')
-        	{
-        		  plugins.push_back(pluginDirs[f]);
-        	}
+        	plugins.clear();
+            for (int f = 0; f < pluginDirs.size(); f++)
+            {
+            	if (pluginDirs[f][0] != '.')
+            	{
+            		  plugins.push_back(pluginDirs[f]);
+            	}
+            }
         }
-    }
 
+        for (int f = 0; f < plugins.size(); f++)
+        {
+        	std::cout << plugins[f] << std::endl;
+        	pluginManager.loadPlugin(pluginPath + "/" + plugins[f], plugins[f] + config);
+        }
 
-    for (int f = 0; f < plugins.size(); f++)
-    {
-    	std::cout << plugins[f] << std::endl;
-    	pluginManager.loadPlugin(string(PLUGINPATH) + "/" + plugins[f], plugins[f] + config);
+		props = std::map<std::string, std::string>();
+		xml_string = leftoverInput;
     }
 
     props = std::map<std::string, std::string>();
