@@ -189,6 +189,7 @@ public:
   std::list<std::string> getNames();
   /// Returns a list of all the names in the map within the specified namespace.
   std::list<std::string> getNames(const std::string &nameSpace);
+  std::list<std::string> getNames(const std::string &nameSpace, bool includeChildren, bool fullPath);
 
 
   /// **** Access to the value stored under the specified name
@@ -252,18 +253,25 @@ public:
   void printStructure();
 
   void setOverwrite(const int inVal) { overwrite = inVal; }
-
-
+    
+    void setDefaultNamespace(const std::string& val)
+    {
+        defaultNamespace = val;
+    }
+    
+    void resetDefaultNamespace()
+    {
+        defaultNamespace = "/";
+    }
 
 
 private: // ****** IMPLEMENTATION DETAILS BELOW THIS POINT ******
-
-  
-  // Just a utility to return the tail end of the fully qualified name.
-  // i.e. trimName("cora/flora", "/bob/nora") is "flora".  This does not
-  // look in the index at all, just manipulates strings.
-  std::string getTrimName(const std::string valName, const std::string nameSpace);
-  std::string getTrimName(const std::string valName);
+    
+    // Just a utility to return the tail end of the fully qualified name.
+    // i.e. trimName("cora/flora", "/bob/nora") is "flora".  This does not
+    // look in the index at all, just manipulates strings.
+    std::string getTrimName(const std::string valName, const std::string nameSpace);
+    std::string getTrimName(const std::string valName);
 
   // Another utility, meant to pull a name apart on the slashes.
   std::vector<std::string> explodeName(const std::string fullName);
@@ -322,6 +330,8 @@ private: // ****** IMPLEMENTATION DETAILS BELOW THIS POINT ******
 
   // This is just a convenience to map strings to object type numbers.
   std::map<std::string, VRCORETYPE_ID> vrTypeMap;
+    
+  std::string defaultNamespace;
   
 };
 

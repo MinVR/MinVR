@@ -73,21 +73,11 @@ public:
 	}
 };
 
-inline std::string trimWhitespace(const std::string &s) {
-  const std::string whitespace = " \t\f\v\n\r";
-  int first = s.find_first_not_of(whitespace);
-  int last = s.find_last_not_of(whitespace);
-  return s.substr(first, (last-first+1));
-}
-
 int main(int argc, char **argv) {
   cout << "Registering plugins..." << endl;
   cout << "Plugin path: " << PLUGINPATH << endl;
 
   App app;
-
-  VRDataIndex di;
-  VREvent v("h", di);
 
   PluginManager pluginManager;
   pluginManager.addInterface(dynamic_cast<VRInputDeviceInterface*>(&app));
@@ -103,102 +93,88 @@ int main(int argc, char **argv) {
   std::cout << "Reading from file = " << fileName << std::endl;
 
   std::vector<VRInputDevice*> devices;
+  VRDataIndex cfg;
 
   if(file.is_open()) {
     std::stringstream buffer;
     buffer << file.rdbuf();
     xml_string = buffer.rdbuf()->str();
       
-    VRDataIndex di2;
-      di2.addDataFromXML(xml_string);
-      std::list<std::string> names = di2.getNames("/Config/Plugins/");
-      for (std::list<std::string>::iterator it = names.begin(); it != names.end(); it++) {
-          cout << *it << endl;
+      cfg.addDataFromXML(xml_string);
+      
+      string nspace = "/VRPlugins/";
+      std::list<std::string> pluginDirs = cfg.getNames(nspace, false, true);
+      for (std::list<std::string>::iterator dir = pluginDirs.begin(); dir != pluginDirs.end(); dir++) {
+          cout << *dir << endl;
+          string pluginPath = std::string(PLUGINPATH);
+          vector<string> plugins;
+          bool allPlugins = false;
+          std::list<std::string> pluginInfo = cfg.getNames((*dir)+"/", false, false);
+          for (std::list<std::string>::iterator info = pluginInfo.begin(); info != pluginInfo.end(); info++) {
+              if (*info == "Path")
+              {
+                  pluginPath = (string)cfg.getValue(*info, (*dir)+"/");
+              }
+              if (*info == "Names")
+              {
+                  plugins = cfg.getValue(*info, (*dir)+"/");
+                  for (int f = 0; f < plugins.size(); f++)
+                  {
+                      if (plugins[f] == "*")
+                      {
+                          allPlugins = true;
+                      }
+                  }
+                  
+              }
+              
+          }
+          
+          if (allPlugins)
+          {
+              std::vector<std::string> pluginDirs = listDirectory(pluginPath, true);
+              plugins.clear();
+              for (int f = 0; f < pluginDirs.size(); f++)
+              {
+                  if (pluginDirs[f][0] != '.')
+                  {
+                      plugins.push_back(pluginDirs[f]);
+                  }
+              }
+          }
+          
+          for (int f = 0; f < plugins.size(); f++)
+          {
+              //std::cout << plugins[f] << std::endl;
+              pluginManager.loadPlugin(pluginPath + "/" + plugins[f], plugins[f] + config);
+          }
       }
-
-
-    std::map<std::string, std::string> props;
-    std::string dataIndexXML;
-    std::string leftoverInput;
-
-    while (XMLUtils::getXMLField(xml_string, "Plugins", props, dataIndexXML, leftoverInput))
-    {
-    	std::string pluginPath = std::string(PLUGINPATH);
-    	if (props.find("path") != props.end())
-    	{
-    		pluginPath = props["path"];
-    	}
-
-        std::vector<std::string> plugins;
-        bool allPlugins = false;
-
-        std::vector<std::string> pluginDirs = listDirectory(pluginPath, true);
-
-    	props = std::map<std::string, std::string>();
-    	string innerLeftOverXML;
-    	while(XMLUtils::getXMLField(dataIndexXML, "Plugin", props, dataIndexXML, innerLeftOverXML))
-    	{
-    		std::string plugin = dataIndexXML;
-    		plugins.push_back(plugin);
-    		if(plugin == "*")
-    		{
-    			allPlugins = true;
-    		}
-
-    		dataIndexXML = innerLeftOverXML;
-    	}
-
-        if (allPlugins)
-        {
-        	plugins.clear();
-            for (int f = 0; f < pluginDirs.size(); f++)
-            {
-            	if (pluginDirs[f][0] != '.')
-            	{
-            		  plugins.push_back(pluginDirs[f]);
-            	}
-            }
-        }
-
-        for (int f = 0; f < plugins.size(); f++)
-        {
-        	std::cout << plugins[f] << std::endl;
-        	pluginManager.loadPlugin(pluginPath + "/" + plugins[f], plugins[f] + config);
-        }
-
-		props = std::map<std::string, std::string>();
-		xml_string = leftoverInput;
-    }
-
-    props = std::map<std::string, std::string>();
-    if (XMLUtils::getXMLField(xml_string, "VRInputDevices", props, dataIndexXML, leftoverInput))
-    {
-    	props = std::map<std::string, std::string>();
-    	while(XMLUtils::getXMLField(dataIndexXML, "VRInputDevice", props, dataIndexXML, leftoverInput))
-    	{
-    		dataIndexXML = trimWhitespace(dataIndexXML);
-    		std::string type = props["type"];
-    		std::string name = props["name"];
-    		//cout << dataIndexXML << endl;
-
-    		for (int f = 0; f < inputDeviceDrivers.size(); f++)
-    		{
-    			VRDataIndex di;
-    			di.addDataFromXML(dataIndexXML);
-    			VRInputDevice* device = inputDeviceDrivers[f]->create(type, name, di);
-    			if (device)
-    			{
-    				devices.push_back(device);
-    			}
-    		}
-
-    		props = std::map<std::string, std::string>();
-    		dataIndexXML = leftoverInput;
-    	}
-    }
+      
+      nspace = "/VRInputDevices/";
+      std::list<std::string> deviceNames = cfg.getNames(nspace, false, false);
+      for (std::list<std::string>::iterator it = deviceNames.begin(); it != deviceNames.end(); it++)
+      {
+    	  if (*it != "Comment")
+    	  {
+              string deviceName = *it;
+              string type = cfg.getValue("DeviceType", nspace+deviceName);
+              //cout << *it << " " << type << endl;
+              cfg.setDefaultNamespace(nspace+deviceName);
+              for (int f = 0; f < inputDeviceDrivers.size(); f++)
+              {
+                  VRInputDevice* device = inputDeviceDrivers[f]->create(type, deviceName, cfg);
+                  if (device)
+                  {
+                      devices.push_back(device);
+                  }
+              }
+              cfg.resetDefaultNamespace();
+    	  }
+      }
   }
 
-  VRNetServer server("3490", 1);
+  VRNetServer server((string)cfg.getValue("/Server/Port"), (int)cfg.getValue("/Server/NumClients"));
+//  VRNetServer server("3490", 1);
 
   while(true)
   {
@@ -223,21 +199,6 @@ int main(int argc, char **argv) {
   }
 
 }
-
-
-#if (defined(WIN64) || defined(WIN32) || defined(__APPLE__))
-#else
-#include <pthread.h>
-void *pfun(void *threadid)
-{
-}
-
-int pfun_call (int argc, char *argv[])
-{
-   pthread_t threads[1];
-   pthread_create(&threads[0], NULL, pfun, (void *)0);
-}
-#endif
 
 std::vector<std::string> listDirectory(
 		const std::string& path, bool directories) {

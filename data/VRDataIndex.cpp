@@ -19,7 +19,7 @@ VRDataIndex VRDataIndex::fromXML(const std::string &xmlString) {
 
 
 
-VRDataIndex::VRDataIndex() : overwrite(1) {
+VRDataIndex::VRDataIndex() : overwrite(1), defaultNamespace("/") {
   factory.RegisterVRDatum(VRCORETYPE_INT, CreateVRDatumInt);
   factory.RegisterVRDatum(VRCORETYPE_DOUBLE, CreateVRDatumDouble);
   factory.RegisterVRDatum(VRCORETYPE_STRING, CreateVRDatumString);
@@ -58,6 +58,35 @@ std::list<std::string> VRDataIndex::getNames(const std::string &containerName) {
     }
   }
   return outList;
+}
+
+std::list<std::string> VRDataIndex::getNames(const std::string &containerName, bool includeChildren, bool fullPath) {
+    if (includeChildren)
+    {
+        return getNames(containerName);
+    }
+    else
+    {
+        std::list<std::string> outList;
+        for (VRDataMap::iterator it = mindex.begin(); it != mindex.end(); it++) {
+            
+            if (it->first.compare(0, containerName.size(), containerName) == 0) {
+                string val = (it->first).substr(containerName.length());
+                if (val.find("/") == string::npos)
+                {
+                    if (fullPath)
+                    {
+                        outList.push_back(it->first);
+                    }
+                    else{
+                        outList.push_back(val);
+                    }
+                }
+            }
+        }
+        return outList;
+    }
+
 }
 
 // Breaks up a name into its constituent parts, on the slashes.  Note
@@ -122,7 +151,8 @@ std::string VRDataIndex::getNameSpace(const std::string fullName) {
 
     // There is no container beside the root.
 
-    out = "/";
+    out = defaultNamespace;
+    //out = "/";
   }
 
   return out;
