@@ -24,6 +24,7 @@ cmake_uninstall.cmake
 *local.cfg
 *local.sh
 *local.vrsetup
+*local.*
 
 # Emacs
 *~
