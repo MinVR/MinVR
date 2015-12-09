@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef WINDOWS
+#ifdef WIN32
   #include <ws2tcpip.h>
   #pragma comment (lib, "Ws2_32.lib")
   #pragma comment (lib, "Mswsock.lib")
@@ -35,7 +35,7 @@ void *get_in_addr2(struct sockaddr *sa) {
 VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverPort)
 {
 
-#ifdef WINDOWS  // WinSock implementation
+#ifdef WIN32  // WinSock implementation
 
   WSADATA wsaData;
   SOCKET sockfd = INVALID_SOCKET;
@@ -44,7 +44,7 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
 
   rv = WSAStartup(MAKEWORD(2,2), &wsaData);
   if (rv != 0) {
-    cerr << "WSAStartup failed with error: " << rv << endl;
+	std::cerr << "WSAStartup failed with error: " << rv << std::endl;
     exit(1);
   }
 
@@ -54,7 +54,7 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
   hints.ai_protocol = IPPROTO_TCP;
 
   if ((rv = getaddrinfo(serverIP.c_str(), serverPort.c_str(), &hints, &servinfo)) != 0) {
-    cerr << "getaddrinfo() failed with error: " << rv << endl;
+	std::cerr << "getaddrinfo() failed with error: " << rv << std::endl;
     WSACleanup();
     exit(1);
   }
@@ -62,14 +62,14 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
   // loop through all the results and connect to the first we can
   for (p = servinfo; p != NULL; p = p->ai_next) {
     if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == INVALID_SOCKET) {
-      cerr << "socket() failed with error: " << WSAGetLastError() << endl;
+	  std::cerr << "socket() failed with error: " << WSAGetLastError() << std::endl;
       continue;
     }
     
     if (connect(sockfd, p->ai_addr, (int)p->ai_addrlen) == SOCKET_ERROR) {
       closesocket(sockfd);
       sockfd = INVALID_SOCKET;
-      cerr << "connect() to server socket failed" << endl;
+	  std::cerr << "connect() to server socket failed" << std::endl;
       continue;
     }
     
@@ -82,8 +82,9 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
     exit(2);
   }
   
-  inet_ntop(p->ai_family, get_in_addr2((struct sockaddr *)p->ai_addr), s, sizeof s);
-  printf("client: connecting to %s\n", s);
+  //inet_ntop(p->ai_family, get_in_addr2((struct sockaddr *)p->ai_addr), s, sizeof s);
+  //printf("client: connecting to %s\n", s);
+  printf("client: connecting...\n");
 
   freeaddrinfo(servinfo); // all done with this structure
 
@@ -150,7 +151,7 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
 
 VRNetClient::~VRNetClient()
 {
-#ifdef WINDOWS 
+#ifdef WIN32 
   closesocket(_socketFD);
   WSACleanup();
 #else
