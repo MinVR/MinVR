@@ -40,6 +40,14 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ================================================================================ */
 
+
+#if defined(WIN32)
+#include <winsock2.h>
+#include <windows.h>
+#else
+#include <dirent.h>
+#endif
+
 #include <iostream>
 #include "plugin/PluginManager.h"
 #include <vector>
@@ -51,11 +59,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sstream>
 #include <fstream>
 
-#if defined(WIN32)
-#include <Windows.h>
-#else
-#include <dirent.h>
-#endif
 
 using namespace MinVR;
 using namespace std;
