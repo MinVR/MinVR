@@ -3,18 +3,18 @@
 // Step 7 of the specialization instructions (in VRDatum.h) is to
 // add an entry here to register the new data type.
 VRDataCollection::VRDataCollection() {
-  factory.RegisterVRDatum(MVRINT, CreateVRDatumInt);
-  factory.RegisterVRDatum(MVRDOUBLE, CreateVRDatumDouble);
-  factory.RegisterVRDatum(MVRSTRING, CreateVRDatumString);
-  factory.RegisterVRDatum(MVRARRAYDOUBLE, CreateVRDatumArrayDouble);
-  factory.RegisterVRDatum(MVRCONTAINER, CreateVRDatumContainer);
+  factory.RegisterVRDatum(VRCORETYPE_INT, CreateVRDatumInt);
+  factory.RegisterVRDatum(VRCORETYPE_DOUBLE, CreateVRDatumDouble);
+  factory.RegisterVRDatum(VRCORETYPE_STRING, CreateVRDatumString);
+  factory.RegisterVRDatum(VRCORETYPE_DOUBLEARRAY, CreateVRDatumDoubleArray);
+  factory.RegisterVRDatum(VRCORETYPE_CONTAINER, CreateVRDatumContainer);
 
   // We create a VRDatum object here just to have access to the
   // typemap that is a static member of that class.  Copy it into a
   // map<> for use over here in reading serialized data strings.
   VRDatumInt *m = new VRDatumInt(0);
-  for (int i = 0; i < MVRNTYPES; i++) {
-    mvrTypeMap[std::string(m->MVRTypeMap[i].first)] = m->MVRTypeMap[i].second;
+  for (int i = 0; i < VRCORETYPE_NTYPES; i++) {
+    mVRTypeMap[std::string(m->VRTypeMap[i].first)] = m->VRTypeMap[i].second;
   }
 }
 
@@ -22,7 +22,7 @@ std::string VRDataCollection::serialize(const std::string trimName,
                                            VRDatumPtr pdata ) {
   // If this is not a container, just spell out the XML with the serialized
   // data inside.
-  if (pdata->getType() != MVRCONTAINER) {
+  if (pdata->getType() != VRCORETYPE_CONTAINER) {
 
     return "<" + trimName + " type=\"" + pdata->getDescription() + "\">" +
       pdata->serialize() + "</" + trimName + ">";
@@ -35,8 +35,8 @@ std::string VRDataCollection::serialize(const std::string trimName,
     serialized = "<" + trimName + " type=\"" + pdata->getDescription() + "\">";
 
     // ... loop through the children (recursively) ...
-    MVRContainer nameList = pdata->getValue();
-    for (MVRContainer::iterator lt = nameList.begin();
+    VRContainer nameList = pdata->getValue();
+    for (VRContainer::iterator lt = nameList.begin();
          lt != nameList.end(); lt++) {
 
       // ... recurse, and get the serialization of the member data value.
@@ -66,9 +66,9 @@ std::string VRDataCollection::deserializeString(const char* valueString) {
   return std::string(valueString);
 }
 
-MVRArrayDouble VRDataCollection::deserializeArrayDouble(const char* valueString) {
+VRDoubleArray VRDataCollection::deserializeDoubleArray(const char* valueString) {
 
-  MVRArrayDouble vVal;
+  VRDoubleArray vVal;
 
   // Separate the name space into its constituent elements.
   std::string elem;
@@ -84,30 +84,29 @@ MVRArrayDouble VRDataCollection::deserializeArrayDouble(const char* valueString)
 }
 
 bool VRDataCollection::processValue(const char* name,
-                                       MVRTYPE_ID type,
+                                       VRCORETYPE_ID type,
                                        const char* valueString) {
-  char buffer[50];
 
   /// Step 9 of adding a data type is adding entries to this switch.
   /// And the corresponding deserialize*() method.
   switch (type) {
-  case MVRINT:
-    addValue(name, deserializeInt(valueString));
+  case VRCORETYPE_INT:
+    addData(name, (VRInt)deserializeInt(valueString));
     break;
 
-  case MVRDOUBLE:
-    addValue(name, deserializeDouble(valueString));
+  case VRCORETYPE_DOUBLE:
+    addData(name, (VRDouble)deserializeDouble(valueString));
     break;
 
-  case MVRSTRING:
-    addValue(name, deserializeString(valueString));
+  case VRCORETYPE_STRING:
+    addData(name, (VRString)deserializeString(valueString));
     break;
 
-  case MVRARRAYDOUBLE:
-    addValue(name, deserializeArrayDouble(valueString));
+  case VRCORETYPE_DOUBLEARRAY:
+    addData(name, (VRDoubleArray)deserializeDoubleArray(valueString));
     break;
 
-  case MVRCONTAINER:
+  case VRCORETYPE_CONTAINER:
     {
       // Check to see if this is just white space. If so, ignore. If
       // not, throw an exception because we don't know what to do.
@@ -120,9 +119,9 @@ bool VRDataCollection::processValue(const char* name,
       }
       break;
     }
-  case MVRNONE:
-  case MVRARRAYINT:
-  case MVRARRAYSTRING:
+  case VRCORETYPE_NONE:
+  case VRCORETYPE_ARRAYINT:
+  case VRCORETYPE_ARRAYSTRING:
     {
       break;
     }	     
@@ -136,7 +135,7 @@ bool VRDataCollection::walkXML(element* node, std::string nameSpace) {
   char type[5] = "type";
 
   std::string qualifiedName;
-  MVRContainer childNames;
+  VRContainer childNames;
 
   qualifiedName = nameSpace + std::string(node->get_name());
 
@@ -156,13 +155,13 @@ bool VRDataCollection::walkXML(element* node, std::string nameSpace) {
 
       if (firstChar >= 0) {
 
-        MVRTYPE_ID typeId;
+        VRCORETYPE_ID typeId;
 
         if (node->get_attribute(type) == NULL) {
 
           typeId = inferType(std::string(node->get_value()));
         } else { // what does map return if no match?
-          typeId = mvrTypeMap[std::string(node->get_attribute(type)->get_value())];
+          typeId = mVRTypeMap[std::string(node->get_attribute(type)->get_value())];
         }
 
         // check for typeId == 0
@@ -181,7 +180,7 @@ bool VRDataCollection::walkXML(element* node, std::string nameSpace) {
       // add it to the index.
       if (childNames.size() > 0 && strcmp(node->get_name(), "XML_DOC")) {
 
-        addValue(qualifiedName, childNames);
+        addData(qualifiedName, childNames);
       }
       return true;
     }
@@ -199,26 +198,26 @@ bool VRDataCollection::walkXML(element* node, std::string nameSpace) {
 // This is really just part of trying to make the package easy to use
 // for configuration files.  For the serialize/deserialize pair, it's
 // not an issue.
-MVRTYPE_ID VRDataCollection::inferType(const std::string valueString) {
+VRCORETYPE_ID VRDataCollection::inferType(const std::string valueString) {
 /// Step 10 -- Add some functionality to this method to help identify
 /// your new data type.
 
   // Test for int
   char *p;
   int conInt = strtol(valueString.c_str(), &p, 10);
-  if (!*p) return MVRINT;
+  if (!*p) return VRCORETYPE_INT;
 
   double conDouble = strtod(valueString.c_str(), &p);
-  if (!*p) return MVRDOUBLE;
+  if (!*p) return VRCORETYPE_DOUBLE;
 
   // Is it a container?
   std::size_t firstChar = valueString.find_first_not_of(" \t\r\n");
   if (firstChar != std::string::npos) {
-    if (valueString[firstChar] == '<') return MVRCONTAINER;
+    if (valueString[firstChar] == '<') return VRCORETYPE_CONTAINER;
   }
 
   // Not any of the above?  Probably a string.
-  return MVRSTRING;
+  return VRCORETYPE_STRING;
 }
 
 bool VRDataCollection::printXML(element* node, std::string prefix) {

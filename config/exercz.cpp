@@ -34,18 +34,18 @@ int main() {
   std::string s1 = "wowie!";
   std::string s2 = "shazam!";
 
-  index->addValue("/henry", a);
-  index->addValue("/ralph", b);
+  index->addData("/henry", a);
+  index->addData("/ralph", b);
 
-  index->addValue("/george", f);
-  index->addValue("/mary", g);
+  index->addData("/george", f);
+  index->addData("/mary", g);
 
-  index->addValue("/billy", s1);
-  index->addValue("/johnny", s2);
+  index->addData("/billy", s1);
+  index->addData("/johnny", s2);
 
   index->addSerializedValue("<bob type=\"container\"><flora type=\"int\">3274</flora><morton type=\"double\">34.5</morton><cora type=\"container\"><flora type=\"int\">1234</flora><nora type=\"double\">23.45</nora></cora></bob>");
 
-  index->addSerializedValue("<chester type=\"arraydouble\">32.7@44.56@22.3@78.2@99.134@</chester>");
+  index->addSerializedValue("<chester type=\"doublearray\">32.7@44.56@22.3@78.2@99.134@</chester>");
 
   std::vector<std::string> elems;
   std::string elem;
@@ -134,45 +134,45 @@ int main() {
         VRDatumPtr p = index->getDatum(elems[1], nameSpace);
 
         switch (p->getType()) {
-        case MVRINT:
+        case VRCORETYPE_INT:
           std::cout << "an integer containing: " << ((int)p->getValue()) << std::endl;
 
           std::cout << "same as: " << (int)index->getValue(elems[1], nameSpace) << std::endl;
           break;
 
-        case MVRDOUBLE:
+        case VRCORETYPE_DOUBLE:
           std::cout << "a double containing: " << ((double)p->getValue()) << std::endl;
           break;
 
-        case MVRSTRING:
+        case VRCORETYPE_STRING:
           std::cout << "a string containing: " << ((std::string)p->getValue()) << std::endl;
           break;
 
-        case MVRARRAYDOUBLE:
+        case VRCORETYPE_DOUBLEARRAY:
           {
-            MVRArrayDouble pdata = p->getValue();
-            for (MVRArrayDouble::iterator it = pdata.begin(); it != pdata.end(); ++it) {
+            VRDoubleArray pdata = p->getValue();
+            for (VRDoubleArray::iterator it = pdata.begin(); it != pdata.end(); ++it) {
               std::cout << "element: " << *it << std::endl;
             }
             break;
           }
 
-        case MVRCONTAINER:
+        case VRCORETYPE_CONTAINER:
 
           {
             std::cout << "a container containing: " << std::endl;
 
-            MVRContainer nameList = p->getValue();
-            for (MVRContainer::iterator nl = nameList.begin();
+            VRContainer nameList = p->getValue();
+            for (VRContainer::iterator nl = nameList.begin();
                  nl != nameList.end(); nl++) {
               std::cout << "                        " << *nl << std::endl;
             }
             break;
           }
 
-	case MVRNONE:
-	case MVRARRAYINT:
-	case MVRARRAYSTRING:
+	case VRCORETYPE_NONE:
+	case VRCORETYPE_ARRAYINT:
+	case VRCORETYPE_ARRAYSTRING:
 	  {
 	    break;
 	  }	     
@@ -188,8 +188,8 @@ int main() {
 
     ////// command: l (list all values)
     } else if (elems[0].compare("ls") == 0) {
-      MVRContainer nameList = index->getDataNames(nameSpace);
-      for (MVRContainer::iterator it = nameList.begin();
+      VRContainer nameList = index->getDataNames(nameSpace);
+      for (VRContainer::iterator it = nameList.begin();
            it != nameList.end(); it++) {
         std::cout << *it << std::endl;
       }
@@ -201,13 +201,13 @@ int main() {
         // Make a list of data values to add to the parent container.
         // In this case, the list will have only one value, but it
         // could have more.
-        MVRContainer c;
+        VRContainer c;
         c.push_back(nameSpace + elems[1]);
 
         std::cout << "nameSpace: " << nameSpace << " c: " << c.front() << std::endl;
 
         if (elems[2].compare("container") == 0) {
-          index->addValue(nameSpace + elems[1]);
+          index->addData(nameSpace + elems[1]);
         } else {
 
           if (elems[2].compare("int") == 0) {
@@ -215,21 +215,21 @@ int main() {
             int iVal;
             sscanf(elems[3].c_str(), "%d", &iVal);
             // Add the value to the index.
-            index->addValue(nameSpace + elems[1], iVal);
+            index->addData(nameSpace + elems[1], iVal);
             // Add it to the parent container.
-            if (nameSpace.size() > 1) index->addValue(nameSpace.substr(0,nameSpace.size() - 1), c);
+            if (nameSpace.size() > 1) index->addData(nameSpace.substr(0,nameSpace.size() - 1), c);
 
           } else if (elems[2].compare("double") == 0) {
 
             double dVal;
             sscanf(elems[3].c_str(), "%lf", &dVal);
-            index->addValue(nameSpace + elems[1], dVal);
-            if (nameSpace.size() > 1) index->addValue(nameSpace.substr(0,nameSpace.size() - 1), c);
+            index->addData(nameSpace + elems[1], dVal);
+            if (nameSpace.size() > 1) index->addData(nameSpace.substr(0,nameSpace.size() - 1), c);
 
           } else if (elems[2].compare("string") == 0) {
 
-            index->addValue(nameSpace + elems[1], elems[3]);
-            if (nameSpace.size() > 1) index->addValue(nameSpace.substr(0,nameSpace.size() - 1), c);
+            index->addData(nameSpace + elems[1], elems[3]);
+            if (nameSpace.size() > 1) index->addData(nameSpace.substr(0,nameSpace.size() - 1), c);
 
           } else {
 

@@ -20,8 +20,8 @@
 class VRDataQueue {
 private:
 
-  typedef std::deque<std::string> MVRDataList;
-  MVRDataList mqueue;
+  typedef std::deque<std::string> VRDataList;
+  VRDataList mqueue;
 
 public:
   VRDataQueue() {};
@@ -44,7 +44,7 @@ public:
   void printQueue() {
 
     int i = 0;
-    for (MVRDataList::iterator it = mqueue.begin(); it != mqueue.end(); ++it) {
+    for (VRDataList::iterator it = mqueue.begin(); it != mqueue.end(); ++it) {
       std::cout << "element " << ++i << ": " << *it << std::endl;
     }
   }

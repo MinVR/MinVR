@@ -13,12 +13,12 @@ int main() {
   VRDataIndex *index = new VRDataIndex;
 
   // Create a container object called cora, with two member objects.
-  index->addValue("/cora/nora", 4);
-  index->addValue("/cora/flora", "gosh and golly");
+  index->addData("/cora/nora", 4);
+  index->addData("/cora/flora", "gosh and golly");
 
   // Create another container called homer, with two members.
-  index->addValue("/homer/bart", 3.4);
-  index->addValue("/homer/lisa", 5.2);
+  index->addData("/homer/bart", 3.4);
+  index->addData("/homer/lisa", 5.2);
 
   // Show the index structure.
   std::cout << "Index Structure" << std::endl;
@@ -30,8 +30,8 @@ int main() {
   queue->push(index->serialize("cora", "/"));
 
   // Change the values of cora's members.
-  index->addValue("/cora/nora", 7);
-  index->addValue("/cora/flora", "are you sure?");
+  index->addData("/cora/nora", 7);
+  index->addData("/cora/flora", "are you sure?");
 
   std::cout << "Index Structure after changing /cora" << std::endl;
   index->printStructure();

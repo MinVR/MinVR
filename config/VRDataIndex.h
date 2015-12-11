@@ -67,9 +67,9 @@
 //
 // Create an index object, and add values to the store in one of three ways.
 //
-//  1. You can add data with the specialized addValue() functions.
+//  1. You can add data with the specialized addData() functions.
 //     These take a name and a value and park them in the index.  The
-//     addValue() with a single argument adds a container and you can
+//     addData() with a single argument adds a container and you can
 //     subsequently add items to it.
 //
 //  2. You can feed some serialized data to the addSerializedValue()
@@ -104,7 +104,7 @@
 //
 //    VRDataIndex *index = new VRDataIndex;
 //    int a = 4;
-//    index->addValue("/george", a);
+//    index->addData("/george", a);
 //
 //  This incorporates an integer value of 4 into the index with the
 //  name "george" that appears at the root (global) level.
@@ -227,11 +227,11 @@ public:
   //
   //   int p = index->getValue(name, nameSpace).intVal()->getValueInt()
   //
-  VRDatumHelper<VRDatum> getValue(const std::string valName) {
+  VRAnyCoreType getValue(const std::string valName) {
     return getDatum(valName)->getValue();
   }
-  VRDatumHelper<VRDatum> getValue(const std::string valName,
-                                  const std::string nameSpace) {
+  VRAnyCoreType getValue(const std::string valName,
+                         const std::string nameSpace) {
     return getDatum(valName, nameSpace)->getValue();
   }
 
@@ -257,7 +257,7 @@ public:
   bool processXMLFile(std::string fileName, std::string nameSpace);
 
   // Returns a list of all the names in the map.  Note this really is
-  // a list of strings, not a MVRContainer.  (No difference, really,
+  // a list of strings, not a VRContainer.  (No difference, really,
   // but we want to keep them semantically separate.)
   std::list<std::string> getDataNames();
   std::list<std::string> getDataNames(const std::string containerName);
@@ -268,20 +268,44 @@ public:
 
   /// Step 6 of the data type addition instructions in VRDatum.h is
   /// to add a specialized method here.
-  std::string addValue(const std::string valName, int value);
-  std::string addValue(const std::string valName, double value);
-  std::string addValue(const std::string valName, std::string value);
-  std::string addValue(const std::string valName, MVRArrayDouble value);
+  std::string addData(const std::string valName, VRInt value);
+  std::string addData(const std::string valName, VRDouble value);
+  std::string addData(const std::string valName, VRString value);
+  std::string addData(const std::string valName, VRDoubleArray value);
 
-  // There is a semantic difference between addValue() for a primitive
-  // value and addValue() for a container.  One creates an object of
+  // There is a semantic difference between addData() for a primitive
+  // value and addData() for a container.  One creates an object of
   // the name and value given.  The second (for containers) adds the
   // contents of the given container value to the container of the
   // given name.
-  std::string addValue(const std::string valName, MVRContainer value);
+  std::string addData(const std::string valName, VRContainer value);
   // Adds an empty container.
-  std::string addValue(const std::string valName);
+  std::string addData(const std::string valName);
 
+  std::string addData(const std::string &name, VRIntConvertible &object) {
+    return addData(name, object.toVRInt());
+  }
+
+  std::string addData(const std::string &name, VRDoubleConvertible &object) {
+    return addData(name, object.toVRDouble());
+  }
+
+  std::string addData(const std::string &name, VRStringConvertible &object) {
+    return addData(name, object.toVRString());
+  }
+
+  // std::string addData(const std::string &name, VRIntArrayConvertible &object) {
+  //   return addData(name, object.toVRIntArray());
+  // }
+  
+  std::string addData(const std::string &name, VRDoubleArrayConvertible &object) {
+    return addData(name, object.toVRDoubleArray());
+  }
+  
+  // std::string addData(const std::string &name, VRStringArrayConvertible &object) {
+  //   return addData(name, object.toVRStringArray());
+  // }
+  
   // A utility to make sure a namespace is spelled right, potentially
   // useful to users, so made public.
   std::string validateNameSpace(const std::string nameSpace);
@@ -379,7 +403,7 @@ public:
 //
 //   - Make VRDatumPtr::intVal(), etc, into templates.
 //
-//   - After those are done, the VRDataIndex::addValue() methods can
+//   - After those are done, the VRDataIndex::addData() methods can
 //     probably be template-ized, too.
 //
 //   -

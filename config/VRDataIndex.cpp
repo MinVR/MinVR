@@ -10,7 +10,7 @@ std::list<std::string> VRDataIndex::getDataNames() {
   return outList;
 }
 
-//
+
 std::list<std::string> VRDataIndex::getDataNames(const std::string containerName) {
   std::list<std::string> outList;
   for (VRDataMap::iterator it = mindex.begin(); it != mindex.end(); it++) {
@@ -319,22 +319,22 @@ bool VRDataIndex::processXMLFile(std::string fileName, std::string nameSpace) {
   return true;
 }
 
-std::string VRDataIndex::addValue(const std::string valName, int value) {
+std::string VRDataIndex::addData(const std::string valName, VRInt value) {
 
   // Check if the name is already in use.
   VRDataMap::iterator it = mindex.find(valName);
   if (it == mindex.end()) {
 
     // No? Create it and stick it in index.
-    VRDatumPtr obj = factory.CreateVRDatum(MVRINT, &value);
+    VRDatumPtr obj = factory.CreateVRDatum(VRCORETYPE_INT, &value);
     mindex.insert(VRDataMap::value_type(valName, obj));
 
     // Add this value to the parent container, if any.
-    MVRContainer cValue;
+    VRContainer cValue;
     cValue.push_back(valName);
     std::string ns = getNameSpace(valName);
     // The parent container is the namespace minus the trailing /.
-    if (ns.compare("/") != 0) addValue(ns.substr(0,ns.size()-1), cValue);
+    if (ns.compare("/") != 0) addData(ns.substr(0,ns.size()-1), cValue);
 
   } else {
     // Overwrite value
@@ -349,21 +349,21 @@ std::string VRDataIndex::addValue(const std::string valName, int value) {
 
 }
 
-std::string VRDataIndex::addValue(const std::string valName, double value) {
+std::string VRDataIndex::addData(const std::string valName, VRDouble value) {
 
   // Check if the name is already in use.
   VRDataMap::iterator it = mindex.find(valName);
   if (it == mindex.end()) {
 
-    VRDatumPtr obj = factory.CreateVRDatum(MVRDOUBLE, &value);
+    VRDatumPtr obj = factory.CreateVRDatum(VRCORETYPE_DOUBLE, &value);
     mindex.insert(VRDataMap::value_type(valName, obj));
 
     // Add this value to the parent container, if any.
-    MVRContainer cValue;
+    VRContainer cValue;
     cValue.push_back(valName);
     std::string ns = getNameSpace(valName);
     // The parent container is the namespace minus the trailing /.
-    if (ns.compare("/") != 0) addValue(ns.substr(0,ns.size()-1), cValue);
+    if (ns.compare("/") != 0) addData(ns.substr(0,ns.size()-1), cValue);
 
   } else {
     // Overwrite value
@@ -376,7 +376,7 @@ std::string VRDataIndex::addValue(const std::string valName, double value) {
   return valName;
 }
 
-std::string VRDataIndex::addValue(const std::string valName, std::string value) {
+std::string VRDataIndex::addData(const std::string valName, VRString value) {
 
   // Remove leading spaces.
   int valueBegin = value.find_first_not_of(" \t\n\r");
@@ -393,15 +393,15 @@ std::string VRDataIndex::addValue(const std::string valName, std::string value) 
   VRDataMap::iterator it = mindex.find(valName);
   if (it == mindex.end()) {
 
-    VRDatumPtr obj = factory.CreateVRDatum(MVRSTRING, &trimValue);
+    VRDatumPtr obj = factory.CreateVRDatum(VRCORETYPE_STRING, &trimValue);
     mindex.insert(VRDataMap::value_type(valName, obj));
 
     // Add this value to the parent container, if any.
-    MVRContainer cValue;
+    VRContainer cValue;
     cValue.push_back(valName);
     std::string ns = getNameSpace(valName);
     // The parent container is the namespace minus the trailing /.
-    if (ns.compare("/") != 0) addValue(ns.substr(0,ns.size()-1), cValue);
+    if (ns.compare("/") != 0) addData(ns.substr(0,ns.size()-1), cValue);
 
   } else {
     // Overwrite value
@@ -414,27 +414,27 @@ std::string VRDataIndex::addValue(const std::string valName, std::string value) 
   return valName;
 }
 
-std::string VRDataIndex::addValue(const std::string valName, MVRArrayDouble value) {
+std::string VRDataIndex::addData(const std::string valName, VRDoubleArray value) {
 
   // Check if the name is already in use.
   VRDataMap::iterator it = mindex.find(valName);
   if (it == mindex.end()) {
 
     // No? Create it and stick it in index.
-    VRDatumPtr obj = factory.CreateVRDatum(MVRARRAYDOUBLE, &value);
+    VRDatumPtr obj = factory.CreateVRDatum(VRCORETYPE_DOUBLEARRAY, &value);
     mindex.insert(VRDataMap::value_type(valName, obj));
 
     // Add this value to the parent container, if any.
-    MVRContainer cValue;
+    VRContainer cValue;
     cValue.push_back(valName);
     std::string ns = getNameSpace(valName);
     // The parent container is the namespace minus the trailing /.
-    if (ns.compare("/") != 0) addValue(ns.substr(0,ns.size()-1), cValue);
+    if (ns.compare("/") != 0) addData(ns.substr(0,ns.size()-1), cValue);
 
   } else {
     // Overwrite value
     if (overwrite > 0) {
-      it->second.arrayDoubleVal()->setValue(value);
+      it->second.doubleArrayVal()->setValue(value);
     } else if (overwrite == 0) {
       throw std::runtime_error(std::string("overwriting values not allowed"));
     }
@@ -443,8 +443,8 @@ std::string VRDataIndex::addValue(const std::string valName, MVRArrayDouble valu
 }
 
 
-std::string VRDataIndex::addValue(const std::string valName,
-                                  MVRContainer value) {
+std::string VRDataIndex::addData(const std::string valName,
+                                 VRContainer value) {
 
   // If the container to add to is the root, ignore.
   if (valName.compare("/") == 0) return valName;
@@ -453,16 +453,16 @@ std::string VRDataIndex::addValue(const std::string valName,
   VRDataMap::iterator it = mindex.find(valName);
   if (it == mindex.end()) {
 
-    VRDatumPtr obj = factory.CreateVRDatum(MVRCONTAINER, &value);
+    VRDatumPtr obj = factory.CreateVRDatum(VRCORETYPE_CONTAINER, &value);
     //std::cout << "added " << obj.containerVal()->getDatum() << std::endl;
     mindex.insert(VRDataMap::value_type(valName, obj));
 
     // Add this value to the parent container, if any.
-    MVRContainer cValue;
+    VRContainer cValue;
     cValue.push_back(valName);
     std::string ns = getNameSpace(valName);
     // The parent container is the namespace minus the trailing /.
-    if (ns.compare("/") != 0) addValue(ns.substr(0,ns.size()-1), cValue);
+    if (ns.compare("/") != 0) addData(ns.substr(0,ns.size()-1), cValue);
 
   } else {
     // Add value to existing container.
@@ -471,23 +471,23 @@ std::string VRDataIndex::addValue(const std::string valName,
   return valName;
 }
 
-std::string VRDataIndex::addValue(const std::string valName) {
+std::string VRDataIndex::addData(const std::string valName) {
 
   // Check if the name is already in use.
   VRDataMap::iterator it = mindex.find(valName);
   if (it == mindex.end()) {
 
-    MVRContainer v ;
-    VRDatumPtr obj = factory.CreateVRDatum(MVRCONTAINER, &v);
+    VRContainer v ;
+    VRDatumPtr obj = factory.CreateVRDatum(VRCORETYPE_CONTAINER, &v);
     //std::cout << "added " << obj.containerVal()->getDatum() << std::endl;
     mindex.insert(VRDataMap::value_type(valName, obj));
 
     // Add this value to the parent container, if any.
-    MVRContainer cValue;
+    VRContainer cValue;
     cValue.push_back(valName);
     std::string ns = getNameSpace(valName);
     // The parent container is the namespace minus the trailing /.
-    if (ns.compare("/") != 0) addValue(ns.substr(0,ns.size()-1), cValue);
+    if (ns.compare("/") != 0) addData(ns.substr(0,ns.size()-1), cValue);
 
   }
   return valName;
@@ -506,7 +506,7 @@ void VRDataIndex::printStructure() {
     for (i = 0; i < ((int)elems.size() - 1); i++) std::cout << " | ";
     std::cout << elems.back();
 
-    if (it->second->getType() == MVRCONTAINER) {
+    if (it->second->getType() == VRCORETYPE_CONTAINER) {
 
       std::cout << std::endl;
 
