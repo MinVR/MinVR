@@ -204,7 +204,13 @@ int main() {
 
     ////// command: l (list all values)
     } else if (elems[0].compare("ls") == 0) {
-      VRContainer nameList = index->getDataNames(nameSpace);
+
+      VRContainer nameList;
+      if (elems.size() > 1) {
+        nameList = index->getNames(elems[1]);
+      } else {
+        nameList = index->getNames(nameSpace);
+      }
       for (VRContainer::iterator it = nameList.begin();
            it != nameList.end(); it++) {
         std::cout << *it << std::endl;

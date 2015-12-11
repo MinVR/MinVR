@@ -2,7 +2,7 @@
 
 // Just returns a list of the data names. For implementing an 'ls'
 // command, or something like it.
-std::list<std::string> VRDataIndex::getDataNames() {
+std::list<std::string> VRDataIndex::getNames() {
   std::list<std::string> outList;
   for (VRDataMap::iterator it = mindex.begin(); it != mindex.end(); it++) {
     outList.push_back(it->first);
@@ -11,7 +11,7 @@ std::list<std::string> VRDataIndex::getDataNames() {
 }
 
 
-std::list<std::string> VRDataIndex::getDataNames(const std::string containerName) {
+std::list<std::string> VRDataIndex::getNames(const std::string containerName) {
   std::list<std::string> outList;
   for (VRDataMap::iterator it = mindex.begin(); it != mindex.end(); it++) {
 

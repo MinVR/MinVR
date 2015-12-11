@@ -205,26 +205,24 @@ public:
   VRDatumPtr getDatum(const std::string valName,
                       const std::string nameSpace);
 
-  // The getValue function relies on the helper function defined with
-  // VRDatum.  Read about it there, but it is just a cute trick to
-  // allow programmers to access values directly from the index.  So
-  // access your values like this:
+  // The return type VRAnyCoreType is a wrapper that can hold any of the
+  // VRCoreTypes.  VRAnyCoreType can be cast to any of the VRCoreTypes. So,
+  // common usage examples for this function are:
   //
-  //   int p = index->getDatum(name, nameSpace)->getValue()
+  //   VRInt i = dataIndex->getValue("MyInteger");
+  //   VRDouble d = dataIndex->getValue("MyDouble");
   //
-  // or like this:
+  // The same syntax can be used with custom classes that are not VRCoreTypes if
+  // they implement a constructor that takes a VRAnyCoreType as an argument.
+  // All of the classes in VRMath do this.  So, we can write:
   //
-  //   int p = index->getValue(name, nameSpace)
+  //   VRVector3 v = dataIndex->getValue("MyHeading");
   //
-  // It's your choice; the two are identical in overhead.  If you're
-  // really worried about overhead, you can do this instead:
+  // You can also do something like this to return the specialized
+  // VRDatum object which you might want for some other nefarious
+  // reason.  I can't think of a use case for this, but you might.
   //
-  //   int p = index->getValue(name, nameSpace)->getValueInt()
-  //
-  // This version does a kind of type checking, but also brings you
-  // the specialized VRDatum object which you might want for some
-  // other nefarious reason.
-  //
+  //   VRDatumInt pobj = index->getValue(name, nameSpace).intVal()
   //   int p = index->getValue(name, nameSpace).intVal()->getValueInt()
   //
   VRAnyCoreType getValue(const std::string valName) {
@@ -259,8 +257,12 @@ public:
   // Returns a list of all the names in the map.  Note this really is
   // a list of strings, not a VRContainer.  (No difference, really,
   // but we want to keep them semantically separate.)
-  std::list<std::string> getDataNames();
-  std::list<std::string> getDataNames(const std::string containerName);
+  std::list<std::string> getNames();
+  // Returns a list of all the names in the map within the specified namespace.
+  std::list<std::string> getNames(const std::string containerName);
+  std::list<std::string> getNames(const std::string &containerName,
+                                  bool includeChildren,
+                                  bool fullPath);
 
   // These are specialized set methods.  They seem a little unhip, but
   // it's because I find this easier than remembering how to spell the

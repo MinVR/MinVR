@@ -53,6 +53,9 @@ int main() {
   std::cout << "Index Structure after changing /cora" << std::endl;
   index->printStructure();
 
+  std::cout << index->serialize("/", "");
+
+  
   // Push the new cora onto the queue.
   queue->push(index->serialize("cora", "/"));
 
