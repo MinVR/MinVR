@@ -2,8 +2,8 @@
 #include <iostream>
 #include <stdexcept>
 #include <sstream>
-#include "VRDataIndex.h"
-#include "VRDataQueue.h"
+#include "config/VRDataIndex.h"
+#include "config/VRDataQueue.h"
 
 
 // This is just a test program meant to be a vague illustration of the
@@ -53,9 +53,6 @@ int main() {
   std::cout << "Index Structure after changing /cora" << std::endl;
   index->printStructure();
 
-  std::cout << index->serialize("/", "");
-
-  
   // Push the new cora onto the queue.
   queue->push(index->serialize("cora", "/"));
 

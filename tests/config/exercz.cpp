@@ -2,8 +2,8 @@
 #include <iostream>
 #include <stdexcept>
 #include <sstream>
-#include "VRDataIndex.h"
-#include "VRDataQueue.h"
+#include "config/VRDataIndex.h"
+#include "config/VRDataQueue.h"
 
 #define HELPMESSAGE  std::cout << "ls - get the list of data names" << std::endl; \
       std::cout << "px - show namespaces / containers " << std::endl; \
