@@ -532,7 +532,7 @@ std::string VRDataIndex::addData(const std::string valName,
   return valName;
 }
 
-std::string VRDataIndex::addData(const std::string valName) {
+std::string VRDataIndex::addNameSpace(const std::string valName) {
 
   // Check if the name is already in use.
   VRDataMap::iterator it = mindex.find(valName);

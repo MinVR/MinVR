@@ -281,9 +281,14 @@ public:
   // contents of the given container value to the container of the
   // given name.
   std::string addData(const std::string valName, VRContainer value);
-  // Adds an empty container.
-  std::string addData(const std::string valName);
 
+  // Adds a namespace.  Or, more simply, adds an empty container.
+  std::string addNameSpace(const std::string valName);
+
+  // These versions of addData can be used by subclasses of the basic
+  // VRDatum types.  If those types include a constructor from the basic
+  // type, then this is all they need to be stored into an index and
+  // retrieved.
   std::string addData(const std::string &name, VRIntConvertible &object) {
     return addData(name, object.toVRInt());
   }

@@ -188,10 +188,10 @@ int main() {
             break;
           }
 
-	case VRCORETYPE_NONE:
-	  {
-	    break;
-	  }	     
+        case VRCORETYPE_NONE:
+          {
+            break;
+          }	     
         }
 
         std::cout << "description: " << index->getDescription(elems[1], nameSpace) << std::endl;
@@ -223,7 +223,7 @@ int main() {
         std::cout << "nameSpace: " << nameSpace << " c: " << c.front() << std::endl;
 
         if (elems[2].compare("container") == 0) {
-          index->addData(nameSpace + elems[1]);
+          index->addNameSpace(nameSpace + elems[1]);
         } else {
 
           if (elems[2].compare("int") == 0) {
