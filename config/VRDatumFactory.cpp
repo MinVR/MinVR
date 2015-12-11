@@ -1,7 +1,7 @@
 #include "VRDatumFactory.h"
 
 VRDatumPtr VRDatumFactory::CreateVRDatum(int VRDatumId,
-                                                      void* pData) {
+                                         void* pData) {
   // try to find the callback corresponding to the given shape id;
   // if no shape id found, throw exception
   CallbackMap::const_iterator it = m_callbacks.find(VRDatumId);

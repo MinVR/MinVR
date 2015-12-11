@@ -22,6 +22,33 @@ std::list<std::string> VRDataIndex::getNames(const std::string containerName) {
   return outList;
 }
 
+std::list<std::string> VRDataIndex::getNames(const std::string &containerName,
+                                             bool includeChildren,
+                                             bool fullPath) {
+  if (includeChildren) {
+    return getNames(containerName);
+  } else {
+    std::list<std::string> outList;
+
+    for (VRDataMap::iterator it = mindex.begin(); it != mindex.end(); it++) {
+      
+      if (it->first.compare(0, containerName.size(), containerName) == 0) {
+        string val = (it->first).substr(containerName.length());
+        if (val.find("/") == string::npos) {
+          if (fullPath) {
+            outList.push_back(it->first);
+          } else {
+            outList.push_back(val);
+          }
+        }
+      }
+    }
+    return outList;
+  }
+}
+
+
+
 // Breaks up a name into its constituent parts, on the slashes.  Note
 // that the first element of the return is blank.  This is on purpose,
 // since that is more or less the top-level container's name.  But beware
