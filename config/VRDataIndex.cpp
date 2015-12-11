@@ -414,7 +414,38 @@ std::string VRDataIndex::addData(const std::string valName, VRString value) {
   return valName;
 }
 
-std::string VRDataIndex::addData(const std::string valName, VRDoubleArray value) {
+std::string VRDataIndex::addData(const std::string valName,
+                                 VRIntArray value) {
+
+  // Check if the name is already in use.
+  VRDataMap::iterator it = mindex.find(valName);
+  if (it == mindex.end()) {
+
+    // No? Create it and stick it in index.
+    VRDatumPtr obj = factory.CreateVRDatum(VRCORETYPE_INTARRAY, &value);
+    mindex.insert(VRDataMap::value_type(valName, obj));
+
+    // Add this value to the parent container, if any.
+    VRContainer cValue;
+    cValue.push_back(valName);
+    std::string ns = getNameSpace(valName);
+    // The parent container is the namespace minus the trailing /.
+    if (ns.compare("/") != 0) addData(ns.substr(0,ns.size()-1), cValue);
+
+  } else {
+    // Overwrite value
+    if (overwrite > 0) {
+      it->second.intArrayVal()->setValue(value);
+    } else if (overwrite == 0) {
+      throw std::runtime_error(std::string("overwriting values not allowed"));
+    }
+  }
+  return valName;
+}
+
+
+std::string VRDataIndex::addData(const std::string valName,
+                                 VRDoubleArray value) {
 
   // Check if the name is already in use.
   VRDataMap::iterator it = mindex.find(valName);
@@ -435,6 +466,36 @@ std::string VRDataIndex::addData(const std::string valName, VRDoubleArray value)
     // Overwrite value
     if (overwrite > 0) {
       it->second.doubleArrayVal()->setValue(value);
+    } else if (overwrite == 0) {
+      throw std::runtime_error(std::string("overwriting values not allowed"));
+    }
+  }
+  return valName;
+}
+
+
+std::string VRDataIndex::addData(const std::string valName,
+                                 VRStringArray value) {
+
+  // Check if the name is already in use.
+  VRDataMap::iterator it = mindex.find(valName);
+  if (it == mindex.end()) {
+
+    // No? Create it and stick it in index.
+    VRDatumPtr obj = factory.CreateVRDatum(VRCORETYPE_STRINGARRAY, &value);
+    mindex.insert(VRDataMap::value_type(valName, obj));
+
+    // Add this value to the parent container, if any.
+    VRContainer cValue;
+    cValue.push_back(valName);
+    std::string ns = getNameSpace(valName);
+    // The parent container is the namespace minus the trailing /.
+    if (ns.compare("/") != 0) addData(ns.substr(0,ns.size()-1), cValue);
+
+  } else {
+    // Overwrite value
+    if (overwrite > 0) {
+      it->second.stringArrayVal()->setValue(value);
     } else if (overwrite == 0) {
       throw std::runtime_error(std::string("overwriting values not allowed"));
     }

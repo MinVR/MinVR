@@ -6,7 +6,9 @@ VRDataCollection::VRDataCollection() {
   factory.RegisterVRDatum(VRCORETYPE_INT, CreateVRDatumInt);
   factory.RegisterVRDatum(VRCORETYPE_DOUBLE, CreateVRDatumDouble);
   factory.RegisterVRDatum(VRCORETYPE_STRING, CreateVRDatumString);
+  factory.RegisterVRDatum(VRCORETYPE_INTARRAY, CreateVRDatumIntArray);
   factory.RegisterVRDatum(VRCORETYPE_DOUBLEARRAY, CreateVRDatumDoubleArray);
+  factory.RegisterVRDatum(VRCORETYPE_STRINGARRAY, CreateVRDatumStringArray);
   factory.RegisterVRDatum(VRCORETYPE_CONTAINER, CreateVRDatumContainer);
 
   // We create a VRDatum object here just to have access to the
@@ -19,13 +21,13 @@ VRDataCollection::VRDataCollection() {
 }
 
 std::string VRDataCollection::serialize(const std::string trimName,
-                                           VRDatumPtr pdata ) {
+                                        VRDatumPtr pdata ) {
   // If this is not a container, just spell out the XML with the serialized
   // data inside.
   if (pdata->getType() != VRCORETYPE_CONTAINER) {
 
     return "<" + trimName + " type=\"" + pdata->getDescription() + "\">" +
-      pdata->serialize() + "</" + trimName + ">";
+      pdata->getValueAsString() + "</" + trimName + ">";
 
   } else {
     // If this is a container...
@@ -48,22 +50,39 @@ std::string VRDataCollection::serialize(const std::string trimName,
   }
 }
 
-int VRDataCollection::deserializeInt(const char* valueString) {
+VRInt VRDataCollection::deserializeInt(const char* valueString) {
   int iVal;
   sscanf(valueString, "%d", &iVal);
 
   return iVal;
 }
 
-double VRDataCollection::deserializeDouble(const char* valueString) {
+VRDouble VRDataCollection::deserializeDouble(const char* valueString) {
   double fVal;
   sscanf(valueString, "%lf", &fVal);
 
   return fVal;
 }
 
-std::string VRDataCollection::deserializeString(const char* valueString) {
+VRString VRDataCollection::deserializeString(const char* valueString) {
   return std::string(valueString);
+}
+
+VRIntArray VRDataCollection::deserializeIntArray(const char* valueString) {
+
+  VRIntArray vVal;
+
+  // Separate the name space into its constituent elements.
+  std::string elem;
+  VRInt iVal;
+  std::stringstream ss(valueString);
+  while (std::getline(ss, elem, MINVRSEPARATOR)) {
+
+    sscanf(elem.c_str(), "%d", &iVal);
+    vVal.push_back(iVal);
+  }
+
+  return vVal;
 }
 
 VRDoubleArray VRDataCollection::deserializeDoubleArray(const char* valueString) {
@@ -72,12 +91,27 @@ VRDoubleArray VRDataCollection::deserializeDoubleArray(const char* valueString) 
 
   // Separate the name space into its constituent elements.
   std::string elem;
-  double fVal;
+  VRDouble fVal;
   std::stringstream ss(valueString);
-  while (std::getline(ss, elem, '@')) {
+  while (std::getline(ss, elem, MINVRSEPARATOR)) {
 
     sscanf(elem.c_str(), "%lf", &fVal);
     vVal.push_back(fVal);
+  }
+
+  return vVal;
+}
+
+VRStringArray VRDataCollection::deserializeStringArray(const char* valueString) {
+
+  VRStringArray vVal;
+
+  // Separate the name space into its constituent elements.
+  VRString elem;
+  std::stringstream ss(valueString);
+  while (std::getline(ss, elem, MINVRSEPARATOR)) {
+
+    vVal.push_back(elem);
   }
 
   return vVal;
@@ -102,8 +136,16 @@ bool VRDataCollection::processValue(const char* name,
     addData(name, (VRString)deserializeString(valueString));
     break;
 
+  case VRCORETYPE_INTARRAY:
+    addData(name, (VRIntArray)deserializeIntArray(valueString));
+    break;
+
   case VRCORETYPE_DOUBLEARRAY:
     addData(name, (VRDoubleArray)deserializeDoubleArray(valueString));
+    break;
+
+  case VRCORETYPE_STRINGARRAY:
+    addData(name, (VRStringArray)deserializeStringArray(valueString));
     break;
 
   case VRCORETYPE_CONTAINER:
@@ -120,8 +162,6 @@ bool VRDataCollection::processValue(const char* name,
       break;
     }
   case VRCORETYPE_NONE:
-  case VRCORETYPE_ARRAYINT:
-  case VRCORETYPE_ARRAYSTRING:
     {
       break;
     }	     
@@ -216,6 +256,18 @@ VRCORETYPE_ID VRDataCollection::inferType(const std::string valueString) {
     if (valueString[firstChar] == '<') return VRCORETYPE_CONTAINER;
   }
 
+  firstChar = valueString.find(MINVRSEPARATOR);
+  if (firstChar != std::string::npos) {
+    // It's an array...
+
+    // Test for int
+    conInt = strtol(valueString.substr(0, firstChar).c_str(), &p, 10);
+    if (!*p) return VRCORETYPE_INTARRAY;
+
+    conDouble = strtod(valueString.substr(0, firstChar).c_str(), &p);
+    if (!*p) return VRCORETYPE_DOUBLEARRAY;
+  }    
+  
   // Not any of the above?  Probably a string.
   return VRCORETYPE_STRING;
 }

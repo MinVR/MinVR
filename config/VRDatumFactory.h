@@ -24,7 +24,7 @@ public:
   VRDatumPtr CreateVRDatum(int VRDatumId, void *pData);
 
   bool RegisterVRDatum(int VRDatumId,
-                          CreateVRDatumCallback Creator);
+                       CreateVRDatumCallback Creator);
 
   bool UnRegisterVRDatum(int VRDatumId);
 

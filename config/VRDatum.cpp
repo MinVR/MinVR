@@ -10,7 +10,9 @@ const VRDatum::VRTypePair VRDatum::VRTypeMap[VRCORETYPE_NTYPES] = {
   {"int", VRCORETYPE_INT},
   {"double", VRCORETYPE_DOUBLE},
   {"string", VRCORETYPE_STRING},
+  {"intarray", VRCORETYPE_INTARRAY},
   {"doublearray", VRCORETYPE_DOUBLEARRAY},
+  {"stringarray", VRCORETYPE_STRINGARRAY},
   {"container", VRCORETYPE_CONTAINER}
 };
 
@@ -38,7 +40,7 @@ bool VRDatumInt::setValue(const int inVal) {
   return true;
 }
 
-std::string VRDatumInt::serialize() {
+std::string VRDatumInt::getValueAsString() {
   char buffer[20];
   sprintf(buffer, "%d", value);
   return std::string(buffer);
@@ -61,7 +63,7 @@ bool VRDatumDouble::setValue(const double inVal) {
   return true;
 }
 
-std::string VRDatumDouble::serialize() {
+std::string VRDatumDouble::getValueAsString() {
   char buffer[20];
   sprintf(buffer, "%f", value);
   return std::string(buffer);
@@ -84,12 +86,43 @@ bool VRDatumString::setValue(const std::string inVal) {
   return true;
 }
 
-std::string VRDatumString::serialize() {
+std::string VRDatumString::getValueAsString() {
   return value;
 }
 
 VRDatumPtr CreateVRDatumString(void *pData) {
   VRDatumString *obj = new VRDatumString(*static_cast<std::string *>(pData));
+  return VRDatumPtr(obj);
+}
+
+////////////////////////////////////////////
+
+VRDatumIntArray::VRDatumIntArray(const std::vector<int> inVal) :
+  VRDatum(VRCORETYPE_INTARRAY), value(inVal) {
+  description = initializeDescription(type);
+};
+
+bool VRDatumIntArray::setValue(const std::vector<int> inVal) {
+  value = inVal;
+  return true;
+}
+
+std::string VRDatumIntArray::getValueAsString() {
+
+  std::string out;
+  char buffer[20];
+
+  for (VRIntArray::iterator it = value.begin(); it != value.end(); ++it) {
+    sprintf(buffer, "%d%c", *it, MINVRSEPARATOR); // '@' is a separator
+    out += std::string(buffer);
+  }
+
+  return out;
+}
+
+VRDatumPtr CreateVRDatumIntArray(void *pData) {
+  VRDatumIntArray *obj =
+    new VRDatumIntArray(*static_cast<VRIntArray *>(pData));
   return VRDatumPtr(obj);
 }
 
@@ -105,13 +138,13 @@ bool VRDatumDoubleArray::setValue(const std::vector<double> inVal) {
   return true;
 }
 
-std::string VRDatumDoubleArray::serialize() {
+std::string VRDatumDoubleArray::getValueAsString() {
 
   std::string out;
   char buffer[20];
 
   for (VRDoubleArray::iterator it = value.begin(); it != value.end(); ++it) {
-    sprintf(buffer, "%f@", *it); // '@' is a separator
+    sprintf(buffer, "%f%c", *it, MINVRSEPARATOR); // '@' is a separator
     out += std::string(buffer);
   }
 
@@ -126,6 +159,34 @@ VRDatumPtr CreateVRDatumDoubleArray(void *pData) {
 
 ////////////////////////////////////////////
 
+VRDatumStringArray::VRDatumStringArray(const std::vector<std::string> inVal) :
+  VRDatum(VRCORETYPE_STRINGARRAY), value(inVal) {
+  description = initializeDescription(type);
+};
+
+bool VRDatumStringArray::setValue(const std::vector<std::string> inVal) {
+  value = inVal;
+  return true;
+}
+
+std::string VRDatumStringArray::getValueAsString() {
+  std::string out;
+  
+  for (VRStringArray::iterator it = value.begin(); it != value.end(); ++it) {
+    out += *it + std::string(1,MINVRSEPARATOR);
+  }
+
+  return out;
+}
+
+VRDatumPtr CreateVRDatumStringArray(void *pData) {
+  VRDatumStringArray *obj =
+    new VRDatumStringArray(*static_cast<VRStringArray *>(pData));
+  return VRDatumPtr(obj);
+}
+
+////////////////////////////////////////////
+
 VRDatumContainer::VRDatumContainer(const VRContainer inVal) :
   VRDatum(VRCORETYPE_CONTAINER), value(inVal) {
   description = initializeDescription(type);
@@ -135,8 +196,8 @@ VRDatumContainer::VRDatumContainer(const VRContainer inVal) :
 // responsibility for assembling the serialization of a container
 // falls to the index class, so this function is sort of a nop, filled
 // out just to keep the compiler happy.
-std::string VRDatumContainer::serialize() {
-  throw std::runtime_error(std::string("shouldn't call the serialize() method of a container object."));
+std::string VRDatumContainer::getValueAsString() {
+  throw std::runtime_error(std::string("shouldn't call the getValueAsString() method of a container object."));
   return getDescription();
 }
 
@@ -172,10 +233,10 @@ VRDatumPtr CreateVRDatumContainer(void *pData) {
 //  We should probably implement this for completeness sake.
 // std::ostream & operator<<(std::ostream &os, const VRDatum& p)
 // {
-//   return os << p.serialize();
+//   return os << p.getValueAsString();
 // }
 // std::ostream & operator<<(std::ostream &os, const VRDatumPtr& p)
 // {
-//   return os << p->serialize();
+//   return os << p->getValueAsString();
 // }
 

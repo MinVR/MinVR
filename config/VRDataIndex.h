@@ -271,7 +271,9 @@ public:
   std::string addData(const std::string valName, VRInt value);
   std::string addData(const std::string valName, VRDouble value);
   std::string addData(const std::string valName, VRString value);
+  std::string addData(const std::string valName, VRIntArray value);
   std::string addData(const std::string valName, VRDoubleArray value);
+  std::string addData(const std::string valName, VRStringArray value);
 
   // There is a semantic difference between addData() for a primitive
   // value and addData() for a container.  One creates an object of
@@ -294,17 +296,17 @@ public:
     return addData(name, object.toVRString());
   }
 
-  // std::string addData(const std::string &name, VRIntArrayConvertible &object) {
-  //   return addData(name, object.toVRIntArray());
-  // }
+  std::string addData(const std::string &name, VRIntArrayConvertible &object) {
+    return addData(name, object.toVRIntArray());
+  }
   
   std::string addData(const std::string &name, VRDoubleArrayConvertible &object) {
     return addData(name, object.toVRDoubleArray());
   }
   
-  // std::string addData(const std::string &name, VRStringArrayConvertible &object) {
-  //   return addData(name, object.toVRStringArray());
-  // }
+  std::string addData(const std::string &name, VRStringArrayConvertible &object) {
+    return addData(name, object.toVRStringArray());
+  }
   
   // A utility to make sure a namespace is spelled right, potentially
   // useful to users, so made public.

@@ -20,7 +20,7 @@
 
 // This is used to separate values in a serialized vector.
 // use static_case<char>MINVRSEPARATOR where a char is needed.
-#define MINVRSEPARATOR "^"
+#define MINVRSEPARATOR '@'
 
 // This class is a helper to avoid having to access values with
 // constructs like ptr.intVal()->getValue().  By using this helper
@@ -57,8 +57,10 @@ public:
   operator VRInt() const { return datum->getValueInt(); }
   operator VRDouble() const { return datum->getValueDouble(); }
   operator VRString() const { return datum->getValueString(); }
-  operator VRContainer() const { return datum->getValueContainer(); }
+  operator VRIntArray() const { return datum->getValueIntArray(); }
   operator VRDoubleArray() const { return datum->getValueDoubleArray(); }
+  operator VRStringArray() const { return datum->getValueStringArray(); }
+  operator VRContainer() const { return datum->getValueContainer(); }
 };
 
 
@@ -81,12 +83,12 @@ public:
 // VRDatum, follow these steps:
 //
 //   1. Add an entry in the VRCORETYPE_ID enum in VRCoreTypes.h, if
-//      necessary, and the initialization of the MVRTypeMap in
+//      necessary, and the initialization of the mVRTypeMap in
 //      VRDatum.cpp.
 //
 //   2. Add a conversion to the VRDatumConverter class.  You'll probably
 //      want to make your type a typedef if you haven't already.  Put
-//      it up there with MVRContainer.
+//      it up there with VRContainer.
 //
 //   3. Create a specialization of the VRDatum class, and call it
 //      something like VRDatumInt or VRDatumDouble.  You will
@@ -180,7 +182,7 @@ class VRDatum {
   // with the description and a name, this will be ready for
   // transmission across some connection to another process or another
   // machine.
-  virtual std::string serialize() = 0;
+  virtual std::string getValueAsString() = 0;
 
   // The description of the datum is a part of the network-ready
   // serialized data.  It's in the 'type=""' part of the XML.
@@ -196,20 +198,26 @@ class VRDatum {
   // in each specialization of this class.  The others are here to
   // prevent bad behavior, and throw an error if the programmer
   // attempts to coerce a data type incorrectly.
-  virtual int getValueInt() const {
-    throw std::runtime_error("This datum is not an int.");
+  virtual VRInt getValueInt() const {
+    throw std::runtime_error("This datum is not a VRInt.");
   }
-  virtual double getValueDouble() const {
-    throw std::runtime_error("This datum is not a double.");
+  virtual VRDouble getValueDouble() const {
+    throw std::runtime_error("This datum is not a VRDouble.");
   }
-  virtual std::string getValueString() const {
-    throw std::runtime_error("This datum is not a std::string.");
+  virtual VRString getValueString() const {
+    throw std::runtime_error("This datum is not a VRString.");
+  }
+  virtual VRIntArray getValueIntArray() const {
+    throw std::runtime_error("This datum is not a VRIntArray.");
   }
   virtual VRDoubleArray getValueDoubleArray() const {
-    throw std::runtime_error("This datum is not a std::string.");
+    throw std::runtime_error("This datum is not a VRDoubleArray.");
+  }
+  virtual VRStringArray getValueStringArray() const {
+    throw std::runtime_error("This datum is not a VRStringArray.");
   }
   virtual VRContainer getValueContainer() const {
-    throw std::runtime_error("This datum is not a container.");
+    throw std::runtime_error("This datum is not a VRContainer.");
   }
 };
 
@@ -229,13 +237,13 @@ private:
 public:
   VRDatumInt(const int inVal);
 
-  std::string serialize();
+  std::string getValueAsString();
 
   int getValueInt() const { return value; };
   bool setValue(const int inVal);
 
-  VRAnyCoreType getValue() {
-    return VRAnyCoreType(this);
+  VRDatumConverter<VRDatum> getValue() {
+    return VRDatumConverter<VRDatum>(this);
   }
 };
 
@@ -247,13 +255,13 @@ private:
 public:
   VRDatumDouble(const double inVal);
 
-  std::string serialize();
+  std::string getValueAsString();
 
   double getValueDouble() const { return value; };
   bool setValue(const double inVal);
 
-  VRAnyCoreType getValue() {
-    return VRAnyCoreType(this);
+  VRDatumConverter<VRDatum> getValue() {
+    return VRDatumConverter<VRDatum>(this);
   }
 };
 
@@ -266,13 +274,32 @@ private:
 public:
   VRDatumString(const std::string inVal);
 
-  std::string serialize();
+  std::string getValueAsString();
 
   std::string getValueString() const { return value; };
   bool setValue(const std::string inVal);
 
-  VRAnyCoreType getValue() {
-    return VRAnyCoreType(this);
+  VRDatumConverter<VRDatum> getValue() {
+    return VRDatumConverter<VRDatum>(this);
+  }
+};
+
+// Specialization for a vector of ints
+class VRDatumIntArray : public VRDatum {
+private:
+  // The actual data is stored here.
+  VRIntArray value;
+
+public:
+  VRDatumIntArray(const std::vector<int> inVal);
+
+  std::string getValueAsString();
+
+  VRIntArray getValueIntArray() const { return value; };
+  bool setValue(const std::vector<int> inVal);
+
+  VRDatumConverter<VRDatum> getValue() {
+    return VRDatumConverter<VRDatum>(this);
   }
 };
 
@@ -285,13 +312,32 @@ private:
 public:
   VRDatumDoubleArray(const std::vector<double> inVal);
 
-  std::string serialize();
+  std::string getValueAsString();
 
   VRDoubleArray getValueDoubleArray() const { return value; };
   bool setValue(const std::vector<double> inVal);
 
-  VRAnyCoreType getValue() {
-    return VRAnyCoreType(this);
+  VRDatumConverter<VRDatum> getValue() {
+    return VRDatumConverter<VRDatum>(this);
+  }
+};
+
+// Specialization for a vector of strings
+class VRDatumStringArray : public VRDatum {
+private:
+  // The actual data is stored here.
+  VRStringArray value;
+
+public:
+  VRDatumStringArray(const std::vector<std::string> inVal);
+
+  std::string getValueAsString();
+
+  VRStringArray getValueStringArray() const { return value; };
+  bool setValue(const std::vector<std::string> inVal);
+
+  VRDatumConverter<VRDatum> getValue() {
+    return VRDatumConverter<VRDatum>(this);
   }
 };
 
@@ -304,14 +350,14 @@ private:
 public:
   VRDatumContainer(const VRContainer inVal);
 
-  std::string serialize();
+  std::string getValueAsString();
 
   VRContainer getValueContainer() const { return value; };
   bool addToValue(const VRContainer inVal);
   //bool removeValue(const std::string rmVal);
 
-  VRAnyCoreType getValue() {
-    return VRAnyCoreType(this);
+  VRDatumConverter<VRDatum> getValue() {
+    return VRDatumConverter<VRDatum>(this);
   }
 };
 
@@ -356,7 +402,7 @@ public:
 //                           so long as there is some kind of cast
 //                           or assignment to determine a type.
 //
-// However, p->getDescription() works fine, as will p->serialize(),
+// However, p->getDescription() works fine, as will p->getValueAsString(),
 // and other things that are actually part of the VRDatum core
 // class.
 //
@@ -434,7 +480,7 @@ public:
     if (pData->getType() == VRCORETYPE_INT) {
       return static_cast<VRDatumInt*>(pData);
     } else {
-      throw std::runtime_error("This datum is not an int.");
+      throw std::runtime_error("This datum is not a VRInt.");
     }
   }
 
@@ -443,7 +489,7 @@ public:
     if (pData->getType() == VRCORETYPE_DOUBLE) {
       return static_cast<VRDatumDouble*>(pData);
     } else {
-      throw std::runtime_error("This datum is not a double.");
+      throw std::runtime_error("This datum is not a VRDouble.");
     }
   }
 
@@ -452,7 +498,16 @@ public:
     if (pData->getType() == VRCORETYPE_STRING) {
       return static_cast<VRDatumString*>(pData);
     } else {
-      throw std::runtime_error("This datum is not a string.");
+      throw std::runtime_error("This datum is not a VRString.");
+    }
+  }
+
+  VRDatumIntArray* intArrayVal()
+  {
+    if (pData->getType() == VRCORETYPE_INTARRAY) {
+      return static_cast<VRDatumIntArray*>(pData);
+    } else {
+      throw std::runtime_error("This datum is not an array of ints.");
     }
   }
 
@@ -465,12 +520,21 @@ public:
     }
   }
 
+  VRDatumStringArray* stringArrayVal()
+  {
+    if (pData->getType() == VRCORETYPE_STRINGARRAY) {
+      return static_cast<VRDatumStringArray*>(pData);
+    } else {
+      throw std::runtime_error("This datum is not an array of strings.");
+    }
+  }
+
   VRDatumContainer* containerVal()
   {
     if (pData->getType() == VRCORETYPE_CONTAINER) {
       return static_cast<VRDatumContainer*>(pData);
     } else {
-      throw std::runtime_error("This datum is not a container.");
+      throw std::runtime_error("This datum is not a VRContainer.");
     }
   }
 
@@ -481,7 +545,9 @@ public:
 VRDatumPtr CreateVRDatumInt(void *pData);
 VRDatumPtr CreateVRDatumDouble(void *pData);
 VRDatumPtr CreateVRDatumString(void *pData);
+VRDatumPtr CreateVRDatumIntArray(void *pData);
 VRDatumPtr CreateVRDatumDoubleArray(void *pData);
+VRDatumPtr CreateVRDatumStringArray(void *pData);
 VRDatumPtr CreateVRDatumContainer(void *pData);
 
 

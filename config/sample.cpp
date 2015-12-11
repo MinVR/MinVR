@@ -33,6 +33,23 @@ int main() {
   index->addData("/cora/nora", 7);
   index->addData("/cora/flora", "are you sure?");
 
+  VRIntArray ia;
+  ia.push_back(1);
+  ia.push_back(2);
+  ia.push_back(3);
+  index->addData("/cora/ia", ia);
+
+  VRDoubleArray da;
+  da.push_back(1.2);
+  da.push_back(3.4);
+  da.push_back(5.6);
+  index->addData("/cora/da", da);
+
+  VRStringArray sa;
+  sa.push_back("hello");
+  sa.push_back("good-bye");
+  index->addData("/cora/sa", sa);
+  
   std::cout << "Index Structure after changing /cora" << std::endl;
   index->printStructure();
 

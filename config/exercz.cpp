@@ -148,10 +148,28 @@ int main() {
           std::cout << "a string containing: " << ((std::string)p->getValue()) << std::endl;
           break;
 
+        case VRCORETYPE_INTARRAY:
+          {
+            VRIntArray pdata = p->getValue();
+            for (VRIntArray::iterator it = pdata.begin(); it != pdata.end(); ++it) {
+              std::cout << "element: " << *it << std::endl;
+            }
+            break;
+          }
+
         case VRCORETYPE_DOUBLEARRAY:
           {
             VRDoubleArray pdata = p->getValue();
             for (VRDoubleArray::iterator it = pdata.begin(); it != pdata.end(); ++it) {
+              std::cout << "element: " << *it << std::endl;
+            }
+            break;
+          }
+
+        case VRCORETYPE_STRINGARRAY:
+          {
+            VRStringArray pdata = p->getValue();
+            for (VRStringArray::iterator it = pdata.begin(); it != pdata.end(); ++it) {
               std::cout << "element: " << *it << std::endl;
             }
             break;
@@ -171,8 +189,6 @@ int main() {
           }
 
 	case VRCORETYPE_NONE:
-	case VRCORETYPE_ARRAYINT:
-	case VRCORETYPE_ARRAYSTRING:
 	  {
 	    break;
 	  }	     
