@@ -207,9 +207,13 @@ int main() {
 
       VRContainer nameList;
       if (elems.size() > 1) {
-        nameList = index->getNames(elems[1]);
+        nameList = index->getValue(elems[1]);
       } else {
-        nameList = index->getNames(nameSpace);
+        if (nameSpace.compare("/") == 0) {
+          nameList = index->getNames();
+        } else {
+          nameList = index->getValue(nameSpace.substr(0,nameSpace.size() - 1));
+        }
       }
       for (VRContainer::iterator it = nameList.begin();
            it != nameList.end(); it++) {
