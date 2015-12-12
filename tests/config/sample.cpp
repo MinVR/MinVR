@@ -82,14 +82,16 @@ int main() {
       remoteIndex->addSerializedValue( newQueue->getSerializedObject() );
 
     std::cout << std::endl << "examining the data..." << std::endl;
-    std::cout << "name: " << p << std::endl;
-    std::cout << remoteIndex->getTypeString(p) << std::endl;
+    std::cout << "The object named " << p << " is a " <<
+      remoteIndex->getTypeString(p) << "." << std::endl;
     std::cout << remoteIndex->getDescription(p) << std::endl;
     if (remoteIndex->getType(p) == VRCORETYPE_CONTAINER) {
       VRContainer lp = remoteIndex->getValue(p);
 
+      std::cout << "... it contains these" << std::endl;
+
       for (VRContainer::iterator it = lp.begin(); it != lp.end(); it++) {
-        std::cout << remoteIndex->getDescription(*it) << std::endl;
+        std::cout << "  " << remoteIndex->getDescription(*it) << std::endl;
       }
     }
     
