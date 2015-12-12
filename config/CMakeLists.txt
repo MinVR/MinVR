@@ -6,6 +6,7 @@ set(${PROJECT_NAME}_headers
   VRDatumFactory.h
   VRDataCollection.h
   VRDataIndex.h
+  VRDataQueue.h
   )
 
 set(${PROJECT_NAME}_source_files
@@ -14,6 +15,7 @@ set(${PROJECT_NAME}_source_files
   VRDatumFactory.cpp
   VRDataCollection.cpp
   VRDataIndex.cpp
+  VRDataQueue.cpp
   Cxml/attribute.cpp
   Cxml/Cxml.cpp
   Cxml/element.cpp
