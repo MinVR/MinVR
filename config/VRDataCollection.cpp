@@ -117,35 +117,36 @@ VRStringArray VRDataCollection::deserializeStringArray(const char* valueString) 
   return vVal;
 }
 
-bool VRDataCollection::processValue(const char* name,
-                                       VRCORETYPE_ID type,
-                                       const char* valueString) {
+std::string VRDataCollection::processValue(const std::string name,
+                                          VRCORETYPE_ID type,
+                                          const char* valueString) {
 
+  std::string out;
   /// Step 9 of adding a data type is adding entries to this switch.
   /// And the corresponding deserialize*() method.
   switch (type) {
   case VRCORETYPE_INT:
-    addData(name, (VRInt)deserializeInt(valueString));
+    out = addData(name, (VRInt)deserializeInt(valueString));
     break;
 
   case VRCORETYPE_DOUBLE:
-    addData(name, (VRDouble)deserializeDouble(valueString));
+    out = addData(name, (VRDouble)deserializeDouble(valueString));
     break;
 
   case VRCORETYPE_STRING:
-    addData(name, (VRString)deserializeString(valueString));
+    out = addData(name, (VRString)deserializeString(valueString));
     break;
 
   case VRCORETYPE_INTARRAY:
-    addData(name, (VRIntArray)deserializeIntArray(valueString));
+    out = addData(name, (VRIntArray)deserializeIntArray(valueString));
     break;
 
   case VRCORETYPE_DOUBLEARRAY:
-    addData(name, (VRDoubleArray)deserializeDoubleArray(valueString));
+    out = addData(name, (VRDoubleArray)deserializeDoubleArray(valueString));
     break;
 
   case VRCORETYPE_STRINGARRAY:
-    addData(name, (VRStringArray)deserializeStringArray(valueString));
+    out = addData(name, (VRStringArray)deserializeStringArray(valueString));
     break;
 
   case VRCORETYPE_CONTAINER:
@@ -159,23 +160,29 @@ bool VRDataCollection::processValue(const char* name,
       if (stVal.size() > 0) {
         throw std::runtime_error(std::string("empty containers not allowed"));
       }
+      out = "";
       break;
     }
   case VRCORETYPE_NONE:
     {
+      out = "";
       break;
     }	     
   }
-  return true;
+  return out;
 }
 
 // This seems to read containers twice.  Do both instances wind up in memory?
-bool VRDataCollection::walkXML(element* node, std::string nameSpace) {
-
+std::string VRDataCollection::walkXML(element* node, std::string nameSpace) {
+  // This method will return the name of the last top-level element in
+  // the input XML.  This aspect of the operation could probably use
+  // more testing.
+  
   char type[5] = "type";
 
   std::string qualifiedName;
   VRContainer childNames;
+  std::string out;
 
   qualifiedName = nameSpace + std::string(node->get_name());
 
@@ -206,9 +213,9 @@ bool VRDataCollection::walkXML(element* node, std::string nameSpace) {
 
         // check for typeId == 0
 
-        processValue(qualifiedName.c_str(),
-                     typeId,
-                     node->get_value());
+        out = processValue(qualifiedName,
+                            typeId,
+                            node->get_value());
       }
     }
 
@@ -220,9 +227,9 @@ bool VRDataCollection::walkXML(element* node, std::string nameSpace) {
       // add it to the index.
       if (childNames.size() > 0 && strcmp(node->get_name(), "XML_DOC")) {
 
-        addData(qualifiedName, childNames);
+        out = addData(qualifiedName, childNames);
       }
-      return true;
+      return out;
     }
 
     // Collect a child name on the container's child name list.
