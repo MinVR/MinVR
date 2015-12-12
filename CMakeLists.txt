@@ -106,20 +106,23 @@ endif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 # Recurse into the following subdirs to build the core MinVR set of libraries:
 # (Uncomment the lines below as we add .cpp files to those directories.)
 
-#add_subdirectory (config)
-add_subdirectory (data)
+set (CMAKE_BUILD_TYPE Debug)
+
+add_subdirectory (config)
+#add_subdirectory (data)
 #add_subdirectory (display)
-add_subdirectory (event)
-add_subdirectory (math)
-add_subdirectory (net)
-add_subdirectory (plugin)
-add_subdirectory (apps)
+#add_subdirectory (event)
+#add_subdirectory (math)
+#add_subdirectory (net)
+#add_subdirectory (plugin)
+#add_subdirectory (apps)
 
 # Now, build some programs, such as tests, that depend upon the MinVR libraries:
 
-add_subdirectory (tests/net)
-add_subdirectory (tests/eventdata)
-add_subdirectory (tests/plugin)
+#add_subdirectory (tests/net)
+#add_subdirectory (tests/eventdata)
+#add_subdirectory (tests/plugin)
+add_subdirectory (tests/config)
 
 option(MINVR_PLUS "If enabled, plus plugins will be installed" OFF)
 
