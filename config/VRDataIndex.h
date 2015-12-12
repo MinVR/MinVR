@@ -2,6 +2,7 @@
 #ifndef MINVR_DATAINDEX_H
 #define MINVR_DATAINDEX_H
 #include "VRDataCollection.h"
+#include "VRDataQueue.h"
 
 // This object maintains an index, a collection of names and pointers
 // to VRDatum objects, which can be used to simulate a dynamically
@@ -233,6 +234,23 @@ public:
     return getDatum(valName, nameSpace)->getValue();
   }
 
+  VRCORETYPE_ID getType(const std::string valName) {
+    return getDatum(valName)->getType();
+  }
+  VRCORETYPE_ID getType(const std::string valName,
+                        const std::string nameSpace) {
+    return getDatum(valName, nameSpace)->getType();
+  }
+
+  
+  std::string getTypeString(const std::string valName) {
+    return getDatum(valName)->getDescription();
+  }
+  std::string getTypeString(const std::string valName,
+                            const std::string nameSpace) {
+    return getDatum(valName, nameSpace)->getDescription();
+  }
+
   // The description of an index entry describes only the name and
   // type, not the value.
   std::string getDescription(const std::string valName);
@@ -247,9 +265,9 @@ public:
 
   // Takes a serialized bit of data and incorporates it into the data
   // index.
-  bool addSerializedValue(const std::string serializedData);
-  bool addSerializedValue(const std::string serializedData,
-                          const std::string nameSpace);
+  std::string addSerializedValue(const std::string serializedData);
+  std::string addSerializedValue(const std::string serializedData,
+                                const std::string nameSpace);
 
   // Process the contents of a given XML file into the index.
   bool processXMLFile(std::string fileName, std::string nameSpace);

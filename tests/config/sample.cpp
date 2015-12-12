@@ -3,8 +3,6 @@
 #include <stdexcept>
 #include <sstream>
 #include "config/VRDataIndex.h"
-#include "config/VRDataQueue.h"
-
 
 // This is just a test program meant to be a vague illustration of the
 // use of the VRDataIndex type system.  Also check out the exercz program.
@@ -75,14 +73,25 @@ int main() {
   // Here's the index we'll populate with the new data.
   VRDataIndex *remoteIndex = new VRDataIndex;
   
-  
   // While there is something in the queue, unpack it into the index,
   // and examine it.
   while (newQueue->notEmpty()) {
 
     // Unpack the items from the queue.
-    remoteIndex->addSerializedValue( newQueue->getSerializedObject() );
+    std::string p =
+      remoteIndex->addSerializedValue( newQueue->getSerializedObject() );
 
+    std::cout << "name: " << p << std::endl;
+    std::cout << remoteIndex->getTypeString(p) << std::endl;
+    std::cout << remoteIndex->getDescription(p) << std::endl;
+    if (remoteIndex->getType(p) == VRCORETYPE_CONTAINER) {
+      VRContainer lp = remoteIndex->getValue(p);
+
+      for (VRContainer::iterator it = lp.begin(); it != lp.end(); it++) {
+        std::cout << remoteIndex->getDescription(*it) << std::endl;
+      }
+    }
+    
     // Print out the entire index.
     std::cout << "Remote Index Structure" << std::endl;
     remoteIndex->printStructure();

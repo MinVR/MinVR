@@ -10,45 +10,6 @@ std::list<std::string> VRDataIndex::getNames() {
   return outList;
 }
 
-
-std::list<std::string> VRDataIndex::getNames(const std::string containerName) {
-  std::list<std::string> outList;
-  for (VRDataMap::iterator it = mindex.begin(); it != mindex.end(); it++) {
-
-    if (it->first.compare(0, containerName.size(), containerName) == 0) {
-      outList.push_back(it->first);
-    }
-  }
-  return outList;
-}
-
-std::list<std::string> VRDataIndex::getNames(const std::string &containerName,
-                                             bool includeChildren,
-                                             bool fullPath) {
-  if (includeChildren) {
-    return getNames(containerName);
-  } else {
-    std::list<std::string> outList;
-
-    for (VRDataMap::iterator it = mindex.begin(); it != mindex.end(); it++) {
-      
-      if (it->first.compare(0, containerName.size(), containerName) == 0) {
-        string val = (it->first).substr(containerName.length());
-        if (val.find("/") == string::npos) {
-          if (fullPath) {
-            outList.push_back(it->first);
-          } else {
-            outList.push_back(val);
-          }
-        }
-      }
-    }
-    return outList;
-  }
-}
-
-
-
 // Breaks up a name into its constituent parts, on the slashes.  Note
 // that the first element of the return is blank.  This is on purpose,
 // since that is more or less the top-level container's name.  But beware
@@ -284,31 +245,32 @@ std::string VRDataIndex::serialize(const std::string valName,
 }
 
 // an int should be <nWindows type="int">6</nWindows>
-bool VRDataIndex::addSerializedValue(const std::string serializedData) {
+std::string VRDataIndex::addSerializedValue(const std::string serializedData) {
 
   return addSerializedValue(serializedData, std::string(""));
 }
 
-bool VRDataIndex::addSerializedValue(const std::string serializedData,
-                                     const std::string nameSpace) {
+std::string VRDataIndex::addSerializedValue(const std::string serializedData,
+                                           const std::string nameSpace) {
 
   Cxml *xml = new Cxml();
   xml->parse_string((char*)serializedData.c_str());
   element *xml_node = xml->get_root_element();
   element* child = xml_node->get_next_child();
-
+  std::string out;
+  
   while (child != NULL) {
 
 #ifdef DEBUG
     printXML(child, validateNameSpace(nameSpace));
 #endif
-    walkXML(child, validateNameSpace(nameSpace));
+    out = walkXML(child, validateNameSpace(nameSpace));
 
     child = xml_node->get_next_child();
   }
 
   delete xml;
-  return true;
+  return out;
 }
 
 bool VRDataIndex::processXMLFile(std::string fileName, std::string nameSpace) {
@@ -371,9 +333,7 @@ std::string VRDataIndex::addData(const std::string valName, VRInt value) {
       throw std::runtime_error(std::string("overwriting values not allowed"));
     }
   }
-
   return valName;
-
 }
 
 std::string VRDataIndex::addData(const std::string valName, VRDouble value) {
@@ -408,7 +368,7 @@ std::string VRDataIndex::addData(const std::string valName, VRString value) {
   // Remove leading spaces.
   int valueBegin = value.find_first_not_of(" \t\n\r");
   if (valueBegin == value.size())
-    return ""; // no content. This should not happen. Or should it?
+    return NULL; // no content. This should not happen. Or should it?
 
   // ... and trailing.
   int valueEnd = value.find_last_not_of(" \t\n\r");
@@ -442,7 +402,7 @@ std::string VRDataIndex::addData(const std::string valName, VRString value) {
 }
 
 std::string VRDataIndex::addData(const std::string valName,
-                                 VRIntArray value) {
+                                VRIntArray value) {
 
   // Check if the name is already in use.
   VRDataMap::iterator it = mindex.find(valName);
@@ -472,7 +432,7 @@ std::string VRDataIndex::addData(const std::string valName,
 
 
 std::string VRDataIndex::addData(const std::string valName,
-                                 VRDoubleArray value) {
+                                VRDoubleArray value) {
 
   // Check if the name is already in use.
   VRDataMap::iterator it = mindex.find(valName);
@@ -530,12 +490,12 @@ std::string VRDataIndex::addData(const std::string valName,
   return valName;
 }
 
-
 std::string VRDataIndex::addData(const std::string valName,
                                  VRContainer value) {
 
   // If the container to add to is the root, ignore.
-  if (valName.compare("/") == 0) return valName;
+  if (valName.compare("/") == 0)
+    throw std::runtime_error(std::string("cannot replace the root namespace"));
 
   // Check if the name is already in use.
   VRDataMap::iterator it = mindex.find(valName);
@@ -551,7 +511,7 @@ std::string VRDataIndex::addData(const std::string valName,
     std::string ns = getNameSpace(valName);
     // The parent container is the namespace minus the trailing /.
     if (ns.compare("/") != 0) addData(ns.substr(0,ns.size()-1), cValue);
-
+    
   } else {
     // Add value to existing container.
     it->second.containerVal()->addToValue(value);

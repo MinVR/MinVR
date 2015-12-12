@@ -8,10 +8,11 @@
 #include <iostream>
 
 // This object maintains a queue (FIFO) of serialized VRDatum objects.
-// See the VRDataIndex object for more about these objects and
-// their types as part of a system of named data values.  Over here,
-// we don't care so much about names, as about times of creation, and
-// quick assembly and disassembly into serialized data.
+// Serialization turns them into strings, so this is basically just a
+// queue of strings.  See the VRDataIndex object for more about these
+// objects and their types as part of a system of named data values.
+// Over here, we don't care so much about names, as about times of
+// creation, and quick assembly and disassembly into serialized data.
 //
 // Use this queue for sending data to some other process, or receiving
 // it.  The transmission format is the same XML format as in the

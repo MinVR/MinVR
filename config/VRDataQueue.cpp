@@ -8,7 +8,7 @@ VRDataQueue::VRDataQueue(std::string serializedQueue) {
   start = 18;
   end = serializedQueue.find("\"", start);
   
-  std::cout << serializedQueue.substr(start, end - start) << std::endl;
+  //std::cout << serializedQueue.substr(start, end - start) << std::endl;
   
   int num;
   std::istringstream( serializedQueue.substr(start,end)) >> num;
@@ -19,7 +19,7 @@ VRDataQueue::VRDataQueue(std::string serializedQueue) {
 
     end = serializedQueue.find("</VRDataQueueItem>", start);
     push( serializedQueue.substr(start + 17, end - start - 17) );
-    std::cout << serializedQueue.substr(start + 17, end - start - 17) << std::endl;
+    //std::cout << serializedQueue.substr(start + 17, end - start - 17) << std::endl;
     start = serializedQueue.find("<VRDataQueueItem>", end);
   }
 }
