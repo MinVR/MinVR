@@ -81,6 +81,7 @@ int main() {
     std::string p =
       remoteIndex->addSerializedValue( newQueue->getSerializedObject() );
 
+    std::cout << std::endl << "examining the data..." << std::endl;
     std::cout << "name: " << p << std::endl;
     std::cout << remoteIndex->getTypeString(p) << std::endl;
     std::cout << remoteIndex->getDescription(p) << std::endl;

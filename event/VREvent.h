@@ -4,7 +4,7 @@
 
 #include <cstring>
 #include <string>
-#include <data/VRDataIndex.h>
+#include <config/VRDataIndex.h>
 
 
 /** VREvent
@@ -18,10 +18,12 @@ public:
 
   virtual ~VREvent();
 
-  /// Returns the name of the VREvent, not be to confused with the name(s) of specific VRAnyCoreType objects stored
-  /// inside the _dataIndex.  For example, an event named "Mouse_Move" can have a datum named "Postion" and
-  /// another datum named "Velocity", etc.  This method returns the event name (e.g., "Mouse_Move").  Use
-  /// getDataIndex->getDataNames() to get "Position" and "Velocity", etc.
+  /// Returns the name of the VREvent, not be to confused with the
+  /// name(s) of specific VRDatum objects stored inside _dataIndex.
+  /// For example, an event named "Mouse_Move" can have an element
+  /// named "Postion" and another named "Velocity", etc.  This method
+  /// returns the event name (e.g., "Mouse_Move").  Use
+  /// getDataIndex->getNames() to get "Position" and "Velocity", etc.
   std::string getName() const { return _name; }
   void setName(const std::string &name) { _name = name; }
 

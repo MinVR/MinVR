@@ -1,7 +1,9 @@
 #include "VRDataIndex.h"
 
 // Just returns a list of the data names. For implementing an 'ls'
-// command, or something like it.
+// command, or something like it.  If you want a list of names within
+// a container (or within a namespace, pretty much the same thing),
+// just use getValue().
 std::list<std::string> VRDataIndex::getNames() {
   std::list<std::string> outList;
   for (VRDataMap::iterator it = mindex.begin(); it != mindex.end(); it++) {

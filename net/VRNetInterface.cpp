@@ -26,7 +26,8 @@ const unsigned char VRNetInterface::INPUT_EVENTS_MSG = 1;
 const unsigned char VRNetInterface::SWAP_BUFFERS_REQUEST_MSG = 2;
 const unsigned char VRNetInterface::SWAP_BUFFERS_NOW_MSG = 3;
 
-// assuming 32-bit ints, note that VRNetInterface::pack/unpackint() use the int32_t type
+// assuming 32-bit ints, note that VRNetInterface::pack/unpackint()
+// use the int32_t type
 const unsigned char VRNetInterface::VRNET_SIZEOFINT = 4;
 
 
