@@ -1,28 +1,4 @@
 #include <net/VRNetServer.h>
-#include <math/VRMath.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-
-#ifdef WIN32
-  #include <ws2tcpip.h>
-  #pragma comment (lib, "Ws2_32.lib")
-  #pragma comment (lib, "Mswsock.lib")
-  #pragma comment (lib, "AdvApi32.lib")
-#else
-  #include <unistd.h>
-  #include <errno.h>
-  #include <string.h>
-  #include <netdb.h>
-  #include <sys/types.h>
-  #include <netinet/in.h>
-  #include <netinet/tcp.h>
-  #include <sys/socket.h>
-  #include <netdb.h>
-  #include <arpa/inet.h>
-  #include <sys/wait.h>
-  #include <signal.h>
-#endif
 
 using namespace std;
 
@@ -228,21 +204,6 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
     inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr), s, sizeof s);
     printf("server: got connection %d from %s\n", numConnected, s);
     
-    /*
-    waitForAndReceiveSwapBuffersRequest(new_fd);
-    
-    std::vector<VREvent> events;
-    Vec3 v1(1,2,3);
-    VREvent e1("event 1", v1);
-    for (int i=0;i<50;i++) {
-      events.push_back(e1);
-    }
-    sendInputEvents(new_fd, events);
-    */
-
-    //if (send(new_fd, "Hello, world!", 13, 0) == -1) {
-    //  perror("send");
-    //}
     _clientSocketFDs.push_back(new_fd);
   }
 
@@ -265,34 +226,46 @@ VRNetServer::~VRNetServer()
 }
 
 
-void 
-VRNetServer::synchronizeInputEventsAcrossAllNodes(std::vector<VREvent> &inputEvents) 
-{
-  // 1. wait for, receive, and parse an inputEvents message from every client, add them to the inputEvents vector
-  // TODO: rather than a for loop could use a select() system call here (I think) to figure out which socket is ready for a read in the situation where 1 is ready but other(s) are not
-  for (std::vector<SOCKET>::iterator itr=_clientSocketFDs.begin(); itr < _clientSocketFDs.end(); itr++) {
-    waitForAndReceiveInputEvents(*itr, inputEvents);
+// Wait for and receive an eventData message from every client, add
+// them together and send them out again.
+VRDataQueue::serialData
+VRNetServer::syncEventDataAcrossAllNodes(VRDataQueue::serialData eventData) {
+
+  VRDataQueue dataQueue = VRDataQueue(eventData);
+  
+  // TODO: rather than a for loop, could use a select() system call
+  // here (I think) to figure out which socket is ready for a read in
+  // the situation where one client is ready but other(s) are not
+  for (std::vector<SOCKET>::iterator itr=_clientSocketFDs.begin();
+       itr < _clientSocketFDs.end(); itr++) {
+    VRDataQueue::serialData ed = waitForAndReceiveEventData(*itr);
+
+    dataQueue.addSerializedQueue(ed);
   }
 
-  // TODO: rather than just appending the events from each client to a list, could possibly sort these inputEvents based upon a timestep.  necessary???
-  
+  VRDataQueue::serialData dq = dataQueue.serialize();
   // 2. send new combined inputEvents array out to all clients
-  for (std::vector<SOCKET>::iterator itr=_clientSocketFDs.begin(); itr < _clientSocketFDs.end(); itr++) {
-    sendInputEvents(*itr, inputEvents);
+  for (std::vector<SOCKET>::iterator itr=_clientSocketFDs.begin();
+       itr < _clientSocketFDs.end(); itr++) {
+    sendEventData(*itr, dq);
   }
+
+  return dq;
 }
 
-void 
-VRNetServer::synchronizeSwapBuffersAcrossAllNodes() 
-{
-  // 1. wait for, receive, and parse a swap_buffers_request message from every client
+void VRNetServer::syncSwapBuffersAcrossAllNodes() {
+  // 1. wait for, receive, and parse a swap_buffers_request message
+  // from every client
+  
   // TODO: rather than a for loop could use a select() system call here (I think) to figure out which socket is ready for a read in the situation where 1 is ready but other(s) are not
-  for (std::vector<SOCKET>::iterator itr=_clientSocketFDs.begin(); itr < _clientSocketFDs.end(); itr++) {
+  for (std::vector<SOCKET>::iterator itr=_clientSocketFDs.begin();
+       itr < _clientSocketFDs.end(); itr++) {
     waitForAndReceiveSwapBuffersRequest(*itr);
   }
   
   // 2. send a swap_buffers_now message to every client
-  for (std::vector<SOCKET>::iterator itr=_clientSocketFDs.begin(); itr < _clientSocketFDs.end(); itr++) {
+  for (std::vector<SOCKET>::iterator itr=_clientSocketFDs.begin();
+       itr < _clientSocketFDs.end(); itr++) {
     sendSwapBuffersNow(*itr);
   }
 }

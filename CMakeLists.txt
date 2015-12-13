@@ -112,14 +112,14 @@ add_subdirectory (config)
 #add_subdirectory (data)
 #add_subdirectory (display)
 #add_subdirectory (event)
-#add_subdirectory (math)
-#add_subdirectory (net)
+add_subdirectory (math)
+add_subdirectory (net)
 #add_subdirectory (plugin)
 #add_subdirectory (apps)
 
 # Now, build some programs, such as tests, that depend upon the MinVR libraries:
 
-#add_subdirectory (tests/net)
+add_subdirectory (tests/net)
 #add_subdirectory (tests/eventdata)
 #add_subdirectory (tests/plugin)
 add_subdirectory (tests/config)

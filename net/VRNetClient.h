@@ -3,6 +3,12 @@
 
 #include "VRNetInterface.h"
 
+#ifndef WIN32
+  #include <netinet/tcp.h>
+  #include <arpa/inet.h>
+#endif
+
+
 
 class VRNetClient : public VRNetInterface {
  public:
@@ -10,9 +16,10 @@ class VRNetClient : public VRNetInterface {
   VRNetClient(const std::string &serverIP, const std::string &serverPort);
   virtual ~VRNetClient();
 
-  void synchronizeInputEventsAcrossAllNodes(std::vector<VREvent> &inputEvents);
+  VRDataQueue::serialData
+    syncEventDataAcrossAllNodes(VRDataQueue::serialData eventData);
 
-  void synchronizeSwapBuffersAcrossAllNodes();
+  void syncSwapBuffersAcrossAllNodes();
 
  private:
 

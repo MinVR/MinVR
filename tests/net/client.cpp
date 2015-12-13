@@ -6,10 +6,24 @@
 #include <unistd.h>
 #endif
 
-int main() {
-  VRDataIndex *index = new VRDataIndex;
+// A little client to illustrate both receiving data from a server and
+// unpacking and inspecting it.  Below, the data is received as a
+// serialized queue of serial data.  The procedure is like this:
+//
+//  1. Unpack serialized queue into a VRDataQueue.  The queue comes in
+//     time-stamped order, for what it's worth.
+//
+//  2. Loop through the items in that queue, unpacking them into
+//     the data index.
+//
+//  3. The unpacking (addSerializedValue()) returns the name of the
+//     unpacked data, which can be used to get the value and type of
+//     the new data.  If it's a container, you can also get the list
+//     of its members and then inspect them, too.
+//
 
-  
+
+int main() {
   VRNetClient client("localhost", "3490");
 
   int i = 0;
@@ -17,21 +31,45 @@ int main() {
     
     std::cout << "in draw loop " << i << std::endl;
     
-    client.synchronizeInputEventsAcrossAllNodes(events);
+    VRDataQueue::serialData eventData = client.syncEventDataAcrossAllNodes("");
+
+    std::cout << eventData << std::endl;
+    // Step 1: Unpacking the serialized queue data.
     VRDataQueue *events = new VRDataQueue( eventData ); 
 
+    // Here's the index we'll populate with the new data.
+    VRDataIndex *dataIndex = new VRDataIndex;
+  
+    // While there is something in the queue, unpack it into the index,
+    // and examine it.
     while (events->notEmpty()) {
 
-      std::string p = index->addSerializedValue(events->getSerializeObject());
+      // Step 2: Unpack the items from the queue.
+      std::string p =
+        dataIndex->addSerializedValue( events->getSerializedObject() );
 
-      // examine the data
+      // Step 3: What do we have here?
+      std::cout << std::endl << "examining the data..." << std::endl;
+      std::cout << "The object named " << p << " is a " <<
+        dataIndex->getTypeString(p) << "." << std::endl;
+      std::cout << dataIndex->getDescription(p) << std::endl;
+      if (dataIndex->getType(p) == VRCORETYPE_CONTAINER) {
+        VRContainer lp = dataIndex->getValue(p);
 
-      std::cout << p->getType() << std::endl;
-      if (p->getType() == VCORETYPE_CONTAINER) 
-      
+        std::cout << "... it contains these" << std::endl;
+
+        for (VRContainer::iterator it = lp.begin(); it != lp.end(); it++) {
+          std::cout << "  " << dataIndex->getDescription(*it) << std::endl;
+        }
+      }
     
-    for (std::vector<VREvent>::iterator it=events.begin(); it<events.end(); ++it) {
-      std::cout << it->toXML() << std::endl;
+      // Print out the entire index.
+      std::cout << "Index Structure" << std::endl;
+      dataIndex->printStructure();
+
+      // Get the next item from the queue.
+      events->pop();
+
     }
     
     #ifdef WIN32
@@ -39,7 +77,7 @@ int main() {
     #else
       //sleep(2);
     #endif
-	client.synchronizeSwapBuffersAcrossAllNodes();
+    client.syncSwapBuffersAcrossAllNodes();
     i++;
   }
 }

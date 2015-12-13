@@ -23,34 +23,37 @@
 //
 //
 class VRDataQueue {
+public:
+    typedef std::string serialData;
+  
 private:
 
-  typedef std::map<long long,std::string> VRDataList;
+  typedef std::map<long long,serialData> VRDataList;
   VRDataList dataMap;
   
 public:
   VRDataQueue() {};
-  VRDataQueue(const std::string serializedQueue);
+  VRDataQueue(const serialData serializedQueue);
 
-  void parseSerializedQueue(const std::string serializedQueue);
+  void addSerializedQueue(const serialData serializedQueue);
   
   bool notEmpty() { return (bool)dataMap.size(); }
 
   // Returns the object at the head of the queue, but does not remove
   // it from the queue.
-  std::string getSerializedObject();
+  serialData getSerializedObject();
   // Removed the object at the front of the queue.
   void pop();
 
   // Takes a serialized bit of data and pushes it onto the end of the
   // queue.
-  void push(const std::string serializedData);
-  void push(const long long timeStamp, const std::string serializedData);
+  void push(const serialData serializedData);
+  void push(const long long timeStamp, const serialData serializedData);
 
   // Serialize the whole queue into a piece of XML.  There is no
   // deserialize method, but there is a constructor that takes a serialized
   // queue as input.
-  std::string serialize();
+  serialData serialize();
 
   // A debug-friendly output function.
   void printQueue(); 

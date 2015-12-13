@@ -1,10 +1,12 @@
-/** This small math library provides lightweight support for the graphics math
-    needed inside MinVR. Some aspects (e.g., separate classes for Point3 and Vector3) are 
-    inspired the math libraries used in Brown computer graphics courses.  Also based on 
-    some routines introduced in the Hill & Kelley text used in UMN courses.  Intended to be 
-    lightweight, for use inside MinVR only since pplication programmers will probably want 
-    to use the math package that is native to whatever graphics engine they are pairing 
-    with MinVR.
+/** This small math library provides lightweight support for the
+    graphics math needed inside MinVR. Some aspects (e.g., separate
+    classes for Point3 and Vector3) are inspired the math libraries
+    used in Brown computer graphics courses.  Also based on some
+    routines introduced in the Hill & Kelley text used in UMN courses.
+    Intended to be lightweight, for use inside MinVR only since
+    application programmers will probably want to use the math package
+    that is native to whatever graphics engine they are pairing with
+    MinVR.
 */
 
 #ifndef VRMATH_H
@@ -12,13 +14,13 @@
 
 #include <iostream>
 
-#include <data/VRDatum.h>
+#include <config/VRDatum.h>
 
 
 /** @class VRPoint3 
   * @brief 3D Point with floating point coordinates.
   */
-class VRPoint3 : public VRDoubleArrayConvertable {
+class VRPoint3 : public VRDoubleArrayConvertible {
 public:  
   /// Default point at the origin
   VRPoint3();
@@ -71,7 +73,7 @@ public:
 /** @class VRVector3 
   * @brief 3D vector (magnitude and direction).
   */
-class VRVector3 : public VRDoubleArrayConvertable {
+class VRVector3 : public VRDoubleArrayConvertible {
 public:
   /// Default constructor to create zero vector
   VRVector3();
@@ -137,7 +139,7 @@ public:
 /** @class VRMatrix4
   * @brief A 4x4 transformation matrix
   */
-class VRMatrix4 : public VRDoubleArrayConvertable {
+class VRMatrix4 : public VRDoubleArrayConvertible {
 public: 
   /// Default constructor creates an identity matrix:
   VRMatrix4();

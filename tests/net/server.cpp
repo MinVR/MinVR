@@ -4,6 +4,51 @@
 #ifndef WIN32
 #include <unistd.h>
 #endif
+#include <ctime>
+
+VRDataIndex *dataIndex = new VRDataIndex;
+
+void makeHeadMoveEvent(double x, double y, double z) {
+  dataIndex->addData("/HeadMove/x", x);
+  dataIndex->addData("/HeadMove/y", y);
+  dataIndex->addData("/HeadMove/z", z);
+  dataIndex->addData("/HeadMove/timestamp", (int)clock());
+}
+
+void makeWandMoveEvent(double x, double y, double z) {
+  VRDoubleArray da;
+  da.push_back(1.2);
+  da.push_back(3.4);
+  da.push_back(5.6);
+  dataIndex->addData("/WandMove/position", da);
+  dataIndex->addData("/WandMove/description", "Where the wand is now.");
+}  
+
+VRDataQueue::serialData makeQueue() {
+
+  VRDataQueue *queue = new VRDataQueue;
+
+  makeHeadMoveEvent(1.2, 2.3, 3.4);
+  queue->push(dataIndex->serialize("/HeadMove"));
+
+  makeWandMoveEvent(2.3, 3.4, 4.5);
+  queue->push(dataIndex->serialize("/WandMove"));
+
+  makeHeadMoveEvent(4.5, 5.6, 6.7);
+  queue->push(dataIndex->serialize("/HeadMove"));
+
+  makeHeadMoveEvent(6.7, 7.8, 8.9);
+  queue->push(dataIndex->serialize("/HeadMove"));
+
+  std::cout << "Index Structure" << std::endl;
+  dataIndex->printStructure();
+
+  // Show the queue.
+  std::cout << "Queue" << std::endl;
+  queue->printQueue();
+  
+  return queue->serialize();
+}
 
 int main() {
   
@@ -18,21 +63,18 @@ int main() {
   int i = 0;
   while (1) {
     std::cout << "in draw loop " << i << std::endl;
-    std::vector<VREvent> events;
+
+    VRDataQueue::serialData events = makeQueue();
+    std::cout << "EVENTS:" << events << std::endl;
+
     
-    VRMatrix4 m = VRMatrix4::translation(VRVector3(0,1,-10) + VRVector3(0,0,i));
-    VRDataIndex di;
-    di.addData("Transform", m);
-    VREvent e("Head_Move", di);
-    events.push_back(e);
-    
-    server.synchronizeInputEventsAcrossAllNodes(events);
+    server.syncEventDataAcrossAllNodes(events);
     #ifdef WIN32
 	  Sleep(2000);
     #else
 	  sleep(2);
     #endif
-    server.synchronizeSwapBuffersAcrossAllNodes();
+    server.syncSwapBuffersAcrossAllNodes();
     i++;
   }
 }

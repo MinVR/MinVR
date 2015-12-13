@@ -1,8 +1,8 @@
 #include "VRDataQueue.h"
 
-VRDataQueue::VRDataQueue(const std::string serializedQueue) {
+VRDataQueue::VRDataQueue(const VRDataQueue::serialData serializedQueue) {
 
-  parseSerializedQueue(serializedQueue);
+  addSerializedQueue(serializedQueue);
   
 }
 
@@ -10,7 +10,9 @@ VRDataQueue::VRDataQueue(const std::string serializedQueue) {
 // process XML that was produced by the serialize() method below.
 // This is why it looks a bit hacky, but this serialization is only
 // intended to transmit from one instance of this class to another.
-void VRDataQueue::parseSerializedQueue(const std::string serializedQueue) {
+void VRDataQueue::addSerializedQueue(const VRDataQueue::serialData serializedQueue) {
+  if (serializedQueue.size() < 18) return;
+  
   std::size_t start, end;
   
   start = 18;
@@ -38,7 +40,7 @@ void VRDataQueue::parseSerializedQueue(const std::string serializedQueue) {
   }
 }
 
-std::string VRDataQueue::getSerializedObject() {
+VRDataQueue::serialData VRDataQueue::getSerializedObject() {
   return dataMap.begin()->second;
 }
 
@@ -46,7 +48,7 @@ void VRDataQueue::pop() {
   dataMap.erase(dataMap.begin());
 }
 
-void VRDataQueue::push(const std::string serializedData) {
+void VRDataQueue::push(const VRDataQueue::serialData serializedData) {
 
   // I doubt very much that this has any claim to platform-
   // independence.  It will have to be rewritten to work in a
@@ -62,22 +64,22 @@ void VRDataQueue::push(const std::string serializedData) {
     tp.tv_usec / 1000 + clock();
 
   //std::cout << "ts: " << timeStamp << std::endl;
-  dataMap.insert(std::pair<long long,std::string>(timeStamp, serializedData));
+  dataMap.insert(std::pair<long long,VRDataQueue::serialData>(timeStamp, serializedData));
 }
 
 void VRDataQueue::push(const long long timeStamp,
-                       const std::string serializedData) {
+                       const VRDataQueue::serialData serializedData) {
 
-  dataMap.insert(std::pair<long long,std::string>(timeStamp, serializedData));
+  dataMap.insert(std::pair<long long,VRDataQueue::serialData>(timeStamp, serializedData));
 }
 
 
-std::string VRDataQueue::serialize() {
+VRDataQueue::serialData VRDataQueue::serialize() {
 
   std::ostringstream lenStr;
   lenStr << dataMap.size();
 
-  std::string out;
+  VRDataQueue::serialData out;
 
   out = "<VRDataQueue num=\"" + lenStr.str() + "\">";
   for (VRDataList::iterator it = dataMap.begin(); it != dataMap.end(); ++it) {

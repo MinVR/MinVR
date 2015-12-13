@@ -1,6 +1,4 @@
 #include "VRMath.h"
-#include <data/VRDatum.h>
-
 
 #include <math.h>
 #define VRMATH_EPSILON 1e-8
