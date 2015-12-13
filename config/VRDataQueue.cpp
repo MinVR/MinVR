@@ -1,10 +1,18 @@
 #include "VRDataQueue.h"
 
-// This function does *not* process arbitrary XML, but it *does* process
-// XML that was produced by the serialize() method below.
-VRDataQueue::VRDataQueue(std::string serializedQueue) {
-  std::size_t start, end, start2;
+VRDataQueue::VRDataQueue(const std::string serializedQueue) {
 
+  parseSerializedQueue(serializedQueue);
+  
+}
+
+// This function does *not* process arbitrary XML, but it *does*
+// process XML that was produced by the serialize() method below.
+// This is why it looks a bit hacky, but this serialization is only
+// intended to transmit from one instance of this class to another.
+void VRDataQueue::parseSerializedQueue(const std::string serializedQueue) {
+  std::size_t start, end;
+  
   start = 18;
   end = serializedQueue.find("\"", start);
   
@@ -14,38 +22,69 @@ VRDataQueue::VRDataQueue(std::string serializedQueue) {
   std::istringstream( serializedQueue.substr(start,end)) >> num;
   start = serializedQueue.find(">", end);
 
-  start = serializedQueue.find("<VRDataQueueItem>", start);
+  long long timeStamp;
+  start = serializedQueue.find("<VRDataQueueItem timeStamp=\"", start);
   while (start != std::string::npos) {
 
-    end = serializedQueue.find("</VRDataQueueItem>", start);
-    push( serializedQueue.substr(start + 17, end - start - 17) );
-    //std::cout << serializedQueue.substr(start + 17, end - start - 17) << std::endl;
-    start = serializedQueue.find("<VRDataQueueItem>", end);
+    end = serializedQueue.find("\">", start);
+    // These constants have to do with the length of the tags used to
+    // encode a queue.
+    std::istringstream(serializedQueue.substr(start + 28, end - start - 28)) >>
+      timeStamp;
+
+    start = serializedQueue.find("</VRDataQueueItem>", end);
+    push(timeStamp, serializedQueue.substr(end + 2, start - end - 2) );
+    start = serializedQueue.find("<VRDataQueueItem timeStamp=\"", end);
   }
 }
 
 std::string VRDataQueue::getSerializedObject() {
-  return mqueue.front();
+  return dataMap.begin()->second;
 }
 
 void VRDataQueue::pop() {
-  mqueue.pop_front();
+  dataMap.erase(dataMap.begin());
 }
 
 void VRDataQueue::push(const std::string serializedData) {
-  mqueue.push_back(serializedData);
+
+  // I doubt very much that this has any claim to platform-
+  // independence.  It will have to be rewritten to work in a
+  // heterogeneous environment.
+  struct timeval tp;
+  gettimeofday(&tp, NULL);
+  
+  // Get current timestamp in milliseconds, and throw in the clock()
+  // output just to provide a little spurious precision and keep the
+  // stamps unique.  Fast CPUs make it hard to get unique timestamps
+  // with a low-precision clock.
+  long long timeStamp = (long long) tp.tv_sec * 1000L +
+    tp.tv_usec / 1000 + clock();
+
+  //std::cout << "ts: " << timeStamp << std::endl;
+  dataMap.insert(std::pair<long long,std::string>(timeStamp, serializedData));
 }
+
+void VRDataQueue::push(const long long timeStamp,
+                       const std::string serializedData) {
+
+  dataMap.insert(std::pair<long long,std::string>(timeStamp, serializedData));
+}
+
 
 std::string VRDataQueue::serialize() {
 
   std::ostringstream lenStr;
-  lenStr << mqueue.size();
+  lenStr << dataMap.size();
 
   std::string out;
 
   out = "<VRDataQueue num=\"" + lenStr.str() + "\">";
-  for (VRDataList::iterator it = mqueue.begin(); it != mqueue.end(); ++it) {
-    out += "<VRDataQueueItem>" + *it + "</VRDataQueueItem>";
+  for (VRDataList::iterator it = dataMap.begin(); it != dataMap.end(); ++it) {
+    std::ostringstream timeStamp;
+    timeStamp << it->first;
+    out += "<VRDataQueueItem timeStamp=\"" + timeStamp.str() + "\">" +
+      it->second + "</VRDataQueueItem>";
   }
   out += "</VRDataQueue>";
 
@@ -56,7 +95,7 @@ std::string VRDataQueue::serialize() {
 void VRDataQueue::printQueue() {
 
   int i = 0;
-  for (VRDataList::iterator it = mqueue.begin(); it != mqueue.end(); ++it) {
-    std::cout << "element " << ++i << ": " << *it << std::endl;
+  for (VRDataList::iterator it = dataMap.begin(); it != dataMap.end(); ++it) {
+    std::cout << "element " << ++i << ": " << it->second << std::endl;
   }
 }

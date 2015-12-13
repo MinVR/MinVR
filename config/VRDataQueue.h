@@ -3,10 +3,10 @@
 #define MINVR_DATAQUEUE_H
 
 #include <string>
-#include <deque>
+#include <map>
 #include <sstream>
 #include <iostream>
-#include <ctime>
+#include <sys/time.h>
 
 // This object maintains a queue (FIFO) of serialized VRDatum objects.
 // Serialization turns them into strings, so this is basically just a
@@ -25,14 +25,16 @@
 class VRDataQueue {
 private:
 
-  typedef std::deque<std::string> VRDataList;
-  VRDataList mqueue;
+  typedef std::map<long long,std::string> VRDataList;
+  VRDataList dataMap;
   
 public:
   VRDataQueue() {};
-  VRDataQueue(std::string serializedQueue);
+  VRDataQueue(const std::string serializedQueue);
+
+  void parseSerializedQueue(const std::string serializedQueue);
   
-  bool notEmpty() { return (bool)mqueue.size(); }
+  bool notEmpty() { return (bool)dataMap.size(); }
 
   // Returns the object at the head of the queue, but does not remove
   // it from the queue.
@@ -43,6 +45,7 @@ public:
   // Takes a serialized bit of data and pushes it onto the end of the
   // queue.
   void push(const std::string serializedData);
+  void push(const long long timeStamp, const std::string serializedData);
 
   // Serialize the whole queue into a piece of XML.  There is no
   // deserialize method, but there is a constructor that takes a serialized
