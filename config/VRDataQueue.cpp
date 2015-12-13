@@ -24,6 +24,18 @@ VRDataQueue::VRDataQueue(std::string serializedQueue) {
   }
 }
 
+std::string VRDataQueue::getSerializedObject() {
+  return mqueue.front();
+}
+
+void VRDataQueue::pop() {
+  mqueue.pop_front();
+}
+
+void VRDataQueue::push(const std::string serializedData) {
+  mqueue.push_back(serializedData);
+}
+
 std::string VRDataQueue::serialize() {
 
   std::ostringstream lenStr;

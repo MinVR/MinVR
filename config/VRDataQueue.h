@@ -6,6 +6,7 @@
 #include <deque>
 #include <sstream>
 #include <iostream>
+#include <ctime>
 
 // This object maintains a queue (FIFO) of serialized VRDatum objects.
 // Serialization turns them into strings, so this is basically just a
@@ -26,7 +27,7 @@ private:
 
   typedef std::deque<std::string> VRDataList;
   VRDataList mqueue;
-
+  
 public:
   VRDataQueue() {};
   VRDataQueue(std::string serializedQueue);
@@ -35,13 +36,13 @@ public:
 
   // Returns the object at the head of the queue, but does not remove
   // it from the queue.
-  std::string getSerializedObject() { return mqueue.front(); }
-  // Returns it and removes it from the front of the queue.
-  void pop() { mqueue.pop_front(); }
+  std::string getSerializedObject();
+  // Removed the object at the front of the queue.
+  void pop();
 
   // Takes a serialized bit of data and pushes it onto the end of the
   // queue.
-  void push(const std::string serializedData) { mqueue.push_back(serializedData);}
+  void push(const std::string serializedData);
 
   // Serialize the whole queue into a piece of XML.  There is no
   // deserialize method, but there is a constructor that takes a serialized
