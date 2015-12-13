@@ -2,9 +2,6 @@
 #ifndef MINVR_DATUM_FACTORY_H
 #define MINVR_DATUM_FACTORY_H
 
-#include <map>
-#include <iostream>
-#include <stdexcept>
 #include "VRDatum.h"
 
 // This factory architecture was suggested by Andrei Alexandrescu in

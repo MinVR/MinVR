@@ -52,14 +52,13 @@ int main() {
       std::cout << std::endl << "examining the data..." << std::endl;
       std::cout << "The object named " << p << " is a " <<
         dataIndex->getTypeString(p) << "." << std::endl;
-      std::cout << dataIndex->getDescription(p) << std::endl;
       if (dataIndex->getType(p) == VRCORETYPE_CONTAINER) {
         VRContainer lp = dataIndex->getValue(p);
 
         std::cout << "... it contains these" << std::endl;
 
         for (VRContainer::iterator it = lp.begin(); it != lp.end(); it++) {
-          std::cout << "  " << dataIndex->getDescription(*it) << std::endl;
+          std::cout << "  " << *it << " (" << dataIndex->getTypeString(*it) << ")" << std::endl;
         }
       }
     

@@ -28,6 +28,16 @@ std::string VRDatum::initializeDescription(VRCORETYPE_ID t) {
   return VRTypeMap[0].first; // Should never reach here.
 }
 
+// Returns the attribute list formatted to include in an XML tag.
+std::string VRDatum::getAttrListAsString() {
+  std::string out = std::string("");
+  for (VRAttributeList::iterator it = attrList.begin();
+       it != attrList.end(); it++) {
+    out += " " + it->first + "=\"" + it->second + "\"";
+  }
+  return out;
+}
+
 
 VRDatumInt::VRDatumInt(const int inVal) :
   VRDatum(VRCORETYPE_INT), value(inVal) {
