@@ -78,10 +78,16 @@ public:
   virtual VRDoubleArray toVRDoubleArray() = 0;
 };
 
-// Conver to a VRStringArray
+// Convert to a VRStringArray
 class VRStringArrayConvertible {
 public:
   virtual VRStringArray toVRStringArray() = 0;
+};
+
+// Convert to a VRContainer
+class VRContainer {
+public:
+  virtual VRContainer toVRContainer() = 0;
 };
 
 

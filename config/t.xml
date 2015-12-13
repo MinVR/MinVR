@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
-<base type="container">
+<base type="container" date="13 Dec 2015">
 
-  <froobus>34</froobus>
-  <CAVEViewer>
-    <name type="string">  CAVEViewerName</name>
+  <froobus slithy="tove">34</froobus>
+  <origin type="double">34.222</origin>
+  <CAVEViewer style="fluffy">
+    <name type="string">CAVEViewerName</name>
     <headTracked type="string">true</headTracked>
     <viewDirection>1.0457</viewDirection>
 
@@ -11,14 +12,14 @@
       <froobus>134</froobus>
       <name type="string">CAVEfrontName</name>
       <deviceMounted type="string">false</deviceMounted>
-      <origin type="float">48.2</origin>
+      <origin type="double">48.2</origin>
       <horizontalAxis type="int">102</horizontalAxis>
     </CAVEfront>
 
     <CAVErear type="container">
       <name type="string">CAVErearName</name>
       <deviceMounted type="string">false</deviceMounted>
-      <origin type="float">-48.1</origin>
+      <origin type="double">-48.1</origin>
       <horizontalAxis type="int">107</horizontalAxis>
     </CAVErear>
   </CAVEViewer>

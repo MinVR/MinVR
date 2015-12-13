@@ -56,6 +56,20 @@ element::~element()
     }
 }
 
+// Added by ts to get the whole attribute list back at once.
+std::map<std::string, std::string> element::get_attribute_map() {
+
+  std::map<std::string, std::string> out;
+  
+  for (std::list<attribute*>::iterator it = m_attribute_list.begin();
+       it != m_attribute_list.end(); it++) {
+    out[std::string((*it)->get_name())] = std::string((*it)->get_value());
+  }
+
+  return out;
+}
+
+
 // Adds an attribute to the attribute list
 bool element::add_attribute(char* the_attribute_name, char* the_value)
 {
