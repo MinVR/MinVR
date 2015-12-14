@@ -2,9 +2,8 @@
 #ifndef MINVR_DATUM_H
 #define MINVR_DATUM_H
 
-#include "VRCoreTypes.h"
-
 #include <map>
+#include <list>
 #include <iostream>
 #include <stdexcept>
 #include <vector>
@@ -16,6 +15,8 @@
 #include <cstdlib>
 #include <string>
 #include <sstream>
+
+#include "VRCoreTypes.h"
 
 // This is used to separate values in a serialized vector.
 // use static_case<char>MINVRSEPARATOR where a char is needed.
@@ -126,7 +127,7 @@ public:
 //      accepts one of the new data types, creates a VRDatum object
 //      for it, and adds a pointer to it in the data index.
 //
-//   9. Write a deserialize*() method for VRDataIndex and find
+//   9. Write a deserialize*() method for VRDataCollection and find
 //      a place for it in the processValue() method of that object.
 //
 //   10.You should also consider adding something to
@@ -146,21 +147,16 @@ public:
 // features of templates that I don't know about, which is probable.
 // So it's on you to keep track, not the compiler.
 class VRDatum {
-public:
-  typedef std::map<std::string, std::string> VRAttributeList;
-
-protected:
+ protected:
   VRCORETYPE_ID type;
 
   // This is to be a description of the data type, e.g. "int" or
   // "string" or something like that.
   std::string description;
 
-  VRAttributeList attrList;
-  
   //friend std::ostream & operator<<(std::ostream &os, const VRDatum& p);
 
-public:
+ public:
   // The constructor for the native storage form.
   VRDatum(const VRCORETYPE_ID inType) : type(inType) {};
 
@@ -173,27 +169,11 @@ public:
   // pointers should be careful to delete their objects.
   virtual ~VRDatum() {};
 
-  // Some facilities for handling XML attributes within the class.
-  // The 'type=' attribute is the only one that really matters to the
-  // operation of the class (so is *not* stored in the attribute
-  // list), but other attributes might matter to other applications.
-  VRAttributeList getAttributeList() { return attrList; };
-  void setAttributeList(VRAttributeList newList) { attrList = newList; };
-  std::string getAttributeValue(const std::string attributeName) {
-    return attrList[attributeName];
-  }
-  void setAttributeValue(const std::string attributeName,
-                         const std::string attributeValue) {
-    attrList[attributeName] = attributeValue;
-  }
-  // Returns the attribute list formatted to include in an XML tag.
-  std::string getAttrListAsString();
-  
   // This array is a mapping between VRCORETYPE_ID and the string
   // description of that type that will appear in serialized data.  It
   // is here as a public member as a convenience for other classes
   // that will need this mapping (e.g. VRDatumFactory and
-  // VRDataIndex).
+  // VRDataCollection).
   typedef struct { std::string first; VRCORETYPE_ID second; } VRTypePair;
   static const VRTypePair VRTypeMap[VRCORETYPE_NTYPES];
   std::string initializeDescription(VRCORETYPE_ID t);

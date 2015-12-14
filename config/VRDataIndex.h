@@ -1,4 +1,18 @@
 // -*-c++-*-
+/* ================================================================================
+
+This file is part of the MinVR Open Source Project.
+
+File: extend/PluginInterface.h
+
+Original Author(s) of this File:
+  Tom Sgouros 8/29/2015
+
+Author(s) of Significant Updates/Modifications to the File:
+	...
+
+-----------------------------------------------------------------------------------
+*/
 #ifndef MINVR_DATAINDEX_H
 #define MINVR_DATAINDEX_H
 
@@ -9,150 +23,151 @@
 // on the queue.
 #include "VRDataQueue.h"
 
-// The VRDataIndex object maintains an index, a collection of names
-// and pointers to VRDatum objects, which can be used to create a
-// dynamically typed computing environment in C++, a strongly-typed
-// system.  In this system, values have types, not variables.  All
-// variables, of whatever type, are equivalent.  There is a container
-// type, which can include an arbitrary collection of any other
-// variables.
-//
-// It supports the concept of a 'namespace' and scoping of its value
-// names, so names within a container type can override names higher
-// in the tree hierarchy.
-//
-// Data values can be easily serialized for transport over a network,
-// and deserialized, for receiving them, and interning the new values
-// into memory.  The system supports an XML format for transmission
-// and storage.
-//
-//
-// The XML parser used here is based on the "Simple C++ XML Parser"
-// from the CodeProject article by "BratilaRazvan", 2010.
-// see: http://www.codeproject.com/Articles/111243/Simple-Cplusplus-XML-Parser
-//
-// Tom Sgouros 8/29/2015
-//
-//
-// More about using the system.
-//
-// Containers define a namespace as well as hold a bunch of objects
-// inside them.  The two are very closely related, but are
-// conceptually distinct.  From a user's point of view, a namespace is
-// a string that starts and ends with a '/' and may or may not have
-// some text in the middle.  Here are some possible namespaces:
-//
-//       /perry/
-//       /freida/mary/
-//       /     <- the root namespace that all VRDataIndex objects have.
-//       /homer/henry/martha/
-//
-// A container object is simply an object that "contains" other
-// values.  Those objects can be primitive VRDatum objects, or they
-// can also be containers themselves.  The container object contains a
-// list of the (absolute) names of the objects it contains.  Here are
-// some possible names of containers:
-//
-//       /peter   which might contain  /peter/harold
-//                                     /peter/norma
-//                                and  /peter/flora
-//
-// Note that the container lists the absolute name.  When the
-// container is serialized, the serialized version contains only the
-// relative names.
-//
-//
-//
-// The precise collection of types currently implemented is
-// somewhat random, but the VRDatum.h file contains instructions for
-// extending the system to any C++ type, including the STL types,
-// whatever, go wild.  This may not be important to actually using the
-// system, read on for those instructions.
-//
-//
-// To use:
-//
-// Create an index object, and add values to the store in one of three ways.
-//
-//  1. You can add data with the specialized addData() functions.
-//     These take a name and a value and park them in the index.  The
-//     addData() with a single argument adds a container and you can
-//     subsequently add items to it.
-//
-//  2. You can feed some serialized data to the addSerializedValue()
-//     functions.  This is just string data, that looks something like
-//     this:
-//
-//     <flora type="int">42</flora>
-//
-//     <bob type="container">
-//        <flora type="int">42</flora>
-//        <pi type="double">3.1415926</pi>
-//     </bob>
-//
-//     The type attributes are usually superfluous, since the code can
-//     usually infer the type from the value string.  However, future
-//     implemented data types might make the inference step less
-//     reliable, so bear that in mind.
-//
-//  3. Feed a file containing XML into processXMLFile().
-//
-//  Once an index has entries, they can be retrieved at your pleasure
-//  with getValue() and serialize().  The getValue() method returns
-//  a pointer an object that can be used directly in your program.  I
-//  hate remembering how to spell the static_cast<>() options, so
-//  these are provided as a convenience via a helper class methods to
-//  the pointer objects.  So (int)p->getValue() gets you an integer
-//  and (double)p->getValue() gets you a double. (So long as the
-//  relevant objects actually contain an integer and double, otherwise
-//  you get an error.)
-//
-//  To use, do this:
-//
-//    VRDataIndex *index = new VRDataIndex;
-//    int a = 4;
-//    index->addData("/george", a);
-//
-//  This incorporates an integer value of 4 into the index with the
-//  name "george" that appears at the root (global) level.
-//
-//  When you want to refer to the value you put in, do this:
-//
-//    int p = index->getValue("/george");
-//
-//  or
-//
-//    int p = index->getValue("george", "/");
-//
-//  Where the second argument is the "namespace", which is arranged
-//  vaguely like a directory structure, with slashes (/) separating
-//  the names.  You can also do this:
-//
-//    std::string s = index->serialize("/george")
-//
-//    VRDataIndex *newIndex = new VRDataIndex;
-//    newIndex->addSerializedValue(s);
-//    int b = newIndex->getValue("/george");
-//
-//  The b variable now comtains the same value as a, with the same
-//  name.
-//
-//
-//  This file should come with an exercz.cpp that does an ok job of
-//  illustrating some of the usage.  You can also use that program to
-//  learn about the namespace and name scoping concepts.  It's sort of
-//  like an interpreter for some primitive language environment whose
-//  only functions are assigning variables and reading them.
-//
-//  The system encompasses the VRDataIndex class, whose job it is
-//  to track a set of names and corresponding VRDatumPtr objects,
-//  smart pointers to VRDatum objects, that hold a type and value.
-//  There is also a VRDatumFactory object, whose only use is
-//  creating the specializations of the VRDatum object for each of
-//  the supported data types.  It's all meant to be as portable as
-//  possible and not rely on any external libraries.  It uses an XML
-//  reader, see those files for the original credit.
-//
+/// The VRDataIndex object maintains an index, a collection of names
+/// and pointers to VRDatum objects, which can be used to create a
+/// dynamically typed computing environment in C++, a strongly-typed
+/// system.  In this system, values have types, variables do not
+/// (though they contain values that do).  All variables, of whatever
+/// type, are equivalent.  There is a container type, which can
+/// include an arbitrary collection of any other variables.
+///
+/// It supports the concept of a 'namespace' and scoping of its value
+/// names, so names within a container type can override names higher
+/// in the tree hierarchy.
+///
+/// Data values can be easily serialized for transport over a network,
+/// and deserialized, for receiving them, and interning the new values
+/// into memory.  The system supports an XML format for transmission
+/// and storage.
+///
+///
+/// The XML parser used here is based on the "Simple C++ XML Parser"
+/// from the CodeProject article by "BratilaRazvan", 2010.
+/// see: http:///www.codeproject.com/Articles/111243/Simple-Cplusplus-XML-Parser
+///
+///
+/// To use the system, it is useful to understand the concept of a
+/// namespace.  If you don't want to bother, just remember this: a
+/// namespace is just a container's name, with a '/' after it.  The
+/// rest is just detail.
+///
+/// Containers define a namespace as well as hold a bunch of objects
+/// inside them.  The two are very closely related, but are
+/// conceptually distinct.  From a user's point of view, a namespace is
+/// a string that starts and ends with a '/' and may or may not have
+/// some text in the middle.  Here are some possible namespaces:
+///
+///       /perry/
+///       /freida/mary/
+///       /     <- the root namespace that all VRDataIndex objects have.
+///       /homer/henry/martha/
+///
+/// A container object is simply an object that "contains" other
+/// values.  Those objects can be primitive VRDatum objects, or they
+/// can also be containers themselves.  The container object contains a
+/// list of the (absolute) names of the objects it contains.  Here are
+/// some possible names of containers:
+///
+///       /peter   which might contain  /peter/harold
+///                                     /peter/norma
+///                                and  /peter/flora
+///
+/// Note that the container lists the absolute name.  When the
+/// container is serialized, the serialized version contains only the
+/// relative names.
+///
+///
+///
+/// The precise collection of types currently implemented is
+/// somewhat random, but the VRDatum.h file contains instructions for
+/// extending the system to any C++ type, including the STL types,
+/// whatever, go wild.  This may not be important to actually using the
+/// system, read on for those instructions.
+///
+///
+/// To use:
+///
+/// Create an index object, and add values to the store in one of three ways.
+///
+///  1. You can add data with the specialized addData() functions.
+///     These take a name and a value and park them in the index.  The
+///     addData() with a single argument adds a container and you can
+///     subsequently add items to it.
+///
+///  2. You can feed some serialized data to the addSerializedValue()
+///     functions.  This is just string data, that looks something like
+///     this:
+///
+///     <flora type="int">42</flora>
+///
+///     <bob type="container">
+///        <flora type="int">42</flora>
+///        <pi type="double">3.1415926</pi>
+///     </bob>
+///
+///     The type attributes are usually superfluous, since the code can
+///     usually infer the type from the value string.  However, future
+///     implemented data types might make the inference step less
+///     reliable, so bear that in mind.
+///
+///  3. Feed a file containing XML into processXMLFile().
+///
+///  Once an index has entries, they can be retrieved at your pleasure
+///  with getValue() and serialize().  The getValue() method returns
+///  a pointer an object that can be used directly in your program.  I
+///  hate remembering how to spell the static_cast<>() options, so
+///  these are provided as a convenience via a helper class methods to
+///  the pointer objects.  So (int)p->getValue() gets you an integer
+///  and (double)p->getValue() gets you a double. (So long as the
+///  relevant objects actually contain an integer and double, otherwise
+///  you get an error.)
+///
+///  To use, do this:
+///
+///    VRDataIndex *index = new VRDataIndex;
+///    int a = 4;
+///    index->addData("/george", a);
+///
+///  This incorporates an integer value of 4 into the index with the
+///  name "george" that appears at the root (global) level.
+///
+///  When you want to refer to the value you put in, do this:
+///
+///    int p = index->getValue("/george");
+///
+///  or
+///
+///    int p = index->getValue("george", "/");
+///
+///  Where the second argument is the "namespace", which is arranged
+///  vaguely like a directory structure, with slashes (/) separating
+///  the names.  You can also do this:
+///
+///    std::string s = index->serialize("/george")
+///
+///    VRDataIndex *newIndex = new VRDataIndex;
+///    newIndex->addSerializedValue(s);
+///    int b = newIndex->getValue("/george");
+///
+///  The b variable now comtains the same value as a, with the same
+///  name.
+///
+///
+///  This file should come with an exercz.cpp that does an ok job of
+///  illustrating some of the usage.  You can also use that program to
+///  learn about the namespace and name scoping concepts.  It's sort of
+///  like an interpreter for some primitive language environment whose
+///  only functions are assigning variables and reading them.
+///
+///  The system encompasses the VRDataIndex class, whose job it is
+///  to track a set of names and corresponding VRDatumPtr objects,
+///  smart pointers to VRDatum objects, that hold a type and value.
+///  There is also a VRDatumFactory object, whose only use is
+///  creating the specializations of the VRDatum object for each of
+///  the supported data types.  It's all meant to be as portable as
+///  possible and not rely on any external libraries.  It uses an XML
+///  reader, see those files for the original credit.
+///
 class VRDataIndex {
 private:
   VRDatumFactory factory;
