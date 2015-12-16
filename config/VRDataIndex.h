@@ -1,19 +1,25 @@
 // -*-c++-*-
 #ifndef MINVR_DATAINDEX_H
 #define MINVR_DATAINDEX_H
-#include "VRDataCollection.h"
+
+#include "VRDatumFactory.h"
+#include "Cxml/Cxml.h"
+// VRDataQueue is included only as a convenience for applications that
+// will use these classes. There isn't anything in VRDataIndex that depends
+// on the queue.
 #include "VRDataQueue.h"
 
-// This object maintains an index, a collection of names and pointers
-// to VRDatum objects, which can be used to simulate a dynamically
-// typed computing environment in C++, a strongly-typed system.  In
-// this system, values have types, not variables.  All variables, of
-// whatever type, are equivalent.  There is a container type, which
-// can include an arbitrary collection of any other variables.
+// The VRDataIndex object maintains an index, a collection of names
+// and pointers to VRDatum objects, which can be used to create a
+// dynamically typed computing environment in C++, a strongly-typed
+// system.  In this system, values have types, not variables.  All
+// variables, of whatever type, are equivalent.  There is a container
+// type, which can include an arbitrary collection of any other
+// variables.
 //
-// It supports the concept of a 'namespace' and
-// scoping of its value names, so names within a container type can
-// override names higher in the tree hierarchy.
+// It supports the concept of a 'namespace' and scoping of its value
+// names, so names within a container type can override names higher
+// in the tree hierarchy.
 //
 // Data values can be easily serialized for transport over a network,
 // and deserialized, for receiving them, and interning the new values
@@ -147,8 +153,12 @@
 //  possible and not rely on any external libraries.  It uses an XML
 //  reader, see those files for the original credit.
 //
-class VRDataIndex : VRDataCollection {
+class VRDataIndex {
 private:
+  VRDatumFactory factory;
+
+  // This is just a convenience to map strings to object type numbers.
+  std::map<std::string, VRCORETYPE_ID> mVRTypeMap;
 
   typedef std::map<std::string, VRDatumPtr> VRDataMap;
   VRDataMap mindex;
@@ -174,10 +184,21 @@ private:
   std::string getNameSpace(const std::string fullName);
 
 public:
-  VRDataIndex() : overwrite(1) {};
+  VRDataIndex();
 
   void setOverwrite(const int inVal) { overwrite = inVal; }
 
+  // Tries to guess a data type from the ASCII representation.
+  VRCORETYPE_ID inferType(const std::string valueString);
+
+  // Start from the root node of an XML document and process the
+  // results into entries in the data index.
+  std::string walkXML(element* node, std::string nameSpace);
+  // A functional part of the walkXML apparatus.
+  std::string processValue(const std::string name,
+                          VRCORETYPE_ID type,
+                          const char* valueString);
+  
   // Finds an entry in the data index, given a name and
   // namespace. Note that the name might be in a senior namespace to
   // the one specified.  That is, if you have a value called flora,
@@ -242,7 +263,6 @@ public:
     return getDatum(valName, nameSpace)->getType();
   }
 
-  
   std::string getTypeString(const std::string valName) {
     return getDatum(valName)->getDescription();
   }
@@ -251,17 +271,11 @@ public:
     return getDatum(valName, nameSpace)->getDescription();
   }
 
-  // The description of an index entry describes only the name and
-  // type, not the value.
-  std::string getDescription(const std::string valName);
-  std::string getDescription(const std::string valName,
-                             const std::string nameSpace);
-
   // This is the name, type, value, expressed as an XML fragment.
-  using VRDataCollection::serialize;
   std::string serialize(const std::string valName);
   std::string serialize(const std::string valName,
                         const std::string nameSpace);
+  std::string serialize(const std::string trimName, VRDatumPtr pdata);
 
   // Takes a serialized bit of data and incorporates it into the data
   // index.
@@ -269,6 +283,15 @@ public:
   std::string addSerializedValue(const std::string serializedData,
                                 const std::string nameSpace);
 
+  // Related.
+  VRInt deserializeInt(const char* valueString);
+  VRDouble deserializeDouble(const char* valueString);
+  VRString deserializeString(const char* valueString);
+  VRIntArray deserializeIntArray(const char* valueString);
+  VRDoubleArray deserializeDoubleArray(const char* valueString);
+  VRStringArray deserializeStringArray(const char* valueString);
+
+  // Don't need a deserializeContainer. That happens in walkXML().
   // Process the contents of a given XML file into the index.
   bool processXMLFile(std::string fileName, std::string nameSpace);
 
@@ -339,6 +362,9 @@ public:
 
   // Mostly just for debug purposes.
   void printStructure();
+  // Prints a vaguely tree-ish representation of an XML parse.  Just
+  // an aid to debugging, really.
+  bool printXML(element* node, std::string prefix);
 
 };
 

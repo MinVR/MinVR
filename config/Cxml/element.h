@@ -3,7 +3,8 @@
 
 #include <list>
 #include "attribute.h"
-
+#include <string>
+#include <map>
 
 class element
 {
@@ -25,6 +26,7 @@ class element
     std::list<element*> get_element_list();               //{return m_element_list;);
 
   public:
+    std::map<std::string, std::string> get_attribute_map();
     // Adds an attribute to the attribute list
     bool add_attribute(char* attribute_name, char* value=NULL);
     bool add_attribute(attribute* m_attribute);
