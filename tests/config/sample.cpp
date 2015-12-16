@@ -2,9 +2,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <sstream>
-#include "VRDataIndex.h"
-#include "VRDataQueue.h"
-
+#include "config/VRDataIndex.h"
 
 // This is just a test program meant to be a vague illustration of the
 // use of the VRDataIndex type system.  Also check out the exercz program.
@@ -53,9 +51,6 @@ int main() {
   std::cout << "Index Structure after changing /cora" << std::endl;
   index->printStructure();
 
-  std::cout << index->serialize("/", "");
-
-  
   // Push the new cora onto the queue.
   queue->push(index->serialize("cora", "/"));
 
@@ -66,21 +61,50 @@ int main() {
   std::cout << "Queue" << std::endl;
   queue->printQueue();
 
-  // Pretend we are in a remote program, having received event data over the net.
+  std::cout << std::endl;
+  std::cout << "serialized queue: " << queue->serialize() << std::endl;
+  std::string queueData = queue->serialize();
+  
+  // Pretend we are in a remote program, having received event data
+  // over the net.  It comes in as some kind of string data called
+  // queueData.
+  VRDataQueue *newQueue = new VRDataQueue(queueData);
+
+  // Here's the index we'll populate with the new data.
   VRDataIndex *remoteIndex = new VRDataIndex;
+  
+  // While there is something in the queue, unpack it into the index,
+  // and examine it.
+  while (newQueue->notEmpty()) {
 
-  // While there is something in the queue, unpack it into the index, and examine.
-  while (queue->notEmpty()) {
+    // Unpack the items from the queue.
+    std::string p =
+      remoteIndex->addSerializedValue( newQueue->getSerializedObject() );
 
-    remoteIndex->addSerializedValue( queue->getSerializedDatum() );
+    std::cout << std::endl << "examining the data..." << std::endl;
+    std::cout << "The object named " << p << " is a " <<
+      remoteIndex->getTypeString(p) << "." << std::endl;
+    std::cout << remoteIndex->getDescription(p) << std::endl;
+    if (remoteIndex->getType(p) == VRCORETYPE_CONTAINER) {
+      VRContainer lp = remoteIndex->getValue(p);
 
+      std::cout << "... it contains these" << std::endl;
+
+      for (VRContainer::iterator it = lp.begin(); it != lp.end(); it++) {
+        std::cout << "  " << remoteIndex->getDescription(*it) << std::endl;
+      }
+    }
+    
+    // Print out the entire index.
     std::cout << "Remote Index Structure" << std::endl;
     remoteIndex->printStructure();
 
+    // Perform arithmetic with some data from the index.
     int r = remoteIndex->getValue("/cora/nora");
     std::cout << " ... sum of /cora/nora and seven = " << 7 + r << std::endl;
 
-    queue->pop();
+    // Get the next item from the queue.
+    newQueue->pop();
 
   }
 }

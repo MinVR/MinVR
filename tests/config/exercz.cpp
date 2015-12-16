@@ -2,8 +2,8 @@
 #include <iostream>
 #include <stdexcept>
 #include <sstream>
-#include "VRDataIndex.h"
-#include "VRDataQueue.h"
+#include "config/VRDataIndex.h"
+#include "config/VRDataQueue.h"
 
 #define HELPMESSAGE  std::cout << "ls - get the list of data names" << std::endl; \
       std::cout << "px - show namespaces / containers " << std::endl; \
@@ -207,9 +207,13 @@ int main() {
 
       VRContainer nameList;
       if (elems.size() > 1) {
-        nameList = index->getNames(elems[1]);
+        nameList = index->getValue(elems[1]);
       } else {
-        nameList = index->getNames(nameSpace);
+        if (nameSpace.compare("/") == 0) {
+          nameList = index->getNames();
+        } else {
+          nameList = index->getValue(nameSpace.substr(0,nameSpace.size() - 1));
+        }
       }
       for (VRContainer::iterator it = nameList.begin();
            it != nameList.end(); it++) {

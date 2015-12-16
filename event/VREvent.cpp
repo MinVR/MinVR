@@ -1,25 +1,23 @@
 #include "VREvent.h"
-#include <data/XMLUtils.h>
 
-VREvent::VREvent(const std::string &eventName, const VRDataIndex &dataIndex) : _name(eventName), _dataIndex(dataIndex) {
-}
+VREvent::VREvent(const std::string &eventName,
+                 const VRDataIndex &dataIndex) :
+  _name(eventName), _dataIndex(dataIndex) {}
 
-VREvent::VREvent() {
-}
+VREvent::VREvent() {}
 
-// AnyCoreType objects inside VRDataIndex are reference counted, so they will clean up themselves
-VREvent::~VREvent() {
-}
-
+// VRDatum objects inside VRDataIndex are reference counted, so they
+// will clean themselves up.
+VREvent::~VREvent() {}
 
 std::string VREvent::toXML() {
-  std::map<std::string, std::string> props;
-  props["name"] = _name;
-  return XMLUtils::writeXMLField("VREvent", props, _dataIndex.toXML());
+  return _dataIndex.serialize(_name);
 }
 
 
 VREvent VREvent::fromXML(const std::string &xml, std::string &leftoverInput) {
+  
+
   std::map<std::string, std::string> props;
   std::string dataIndexXML;
   XMLUtils::getXMLField(xml, "VREvent", props, dataIndexXML, leftoverInput);

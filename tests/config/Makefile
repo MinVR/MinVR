@@ -80,14 +80,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/tomfool/tech/15/yurt/MinVR2/CMakeFiles /Users/tomfool/tech/15/yurt/MinVR2/CMakeFiles/progress.marks
-	$(MAKE) -f CMakeFiles/Makefile2 all
+	cd /Users/tomfool/tech/15/yurt/MinVR2 && $(CMAKE_COMMAND) -E cmake_progress_start /Users/tomfool/tech/15/yurt/MinVR2/CMakeFiles /Users/tomfool/tech/15/yurt/MinVR2/tests/config/CMakeFiles/progress.marks
+	cd /Users/tomfool/tech/15/yurt/MinVR2 && $(MAKE) -f CMakeFiles/Makefile2 tests/config/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/tomfool/tech/15/yurt/MinVR2/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	$(MAKE) -f CMakeFiles/Makefile2 clean
+	cd /Users/tomfool/tech/15/yurt/MinVR2 && $(MAKE) -f CMakeFiles/Makefile2 tests/config/clean
 .PHONY : clean
 
 # The main clean target
@@ -97,57 +97,102 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	$(MAKE) -f CMakeFiles/Makefile2 preinstall
+	cd /Users/tomfool/tech/15/yurt/MinVR2 && $(MAKE) -f CMakeFiles/Makefile2 tests/config/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	$(MAKE) -f CMakeFiles/Makefile2 preinstall
+	cd /Users/tomfool/tech/15/yurt/MinVR2 && $(MAKE) -f CMakeFiles/Makefile2 tests/config/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /Users/tomfool/tech/15/yurt/MinVR2 && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
-#=============================================================================
-# Target rules for targets named VRIndex
+# Convenience name for target.
+tests/config/CMakeFiles/exercz.dir/rule:
+	cd /Users/tomfool/tech/15/yurt/MinVR2 && $(MAKE) -f CMakeFiles/Makefile2 tests/config/CMakeFiles/exercz.dir/rule
+.PHONY : tests/config/CMakeFiles/exercz.dir/rule
 
-# Build rule for target.
-VRIndex: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 VRIndex
-.PHONY : VRIndex
+# Convenience name for target.
+exercz: tests/config/CMakeFiles/exercz.dir/rule
 
-# fast build rule for target.
-VRIndex/fast:
-	$(MAKE) -f config/CMakeFiles/VRIndex.dir/build.make config/CMakeFiles/VRIndex.dir/build
-.PHONY : VRIndex/fast
-
-#=============================================================================
-# Target rules for targets named exercz
-
-# Build rule for target.
-exercz: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 exercz
 .PHONY : exercz
 
 # fast build rule for target.
 exercz/fast:
-	$(MAKE) -f tests/config/CMakeFiles/exercz.dir/build.make tests/config/CMakeFiles/exercz.dir/build
+	cd /Users/tomfool/tech/15/yurt/MinVR2 && $(MAKE) -f tests/config/CMakeFiles/exercz.dir/build.make tests/config/CMakeFiles/exercz.dir/build
 .PHONY : exercz/fast
 
-#=============================================================================
-# Target rules for targets named sample
+# Convenience name for target.
+tests/config/CMakeFiles/sample.dir/rule:
+	cd /Users/tomfool/tech/15/yurt/MinVR2 && $(MAKE) -f CMakeFiles/Makefile2 tests/config/CMakeFiles/sample.dir/rule
+.PHONY : tests/config/CMakeFiles/sample.dir/rule
 
-# Build rule for target.
-sample: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 sample
+# Convenience name for target.
+sample: tests/config/CMakeFiles/sample.dir/rule
+
 .PHONY : sample
 
 # fast build rule for target.
 sample/fast:
-	$(MAKE) -f tests/config/CMakeFiles/sample.dir/build.make tests/config/CMakeFiles/sample.dir/build
+	cd /Users/tomfool/tech/15/yurt/MinVR2 && $(MAKE) -f tests/config/CMakeFiles/sample.dir/build.make tests/config/CMakeFiles/sample.dir/build
 .PHONY : sample/fast
+
+exercz.o: exercz.cpp.o
+
+.PHONY : exercz.o
+
+# target to build an object file
+exercz.cpp.o:
+	cd /Users/tomfool/tech/15/yurt/MinVR2 && $(MAKE) -f tests/config/CMakeFiles/exercz.dir/build.make tests/config/CMakeFiles/exercz.dir/exercz.cpp.o
+.PHONY : exercz.cpp.o
+
+exercz.i: exercz.cpp.i
+
+.PHONY : exercz.i
+
+# target to preprocess a source file
+exercz.cpp.i:
+	cd /Users/tomfool/tech/15/yurt/MinVR2 && $(MAKE) -f tests/config/CMakeFiles/exercz.dir/build.make tests/config/CMakeFiles/exercz.dir/exercz.cpp.i
+.PHONY : exercz.cpp.i
+
+exercz.s: exercz.cpp.s
+
+.PHONY : exercz.s
+
+# target to generate assembly for a file
+exercz.cpp.s:
+	cd /Users/tomfool/tech/15/yurt/MinVR2 && $(MAKE) -f tests/config/CMakeFiles/exercz.dir/build.make tests/config/CMakeFiles/exercz.dir/exercz.cpp.s
+.PHONY : exercz.cpp.s
+
+sample.o: sample.cpp.o
+
+.PHONY : sample.o
+
+# target to build an object file
+sample.cpp.o:
+	cd /Users/tomfool/tech/15/yurt/MinVR2 && $(MAKE) -f tests/config/CMakeFiles/sample.dir/build.make tests/config/CMakeFiles/sample.dir/sample.cpp.o
+.PHONY : sample.cpp.o
+
+sample.i: sample.cpp.i
+
+.PHONY : sample.i
+
+# target to preprocess a source file
+sample.cpp.i:
+	cd /Users/tomfool/tech/15/yurt/MinVR2 && $(MAKE) -f tests/config/CMakeFiles/sample.dir/build.make tests/config/CMakeFiles/sample.dir/sample.cpp.i
+.PHONY : sample.cpp.i
+
+sample.s: sample.cpp.s
+
+.PHONY : sample.s
+
+# target to generate assembly for a file
+sample.cpp.s:
+	cd /Users/tomfool/tech/15/yurt/MinVR2 && $(MAKE) -f tests/config/CMakeFiles/sample.dir/build.make tests/config/CMakeFiles/sample.dir/sample.cpp.s
+.PHONY : sample.cpp.s
 
 # Help Target
 help:
@@ -157,9 +202,14 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... VRIndex"
 	@echo "... exercz"
 	@echo "... sample"
+	@echo "... exercz.o"
+	@echo "... exercz.i"
+	@echo "... exercz.s"
+	@echo "... sample.o"
+	@echo "... sample.i"
+	@echo "... sample.s"
 .PHONY : help
 
 
@@ -171,6 +221,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /Users/tomfool/tech/15/yurt/MinVR2 && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

@@ -2,7 +2,9 @@
 #define VRNETINTERFACE_H
 
 #include <vector>
-#include <event/VREvent.h>
+#include <config/VRDataIndex.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #ifdef WIN32
   #include <winsock2.h>
@@ -10,20 +12,34 @@
 	#include <stdint.h>
 	//typedef int int32_t;
 	//typedef unsigned int uint32_t;
+  #include <ws2tcpip.h>
+  #pragma comment (lib, "Ws2_32.lib")
+  #pragma comment (lib, "Mswsock.lib")
+  #pragma comment (lib, "AdvApi32.lib")
+
 #else
   #define SOCKET int
   #include "stdint.h"
+  #include <unistd.h>
+  #include <errno.h>
+  #include <string.h>
+  #include <netdb.h>
+  #include <sys/types.h>
+  #include <netinet/in.h>
+  #include <sys/socket.h>
 #endif
 
 
 class VRNetInterface {
  public:
-  virtual void synchronizeInputEventsAcrossAllNodes(std::vector<VREvent> &inputEvents) = 0;
-  virtual void synchronizeSwapBuffersAcrossAllNodes() = 0;
+  virtual VRDataQueue::serialData
+    syncEventDataAcrossAllNodes(VRDataQueue::serialData eventData) = 0;
+  virtual void syncSwapBuffersAcrossAllNodes() = 0;
 
  protected:
-  // unique identifiers for different network messages sent as a 1-byte header for each msg
-  static const unsigned char INPUT_EVENTS_MSG;
+  // unique identifiers for different network messages sent as a
+  // 1-byte header for each msg
+  static const unsigned char EVENTS_MSG;
   static const unsigned char SWAP_BUFFERS_REQUEST_MSG;
   static const unsigned char SWAP_BUFFERS_NOW_MSG;
   
@@ -31,14 +47,15 @@ class VRNetInterface {
 
   static void sendSwapBuffersRequest(SOCKET socketID);
   static void sendSwapBuffersNow(SOCKET socketID);
-  static void sendInputEvents(SOCKET socketID, std::vector<VREvent> &inputEvents);
-  static int sendall(SOCKET s, const unsigned char *buf, int len);
+  static void sendEventData(SOCKET socketID, VRDataQueue::serialData eventData);
+  static int sendall(SOCKET socketID, const unsigned char *buf, int len);
 
-  static void waitForAndReceiveMessageHeader(SOCKET socketID, unsigned char messageID);
+  static void waitForAndReceiveOneByte(SOCKET socketID,
+                                       unsigned char messageID);
   static void waitForAndReceiveSwapBuffersRequest(SOCKET socketID);
   static void waitForAndReceiveSwapBuffersNow(SOCKET socketID);
-  static void waitForAndReceiveInputEvents(SOCKET socketID, std::vector<VREvent> &inputEvents);
-  static int receiveall(SOCKET s, unsigned char *buf, int len);
+  static VRDataQueue::serialData waitForAndReceiveEventData(SOCKET socketID);
+  static int receiveall(SOCKET socketID, unsigned char *buf, int len);
   
   
 public:
@@ -72,7 +89,6 @@ public:
     }
     return toReturn;
   }
-
 };
 
 #endif

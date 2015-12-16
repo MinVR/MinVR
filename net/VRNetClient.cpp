@@ -1,25 +1,5 @@
 #include <net/VRNetClient.h>
-#include <math/VRMath.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-
-#ifdef WIN32
-  #include <ws2tcpip.h>
-  #pragma comment (lib, "Ws2_32.lib")
-  #pragma comment (lib, "Mswsock.lib")
-  #pragma comment (lib, "AdvApi32.lib")
-#else
-  #include <unistd.h>
-  #include <errno.h>
-  #include <string.h>
-  #include <netdb.h>
-  #include <sys/types.h>
-  #include <netinet/in.h>
-  #include <netinet/tcp.h>
-  #include <sys/socket.h>
-  #include <arpa/inet.h>
-#endif
+//#include <math/VRMath.h>
 
 
 // get sockaddr, IPv4 or IPv6:
@@ -160,23 +140,20 @@ VRNetClient::~VRNetClient()
 }
 
 
-
-void 
-VRNetClient::synchronizeInputEventsAcrossAllNodes(std::vector<VREvent> &inputEvents) 
-{
-  // 1. send inputEvents to server
-  sendInputEvents(_socketFD, inputEvents);
-
-  // 2. receive and parse serverInputEvents
-  std::vector<VREvent> serverInputEvents;
-  waitForAndReceiveInputEvents(_socketFD, serverInputEvents);
+VRDataQueue::serialData
+VRNetClient::syncEventDataAcrossAllNodes(VRDataQueue::serialData eventData) {
   
-  // 3. inputEvents = serverInputEvents
-  inputEvents = serverInputEvents;
+  // 1. send inputEvents to server
+  sendEventData(_socketFD, eventData);
+
+  // 2. receive all events from the server
+  VRDataQueue::serialData allEvents = waitForAndReceiveEventData(_socketFD);
+  
+  return allEvents;
 }
 
 void 
-VRNetClient::synchronizeSwapBuffersAcrossAllNodes() 
+VRNetClient::syncSwapBuffersAcrossAllNodes() 
 {
   // 1. send a swap_buffers_request message to the server
   sendSwapBuffersRequest(_socketFD);

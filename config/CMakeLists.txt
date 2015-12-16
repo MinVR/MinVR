@@ -6,6 +6,7 @@ set(${PROJECT_NAME}_headers
   VRDatumFactory.h
   VRDataCollection.h
   VRDataIndex.h
+  VRDataQueue.h
   )
 
 set(${PROJECT_NAME}_source_files
@@ -14,6 +15,7 @@ set(${PROJECT_NAME}_source_files
   VRDatumFactory.cpp
   VRDataCollection.cpp
   VRDataIndex.cpp
+  VRDataQueue.cpp
   Cxml/attribute.cpp
   Cxml/Cxml.cpp
   Cxml/element.cpp
@@ -22,10 +24,4 @@ set(${PROJECT_NAME}_source_files
   )
 
 add_library(${PROJECT_NAME} ${${PROJECT_NAME}_source_files})
-
-add_executable(exercz exercz.cpp ${${PROJECT_NAME}_headers})
-target_link_libraries(exercz ${PROJECT_NAME})
-
-add_executable(sample sample.cpp ${${PROJECT_NAME}_headers})
-target_link_libraries(sample ${PROJECT_NAME})
 

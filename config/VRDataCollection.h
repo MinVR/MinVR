@@ -36,11 +36,11 @@ public:
 
   // Start from the root node of an XML document and process the
   // results into entries in the data index.
-  bool walkXML(element* node, std::string nameSpace);
+  std::string walkXML(element* node, std::string nameSpace);
   // A functional part of the walkXML apparatus.
-  bool processValue(const char* name,
-                    VRCORETYPE_ID type,
-                    const char* valueString);
+  std::string processValue(const std::string name,
+                          VRCORETYPE_ID type,
+                          const char* valueString);
 
   VRInt deserializeInt(const char* valueString);
   VRDouble deserializeDouble(const char* valueString);
