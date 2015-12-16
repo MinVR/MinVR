@@ -56,7 +56,7 @@ class Plugin : public FrameworkPlugin {
 
 extern "C"
 {
-	int getPluginFrameworkVersion() {
+	PLUGIN_API int getPluginFrameworkVersion() {
 		return PLUGIN_FRAMEWORK_VERSION;
 	}
 }
