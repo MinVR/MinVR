@@ -168,6 +168,7 @@ Author(s) of Significant Updates/Modifications to the File:
 ///  possible and not rely on any external libraries.  It uses an XML
 ///  reader, see those files for the original credit.
 ///
+
 class VRDataIndex {
 private:
   VRDatumFactory factory;
