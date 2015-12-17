@@ -194,7 +194,6 @@ int main() {
           }	     
         }
 
-        std::cout << "description: " << index->getDescription(elems[1], nameSpace) << std::endl;
         std::cout << "serialization: " << index->serialize(elems[1], nameSpace) << std::endl;
       } catch (const std::exception& e) {
 

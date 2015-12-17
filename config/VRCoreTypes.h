@@ -85,7 +85,7 @@ public:
 };
 
 // Convert to a VRContainer
-class VRContainer {
+class VRContainerConvertible {
 public:
   virtual VRContainer toVRContainer() = 0;
 };
