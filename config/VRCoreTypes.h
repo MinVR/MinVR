@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <list>
+#include <string>
 
 /// This is the list of data types we can handle.  This is step 1
 /// in the specialization instructions below.
