@@ -23,13 +23,14 @@ if (MINVR_GLFW)
 	set(plugin_project_name MinVR_GLFW)
 	set(MinVR_GLFW_prefix "${VRPlugins_checkout_dir}/${plugin_project_name}")
 	make_directory(${MinVR_GLFW_prefix})
+	set(project_CMAKE_ARGS ${VRPlugins_CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX=${VRPlugins_install_dir}/${plugin_project_name})
 	
 	ExternalProject_add(BaseGLFW
 			PREFIX ${MinVR_GLFW_prefix}
 			GIT_REPOSITORY https://github.com/ivlab/BaseGLFW.git
 			GIT_TAG master
 			INSTALL_DIR ${VRPlugins_install_dir}/${plugin_project_name}
-			CMAKE_ARGS ${VRPlugins_CMAKE_ARGS}
+			CMAKE_ARGS ${project_CMAKE_ARGS}
 			UPDATE_COMMAND ""
 			SOURCE_DIR ${MinVR_GLFW_prefix}
 			DOWNLOAD_DIR ${MinVR_GLFW_prefix}
