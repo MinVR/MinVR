@@ -4,11 +4,11 @@ project (VRPlugins)
 
 set(VRPlugins_checkout_dir ${PROJECT_SOURCE_DIR}/plugins)
 set(VRPlugins_build_dir ${CMAKE_BINARY_DIR}/plugins)
-set(VRPlugins_stamp_dir ${VRPlugins_checkout_dir}/build/${MinVR_BUILD_TYPE}/stamp)
-set(VRPlugins_tmp_dir ${VRPlugins_checkout_dir}/build/${MinVR_BUILD_TYPE}/tmp)
+set(VRPlugins_stamp_dir ${VRPlugins_checkout_dir}/build/${CMAKE_BUILD_TYPE}/stamp)
+set(VRPlugins_tmp_dir ${VRPlugins_checkout_dir}/build/${CMAKE_BUILD_TYPE}/tmp)
 make_directory(${VRPlugins_checkout_dir})
 set(VRPlugins_install_dir "${CMAKE_INSTALL_PREFIX}/plugins")
-set(VRPlugins_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${VRPlugins_install_dir} -DMinVR_INCLUDE_DIRS=${PROJECT_SOURCE_DIR}/.. -DMinVR_BINARY_DIRS=${CMAKE_BINARY_DIR}/lib -DCMAKE_BUILD_TYPE=${MinVR_BUILD_TYPE})
+set(VRPlugins_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${VRPlugins_install_dir} -DMinVR_INCLUDE_DIRS=${PROJECT_SOURCE_DIR}/.. -DMinVR_BINARY_DIRS=${CMAKE_BINARY_DIR}/lib -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	set(MinVRExtensions_CMAKE_ARGS ${VRPlugins_CMAKE_ARGS} -DCMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD="c++11" -DCMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY="libc++")
 endif()
@@ -28,7 +28,7 @@ if (MINVR_GLFW)
 			PREFIX ${MinVR_GLFW_prefix}
 			GIT_REPOSITORY https://github.com/ivlab/BaseGLFW.git
 			GIT_TAG master
-			INSTALL_DIR ${VRPlugins_install_dir}
+			INSTALL_DIR ${VRPlugins_install_dir}/${plugin_project_name}
 			CMAKE_ARGS ${VRPlugins_CMAKE_ARGS}
 			UPDATE_COMMAND ""
 			SOURCE_DIR ${MinVR_GLFW_prefix}

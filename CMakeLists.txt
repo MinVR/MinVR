@@ -108,8 +108,6 @@ endif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 # Recurse into the following subdirs to build the core MinVR set of libraries:
 # (Uncomment the lines below as we add .cpp files to those directories.)
 
-set (CMAKE_BUILD_TYPE Debug)
-
 add_subdirectory (config)
 #add_subdirectory (data)
 #add_subdirectory (display)
