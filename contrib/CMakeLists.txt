@@ -16,7 +16,7 @@ endif()
 include(ExternalProject)
 
 #------------------GLFW-------------------------------
-option(MINVR_GLFW "If enabled, GLFW plugin will be installed" ON)
+option(MINVR_GLFW "If enabled, GLFW plugin will be installed" OFF)
 if (MINVR_GLFW)
 	set(MinVRExtensions_checkout_Dir ${PROJECT_SOURCE_DIR}/plugins/MinVRExtensions)
 
