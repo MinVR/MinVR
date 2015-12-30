@@ -6,7 +6,7 @@
 #endif
 #include <ctime>
 
-VRDataIndex *dataIndex = new VRDataIndex;
+VRDataIndex *dataIndex;
 
 void makeHeadMoveEvent(double x, double y, double z) {
   dataIndex->addData("/HeadMove/x", x);
@@ -51,7 +51,8 @@ VRDataQueue::serialData makeQueue() {
 }
 
 int main() {
-  
+  dataIndex = new VRDataIndex();
+
   if (VRNetInterface::isLittleEndian()) {
     std::cout << "little endian" << std::endl;
   }
