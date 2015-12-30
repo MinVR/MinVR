@@ -11,6 +11,7 @@
 
 #include "display/VRDisplayDevice.h"
 #include "plugin/PluginInterface.h"
+#include "main/VRTimer.h"
 
 namespace MinVR {
 
@@ -19,6 +20,7 @@ public:
 	virtual ~VRPluginInterface() {}
 
 	virtual void addVRDisplayDeviceFactory(VRDisplayDeviceFactory* factory) = 0;
+	virtual void addVRTimer(VRTimer* timer) = 0;
 
 	std::string getName() { return "VRPluginInterface"; }
 	const std::type_info& getType() { return typeid(VRPluginInterface); }
