@@ -11,6 +11,7 @@ class VRDisplayDevice {
 public:
 	virtual ~VRDisplayDevice() {}
 
+	virtual bool isOpen() = 0;
 	virtual void use() = 0;
 	virtual void release() = 0;
 	virtual void startRendering() = 0;
