@@ -18,6 +18,52 @@ public:
 	virtual void render() const = 0;
 };
 
+class VRRendererFunctor : public VRRenderer {
+public:
+	typedef void (*MethodType)();
+
+	VRRendererFunctor(MethodType method) : method(method) {}
+	virtual ~VRRendererFunctor() {}
+
+	void render() const;
+
+private:
+	MethodType method;
+};
+
+template<class T>
+class SpecificVRRenderer : public VRRenderer {
+public:
+	typedef void (T::*MethodType)() const;
+
+	SpecificVRRenderer(T *obj, MethodType method);
+	virtual ~SpecificVRRenderer() {}
+
+	void render() const;
+
+private:
+	T *obj;
+	MethodType method;
+};
+
+//---------------------------------
+
+inline void VRRendererFunctor::render() const
+{
+	(*method)();
+}
+
+template<class T>
+SpecificVRRenderer<T>::SpecificVRRenderer(T *obj, MethodType method) : obj(obj), method(method)
+{
+}
+
+template<class T>
+void SpecificVRRenderer<T>::render() const
+{
+	(obj->*method)();
+}
+
 } /* namespace MinVR */
 
 #endif /* VRRENDERER_H_ */

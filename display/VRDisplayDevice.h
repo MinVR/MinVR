@@ -18,6 +18,17 @@ public:
 	void startRendering(const MinVR::VRRenderer& renderer) { startRendering(renderer, 0); }
 	virtual void finishRendering() = 0;
 
+	template<class T>
+	void startRendering(T *obj, void (T::*method)() const)
+	{
+		startRendering(MinVR::SpecificVRRenderer<T>(obj, method));
+	}
+
+	void startRendering(void (*method)())
+	{
+		startRendering(MinVR::VRRendererFunctor(method));
+	}
+
 protected:
 	virtual void startRendering(const MinVR::VRRenderer& renderer, int x) = 0;
 	void startRendering(VRDisplayDevice* &display, const MinVR::VRRenderer& renderer, int x)
