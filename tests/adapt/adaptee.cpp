@@ -1,5 +1,6 @@
 /*
- * OGL01Shape3D.cpp: 3D Shapes
+ * A simple GLUT program we can use as an example of how to adapt 3D graphics
+ * code to VR using MinVR2.
  */
 #include <iostream>
 #include <GL/glut.h>  // GLUT, include glu.h and gl.h
