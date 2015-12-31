@@ -2,6 +2,7 @@
 #define DISPLAYDEVICE_H
 
 #include "config/VRDataIndex.h"
+#include "display/VRRenderer.h"
 #include <vector>
 
 /** DisplayDevice:
@@ -14,7 +15,7 @@ public:
 	virtual bool isOpen() = 0;
 	virtual void use() = 0;
 	virtual void release() = 0;
-	virtual void startRendering() = 0;
+	virtual void startRendering(const MinVR::VRRenderer& renderer) = 0;
 	virtual void finishRendering() = 0;
 };
 
@@ -22,7 +23,7 @@ class VRDisplayDeviceFactory {
 public:
 	virtual ~VRDisplayDeviceFactory() {}
 
-	virtual std::vector<VRDisplayDevice*> create(const VRDataIndex& config) = 0;
+	virtual std::vector<VRDisplayDevice*> create(const VRDataIndex& config, const std::string nameSpace, VRDisplayDeviceFactory* factory) = 0;
 };
 
 
