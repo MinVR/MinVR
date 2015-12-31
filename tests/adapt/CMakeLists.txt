@@ -33,4 +33,10 @@ add_executable (adaptee
 
 target_link_libraries (adaptee ${ALL_LIBS})
 
+add_executable (adapted
+  adapted.cpp
+  )
+
+target_link_libraries (adapted ${ALL_LIBS})
+
 
