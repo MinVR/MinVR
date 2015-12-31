@@ -15,8 +15,15 @@ public:
 	virtual bool isOpen() = 0;
 	virtual void use() = 0;
 	virtual void release() = 0;
-	virtual void startRendering(const MinVR::VRRenderer& renderer) = 0;
+	void startRendering(const MinVR::VRRenderer& renderer) { startRendering(renderer, 0); }
 	virtual void finishRendering() = 0;
+
+protected:
+	virtual void startRendering(const MinVR::VRRenderer& renderer, int x) = 0;
+	void startRendering(VRDisplayDevice* &display, const MinVR::VRRenderer& renderer, int x)
+	{
+		display->startRendering(renderer, x);
+	}
 };
 
 class VRDisplayDeviceFactory {
