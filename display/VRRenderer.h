@@ -6,40 +6,40 @@
  * 		Dan Orban (dtorban)
  */
 
-#ifndef VRRENDERER_H_
-#define VRRENDERER_H_
+#ifndef VRDISPLAYACTION_H_
+#define VRDISPLAYACTION_H_
 
 namespace MinVR {
 
-class VRRenderer {
+class VRDisplayAction {
 public:
-	virtual ~VRRenderer() {}
+	virtual ~VRDisplayAction() {}
 
-	virtual void render() const = 0;
+	virtual void exec() const = 0;
 };
 
-class VRRendererFunctor : public VRRenderer {
+class VRDisplayActionFunctor : public VRDisplayAction {
 public:
 	typedef void (*MethodType)();
 
-	VRRendererFunctor(MethodType method) : method(method) {}
-	virtual ~VRRendererFunctor() {}
+	VRDisplayActionFunctor(MethodType method) : method(method) {}
+	virtual ~VRDisplayActionFunctor() {}
 
-	void render() const;
+	void exec() const;
 
 private:
 	MethodType method;
 };
 
 template<class T>
-class SpecificVRRenderer : public VRRenderer {
+class SpecificVRDisplayAction : public VRDisplayAction {
 public:
 	typedef void (T::*MethodType)() const;
 
-	SpecificVRRenderer(T *obj, MethodType method);
-	virtual ~SpecificVRRenderer() {}
+	SpecificVRDisplayAction(T *obj, MethodType method);
+	virtual ~SpecificVRDisplayAction() {}
 
-	void render() const;
+	void exec() const;
 
 private:
 	T *obj;
@@ -48,22 +48,22 @@ private:
 
 //---------------------------------
 
-inline void VRRendererFunctor::render() const
+inline void VRDisplayActionFunctor::exec() const
 {
 	(*method)();
 }
 
 template<class T>
-SpecificVRRenderer<T>::SpecificVRRenderer(T *obj, MethodType method) : obj(obj), method(method)
+SpecificVRDisplayAction<T>::SpecificVRDisplayAction(T *obj, MethodType method) : obj(obj), method(method)
 {
 }
 
 template<class T>
-void SpecificVRRenderer<T>::render() const
+void SpecificVRDisplayAction<T>::exec() const
 {
 	(obj->*method)();
 }
 
 } /* namespace MinVR */
 
-#endif /* VRRENDERER_H_ */
+#endif /* VRDISPLAYACTION_H_ */
