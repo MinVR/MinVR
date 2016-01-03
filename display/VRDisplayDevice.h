@@ -57,12 +57,33 @@ public:
 		startRendering(MinVR::VRRendererFunctor(method));
 	}
 
+	VRDisplayDevice* getParent() const {
+		return parent;
+	}
+
+	void setParent(VRDisplayDevice* parent) {
+		this->parent = parent;
+	}
+
+	const std::vector<VRDisplayDevice*>& getSubDisplays() const {
+		return subDisplays;
+	}
+
+	void addSubDisplay(VRDisplayDevice* display)
+	{
+		subDisplays.push_back(display);
+	}
+
 protected:
 	virtual void startRendering(const MinVR::VRRenderer& renderer, int x) = 0;
 	void startRendering(VRDisplayDevice* &display, const MinVR::VRRenderer& renderer, int x)
 	{
 		display->startRendering(renderer, x);
 	}
+
+private:
+	VRDisplayDevice* parent;
+	std::vector<VRDisplayDevice*> subDisplays;
 };
 
 class VRDisplayDeviceFactory {
@@ -100,6 +121,13 @@ public:
 					{
 						newDisplays.push_back(display);
 						displays.push_back(display);
+
+						std::vector<VRDisplayDevice*> subDisplays = factory->create(config, *f, factory);
+						for (int f = 0; f < subDisplays.size(); f++)
+						{
+							subDisplays[f]->setParent(display);
+							display->addSubDisplay(subDisplays[f]);
+						}
 					}
 				}
 			}
