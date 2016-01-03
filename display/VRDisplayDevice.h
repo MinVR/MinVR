@@ -72,5 +72,46 @@ public:
 	virtual std::vector<VRDisplayDevice*> create(VRDataIndex& config, const std::string nameSpace, VRDisplayDeviceFactory* factory) = 0;
 };
 
+class SimpleVRDisplayFactory : public VRDisplayDeviceFactory {
+public:
+	virtual ~SimpleVRDisplayFactory() {
+		for (int f = 0; f < displays.size(); f++)
+		{
+			delete displays[f];
+		}
+	}
+
+	std::vector<VRDisplayDevice*> create(VRDataIndex& config, const std::string nameSpace, VRDisplayDeviceFactory* factory)
+	{
+		std::vector<VRDisplayDevice*> newDisplays;
+
+		VRContainer item = config.getValue(nameSpace);
+
+		for (VRContainer::iterator f = item.begin(); f != item.end(); f++)
+		{
+			if (config.getType(*f) == VRCORETYPE_CONTAINER) {
+
+				VRContainer item = config.getValue(*f);
+				if (config.exists("displayType", *f))
+				{
+					std::string displayType = config.getValue("displayType", *f);
+					VRDisplayDevice* display = createDisplay(displayType, *f, config, factory);
+					if (display != NULL)
+					{
+						newDisplays.push_back(display);
+						displays.push_back(display);
+					}
+				}
+			}
+		}
+
+		return newDisplays;
+	}
+
+	virtual VRDisplayDevice* createDisplay(const std::string type, const std::string name, VRDataIndex& config, VRDisplayDeviceFactory* factory) = 0;
+
+protected:
+	std::vector<VRDisplayDevice*> displays;
+};
 
 #endif

@@ -266,6 +266,11 @@ public:
     return getDatum(valName, nameSpace)->getValue();
   }
 
+  bool exists(const std::string valName, const std::string nameSpace)
+  {
+	  return getEntry(valName, nameSpace) != mindex.end();
+  }
+
   VRCORETYPE_ID getType(const std::string valName) {
     return getDatum(valName)->getType();
   }
