@@ -11,7 +11,15 @@
  */
 class VRDisplayDevice {
 public:
+	VRDisplayDevice() : parent(NULL) {}
 	virtual ~VRDisplayDevice() {}
+
+	virtual int getDisplayXOffset() { return parent != NULL ? parent->getDisplayXOffset() : 0; }
+	virtual int getDisplayYOffset() { return parent != NULL ? parent->getDisplayYOffset() : 0; }
+	virtual int getXOffset() { return parent != NULL ? parent->getXOffset() : 0; }
+	virtual int getYOffset() { return parent != NULL ? parent->getYOffset() : 0; }
+	virtual int getWidth() { return parent != NULL ? parent->getWidth() : 0; }
+	virtual int getHeight() { return parent != NULL ? parent->getHeight() : 0; }
 
 	virtual bool isOpen() = 0;
 	virtual void use(const MinVR::VRDisplayAction& action) = 0;
@@ -76,9 +84,33 @@ public:
 
 protected:
 	virtual void startRendering(const MinVR::VRRenderer& renderer, int x) = 0;
+
 	void startRendering(VRDisplayDevice* &display, const MinVR::VRRenderer& renderer, int x)
 	{
 		display->startRendering(renderer, x);
+	}
+
+	void startRenderingAllDisplays(const MinVR::VRRenderer& renderer, int x)
+	{
+		if (subDisplays.size() > 0)
+		{
+			for (int f = 0; f < subDisplays.size(); f++)
+			{
+				subDisplays[f]->startRendering(renderer, x);
+			}
+		}
+		else
+		{
+			renderer.render();
+		}
+	}
+
+	void finishRenderingAllDisplays()
+	{
+		for (int f = 0; f < subDisplays.size(); f++)
+		{
+			subDisplays[f]->finishRendering();
+		}
 	}
 
 private:
