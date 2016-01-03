@@ -21,7 +21,7 @@ public:
 	virtual int getWidth() { return parent != NULL ? parent->getWidth() : 0; }
 	virtual int getHeight() { return parent != NULL ? parent->getHeight() : 0; }
 
-	virtual bool isOpen() = 0;
+	virtual bool isOpen() { return parent != NULL ? parent->isOpen() : true; }
 	virtual void use(const MinVR::VRDisplayAction& action) = 0;
 	void startRendering(const MinVR::VRRenderer& renderer) { startRendering(renderer, 0); }
 	virtual void finishRendering() = 0;
