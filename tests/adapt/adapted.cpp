@@ -1,9 +1,12 @@
 /*
- * OGL01Shape3D.cpp: 3D Shapes
+ * A simple GLUT program we can use as an example of how to adapt 3D graphics
+ * code to VR using MinVR2.
  */
 #include <iostream>
 #include <GL/glut.h>  // GLUT, include glu.h and gl.h
 #include <math.h>
+
+#include <main/VRMain.h>
 
 /* Global variables */
 char title[] = "3D Shapes";
@@ -278,6 +281,27 @@ void processSpecialKeys(int key, int xx, int yy) {
   glutPostRedisplay();
 }
 
+void eventCB(const std::string eventName, VRDataIndex *dataIndex) {
+
+  // Step 3: What do we have here?
+  std::cout << std::endl << "examining the data..." << std::endl;
+  std::cout << "The object named " << eventName << " is a " <<
+    dataIndex->getTypeString(eventName) << "." << std::endl;
+  if (dataIndex->getType(eventName) == VRCORETYPE_CONTAINER) {
+    VRContainer lp = dataIndex->getValue(eventName);
+
+    std::cout << "... it contains these" << std::endl;
+
+    for (VRContainer::iterator it = lp.begin(); it != lp.end(); it++) {
+      std::cout << "  " << *it << " (" << dataIndex->getTypeString(*it) << ")" << std::endl;
+    }
+  }
+    
+  // Print out the entire index.
+  std::cout << "Index Structure" << std::endl;
+  dataIndex->printStructure();
+}
+
 /* Main function: GLUT runs as a console application starting at main() */
 int main(int argc, char** argv) {
    glutInit(&argc, argv);            // Initialize GLUT
@@ -297,6 +321,11 @@ int main(int argc, char** argv) {
    // Register callback handler for window re-size event
    glutReshapeFunc(reshape);
    initGL();                       // Our own OpenGL initialization
+
+   if (argc > 1) {
+     VRMain::instance()->initialize(argv[1]);
+   }
+     
    glutMainLoop();                 // Enter the infinite event-processing loop
    return 0;
 }

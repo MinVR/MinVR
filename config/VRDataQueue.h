@@ -35,6 +35,8 @@ public:
   VRDataQueue() {};
   VRDataQueue(const serialData serializedQueue);
 
+  static const serialData noData;
+  
   void addSerializedQueue(const serialData serializedQueue);
   
   bool notEmpty() { return (bool)dataMap.size(); }

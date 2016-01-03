@@ -1,5 +1,8 @@
 #include "VRDataQueue.h"
 
+// Use this when the client has no new data to offer.
+const VRDataQueue::serialData VRDataQueue::noData = "";
+
 VRDataQueue::VRDataQueue(const VRDataQueue::serialData serializedQueue) {
 
   addSerializedQueue(serializedQueue);

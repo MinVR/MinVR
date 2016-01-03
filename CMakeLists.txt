@@ -114,6 +114,7 @@ add_subdirectory (config)
 #add_subdirectory (event)
 add_subdirectory (math)
 add_subdirectory (net)
+add_subdirectory (main)
 #add_subdirectory (plugin)
 #add_subdirectory (apps)
 

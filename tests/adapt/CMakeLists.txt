@@ -37,6 +37,6 @@ add_executable (adapted
   adapted.cpp
   )
 
-target_link_libraries (adapted ${ALL_LIBS})
+target_link_libraries (adapted VRMain VRIndex VRMath VRNet ${ALL_LIBS})
 
 
