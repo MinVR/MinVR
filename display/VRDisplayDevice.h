@@ -160,6 +160,8 @@ public:
 							subDisplays[f]->setParent(display);
 							display->addSubDisplay(subDisplays[f]);
 						}
+
+						initializeDisplay(display);
 					}
 				}
 			}
@@ -169,7 +171,7 @@ public:
 	}
 
 	virtual VRDisplayDevice* createDisplay(const std::string type, const std::string name, VRDataIndex& config, VRDisplayDeviceFactory* factory) = 0;
-
+	virtual void initializeDisplay(VRDisplayDevice* display) {}
 protected:
 	std::vector<VRDisplayDevice*> displays;
 };
