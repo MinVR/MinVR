@@ -20,8 +20,28 @@ public:
 	virtual int getYOffset() { return parent != NULL ? parent->getYOffset() : 0; }
 	virtual int getWidth() { return parent != NULL ? parent->getWidth() : 0; }
 	virtual int getHeight() { return parent != NULL ? parent->getHeight() : 0; }
-
 	virtual bool isOpen() { return parent != NULL ? parent->isOpen() : true; }
+
+	virtual bool isQuadbuffered()
+	{
+		for (int f = 0; f < subDisplays.size(); f++)
+		{
+			if (subDisplays[f]->isQuadbuffered())
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	virtual void initialize()
+	{
+		for (int f = 0; f < subDisplays.size(); f++)
+		{
+			subDisplays[f]->initialize();
+		}
+	}
 	virtual void use(const MinVR::VRDisplayAction& action) = 0;
 	void startRendering(const MinVR::VRRenderer& renderer) { startRendering(renderer, 0); }
 	virtual void finishRendering() = 0;
@@ -160,8 +180,6 @@ public:
 							subDisplays[f]->setParent(display);
 							display->addSubDisplay(subDisplays[f]);
 						}
-
-						initializeDisplay(display);
 					}
 				}
 			}
@@ -171,7 +189,6 @@ public:
 	}
 
 	virtual VRDisplayDevice* createDisplay(const std::string type, const std::string name, VRDataIndex& config, VRDisplayDeviceFactory* factory) = 0;
-	virtual void initializeDisplay(VRDisplayDevice* display) {}
 protected:
 	std::vector<VRDisplayDevice*> displays;
 };
