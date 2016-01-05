@@ -1,5 +1,13 @@
 #include "VRDataQueue.h"
 
+#ifdef WIN32
+	#include <windows.h>  
+	#include <ctime>  
+#else
+	#include <sys/time.h>
+#endif
+
+
 VRDataQueue::VRDataQueue(const VRDataQueue::serialData serializedQueue) {
 
   addSerializedQueue(serializedQueue);
@@ -50,9 +58,17 @@ void VRDataQueue::pop() {
 
 void VRDataQueue::push(const VRDataQueue::serialData serializedData) {
 
-  // I doubt very much that this has any claim to platform-
-  // independence.  It will have to be rewritten to work in a
-  // heterogeneous environment.
+#ifdef WIN32
+	LARGE_INTEGER frequency;        // ticks per second
+	LARGE_INTEGER t1;
+	QueryPerformanceFrequency(&frequency);
+
+	// start timer
+	QueryPerformanceCounter(&t1);
+
+	long long timeStamp = (t1.QuadPart) * 1000.0 / frequency.QuadPart + clock();;
+#else
+
   struct timeval tp;
   gettimeofday(&tp, NULL);
   
@@ -62,6 +78,7 @@ void VRDataQueue::push(const VRDataQueue::serialData serializedData) {
   // with a low-precision clock.
   long long timeStamp = (long long) tp.tv_sec * 1000L +
     tp.tv_usec / 1000 + clock();
+#endif
 
   //std::cout << "ts: " << timeStamp << std::endl;
   dataMap.insert(std::pair<long long,VRDataQueue::serialData>(timeStamp, serializedData));
