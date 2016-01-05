@@ -42,7 +42,7 @@ public:
 			subDisplays[f]->initialize();
 		}
 	}
-	virtual void use(const MinVR::VRDisplayAction& action) = 0;
+	virtual void use(const MinVR::VRDisplayAction& action) { useDisplay(action); }
 	void startRendering(const MinVR::VRRenderer& renderer) { startRendering(renderer, 0); }
 	virtual void finishRendering() = 0;
 
@@ -102,13 +102,15 @@ public:
 		subDisplays.push_back(display);
 	}
 
-protected:
-	virtual void startRendering(const MinVR::VRRenderer& renderer, int x) = 0;
-
-	void startRendering(VRDisplayDevice* &display, const MinVR::VRRenderer& renderer, int x)
+	static void startRendering(VRDisplayDevice* &display, const MinVR::VRRenderer& renderer, int x)
 	{
 		display->startRendering(renderer, x);
 	}
+
+protected:
+	virtual void startRendering(const MinVR::VRRenderer& renderer, int x) = 0;
+
+	virtual void useDisplay(const MinVR::VRDisplayAction& action) { useAllDisplays(action); }
 
 	void startRenderingAllDisplays(const MinVR::VRRenderer& renderer, int x)
 	{
@@ -122,6 +124,21 @@ protected:
 		else
 		{
 			renderer.render();
+		}
+	}
+
+	void useAllDisplays(const MinVR::VRDisplayAction& action)
+	{
+		if (subDisplays.size() > 0)
+		{
+			for (int f = 0; f < subDisplays.size(); f++)
+			{
+				subDisplays[f]->use(action);
+			}
+		}
+		else
+		{
+			action.exec();
 		}
 	}
 

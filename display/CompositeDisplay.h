@@ -51,14 +51,6 @@ public:
 
 	virtual ~CompositeDisplay() {}
 
-	virtual void use(const MinVR::VRDisplayAction& action)
-	{
-		for (int f = 0; f < getSubDisplays().size(); f++)
-		{
-			getSubDisplays()[f]->use(action);
-		}
-	}
-
 	void finishRendering()
 	{
 		finishRenderingAllDisplays();
