@@ -11,7 +11,7 @@
  */
 class VRDisplayDevice {
 public:
-	VRDisplayDevice() : parent(NULL) {}
+	VRDisplayDevice() : parent(NULL), _allowThreading(false) {}
 	virtual ~VRDisplayDevice() {}
 
 	virtual int getDisplayXOffset() { return parent != NULL ? parent->getDisplayXOffset() : 0; }
@@ -21,6 +21,8 @@ public:
 	virtual int getWidth() { return parent != NULL ? parent->getWidth() : 0; }
 	virtual int getHeight() { return parent != NULL ? parent->getHeight() : 0; }
 	virtual bool isOpen() { return parent != NULL ? parent->isOpen() : true; }
+	virtual bool allowThreading() { return _allowThreading; }
+	virtual void setAllowThreading(bool allowed) { this->_allowThreading = allowed; }
 
 	virtual bool isQuadbuffered()
 	{
@@ -153,6 +155,7 @@ protected:
 private:
 	VRDisplayDevice* parent;
 	std::vector<VRDisplayDevice*> subDisplays;
+	bool _allowThreading;
 };
 
 class VRDisplayDeviceFactory {
