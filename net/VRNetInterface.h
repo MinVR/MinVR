@@ -1,8 +1,9 @@
 #ifndef VRNETINTERFACE_H
 #define VRNETINTERFACE_H
 
+#include <config/VRDataQueue.h>
+
 #include <vector>
-#include <config/VRDataIndex.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -16,7 +17,6 @@
   #pragma comment (lib, "Ws2_32.lib")
   #pragma comment (lib, "Mswsock.lib")
   #pragma comment (lib, "AdvApi32.lib")
-
 #else
   #define SOCKET int
   #include "stdint.h"
