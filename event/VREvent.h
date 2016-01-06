@@ -6,19 +6,20 @@
 #include <string>
 #include <config/VRDataIndex.h>
 
-
 /** VREvent
  */
 class VREvent {
 public:
 
   VREvent(const std::string &eventName, const VRDataIndex &dataIndex);
-  /// Creates an empty event
+
+  VREvent(const std::string &serialized_string);
+
   VREvent();
 
   virtual ~VREvent();
 
-  /// Returns the name of the VREvent, not be to confused with the
+  /// Returns the name of the VREvent, not be to confused with the;
   /// name(s) of specific VRDatum objects stored inside _dataIndex.
   /// For example, an event named "Mouse_Move" can have an element
   /// named "Postion" and another named "Velocity", etc.  This method
@@ -32,11 +33,6 @@ public:
 
   /// Serialize the event in an XML format
   std::string toXML();
-
-  /// A static constructor that creates a new VREvent from XML format data
-  static VREvent fromXML(const std::string &xml);
-  /// A static constructor that creates a new VREvent from XML format data
-  static VREvent fromXML(const std::string &xml, std::string &leftoverInput);
   
 protected:
   std::string _name;

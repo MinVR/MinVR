@@ -5,6 +5,11 @@ project (VREvent)
 set (${PROJECT_NAME}_source_files 
 	VREvent.cpp
 	VREvent.h
+	VREventQueue.h
+	VREventQueue.cpp
+	VREventFactory.h
+	VREventFactory.cpp
+
 )
 
 add_library (${PROJECT_NAME} ${${PROJECT_NAME}_source_files})
