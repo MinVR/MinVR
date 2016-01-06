@@ -41,9 +41,8 @@ int main(int argc, char**argv) {
 
   dataIndex->printStructure();
   
-  // VRNetServer server((VRString)dataIndex->getValue("/config/net/serverPort"),
-  //                    (VRInt)dataIndex->getValue("/config/net/numClients"));
-  VRNetServer server("3490",1);
+  VRNetServer server((VRString)dataIndex->getValue("/config/net/serverPort"),
+                     (VRInt)dataIndex->getValue("/config/net/numClients"));
 
   VRDataQueue *queue = new VRDataQueue;
 
@@ -65,9 +64,9 @@ int main(int argc, char**argv) {
       
     server.syncEventDataAcrossAllNodes(queue->serialize());
     #ifdef WIN32
-	  Sleep(2000);
+	  Sleep(20);
     #else
-	  sleep(2);
+	  usleep(200);
     #endif
     server.syncSwapBuffersAcrossAllNodes();
     i++;
