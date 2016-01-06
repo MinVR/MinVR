@@ -38,8 +38,9 @@ void initGL() {
 
 /* Handler for window-repaint event. Called back when the window first
    appears and whenever the window needs to be re-painted. */
-void display() {
-  // Clear color and depth buffers
+void renderCB(VRDataIndex* index) {
+  
+   // Clear color and depth buffers
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
    // Enable depth testing for z-culling
    glEnable(GL_DEPTH_TEST);
@@ -50,6 +51,9 @@ void display() {
  
    // Render a color-cube consisting of 6 quads with different colors
    glLoadIdentity();                 // Reset the model-view matrix
+
+   horizAngle = index->getValue("/HeadAngle/horizAngle");
+   vertAngle = index->getValue("/HeadAngle/vertAngle");
 
    cameraPos[0] = radius * cos(horizAngle) * cos(vertAngle);
    cameraPos[1] = -radius * sin(vertAngle);
@@ -212,11 +216,15 @@ void display() {
       glColor3f(0.0f,1.0f,0.0f);       // Green
       glVertex3f(-1.0f,-1.0f, 1.0f);
    glEnd();   // Done drawing the pyramid
+}
 
+
+void swapCB() {
   
    // Swap the front and back frame buffers (double buffering)
    glutSwapBuffers();
 }
+
 
 /* Handler for window re-size event. Called back when the window first
    appears and whenever the window is re-sized with its new width and
@@ -281,7 +289,7 @@ void processSpecialKeys(int key, int xx, int yy) {
   glutPostRedisplay();
 }
 
-void eventCB(const std::string eventName, VRDataIndex *dataIndex) {
+void eventCB(const std::string &eventName, VRDataIndex *dataIndex) {
 
   // Step 3: What do we have here?
   std::cout << std::endl << "examining the data..." << std::endl;
@@ -302,6 +310,12 @@ void eventCB(const std::string eventName, VRDataIndex *dataIndex) {
   dataIndex->printStructure();
 }
 
+void mvrDisplay() {
+  VRMain::instance()->synchronizeAndProcessEvents();
+  VRMain::instance()->renderEverywhere();
+  glutPostRedisplay();
+}
+
 /* Main function: GLUT runs as a console application starting at main() */
 int main(int argc, char** argv) {
    glutInit(&argc, argv);            // Initialize GLUT
@@ -317,7 +331,7 @@ int main(int argc, char** argv) {
 
    
    // Register callback handler for window re-paint event
-   glutDisplayFunc(display);
+   glutDisplayFunc(mvrDisplay);
    // Register callback handler for window re-size event
    glutReshapeFunc(reshape);
    initGL();                       // Our own OpenGL initialization
@@ -325,7 +339,11 @@ int main(int argc, char** argv) {
    if (argc > 1) {
      VRMain::instance()->initialize(argv[1]);
    }
-     
+   VRMain::instance()->registerEventCallback(&eventCB);
+   VRMain::instance()->registerRenderCallback(&renderCB);
+   VRMain::instance()->registerSwapCallback(&swapCB);
+   
    glutMainLoop();                 // Enter the infinite event-processing loop
+
    return 0;
 }

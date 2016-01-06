@@ -2,7 +2,7 @@
 #define VRMAIN_H
 
 #include "config/VRDataIndex.h"
-#include "net/VRNetInterface.h"
+#include "net/VRNetClient.h"
 
 
 /** Application programmers should use this singleton class as the
@@ -11,6 +11,17 @@
 class VRMain {
 public:
 
+  void registerEventCallback(void (*eventCB)
+                                   (const std::string &,
+                                    VRDataIndex *))
+  { _eventCB = eventCB; };
+  
+  void registerRenderCallback(void (*renderCB)(VRDataIndex *))
+  { _renderCB = renderCB; };
+
+  void registerSwapCallback(void (*swapCB)()) { _swapCB = swapCB; };
+                            
+  
   // VRMain is a singleton class -- each program should contain exactly
   // one instance of VRMain.  Access the current instance using the
   // instance() function, which will create a new instance the first
@@ -37,16 +48,14 @@ public:
   // processes them to update its own state (e.g., for headtracking).
   // Finally, MinVR calls your event callback function so that your
   // program can also respond to input events.
-  void synchronizeAndProcessEvents(void (*eventCB)
-                                   (const std::string &,
-                                    VRDataIndex *));
+  void synchronizeAndProcessEvents();
 
 
   // 3. Tell MinVR to apply the appropriate projection matrices,
   // shaders, etc. for each DisplayDevice setup during initilization
   // and then call your draw function to actually render the scene via
   // OpenGL or whatever graphics engine you are using.
-  virtual void renderOnAllDisplayDevices(void (*renderCB)(VRDataIndex *));
+  virtual void renderEverywhere();
 
   // END LOOP
 
@@ -62,11 +71,17 @@ private:
   VRMain();
   static VRMain *_instance;
 
-  VRNetInterface   *_vrNet;
+  bool initialized;
+
+  VRNetClient   *_vrNet;
   //std::vector<VRInputDevice*> _inputDevices;
   //std::vector<VRDisplayDevice*> _displayDevices;
 
   VRDataIndex *_index;
+
+  void (*_eventCB)(const std::string &, VRDataIndex *);
+  void (*_renderCB)(VRDataIndex *);
+  void (*_swapCB)();
 };
 
 #endif

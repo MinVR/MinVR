@@ -3,7 +3,7 @@
 VRMain* VRMain::_instance = NULL;
 
 
-VRMain::VRMain() : _vrNet(NULL)
+VRMain::VRMain() : initialized(false),_vrNet(NULL)
 {
 }
 
@@ -47,14 +47,20 @@ VRMain::initialize(const std::string settingsFile)
   //_displayManager = new DisplayManager(displayDevices);
 
   // Set Network Synchronization mode based on settings
+  _vrNet = new VRNetClient((VRString)_index->getValue("/config/net/serverHost"),
+                           (VRString)_index->getValue("/config/net/serverPort"));
 
+  initialized = true;
 }
 
 void 
-VRMain::synchronizeAndProcessEvents(void (*eventCB)
-                                   (const std::string &,
-                                    VRDataIndex *)) {
+VRMain::synchronizeAndProcessEvents() {
 
+  if (!initialized) {
+    std::cerr << "VRMain not initialized." << std::endl;
+    return;
+  }
+  
   VRDataQueue::serialData eventData;
   // std::vector<VREvent> inputEvents;
   // for (std::vector<InputDevice*>::iterator id = _inputDevices.begin();
@@ -71,6 +77,8 @@ VRMain::synchronizeAndProcessEvents(void (*eventCB)
     eventData = _vrNet->syncEventDataAcrossAllNodes(VRDataQueue::noData);
   }
 
+  std::cout << "eventData: " << eventData << std::endl;
+  
   VRDataQueue *events = new VRDataQueue(eventData);
 
   //  ATTENTION: The user callback should use just ONE event, not a
@@ -105,7 +113,7 @@ VRMain::synchronizeAndProcessEvents(void (*eventCB)
     //  }
 
     // 2.5 Invoke the user's callback on the new event
-    (*eventCB)(event, _index);
+    (*_eventCB)(event, _index);
 
     // Get the next item from the queue.
     events->pop();
@@ -114,9 +122,12 @@ VRMain::synchronizeAndProcessEvents(void (*eventCB)
 }
 
 void 
-VRMain::renderOnAllDisplayDevices(void (*renderCallbackFunction)(VRDataIndex *))
-{
+VRMain::renderEverywhere() {
 
+  if (!initialized) {
+    std::cerr << "VRMain not initialized." << std::endl;
+    return;
+  }
   // for (std::vector<DisplayDevice*>::iterator dd = _displayDevices.begin();
   //      dd != _displayDevices.end(); dd++) {
   //   // Stereo displays will have two passes, one per eye; some
@@ -129,7 +140,7 @@ VRMain::renderOnAllDisplayDevices(void (*renderCallbackFunction)(VRDataIndex *))
 
   //     // The application programmer fills in the
   //     // renderCallbackFunction to draw his/her scene
-  //     (*renderCallbackFunction)(curState);
+  (*_renderCB)(_index);
 
   //     (*dd)->endRenderingPass(pass, curState);
       
@@ -144,10 +155,7 @@ VRMain::renderOnAllDisplayDevices(void (*renderCallbackFunction)(VRDataIndex *))
     _vrNet->syncSwapBuffersAcrossAllNodes();
   }
 
-  // for (std::vector<DisplayDevice*>::iterator dd = _displayDevices.begin();
-  //      dd != _displayDevices.end(); dd++) {
-  //   (*dd)->swapBuffers();
-  // }
+  (*_swapCB)();
 }
 
 void 
