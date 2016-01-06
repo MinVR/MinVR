@@ -40,7 +40,7 @@ void VRNetInterface::sendEventData(SOCKET socketID,
 int VRNetInterface::sendall(SOCKET s, const unsigned char *buf, int len) {
   int total = 0;        // how many bytes we've sent
   int bytesleft = len;  // how many we have left to send
-  int n;    
+  int n = 0;    
   while (total < len) {
 #ifdef WIN32
 	  n = send(s, (char *)(buf + total), bytesleft, 0);
@@ -110,13 +110,15 @@ VRNetInterface::waitForAndReceiveEventData(SOCKET socketID) {
   }
   
   buf2[dataSize] = '\0';
-  return VRDataQueue::serialData(reinterpret_cast<const char *>(buf2));
+  std::string data(reinterpret_cast<const char*>(buf2));
+  delete buf2;
+  return data;
 }
 
 int VRNetInterface::receiveall(SOCKET s, unsigned char *buf, int len) {
   int total = 0;        // how many bytes we've received
   int bytesleft = len; // how many we have left to receive
-  int n;    
+  int n = 0;
   while (total < len) {
 #ifdef WIN32
 	  n = recv(s, (char *)(buf + total), bytesleft, 0);
