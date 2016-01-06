@@ -1,5 +1,7 @@
 #include "VRDataIndex.h"
 
+std::string VRDataIndex::rootNameSpace = "/";
+
 // Step 7 of the specialization instructions (in VRDatum.h) is to
 // add an entry here to register the new data type.
 VRDataIndex::VRDataIndex()  : overwrite(1) {

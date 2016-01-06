@@ -202,6 +202,8 @@ private:
 public:
   VRDataIndex();
 
+  static std::string rootNameSpace;
+  
   void setOverwrite(const int inVal) { overwrite = inVal; }
 
   // Tries to guess a data type from the ASCII representation.
