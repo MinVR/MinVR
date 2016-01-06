@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "config/VRDataIndex.h"
+#include "config/VRDataQueue.h"
 
 /** InputDevice:
     An as-simple-as-possible public interface for Input Devices

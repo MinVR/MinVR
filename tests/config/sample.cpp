@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <sstream>
 #include "config/VRDataIndex.h"
+#include "config/VRDataQueue.h"
 
 // This is just a test program meant to be a vague illustration of the
 // use of the VRDataIndex type system.  Also check out the exercz program.
