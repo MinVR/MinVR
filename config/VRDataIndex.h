@@ -380,6 +380,7 @@ public:
 
   // Mostly just for debug purposes.
   void printStructure();
+  void printStructure(const std::string itemName);
   // Prints a vaguely tree-ish representation of an XML parse.  Just
   // an aid to debugging, really.
   bool printXML(element* node, std::string prefix);
