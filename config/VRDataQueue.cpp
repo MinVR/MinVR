@@ -75,7 +75,7 @@ void VRDataQueue::push(const VRDataQueue::serialData serializedData) {
 	QueryPerformanceCounter(&t1);
 
 	long long timeStamp = (t1.QuadPart) * 1000.0 / frequency.QuadPart + clock();;
-#else
+#elseif OSX
 
   struct timeval tp;
   gettimeofday(&tp, NULL);
@@ -86,6 +86,15 @@ void VRDataQueue::push(const VRDataQueue::serialData serializedData) {
   // with a low-precision clock.
   long long timeStamp = (long long) tp.tv_sec * 1000L +
     tp.tv_usec / 1000 + clock();
+
+#else
+
+  struct timeval tp;
+  gettimeofday(&tp, NULL);
+  
+  // Get current timestamp in milliseconds.
+  long long timeStamp = (long long) tp.tv_sec * 1000000L + tp.tv_usec;
+
 #endif
 
   //std::cout << "ts: " << timeStamp << std::endl;

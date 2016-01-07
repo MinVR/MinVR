@@ -103,6 +103,15 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC") 
 endif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  # Apple-specific code
+  set(CMAKE_CXX_FLAGS "-DOSX")
+endif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+
+if (WIN32)
+  # Windows-specific
+endif (WIN32)
+
 # Recurse into the following subdirs to build the core MinVR set of libraries:
 # (Uncomment the lines below as we add .cpp files to those directories.)
 
