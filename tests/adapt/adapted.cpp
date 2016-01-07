@@ -52,16 +52,7 @@ void renderCB(VRDataIndex* index) {
    // Render a color-cube consisting of 6 quads with different colors
    glLoadIdentity();                 // Reset the model-view matrix
 
-   horizAngle = index->getValue("/HeadAngle/horizAngle");
-   vertAngle = index->getValue("/HeadAngle/vertAngle");
-
-   cameraPos[0] = radius * cos(horizAngle) * cos(vertAngle);
-   cameraPos[1] = -radius * sin(vertAngle);
-   cameraPos[2] = radius * sin(horizAngle) * cos(vertAngle);
-
-   cameraAim[0] = cos(horizAngle) * sin(vertAngle);
-   cameraAim[1] = cos(vertAngle);
-   cameraAim[2] = sin(horizAngle) * sin(vertAngle);
+   // The stuff that used to be here has moved to the event handler.
    
    gluLookAt (cameraPos[0], cameraPos[1], cameraPos[2],
               targetPos[0], targetPos[1], targetPos[2],
@@ -218,7 +209,9 @@ void renderCB(VRDataIndex* index) {
    glEnd();   // Done drawing the pyramid
 }
 
-
+// The tail end of the drawing function above has been chopped off and
+// put into this swap function so it can be called in sync with all
+// the other processes.
 void swapCB() {
   
    // Swap the front and back frame buffers (double buffering)
@@ -248,68 +241,66 @@ void reshape(GLsizei width, GLsizei height) {  // GLsizei for non-negative integ
    //glMultMatrix( GLKMatrix4MakePerspective(45.0f, aspect, 0.1f,100.0f ).m ); 
 }
 
-void processMouseEvent(int button, int state, int x, int y) {
+// The mouse and special key event stuff that was here is now gone.
 
-  if (state == GLUT_UP) {
-    if (button == GLUT_LEFT_BUTTON) {
-      radius += 5.0 * incAngle;
-    } else {
-      radius -= 5.0 * incAngle;
-    }
-    
-    glutPostRedisplay();
-  }
-}
-
-void processSpecialKeys(int key, int xx, int yy) {
-
-	float fraction = 0.1f;
-
-	switch (key) {
-		case GLUT_KEY_LEFT :
-			horizAngle -= incAngle;
-			break;
-		case GLUT_KEY_RIGHT :
-			horizAngle += incAngle;
-			break;
-		case GLUT_KEY_UP :
-      vertAngle -= incAngle;
-			break;
-		case GLUT_KEY_DOWN :
-      vertAngle += incAngle;
-			break;
-	}
-
-  if (horizAngle > 6.283185) horizAngle -= 6.283185;
-  if (horizAngle < 0.0) horizAngle += 6.283185;
-
-  if (vertAngle > 6.283185) vertAngle -= 6.283185;
-  if (vertAngle < 0.0) vertAngle += 6.283185;
-
-  glutPostRedisplay();
-}
-
+// This is the event handler.  Takes an event name and a pointer to
+// the dataIndex where you can find that event's data.
 void eventCB(const std::string &eventName, VRDataIndex *dataIndex) {
-
-  // Step 3: What do we have here?
+  
+  // The event can be examined here.
   std::cout << std::endl << "examining the data..." << std::endl;
-  std::cout << "The object named " << eventName << " is a " <<
-    dataIndex->getTypeString(eventName) << "." << std::endl;
-  if (dataIndex->getType(eventName) == VRCORETYPE_CONTAINER) {
-    VRContainer lp = dataIndex->getValue(eventName);
+  dataIndex->printStructure(eventName);
 
-    std::cout << "... it contains these" << std::endl;
+  // The event handler's actions are here.
+  if (eventName.compare("/HeadAngleEvent") == 0) {
 
-    for (VRContainer::iterator it = lp.begin(); it != lp.end(); it++) {
-      std::cout << "  " << *it << " (" << dataIndex->getTypeString(*it) << ")" << std::endl;
+    // If it's a head angle event, grab the two angles and calculate
+    // the eye position and direction.
+    horizAngle = dataIndex->getValue("/HeadAngleEvent/horizAngle");
+    vertAngle = dataIndex->getValue("/HeadAngleEvent/vertAngle");
+
+    cameraPos[0] = radius * cos(horizAngle) * cos(vertAngle);
+    cameraPos[1] = -radius * sin(vertAngle);
+    cameraPos[2] = radius * sin(horizAngle) * cos(vertAngle);
+
+    cameraAim[0] = cos(horizAngle) * sin(vertAngle);
+    cameraAim[1] = cos(vertAngle);
+    cameraAim[2] = sin(horizAngle) * sin(vertAngle);
+    
+  } else if (eventName.compare("/RadiusEvent") == 0) {
+
+    // This is a radius event.  Here's a condition for copying the event
+    // data, just to show we can do this.
+    if ((double)dataIndex->getValue("/RadiusEvent/radius") > 2.0) {   
+      dataIndex->addData("/MVR/VRDisplayDevices/radius",
+                         (double)dataIndex->getValue("/RadiusEvent/radius"));
     }
+
+    // Perhaps there should be a 
+    //    dataIndex->copyValue("/RadiusEvent/radius",
+    //                         "/MVR/VRDisplayDevices/radius");
+
+    // Notice that the radius itself is set here.  Asking for a
+    // variable using a namespace allows there to be a default value
+    // defined at a higher level.  So if the specific display
+    // overrides the default radius value, it will not be affected by
+    // the event.
+    radius = dataIndex->getValue("radius", "/MVR/VRDisplayDevices/" +
+                                 VRMain::instance()->getName() + "/");
+
+    std::cout << "radius: " << radius << std::endl;
+    
+    // The process name could be stored in the dataIndex instead of as
+    // a private class variable in VRMain.
+
   }
     
   // Print out the entire index.
-  std::cout << "Index Structure" << std::endl;
-  dataIndex->printStructure();
+  //  std::cout << "Index Structure" << std::endl;
+  //  dataIndex->printStructure();
 }
 
+// Here's the new display callback to feed to the glut mainloop.
 void mvrDisplay() {
   VRMain::instance()->synchronizeAndProcessEvents();
   VRMain::instance()->renderEverywhere();
@@ -325,9 +316,7 @@ int main(int argc, char** argv) {
    glutCreateWindow(title);          // Create window with the given title
 
 
-   // Register event callback for mouse events.
-   glutMouseFunc(processMouseEvent);
-   glutSpecialFunc(processSpecialKeys);
+   // No longer have to register event callbacks for mouse events.
 
    
    // Register callback handler for window re-paint event
@@ -337,7 +326,7 @@ int main(int argc, char** argv) {
    initGL();                       // Our own OpenGL initialization
 
    if (argc > 1) {
-     VRMain::instance()->initialize(argv[1]);
+     VRMain::instance()->initialize(argv[1],argv[2]);
    }
    VRMain::instance()->registerEventCallback(&eventCB);
    VRMain::instance()->registerRenderCallback(&renderCB);

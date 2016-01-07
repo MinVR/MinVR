@@ -11,6 +11,8 @@ VRMain::VRMain() : initialized(false),_vrNet(NULL)
 VRMain::~VRMain()
 {
   delete _instance;
+  delete _index;
+  delete _vrNet;
   _instance = NULL;
 }
 
@@ -26,8 +28,15 @@ VRMain::instance()
 
 
 void 
-VRMain::initialize(const std::string settingsFile) 
+VRMain::initialize(const std::string settingsFile)
 {
+  initialize("", settingsFile);
+}
+
+void
+VRMain::initialize(const std::string processName, const std::string settingsFile) 
+{
+  _name = processName;
   _index = new VRDataIndex();
   _index->processXMLFile(settingsFile, "/");
 
@@ -46,9 +55,12 @@ VRMain::initialize(const std::string settingsFile)
   // based on settings
   //_displayManager = new DisplayManager(displayDevices);
 
-  // Set Network Synchronization mode based on settings
-  _vrNet = new VRNetClient((VRString)_index->getValue("/config/net/serverHost"),
-                           (VRString)_index->getValue("/config/net/serverPort"));
+  // Set Network Synchronization mode based on settings.  Note that
+  // these names are hard-wired in place. This is meant to be not
+  // configurable, though doubtless these names will change during
+  // development.
+  _vrNet = new VRNetClient((VRString)_index->getValue("/MVR/Server/Host"),
+                           (VRString)_index->getValue("/MVR/Server/Port"));
 
   initialized = true;
 }
@@ -62,6 +74,7 @@ VRMain::synchronizeAndProcessEvents() {
   }
   
   VRDataQueue::serialData eventData;
+
   // std::vector<VREvent> inputEvents;
   // for (std::vector<InputDevice*>::iterator id = _inputDevices.begin();
   //     id != _inputDevices.end(); id++) {
@@ -77,20 +90,8 @@ VRMain::synchronizeAndProcessEvents() {
     eventData = _vrNet->syncEventDataAcrossAllNodes(VRDataQueue::noData);
   }
 
-  std::cout << "eventData: " << eventData << std::endl;
-  
   VRDataQueue *events = new VRDataQueue(eventData);
 
-  //  ATTENTION: The user callback should use just ONE event, not a
-  //  whole list of them.  It should be integrated into the MinVR
-  //  processing of events.  That is, the events should be dequeued
-  //  and processed, one at a time, and *once*.  Probably this means
-  //  that the above event handlers also must be rewritten to process
-  //  just one event at a time, and this function will contain the
-  //  unwrapping, dequeueing, and processing of events, with the
-  //  display callback and the user callback interleaved.
-
-  
   // After MinVR's internal state is updated above, now the events are
   // passed on to the application programmer's event callback
   // function.
@@ -119,6 +120,8 @@ VRMain::synchronizeAndProcessEvents() {
     events->pop();
 
   }
+
+  delete events;
 }
 
 void 
