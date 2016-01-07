@@ -23,6 +23,11 @@ add_subdirectory (plugins/OpenGL)
 
 add_subdirectory (plugins/Threading)
 
+#------------------GLFW-----------------------------
+
+add_subdirectory (plugins/GLFW)
+
+
 #------------------GLFW-------------------------------
 option(MINVR_GLFW "If enabled, GLFW plugin will be installed" OFF)
 if (MINVR_GLFW)

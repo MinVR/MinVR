@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<Server>
+  <Port type="string">3490</Port>
+  <NumClients type="int">1</NumClients>
+</Server>
+
+<VRPlugins>
+    <MinVRDefaultPlugins>
+        <Names type="stringarray">MinVR_glfw@MinVR_OpenGL@MinVR_Threading</Names>
+    </MinVRDefaultPlugins>
+</VRPlugins>
+
+<VRDisplayDevices>
+  <ThreadedDisplay>
+    <displayType type="string">thread_group</DisplayType>
+    <Display1>
+      <displayType type="string">glfw_display</DisplayType>
+      <xOffset type="int">600</xOffset>
+      <yOffset type="int">0</yOffset>
+      <width type="int">200</width>
+      <height type="int">200</height>
+    </Display1>
+    <Display2>
+      <stereoFormatter>
+	<displayType type="string">sideBySideStereo</DisplayType>
+      </stereoFormatter>
+      <displayType type="string">glfw_display</DisplayType>
+      <allowThreading type="int">1</allowThreading>
+      <xOffset type="int">600</xOffset>
+      <yOffset type="int">250</yOffset>
+      <width type="int">200</width>
+      <height type="int">200</height>
+    </Display2>
+    <Display3>
+      <stereoFormatter>
+	<displayType type="string">sideBySideStereo</DisplayType>
+      </stereoFormatter>
+      <displayType type="string">glfw_display</DisplayType>
+      <allowThreading type="int">1</allowThreading>
+      <xOffset type="int">600</xOffset>
+      <yOffset type="int">450</yOffset>
+      <width type="int">200</width>
+      <height type="int">200</height>
+    </Display3>
+  </ThreadedDisplay>
+  <MainDisplay>
+    <displayType type="string">glfw_display</DisplayType>
+    <xOffset type="int">800</xOffset>
+    <yOffset type="int">0</yOffset>
+    <width type="int">300</width>
+    <height type="int">600</height>
+  </MainDisplay>
+  <OtherDisplay>
+    <displayType type="string">glfw_display</DisplayType>
+    <xOffset type="int">0</xOffset>
+    <yOffset type="int">0</yOffset>
+    <width type="int">600</width>
+    <height type="int">600</height>
+    <stereoFormatter>
+       <!--displayType type="string">quadbufferStereo</DisplayType-->
+       <displayType type="string">sideBySideStereo</DisplayType>
+       <topViewport>
+          <displayType type="string">viewport</DisplayType>
+	  <xOffset type="int">0</xOffset>
+	  <yOffset type="int">300</yOffset>
+	  <width type="int">600</width>
+	  <height type="int">300</height>
+       </topViewport>
+       <bottomViewport>
+          <displayType type="string">viewport</DisplayType>
+	  <xOffset type="int">0</xOffset>
+	  <yOffset type="int">0</yOffset>
+	  <width type="int">600</width>
+	  <height type="int">300</height>
+       </bottomViewport>
+  </OtherDisplay>
+</VRDisplayDevices>
