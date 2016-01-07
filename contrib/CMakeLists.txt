@@ -19,6 +19,10 @@ include(ExternalProject)
 
 add_subdirectory (plugins/OpenGL)
 
+#------------------Threading-----------------------------
+
+add_subdirectory (plugins/Threading)
+
 #------------------GLFW-------------------------------
 option(MINVR_GLFW "If enabled, GLFW plugin will be installed" OFF)
 if (MINVR_GLFW)
