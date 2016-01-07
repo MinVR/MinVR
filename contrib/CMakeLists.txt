@@ -15,22 +15,36 @@ endif()
 
 include(ExternalProject)
 
+option(BASE_PLUGINS "If enabled, Base plugins will be installed" OFF)
+option(BASE_GRAPHICS_PLUGINS "If enabled, Base graphics plugins will be installed" OFF)
+
+if (BASE_PLUGINS)
+	set(BASE_GRAPHICS_PLUGINS ON)
+endif(BASE_PLUGINS)
+
 #------------------OpenGL-----------------------------
 
-add_subdirectory (plugins/OpenGL)
+option(MINVR_OPENGL_PLUGIN "If enabled, OpenGL plugin will be installed" OFF)
+if (MINVR_OPENGL_PLUGIN OR BASE_GRAPHICS_PLUGINS)
+	add_subdirectory (plugins/OpenGL)
+endif()
 
 #------------------Threading-----------------------------
 
-add_subdirectory (plugins/Threading)
+option(MINVR_THREADING_PLUGIN "If enabled, GLFW plugin will be installed" OFF)
+if (MINVR_THREADING_PLUGIN OR BASE_GRAPHICS_PLUGINS)
+	add_subdirectory (plugins/Threading)
+endif()
 
 #------------------GLFW-----------------------------
-
-add_subdirectory (plugins/GLFW)
-
+option(MINVR_GLFW_PLUGIN "If enabled, GLFW plugin will be installed" OFF)
+if (MINVR_GLFW OR BASE_GRAPHICS_PLUGINS)
+	add_subdirectory (plugins/GLFW)
+endif()
 
 #------------------GLFW-------------------------------
-option(MINVR_GLFW "If enabled, GLFW plugin will be installed" OFF)
-if (MINVR_GLFW)
+
+if (false)
 	set(MinVRExtensions_checkout_Dir ${PROJECT_SOURCE_DIR}/plugins/MinVRExtensions)
 
 	set(plugin_project_name MinVR_GLFW)
@@ -54,7 +68,7 @@ if (MINVR_GLFW)
 	 
 	set_property(TARGET BaseGLFW PROPERTY FOLDER "Plugins")
 	
-endif(MINVR_GLFW)
+endif()
 
 #-----------------Extensions--------------------------
 if (false)
