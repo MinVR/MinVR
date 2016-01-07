@@ -58,11 +58,16 @@ int main(int argc, char **argv) {
   PluginManager pluginManager;
   pluginManager.addInterface(dynamic_cast<SimpleInterface*>(&iface));
 
+    string buildType = "";
+#ifdef MinVR_DEBUG
+    buildType = "d";
+#endif
+    
   // Load specific plugins which will initialize and add factories.
   // This can be defined inside the configuration itself
-  pluginManager.loadPlugin(std::string(PLUGINPATH) + "/MinVR_GLFW", "MinVR_GLFW");
-  pluginManager.loadPlugin(std::string(PLUGINPATH) + "/MinVR_OpenGL", "MinVR_OpenGL");
-  pluginManager.loadPlugin(std::string(PLUGINPATH) + "/MinVR_Threading", "MinVR_Threading");
+  pluginManager.loadPlugin(std::string(PLUGINPATH) + "/MinVR_GLFW", "MinVR_GLFW" + buildType);
+  pluginManager.loadPlugin(std::string(PLUGINPATH) + "/MinVR_OpenGL", "MinVR_OpenGL" + buildType);
+  pluginManager.loadPlugin(std::string(PLUGINPATH) + "/MinVR_Threading", "MinVR_Threading" + buildType);
 
   // Load configuration from file
   VRDataIndex config;
