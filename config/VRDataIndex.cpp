@@ -20,6 +20,7 @@ VRDataIndex::VRDataIndex()  : overwrite(1) {
   for (int i = 0; i < VRCORETYPE_NTYPES; i++) {
     mVRTypeMap[std::string(m->VRTypeMap[i].first)] = m->VRTypeMap[i].second;
   }
+  delete m;
 }
 
 std::string VRDataIndex::serialize(const std::string trimName,

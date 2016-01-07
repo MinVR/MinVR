@@ -70,7 +70,9 @@ int main() {
       events->pop();
 
     }
-    
+	delete dataIndex;
+	delete events;
+
     #ifdef WIN32
 	  Sleep(2000);
     #else

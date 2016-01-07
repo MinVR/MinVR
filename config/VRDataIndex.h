@@ -18,11 +18,6 @@ Author(s) of Significant Updates/Modifications to the File:
 
 #include "VRDatumFactory.h"
 #include "Cxml/Cxml.h"
-// VRDataQueue is included only as a convenience for applications that
-// will use these classes. There isn't anything in VRDataIndex that depends
-// on the queue.
-#include "VRDataQueue.h"
-
 /// The VRDataIndex object maintains an index, a collection of names
 /// and pointers to VRDatum objects, which can be used to create a
 /// dynamically typed computing environment in C++, a strongly-typed

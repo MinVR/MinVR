@@ -451,6 +451,7 @@ public:
     if(reference->release() == 0)
       {
         delete pData;
+		delete reference;
       }
   }
 
@@ -474,6 +475,7 @@ public:
         if(reference->release() == 0)
           {
             delete pData;
+			delete reference;
           }
 
         // Copy the data and reference pointer and increment the
