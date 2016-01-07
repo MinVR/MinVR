@@ -7,7 +7,7 @@
  */
 
 #include "VRViewportOgl.h"
-#include "GL/gl.h"
+#include "OpenGLGraphics.h"
 
 namespace MinVR {
 

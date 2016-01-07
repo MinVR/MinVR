@@ -8,7 +8,7 @@
 #include "display/CompositeDisplay.h"
 #include <sstream>
 #include <fstream>
-#include "GL/gl.h"
+#include "OpenGLGraphics.h"
 using namespace MinVR;
 using namespace std;
 
@@ -122,10 +122,11 @@ int main(int argc, char **argv) {
 void update()
 {
 	// Example update of a vertex array
-	GLfloat vertices[] = {0,0,0,1,1,1,0,0,0};
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(3, GL_FLOAT, 0, vertices);
-	glDisableClientState(GL_VERTEX_ARRAY);
+	//GLfloat vertices[] = {0,0,0,1,1,1,0,0,0};
+	//glEnableClientState(GL_VERTEX_ARRAY);
+	//glVertexPointer(3, GL_FLOAT, 0, vertices);
+	//glDisableClientState(GL_VERTEX_ARRAY);
+    glClearColor(1,0,0,1);
 }
 
 /*

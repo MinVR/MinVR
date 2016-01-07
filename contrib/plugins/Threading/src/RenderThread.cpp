@@ -52,13 +52,13 @@ void RenderThread::render() {
 		if (action == THREADACTION_RENDER)
 		{
 			frame++;
-			//std::cout << "RENDER " << frame << std::endl << std::flush;
+			std::cout << "RENDER " << frame << std::endl << std::flush;
 			VRDisplayDevice::startRendering(display, *(threadInfo->renderer), threadInfo->x);
 		}
 		else if (action == THREADACTION_ACTION)
 		{
-			//std::cout << "ACTION " << frame << std::endl << std::flush;
-			threadInfo->action->exec();
+			std::cout << "ACTION " << frame << std::endl << std::flush;
+            display->use(*(threadInfo->action));
 		}
 
 		threadInfo->startedActionMutex.lock();

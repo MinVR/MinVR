@@ -7,7 +7,7 @@
  */
 
 #include <stereo/QuadbufferStereo.h>
-#include "GL/gl.h"
+#include "OpenGLGraphics.h"
 
 namespace MinVR {
 

@@ -113,7 +113,7 @@ void ThreadedDisplay::startRendering(const MinVR::VRRenderer& renderer, int x) {
 	threadInfo.startActionCond.notify_all();
 	threadInfo.startActionMutex.unlock();
 
-	//std::cout << "start rendering threaded " << frame << std::endl << std::flush;
+	std::cout << "start rendering threaded " << frame << std::endl << std::flush;
 	std::vector<VRDisplayDevice*> subDisplays = getSubDisplays();
 	for (int f = 0; f < subDisplays.size(); f++)
 	{

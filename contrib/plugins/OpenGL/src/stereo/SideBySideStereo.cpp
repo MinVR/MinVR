@@ -7,7 +7,7 @@
  */
 
 #include <stereo/SideBySideStereo.h>
-#include "GL/gl.h"
+#include "OpenGLGraphics.h"
 
 namespace MinVR {
 
