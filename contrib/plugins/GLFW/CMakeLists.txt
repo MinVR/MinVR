@@ -25,8 +25,12 @@ set(glfw_checkout_Dir ${PROJECT_SOURCE_DIR}/deps/glfw)
 make_directory(${glfw_checkout_Dir})
 include(ExternalProject)
 
+set(glfw_build_dir ${CMAKE_BINARY_DIR}/plugins/${PROJECT_NAME}/glfw)
+set(glfw_stamp_dir ${glfw_build_dir}/stamp)
+set(glfw_tmp_dir ${glfw_build_dir}/tmp)
+
 set(glfw_PREFIX "${glfw_checkout_Dir}")
-set(glfw_INSTALL_DIR "${VRPlugins_install_dir}/${PROJECT_NAME}/glfw")
+set(glfw_INSTALL_DIR "${glfw_build_dir}/install")
 
 set(glfw_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${glfw_INSTALL_DIR} -DUSE_MSVC_RUNTIME_LIBRARY_DLL=ON -DGLFW_BUILD_DOCS=OFF -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
 set(glfw_DIR "${glfw_INSTALL_DIR}")
@@ -34,10 +38,6 @@ set(glfw_DIR "${glfw_INSTALL_DIR}")
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	set(glfw_CMAKE_ARGS ${glfw_CMAKE_ARGS} -DCMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD="c++11" -DCMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY="libc++")
 endif()
-
-set(glfw_build_dir ${CMAKE_BINARY_DIR}/plugins/${PROJECT_NAME}/glfw)
-set(glfw_stamp_dir ${glfw_build_dir}/stamp)
-set(glfw_tmp_dir ${glfw_build_dir}/tmp)
    
 ExternalProject_add(glfw
 		PREFIX ${glfw_PREFIX}
@@ -150,7 +150,7 @@ endif()
 # Build Target
 #------------------------------------------
 
-add_definitions(-DPLUGINPATH="${CMAKE_INSTALL_PREFIX}/plugins")
+add_definitions(-DPLUGINPATH="${CMAKE_BINARY_DIR}/plugins")
 add_executable ( test_glfw test/test.cpp )
 target_link_libraries(test_glfw ${OPENGL_LIBRARIES} debug VRPlugind optimized VRPlugin debug VRIndexd optimized VRIndex ${LIBS_ALL})
 
