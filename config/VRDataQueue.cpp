@@ -51,6 +51,10 @@ void VRDataQueue::pop() {
   dataMap.erase(dataMap.begin());
 }
 
+void VRDataQueue::clear() {
+  dataMap.clear();
+}
+
 void VRDataQueue::push(const VRDataQueue::serialData serializedData) {
 
   // I doubt very much that this has any claim to platform-
