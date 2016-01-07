@@ -77,7 +77,10 @@ void ThreadedDisplay::initialize() {
 
 void ThreadedDisplay::finishRendering() {
 	//finishRenderingAllDisplays();
-
+	threadInfo.finishActionMutex.lock();
+	threadInfo.threadAction = THREADACTION_RENDER;
+	threadInfo.finishActionCond.notify_all();
+	threadInfo.finishActionMutex.unlock();
 
 	// Wait for threads to finish rendering
 	UniqueMutexLock endActionLock(threadInfo.endActionMutex);

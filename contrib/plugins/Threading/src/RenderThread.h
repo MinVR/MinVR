@@ -20,6 +20,8 @@ struct RenderThreadInfo
 {
 	Mutex startActionMutex;
 	ConditionVariable startActionCond;
+	Mutex finishActionMutex;
+	ConditionVariable finishActionCond;
 	Mutex startedActionMutex;
 	ConditionVariable startedActionCond;
 	Mutex endActionMutex;

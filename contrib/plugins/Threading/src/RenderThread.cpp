@@ -74,11 +74,23 @@ void RenderThread::render() {
 
 		if (action == THREADACTION_RENDER)
 		{
+			// Wait for the main thread to signal that it's ok to start rendering
+			UniqueMutexLock finishActionLock(threadInfo->finishActionMutex);
+			while (threadInfo->threadAction == THREADACTION_NONE) {
+				threadInfo->finishActionCond.wait(finishActionLock);
+			}
+
+			finishActionLock.unlock();
+
 			display->finishRendering();
 		}
 
 		threadInfo->endActionMutex.lock();
 		threadInfo->numThreadsCompleted++;
+		if (threadInfo->numThreadsCompleted >= threadInfo->numThreads)
+		{
+			threadInfo->threadAction = THREADACTION_NONE;
+		}
 		threadInfo->endActionCond.notify_all();
 		threadInfo->endActionMutex.unlock();
 
