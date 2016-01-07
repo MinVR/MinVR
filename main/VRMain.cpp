@@ -1,4 +1,4 @@
-#include "VRMain.H"
+#include "VRMain.h"
 
 VRMain* VRMain::_instance = NULL;
 
