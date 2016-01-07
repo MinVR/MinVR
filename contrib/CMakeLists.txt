@@ -15,6 +15,10 @@ endif()
 
 include(ExternalProject)
 
+#------------------OpenGL-----------------------------
+
+add_subdirectory (plugins/OpenGL)
+
 #------------------GLFW-------------------------------
 option(MINVR_GLFW "If enabled, GLFW plugin will be installed" OFF)
 if (MINVR_GLFW)
