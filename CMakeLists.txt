@@ -114,6 +114,7 @@ add_subdirectory (config)
 #add_subdirectory (event)
 add_subdirectory (math)
 add_subdirectory (net)
+add_subdirectory (main)
 #add_subdirectory (plugin)
 #add_subdirectory (apps)
 
@@ -123,6 +124,7 @@ add_subdirectory (tests/net)
 #add_subdirectory (tests/eventdata)
 #add_subdirectory (tests/plugin)
 add_subdirectory (tests/config)
+add_subdirectory (tests/adapt)
 
 option(MINVR_PLUS "If enabled, plus plugins will be installed" OFF)
 
