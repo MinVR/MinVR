@@ -1,5 +1,7 @@
 #include "VRDataIndex.h"
 
+std::string VRDataIndex::rootNameSpace = "/";
+
 // Step 7 of the specialization instructions (in VRDatum.h) is to
 // add an entry here to register the new data type.
 VRDataIndex::VRDataIndex()  : overwrite(1) {
@@ -864,14 +866,30 @@ std::string VRDataIndex::addNameSpace(const std::string valName) {
 
 
 void VRDataIndex::printStructure() {
+  printStructure("/");
+}
 
+void VRDataIndex::printStructure(const std::string itemName) {
+  
   // Should sort mindex here.
 
   int i;
+  
   for (VRDataMap::iterator it = mindex.begin(); it != mindex.end(); ++it) {
 
+    bool printMe = true;
+
+    std::vector<std::string> itemElems = explodeName( itemName );
     std::vector<std::string> elems = explodeName( it->first );
 
+    for (i = 1; i < min(itemElems.size(), elems.size()); i++) {
+      
+      if (itemElems[i].compare(elems[i]) != 0)
+        printMe = false;
+    }
+
+    if (!printMe) continue;
+    
     for (i = 0; i < ((int)elems.size() - 1); i++) std::cout << " | ";
     std::cout << elems.back();
 

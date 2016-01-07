@@ -1,0 +1,7 @@
+<config>
+  <net>
+    <serverPort type="string">3490</serverPort>
+    <serverHost type="string">localhost</serverHost>
+    <numClients>2</numClients>
+  </net>
+</config>

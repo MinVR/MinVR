@@ -22,6 +22,7 @@ class VRNetServer : public VRNetInterface {
 
   VRDataQueue::serialData
     syncEventDataAcrossAllNodes(VRDataQueue::serialData eventData);
+  VRDataQueue::serialData syncEventDataAcrossAllNodes();
 
   void syncSwapBuffersAcrossAllNodes();
 

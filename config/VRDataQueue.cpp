@@ -8,6 +8,10 @@
 #endif
 
 
+// Use this when the client has no new data to offer.
+const VRDataQueue::serialData VRDataQueue::noData = "";
+
+
 VRDataQueue::VRDataQueue(const VRDataQueue::serialData serializedQueue) {
 
   addSerializedQueue(serializedQueue);
@@ -54,6 +58,10 @@ VRDataQueue::serialData VRDataQueue::getSerializedObject() {
 
 void VRDataQueue::pop() {
   dataMap.erase(dataMap.begin());
+}
+
+void VRDataQueue::clear() {
+  dataMap.clear();
 }
 
 void VRDataQueue::push(const VRDataQueue::serialData serializedData) {

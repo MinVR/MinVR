@@ -24,7 +24,9 @@ public:
 		static VRDataIndex di;
 		return create(type, name, di);
 	}
-    virtual VRInputDevice* create(const std::string &type, const std::string& name, VRDataIndex &config) = 0;
+  virtual VRInputDevice* create(const std::string &type,
+                                const std::string& name,
+                                VRDataIndex &config) = 0;
 };
 
 class VRInputDeviceInterface : public MinVR::PluginInterface {
