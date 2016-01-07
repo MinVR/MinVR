@@ -197,6 +197,8 @@ private:
 public:
   VRDataIndex();
 
+  static std::string rootNameSpace;
+  
   void setOverwrite(const int inVal) { overwrite = inVal; }
 
   // Tries to guess a data type from the ASCII representation.
@@ -378,6 +380,7 @@ public:
 
   // Mostly just for debug purposes.
   void printStructure();
+  void printStructure(const std::string itemName);
   // Prints a vaguely tree-ish representation of an XML parse.  Just
   // an aid to debugging, really.
   bool printXML(element* node, std::string prefix);

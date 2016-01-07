@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MVR>
+<Server>
+  <Port type="string">3490</Port>
+  <Host>localhost</Host>
+  <NumClients type="int">2</NumClients>
+</Server>
+
+<VRDisplayDevices>
+  <radius>20.0</radius>
+  <Display1>
+    <radius>7.0</radius>
+	  <xOffset type="int">0</xOffset>
+	  <yOffset type="int">300</yOffset>
+  </Display1>
+  <Display2>
+	  <xOffset type="int">0</xOffset>
+	  <yOffset type="int">300</yOffset>
+  </Display2>
+</VRDisplayDevices>
+</MVR>

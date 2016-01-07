@@ -35,6 +35,8 @@ public:
   VRDataQueue() {};
   VRDataQueue(const serialData serializedQueue);
 
+  static const serialData noData;
+  
   void addSerializedQueue(const serialData serializedQueue);
   
   bool notEmpty() { return (bool)dataMap.size(); }
@@ -45,6 +47,9 @@ public:
   // Removed the object at the front of the queue.
   void pop();
 
+  // Remove all the objects in the queue.
+  void clear();
+  
   // Takes a serialized bit of data and pushes it onto the end of the
   // queue.
   void push(const serialData serializedData);

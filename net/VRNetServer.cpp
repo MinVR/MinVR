@@ -253,6 +253,17 @@ VRNetServer::syncEventDataAcrossAllNodes(VRDataQueue::serialData eventData) {
   return dq;
 }
 
+// This variant is not used by the server, but is part of the net
+// interface definition for convenience.  Empty definition here to
+// satisfy the compiler.
+VRDataQueue::serialData
+VRNetServer::syncEventDataAcrossAllNodes() {
+
+  VRDataQueue::serialData out = "";
+  return out;
+
+}
+
 void VRNetServer::syncSwapBuffersAcrossAllNodes() {
   // 1. wait for, receive, and parse a swap_buffers_request message
   // from every client

@@ -80,8 +80,6 @@ else()
   set(CMAKE_BUILD_POSTFIX "")
 endif()
 
-set(MinVR_BUILD_TYPE ${CMAKE_BUILD_TYPE})
-
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DMinVR_DEBUG")
 
 make_directory(${CMAKE_BINARY_DIR}/lib)
@@ -124,5 +122,6 @@ add_subdirectory (tests/net)
 #add_subdirectory (tests/eventdata)
 #add_subdirectory (tests/plugin)
 add_subdirectory (tests/config)
+add_subdirectory (tests/adapt)
 
 add_subdirectory (contrib)

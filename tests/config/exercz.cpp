@@ -98,8 +98,13 @@ int main() {
     ////// command: px
     } else if (elems[0].compare("px") == 0) {
 
-      index->printStructure();
+      if (elems.size() > 1) {
+        index->printStructure(elems[1]);
+      } else {
+        index->printStructure();
+      }
 
+      
     ////// command: z (undocumented in help; use for testing)
     } else if (elems[0].compare("z") == 0) {
 
