@@ -1,4 +1,25 @@
 <?xml version="1.0"?>
+<MVR>
+<Server>
+  <Port type="string">3490</Port>
+  <Host>localhost</Host>
+  <NumClients type="int">2</NumClients>
+</Server>
+
+<VRDisplayDevices>
+  <radius>20.0</radius>
+  <Display1>
+    <radius>7.0</radius>
+	  <xOffset type="int">0</xOffset>
+	  <yOffset type="int">300</yOffset>
+  </Display1>
+  <Display2>
+	  <xOffset type="int">0</xOffset>
+	  <yOffset type="int">300</yOffset>
+  </Display2>
+</VRDisplayDevices>
+</MVR>
+
 <Server>
   <Port type="string">3490</Port>
   <NumClients type="int">1</NumClients>
@@ -14,6 +35,7 @@
   <ThreadedDisplay>
     <displayType type="string">thread_group</DisplayType>
     <Display1>
+	  <allowThreading type="int">0</allowThreading>
       <displayType type="string">glfw_display</DisplayType>
       <xOffset type="int">600</xOffset>
       <yOffset type="int">0</yOffset>
@@ -25,7 +47,7 @@
 	<displayType type="string">sideBySideStereo</DisplayType>
       </stereoFormatter>
       <displayType type="string">glfw_display</DisplayType>
-      <allowThreading type="int">1</allowThreading>
+      <allowThreading type="int">0</allowThreading>
       <xOffset type="int">600</xOffset>
       <yOffset type="int">250</yOffset>
       <width type="int">200</width>
@@ -36,7 +58,7 @@
 	<displayType type="string">sideBySideStereo</DisplayType>
       </stereoFormatter>
       <displayType type="string">glfw_display</DisplayType>
-      <allowThreading type="int">1</allowThreading>
+      <allowThreading type="int">0</allowThreading>
       <xOffset type="int">600</xOffset>
       <yOffset type="int">450</yOffset>
       <width type="int">200</width>
