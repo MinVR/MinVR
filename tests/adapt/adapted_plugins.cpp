@@ -57,9 +57,7 @@ public:
  * Render and update methods
  */
 void initGL();
-void update();
 void render();
-void renderTriangle();
 void reshape();
 void eventCB(const std::string &eventName, VRDataIndex *dataIndex);
 void renderCB(VRDataIndex* index);
@@ -147,9 +145,6 @@ int main(int argc, char **argv) {
 		  dataQueue.pop();
 	  }
 
-	  // Run a function on all contexts (not necessarily displays)
-	  display->use(update);
-
 	  // Render the triangle on all displays (passing render function into display)
 	  // Includes viewports, threading, stereo displays, and custom display types
 	  display->startRendering(render);
@@ -160,44 +155,6 @@ int main(int argc, char **argv) {
   delete display;
 }
 
-/*
- * Update vertex arrays, etc...
- */
-void update()
-{
-	// Example update of a vertex array
-	GLfloat vertices[] = {0,0,0,1,1,1,0,0,0};
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(3, GL_FLOAT, 0, vertices);
-	glDisableClientState(GL_VERTEX_ARRAY);
-}
-
-/*
- * Renders a triangle
- */
-void renderTriangle()
-{
-	  float ratio;
-	  int width = 640;
-	  int height = 480;
-	  ratio = width / (float) height;
-	  //glViewport(0, 0, width, height);
-	  glClear(GL_COLOR_BUFFER_BIT);
-	  glMatrixMode(GL_PROJECTION);
-	  glLoadIdentity();
-	  glOrtho(-ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-	  glMatrixMode(GL_MODELVIEW);
-	  glLoadIdentity();
-	  glRotatef((float) mainTimer->getTime() * 50.f, 0.f, 0.f, 1.f);
-	  glBegin(GL_TRIANGLES);
-	  glColor3f(1.f, 0.f, 0.f);
-	  glVertex3f(-0.6f, -0.4f, 0.f);
-	  glColor3f(0.f, 1.f, 0.f);
-	  glVertex3f(0.6f, -0.4f, 0.f);
-	  glColor3f(0.f, 0.f, 1.f);
-	  glVertex3f(0.f, 0.6f, 0.f);
-	  glEnd();
-}
 
 //-----------------------------------
 
