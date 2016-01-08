@@ -8,6 +8,8 @@
 
 #include <main/VRMain.h>
 
+VRMain *MVR;
+
 /* Global variables */
 char title[] = "3D Shapes";
 
@@ -286,7 +288,7 @@ void eventCB(const std::string &eventName, VRDataIndex *dataIndex) {
     // overrides the default radius value, it will not be affected by
     // the event.
     radius = dataIndex->getValue("radius", "/MVR/VRDisplayDevices/" +
-                                 VRMain::instance()->getName() + "/");
+                                 MVR->getName() + "/");
 
     std::cout << "radius: " << radius << std::endl;
     
@@ -302,8 +304,8 @@ void eventCB(const std::string &eventName, VRDataIndex *dataIndex) {
 
 // Here's the new display callback to feed to the glut mainloop.
 void mvrDisplay() {
-  VRMain::instance()->synchronizeAndProcessEvents();
-  VRMain::instance()->renderEverywhere();
+  MVR->synchronizeAndProcessEvents();
+  MVR->renderEverywhere();
   glutPostRedisplay();
 }
 
@@ -325,12 +327,14 @@ int main(int argc, char** argv) {
    glutReshapeFunc(reshape);
    initGL();                       // Our own OpenGL initialization
 
+   MVR = new VRMain();
+   
    if (argc > 1) {
-     VRMain::instance()->initialize(argv[1],argv[2]);
+     MVR->initialize(argv[1],argv[2]);
    }
-   VRMain::instance()->registerEventCallback(&eventCB);
-   VRMain::instance()->registerRenderCallback(&renderCB);
-   VRMain::instance()->registerSwapCallback(&swapCB);
+   MVR->registerEventCallback(&eventCB);
+   MVR->registerRenderCallback(&renderCB);
+   MVR->registerSwapCallback(&swapCB);
    
    glutMainLoop();                 // Enter the infinite event-processing loop
 
