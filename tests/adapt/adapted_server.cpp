@@ -47,12 +47,10 @@ void makeHeadAngleEvent() {
 
   dataIndex->addData("/HeadAngleEvent/vertAngle", vertAngle);
   dataIndex->addData("/HeadAngleEvent/horizAngle", horizAngle);
-  dataIndex->addData("/HeadAngleEvent/timestamp", (int)clock());
 }
 
 void makeRadiusEvent() {
   dataIndex->addData("/RadiusEvent/radius", radius);
-  dataIndex->addData("/RadiusEvent/timestamp", (int)clock());
  
   radius -= 0.1;
 }
@@ -91,15 +89,14 @@ int main(int argc, char**argv) {
       makeRadiusEvent();
       queue->push(dataIndex->serialize("/RadiusEvent"));
     }
-    // If you want to see the structure of things, uncomment these.
-    //std::cout << "EVENTS:" << queue->serialize() << std::endl;
+    //If you want to see the structure of things, uncomment these.
+    // std::cout << "EVENTS:" << queue->serialize() << std::endl;
 
-    //std::cout << "Index Structure" << std::endl;
-    //dataIndex->printStructure();
+    // std::cout << "Index Structure" << std::endl;
+    // dataIndex->printStructure();
 
-    // Show the queue.
-    //std::cout << "Queue" << std::endl;
-    //queue->printQueue();
+    // std::cout << "Queue" << std::endl;
+    // queue->printQueue();
 
     // Send the event queue and synchronize with all the clients.
     server.syncEventDataAcrossAllNodes(queue->serialize());

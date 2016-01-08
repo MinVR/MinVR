@@ -1,6 +1,5 @@
 #include "VRMain.h"
 
-
 VRMain::VRMain() : initialized(false),_vrNet(NULL)
 {
 }
