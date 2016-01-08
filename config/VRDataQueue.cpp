@@ -80,15 +80,11 @@ void VRDataQueue::push(const VRDataQueue::serialData serializedData) {
   struct timeval tp;
   gettimeofday(&tp, NULL);
   
-  // Get current timestamp in milliseconds, and throw in the clock()
-  // output just to provide a little spurious precision and keep the
-  // stamps unique.  Fast CPUs make it hard to get unique timestamps
-  // with a low-precision clock.
-  long long timeStamp = (long long) tp.tv_sec * 1000L +
-    tp.tv_usec / 1000 + clock();
+  // Get current timestamp in milliseconds.
+  long long timeStamp = (long long) tp.tv_sec * 1000000L + tp.tv_usec;
+
 #endif
 
-  //std::cout << "ts: " << timeStamp << std::endl;
   dataMap.insert(std::pair<long long,VRDataQueue::serialData>(timeStamp, serializedData));
 }
 
