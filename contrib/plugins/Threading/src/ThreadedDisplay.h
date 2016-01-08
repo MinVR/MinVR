@@ -9,6 +9,7 @@
 #ifndef THREADEDDISPLAY_H_
 #define THREADEDDISPLAY_H_
 
+#include "plugin/PluginFramework.h"
 #include "display/VRDisplayDevice.h"
 #include "RenderThread.h"
 #include "Thread.h"
@@ -17,15 +18,15 @@ namespace MinVR {
 
 class ThreadedDisplay: public VRDisplayDevice {
 public:
-	ThreadedDisplay();
-	virtual ~ThreadedDisplay();
+	PLUGIN_API ThreadedDisplay();
+	PLUGIN_API virtual ~ThreadedDisplay();
 
-	void initialize();
-	void useDisplay(const MinVR::VRDisplayAction& action);
-	void finishRendering();
+	PLUGIN_API void initialize();
+	PLUGIN_API void useDisplay(const MinVR::VRDisplayAction& action);
+	PLUGIN_API void finishRendering();
 
 protected:
-	void startRendering(const MinVR::VRRenderer& renderer, int x);
+	PLUGIN_API void startRendering(const MinVR::VRRenderer& renderer, int x);
 
 private:
 	std::vector<RenderThread*> renderThreads;
@@ -38,7 +39,7 @@ public:
 	ThreadedDisplayFactory();
 	virtual ~ThreadedDisplayFactory();
 
-	VRDisplayDevice* createDisplay(const std::string type, const std::string name, VRDataIndex& config, VRDisplayDeviceFactory* factory);
+	PLUGIN_API VRDisplayDevice* createDisplay(const std::string type, const std::string name, VRDataIndex& config, VRDisplayDeviceFactory* factory);
 };
 
 } /* namespace MinVR */

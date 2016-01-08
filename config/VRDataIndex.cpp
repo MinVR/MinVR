@@ -458,7 +458,7 @@ VRDataIndex::getEntry(const std::string valName,
     // the root level nameSpace.
     for (int N = elems.size(); N >= 0; --N) {
 
-      std::vector<std::string> names(&elems[0], &elems[N]);
+      std::vector<std::string> names(&elems[0], &elems[0] + N);
       std::string testSpace;
 
       for (std::vector<std::string>::iterator it = names.begin();

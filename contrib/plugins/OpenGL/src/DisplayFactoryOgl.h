@@ -9,16 +9,17 @@
 #ifndef DISPLAYFACTORYOGL_H_
 #define DISPLAYFACTORYOGL_H_
 
+#include "plugin/PluginFramework.h"
 #include "display/VRDisplayDevice.h"
 
 namespace MinVR {
 
 class DisplayFactoryOgl : public SimpleVRDisplayFactory {
 public:
-	DisplayFactoryOgl();
-	virtual ~DisplayFactoryOgl();
+	PLUGIN_API DisplayFactoryOgl();
+	PLUGIN_API virtual ~DisplayFactoryOgl();
 
-	VRDisplayDevice* createDisplay(const std::string type, const std::string name, VRDataIndex& config, VRDisplayDeviceFactory* factory);
+	PLUGIN_API VRDisplayDevice* createDisplay(const std::string type, const std::string name, VRDataIndex& config, VRDisplayDeviceFactory* factory);
 };
 
 } /* namespace MinVR */

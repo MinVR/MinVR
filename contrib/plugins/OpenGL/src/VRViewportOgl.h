@@ -9,24 +9,25 @@
 #ifndef VRVIEWPORTOGL_H_
 #define VRVIEWPORTOGL_H_
 
+#include "plugin/PluginFramework.h"
 #include "display/VRDisplayDevice.h"
 
 namespace MinVR {
 
 class VRViewportOgl: public VRDisplayDevice {
 public:
-	VRViewportOgl(int x, int y, int width, int height);
-	virtual ~VRViewportOgl();
+	PLUGIN_API VRViewportOgl(int x, int y, int width, int height);
+	PLUGIN_API virtual ~VRViewportOgl();
 
-	int getXOffset();
-	int getYOffset();
-	int getWidth();
-	int getHeight();
+	PLUGIN_API int getXOffset();
+	PLUGIN_API int getYOffset();
+	PLUGIN_API int getWidth();
+	PLUGIN_API int getHeight();
 
-	void finishRendering();
+	PLUGIN_API void finishRendering();
 
 protected:
-	void startRendering(const MinVR::VRRenderer& renderer, int x);
+	PLUGIN_API void startRendering(const MinVR::VRRenderer& renderer, int x);
 
 private:
 	int x, y, width, height;

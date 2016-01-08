@@ -9,6 +9,7 @@
 #ifndef RENDERTHREAD_H_
 #define RENDERTHREAD_H_
 
+#include "plugin/PluginFramework.h"
 #include "display/VRDisplayDevice.h"
 #include "Thread.h"
 
@@ -40,10 +41,10 @@ struct RenderThreadInfo
 class RenderThread {
 public:
 
-	RenderThread(VRDisplayDevice* display, RenderThreadInfo* threadInfo);
-	virtual ~RenderThread();
+	PLUGIN_API RenderThread(VRDisplayDevice* display, RenderThreadInfo* threadInfo);
+	PLUGIN_API virtual ~RenderThread();
 
-	void render();
+	PLUGIN_API void render();
 
 private:
 	VRDisplayDevice* display;

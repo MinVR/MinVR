@@ -9,21 +9,22 @@
 #ifndef QUADBUFFERSTEREO_H_
 #define QUADBUFFERSTEREO_H_
 
+#include "plugin/PluginFramework.h"
 #include "display/VRDisplayDevice.h"
 
 namespace MinVR {
 
 class QuadbufferStereo : public VRDisplayDevice {
 public:
-	QuadbufferStereo();
-	virtual ~QuadbufferStereo();
+	PLUGIN_API QuadbufferStereo();
+	PLUGIN_API virtual ~QuadbufferStereo();
 
-	bool isQuadbuffered() { return true; }
+	PLUGIN_API bool isQuadbuffered() { return true; }
 
-	void finishRendering();
+	PLUGIN_API void finishRendering();
 
 protected:
-	void startRendering(const MinVR::VRRenderer& renderer, int x);
+	PLUGIN_API void startRendering(const MinVR::VRRenderer& renderer, int x);
 };
 
 } /* namespace MinVR */

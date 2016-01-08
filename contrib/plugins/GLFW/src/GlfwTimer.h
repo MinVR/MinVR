@@ -9,17 +9,18 @@
 #ifndef GLFWTIMER_H_
 #define GLFWTIMER_H_
 
+#include "plugin/PluginFramework.h"
 #include "main/VRTimer.h"
 
 namespace MinVR {
 
 class GlfwTimer : public VRTimer {
 public:
-	GlfwTimer();
-	virtual ~GlfwTimer();
+	PLUGIN_API GlfwTimer();
+	PLUGIN_API virtual ~GlfwTimer();
 
-	std::string getName();
-	double getTime();
+	PLUGIN_API std::string getName();
+	PLUGIN_API double getTime();
 };
 
 } /* namespace MinVR */

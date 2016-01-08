@@ -9,6 +9,7 @@
 #ifndef GLFWWINDOW_H_
 #define GLFWWINDOW_H_
 
+#include "plugin/PluginFramework.h"
 #include "display/VRDisplayDevice.h"
 #include <GLFW/glfw3.h>
 #include "GlfwInputDevice.h"
@@ -17,22 +18,22 @@ namespace MinVR {
 
 class GlfwWindow : public VRDisplayDevice {
 public:
-	GlfwWindow(int x, int y, int width, int height);
-	virtual ~GlfwWindow();
+	PLUGIN_API GlfwWindow(int x, int y, int width, int height);
+	PLUGIN_API virtual ~GlfwWindow();
 
-	int getWidth();
-	int getHeight();
+	PLUGIN_API int getWidth();
+	PLUGIN_API int getHeight();
 
-	void initialize();
-	bool isOpen();
-	void useDisplay(const MinVR::VRDisplayAction& action);
-	void finishRendering();
+	PLUGIN_API void initialize();
+	PLUGIN_API bool isOpen();
+	PLUGIN_API void useDisplay(const MinVR::VRDisplayAction& action);
+	PLUGIN_API void finishRendering();
 
-	GLFWwindow* getWindow() const {
+	PLUGIN_API GLFWwindow* getWindow() const {
 		return window;
 	}
 
-	void setInputDevice(GlfwInputDevice* inputDevice) {
+	PLUGIN_API void setInputDevice(GlfwInputDevice* inputDevice) {
 		this->inputDevice = inputDevice;
 	}
 
@@ -40,7 +41,7 @@ public:
 
 
 protected:
-	void startRendering(const MinVR::VRRenderer& renderer, int x);
+	PLUGIN_API void startRendering(const MinVR::VRRenderer& renderer, int x);
 
 private:
 	GLFWwindow* window;

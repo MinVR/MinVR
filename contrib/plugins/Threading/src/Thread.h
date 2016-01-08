@@ -44,6 +44,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef THREAD_H_
 #define THREAD_H_
 
+#include "plugin/PluginFramework.h"
 #ifdef USE_BOOST
 #include "Boost/BoostThread.h"
 #else
@@ -64,10 +65,10 @@ typedef std::unique_lock<Mutex> UniqueMutexLock;
 class Barrier
 {
 public:
-	Barrier(unsigned int numThreads) : _numThreads(numThreads), m_count(numThreads), m_generation(0) {}
-	~Barrier() {}
+	PLUGIN_API Barrier(unsigned int numThreads) : _numThreads(numThreads), m_count(numThreads), m_generation(0) {}
+	PLUGIN_API ~Barrier() {}
 
-    bool wait()
+	PLUGIN_API bool wait()
     {
       UniqueMutexLock lock(m_mutex);
       unsigned int gen = m_generation;
