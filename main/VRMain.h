@@ -2,10 +2,10 @@
 #define VRMAIN_H
 
 #include "config/VRDataIndex.h"
-#include "net/VRNetClient.h"
 #include "main/VRPluginInterface.h"
 #include "plugin/PluginManager.h"
 #include "display/concrete/CommandLineDisplay.h"
+#include "net/VRNetInterface.h"
 
 /** Application programmers should use this singleton class as the
     interface to the MinVR library.
@@ -100,7 +100,7 @@ private:
   // not simply that the object has been created.
   bool initialized;
 
-  VRNetClient   *_vrNet;
+  VRNetInterface   *_vrNet;
   // These have to be re-implemented.
   //std::vector<VRInputDevice*> _inputDevices;
   //std::vector<VRDisplayDevice*> _displayDevices;

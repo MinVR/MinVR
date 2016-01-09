@@ -2,6 +2,10 @@
 #include "display/concrete/CompositeDisplay.h"
 #include "display/concrete/CompositeDisplayFactory.h"
 #include "display/concrete/DataIndexWrapperDisplay.h"
+#include <stdio.h>
+#include <unistd.h>
+#include "net/VRNetClient.h"
+#include "net/VRNetServer.h"
 
 void emptyEventCallbackMVR(const std::string &eventName, VRDataIndex *dataIndex) {}
 void emptyRenderCallbackMVR(VRDataIndex* index) {}
@@ -39,6 +43,64 @@ VRMain::initialize(const std::string processName, const std::string settingsFile
   _name = processName;
   _index = new VRDataIndex();
   _index->processXMLFile(settingsFile, "/");
+
+  _index->addData("/ProcessId", 0);
+
+  if (_index->exists("Server", "/MVR"))
+  {
+	  int numProcesses = 1;
+	  bool createServer = true;
+
+	  int numClients = ((VRInt)_index->getValue("/MVR/Server/NumClients"));
+
+	  if (_index->exists("NumProcesses", "/MVR/Server"))
+	  {
+		  numProcesses = _index->getValue("/MVR/Server/NumProcesses");
+		  if (numProcesses > numClients) { numProcesses = numClients; }
+	  }
+
+	  if (_index->exists("CreateServer", "/MVR/Server"))
+	  {
+		  createServer  = ((VRInt)_index->getValue("/MVR/Server/CreateServer"));
+	  }
+
+	  int currentProcess = 0;
+	  while (currentProcess < numProcesses-1)
+	  {
+		  pid_t pid = fork();
+		  if (pid == 0)
+		  {
+			  break;
+		  }
+
+		  currentProcess++;
+
+		  if (currentProcess == 1)
+		  {
+			  sleep(3);
+		  }
+
+	  }
+
+	  _index->addData("/ProcessId", currentProcess);
+
+	  if (numClients > 1)
+	  {
+		  if (currentProcess == 0 && createServer)
+		  {
+			  _vrNet = new VRNetServer((VRString)_index->getValue("/MVR/Server/Port"), numClients-1);
+		  }
+		  else
+		  {
+			  // Set Network Synchronization mode based on settings.  Note that
+			  // these names are hard-wired in place. This is meant to be not
+			  // configurable, though doubtless these names will change during
+			  // development.
+			  _vrNet = new VRNetClient((VRString)_index->getValue("/MVR/Server/Host"),
+									   (VRString)_index->getValue("/MVR/Server/Port"));
+		  }
+	  }
+  }
 
   _index->printStructure();
   
@@ -96,16 +158,6 @@ VRMain::initialize(const std::string processName, const std::string settingsFile
 	  {
 		  _inputDevices.push_back(devices[i]);
 	  }
-  }
-
-  if (_index->exists("Server", "/MVR"))
-  {
-	  // Set Network Synchronization mode based on settings.  Note that
-	  // these names are hard-wired in place. This is meant to be not
-	  // configurable, though doubtless these names will change during
-	  // development.
-	  _vrNet = new VRNetClient((VRString)_index->getValue("/MVR/Server/Host"),
-							   (VRString)_index->getValue("/MVR/Server/Port"));
   }
 
   initialized = true;
