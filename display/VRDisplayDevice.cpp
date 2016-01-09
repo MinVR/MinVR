@@ -29,7 +29,7 @@ void VRDisplayDevice::render(const MinVR::VRRenderer& renderer)
 	finishRendering();
 }
 
-void VRDisplayDevice::render(void (*method)())
+void VRDisplayDevice::render(void (*method)(VRRenderState&))
 {
 	render(MinVR::VRRendererFunctor(method));
 }
@@ -39,7 +39,7 @@ void VRDisplayDevice::use(void (*method)())
 	use(MinVR::VRDisplayActionFunctor(method));
 }
 
-void VRDisplayDevice::startRendering(void (*method)())
+void VRDisplayDevice::startRendering(void (*method)(VRRenderState&))
 {
 	startRendering(MinVR::VRRendererFunctor(method));
 }

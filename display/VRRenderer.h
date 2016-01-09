@@ -9,37 +9,41 @@
 #ifndef VRDISPLAYACTION_H_
 #define VRDISPLAYACTION_H_
 
+#include "display/VRRenderState.h"
+
 namespace MinVR {
 
-class VRDisplayAction {
-public:
-	virtual ~VRDisplayAction() {}
 
-	virtual void exec() const = 0;
+
+class VRRenderer {
+public:
+	virtual ~VRRenderer() {}
+
+	virtual void render(VRRenderState& state) const = 0;
 };
 
-class VRDisplayActionFunctor : public VRDisplayAction {
+class VRRendererFunctor : public VRRenderer {
 public:
-	typedef void (*MethodType)();
+	typedef void (*MethodType)(VRRenderState&);
 
-	VRDisplayActionFunctor(MethodType method) : method(method) {}
-	virtual ~VRDisplayActionFunctor() {}
+	VRRendererFunctor(MethodType method) : method(method) {}
+	virtual ~VRRendererFunctor() {}
 
-	void exec() const;
+	void render(VRRenderState& state) const;
 
 private:
 	MethodType method;
 };
 
 template<class T>
-class SpecificVRDisplayAction : public VRDisplayAction {
+class SpecificVRRenderer : public VRRenderer {
 public:
-	typedef void (T::*MethodType)() const;
+	typedef void (T::*MethodType)(VRRenderState&) const;
 
-	SpecificVRDisplayAction(T *obj, MethodType method);
-	virtual ~SpecificVRDisplayAction() {}
+	SpecificVRRenderer(T *obj, MethodType method);
+	virtual ~SpecificVRRenderer() {}
 
-	void exec() const;
+	void render(VRRenderState& state) const;
 
 private:
 	T *obj;
@@ -48,20 +52,20 @@ private:
 
 //---------------------------------
 
-inline void VRDisplayActionFunctor::exec() const
+inline void VRRendererFunctor::render(VRRenderState& state) const
 {
-	(*method)();
+	(*method)(state);
 }
 
 template<class T>
-SpecificVRDisplayAction<T>::SpecificVRDisplayAction(T *obj, MethodType method) : obj(obj), method(method)
+SpecificVRRenderer<T>::SpecificVRRenderer(T *obj, MethodType method) : obj(obj), method(method)
 {
 }
 
 template<class T>
-void SpecificVRDisplayAction<T>::exec() const
+void SpecificVRRenderer<T>::render(VRRenderState& state) const
 {
-	(obj->*method)();
+	(obj->*method)(state);
 }
 
 } /* namespace MinVR */

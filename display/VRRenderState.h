@@ -1,6 +1,8 @@
 #ifndef VRRENDERSTATE_H
 #define VRRENDERSTATE_H
 
+class VRDisplayDevice;
+
 /** This data structure gets passed to the application programmer's draw callback function.  It holds state info 
     for the current OpenGL context and the current "VR context".  We think of this as analogous to the special and
     built-in variables in GLSL (e.g., gl_ModelViewProjectionMatrix, gl_VertexID).  There are some data associated 
@@ -10,6 +12,7 @@
 class VRRenderState {
 public:
 
+	VRDisplayDevice* display;
   /*VRProjectionMethod::ProjectionType projectionType;
   float *projectionMatrix;
   float *headMatrix;

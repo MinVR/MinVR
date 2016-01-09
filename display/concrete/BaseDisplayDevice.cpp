@@ -80,7 +80,8 @@ void BaseDisplayDevice::startRenderingAllDisplays(const MinVR::VRRenderer& rende
 	}
 	else
 	{
-		renderer.render();
+		state.display = this;
+		renderer.render(state);
 	}
 }
 
@@ -97,6 +98,14 @@ void BaseDisplayDevice::useAllDisplays(const MinVR::VRDisplayAction& action)
 	{
 		action.exec();
 	}
+}
+
+std::string BaseDisplayDevice::getName() const {
+	return name;
+}
+
+void BaseDisplayDevice::setName(std::string& name) {
+	this->name = name;
 }
 
 void BaseDisplayDevice::finishRenderingAllDisplays()

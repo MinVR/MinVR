@@ -43,7 +43,7 @@ public:
  * Render and update methods
  */
 void update();
-void renderTriangle();
+void renderTriangle(VRRenderState& state);
 
 /*
  * Main functionality
@@ -137,7 +137,7 @@ void update()
 /*
  * Renders a triangle
  */
-void renderTriangle()
+void renderTriangle(VRRenderState& state)
 {
 	  float ratio;
 	  int width = 640;

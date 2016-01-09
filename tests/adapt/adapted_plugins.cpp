@@ -58,7 +58,7 @@ public:
  * Render and update methods
  */
 void initGL();
-void render();
+void render(VRRenderState& state);
 void reshape();
 void eventCB(const std::string &eventName, VRDataIndex *dataIndex);
 void renderCB(VRDataIndex* index);
@@ -187,9 +187,11 @@ void initGL() {
   glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 }
 
-void render() {
-	GLfloat width = 640;
-	GLfloat height = 480;
+void render(VRRenderState& state) {
+	//cout << state.display->getName() << std::endl;
+
+	GLfloat width = state.display->getWidth();
+	GLfloat height = state.display->getHeight();
 
    // Compute aspect ratio of the new window
    if (height == 0) height = 1;                // To prevent divide by 0
@@ -428,8 +430,8 @@ void reshape() {  // GLsizei for non-negative integer
 void eventCB(const std::string &eventName, VRDataIndex *dataIndex) {
 
   // The event can be examined here.
-  std::cout << std::endl << "examining the data..." << std::endl;
-  dataIndex->printStructure(eventName);
+  //std::cout << std::endl << "examining the data..." << std::endl;
+  //dataIndex->printStructure(eventName);
 
   // The event handler's actions are here.
   if (eventName.compare("/HeadAngleEvent") == 0) {
@@ -468,7 +470,7 @@ void eventCB(const std::string &eventName, VRDataIndex *dataIndex) {
 
     radius = dataIndex->getValue("radius", "/MVR/VRDisplayDevices/" + MVR->getName() + "/");
 
-    std::cout << "radius: " << radius << std::endl;
+    //std::cout << "radius: " << radius << std::endl;
 
     // The process name could be stored in the dataIndex instead of as
     // a private class variable in VRMain.

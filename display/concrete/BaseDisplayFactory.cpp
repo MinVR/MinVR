@@ -34,6 +34,8 @@ std::vector<VRDisplayDevice*> BaseDisplayFactory::create(VRDataIndex& config, co
 				VRDisplayDevice* display = createDisplay(displayType, *f, config, factory);
 				if (display != NULL)
 				{
+					display->setName(*f);
+
 					newDisplays.push_back(display);
 					displays.push_back(display);
 

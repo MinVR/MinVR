@@ -17,6 +17,8 @@ class BaseDisplayDevice : public VRDisplayDevice {
 public:
 	virtual ~BaseDisplayDevice();
 
+	virtual std::string getName() const;
+	virtual void setName(std::string& name);
 	virtual int getDisplayXOffset();
 	virtual int getDisplayYOffset();
 	virtual int getXOffset();
@@ -27,6 +29,7 @@ public:
 	virtual bool allowThreading();
 	virtual void setAllowThreading(bool allowed);
 	virtual bool isQuadbuffered();
+
 
 	virtual void initialize();
 
@@ -44,6 +47,7 @@ protected:
 	void finishRenderingAllDisplays();
 
 private:
+	std::string name;
 	VRDisplayDevice* parent;
 	std::vector<VRDisplayDevice*> subDisplays;
 	bool _allowThreading;

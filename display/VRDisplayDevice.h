@@ -5,6 +5,7 @@
 #include "display/VRRenderer.h"
 #include "display/VRDisplayAction.h"
 #include "display/VRRenderState.h"
+#include <string>
 #include <vector>
 
 /** DisplayDevice:    An as-simple-as-possible public interface for Display Devices
@@ -13,6 +14,8 @@ class VRDisplayDevice {
 public:
 	virtual ~VRDisplayDevice() {}
 
+	virtual std::string getName() const = 0;
+	virtual void setName(std::string& name) = 0;
 	virtual int getDisplayXOffset() = 0;
 	virtual int getDisplayYOffset() = 0;
 	virtual int getXOffset() = 0;
@@ -35,16 +38,16 @@ public:
 	virtual void addSubDisplay(VRDisplayDevice* display) = 0;
 
 	template<class T>
-	void render(T *obj, void (T::*method)() const);
-	void render(void (*method)());
+	void render(T *obj, void (T::*method)(VRRenderState&) const);
+	void render(void (*method)(VRRenderState&));
 
 	template<class T>
 	void use(T *obj, void (T::*method)() const);
 	void use(void (*method)());
 
 	template<class T>
-	void startRendering(T *obj, void (T::*method)() const);
-	void startRendering(void (*method)());
+	void startRendering(T *obj, void (T::*method)(VRRenderState&) const);
+	void startRendering(void (*method)(VRRenderState&));
 	static void startRendering(VRDisplayDevice* &display, const MinVR::VRRenderer& renderer, VRRenderState& renderState);
 
 protected:
@@ -53,7 +56,7 @@ protected:
 };
 
 template<class T>
-void VRDisplayDevice::render(T *obj, void (T::*method)() const)
+void VRDisplayDevice::render(T *obj, void (T::*method)(VRRenderState&) const)
 {
 	render(MinVR::SpecificVRRenderer<T>(obj, method));
 }
@@ -65,7 +68,7 @@ void VRDisplayDevice::use(T *obj, void (T::*method)() const)
 }
 
 template<class T>
-void VRDisplayDevice::startRendering(T *obj, void (T::*method)() const)
+void VRDisplayDevice::startRendering(T *obj, void (T::*method)(VRRenderState&) const)
 {
 	startRendering(MinVR::SpecificVRRenderer<T>(obj, method));
 }
