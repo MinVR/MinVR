@@ -3,7 +3,7 @@
 <Server>
   <Port type="string">3490</Port>
   <Host>localhost</Host>
-  <NumClients type="int">2</NumClients>
+  <NumClients type="int">1</NumClients>
 </Server>
 
 <VRDisplayDevices>
