@@ -73,5 +73,5 @@ endif()
 
 add_definitions(-DPLUGINPATH="${CMAKE_BINARY_DIR}/plugins")
 add_executable ( adapted_plugins adapted_plugins.cpp )
-target_link_libraries(adapted_plugins VRMain VRIndex VRMath VRNet VRPlugin ${ALL_LIBS})
+target_link_libraries(adapted_plugins VRMain VRDisplay VRIndex VRMath VRNet VRPlugin ${ALL_LIBS})
 

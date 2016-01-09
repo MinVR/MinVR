@@ -10,6 +10,7 @@
 #define COMPOSITEDISPLAY_H_
 
 #include "display/concrete/BaseDisplayDevice.h"
+#include "display/VRDisplayDeviceFactory.h"
 
 namespace MinVR {
 

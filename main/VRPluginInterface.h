@@ -9,7 +9,7 @@
 #ifndef VRPLUGININTERFACE_H_
 #define VRPLUGININTERFACE_H_
 
-#include "display/VRDisplayDevice.h"
+#include "display/VRDisplayDeviceFactory.h"
 #include "plugin/PluginInterface.h"
 #include "main/VRTimer.h"
 #include "event/VRInputDevice.h"

@@ -9,7 +9,7 @@
 #ifndef COMPOSITEDISPLAY_H_
 #define COMPOSITEDISPLAY_H_
 
-#include "display/VRDisplayDevice.h"
+/*#include "display/VRDisplayDevice.h"
 
 namespace MinVR {
 
@@ -67,4 +67,4 @@ protected:
 
 } /* namespace MinVR */
 
-#endif /* COMPOSITEDISPLAY_H_ */
+//#endif /* COMPOSITEDISPLAY_H_ */

@@ -6,17 +6,21 @@
  * 		Dan Orban (dtorban)
  */
 
-#ifndef VRDISPLAYDEVICEFACTORY2_H_
-#define VRDISPLAYDEVICEFACTORY2_H_
+#ifndef VRDISPLAYDEVICEFACTORY_H_
+#define VRDISPLAYDEVICEFACTORY_H_
 
-namespace ElasticMesh {
+#include <vector>
+#include "display/VRDisplayDevice.h"
 
-class VRDisplayDeviceFactory2 {
+namespace MinVR {
+
+class VRDisplayDeviceFactory {
 public:
-	VRDisplayDeviceFactory2();
-	virtual ~VRDisplayDeviceFactory2();
+	virtual ~VRDisplayDeviceFactory() {}
+
+	virtual std::vector<VRDisplayDevice*> create(VRDataIndex& config, const std::string nameSpace, VRDisplayDeviceFactory* factory) = 0;
 };
 
-} /* namespace ElasticMesh */
+} /* namespace MinVR */
 
-#endif /* VRDISPLAYDEVICEFACTORY2_H_ */
+#endif /* VRDISPLAYDEVICEFACTORY_H_ */

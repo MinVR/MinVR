@@ -5,7 +5,9 @@ project (VRDisplay)
 set (${PROJECT_NAME}_source_files 
 	VRDisplayDevice.cpp
 	concrete/BaseDisplayDevice.cpp
+	concrete/BaseDisplayFactory.cpp
 	concrete/CompositeDisplay.cpp
+	concrete/CompositeDisplayFactory.cpp
 )
 
 add_library (${PROJECT_NAME} ${${PROJECT_NAME}_source_files})
