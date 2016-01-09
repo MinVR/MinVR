@@ -1,8 +1,5 @@
 #include "VRMain.h"
 
-VRMain* VRMain::_instance = NULL;
-
-
 VRMain::VRMain() : initialized(false),_vrNet(NULL)
 {
 }
@@ -10,20 +7,8 @@ VRMain::VRMain() : initialized(false),_vrNet(NULL)
 
 VRMain::~VRMain()
 {
-  delete _instance;
   delete _index;
   delete _vrNet;
-  _instance = NULL;
-}
-
-
-VRMain* 
-VRMain::instance() 
-{
-  if (!_instance) {
-    _instance = new VRMain();
-  }
-  return _instance;
 }
 
 

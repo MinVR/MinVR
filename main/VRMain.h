@@ -16,6 +16,9 @@
 class VRMain {
 public:
 
+  VRMain();
+  virtual ~VRMain();
+
   // Use these methods to register the various callbacks for the
   // execution.  Likely enough we'll have a longer list of these
   // eventually, and maybe a better way to organize them.
@@ -30,23 +33,21 @@ public:
   void registerSwapCallback(void (*swapCB)()) { _swapCB = swapCB; };
                             
   
-  // VRMain is a singleton class -- each program should contain exactly
-  // one instance of VRMain.  Access the current instance using the
-  // instance() function, which will create a new instance the first
-  // time it is called, typically via:
-  // VRMain::instance()->initialize(name,settings);
-  static VRMain* instance();
-
-
   // THE BIG 4: TO USE MINVR, ADD THE FOLLOWING 4 FUNCTIONS TO YOUR PROGRAM:
 
-  // 1. The first step is to initialize MinVR.  The settings file is
-  // quite detailed and contains the information needed to setup the
-  // geometry of the VR display devices, the type of stereo rendering
-  // to use, input device drivers to create, plugins/add-ons to load,
-  // and more.  The process name is used to find the data that belongs
-  // to this process in the configuration files.  Leave it out if such
-  // things are irrelevant to your project.
+  // 1. The first step is to initialize MinVR.  This is a separate
+  // step from the constructor because it is frequently convenient for
+  // your VRMain to be a global variable, and C++ does not allow a
+  // convenient and reliable way to initialize global variables with
+  // arguments.
+  //  
+  // The settings file is quite detailed and contains the information
+  // needed to setup the geometry of the VR display devices, the type
+  // of stereo rendering to use, input device drivers to create,
+  // plugins/add-ons to load, and more.  The process name is used to
+  // find the data that belongs to this process in the configuration
+  // files.  Leave it out if such things are irrelevant to your
+  // project.
   void initialize(const std::string settingsFile);
   void initialize(const std::string processName, const std::string settingsFile);
 
@@ -75,14 +76,9 @@ public:
   // resources created by MinVR
   void shutdown();
 
-  virtual ~VRMain();
-
   std::string getName() { return _name; }
   
 private:
-
-  VRMain();
-  static VRMain *_instance;
 
   std::string _name;
   // This flag indicates that the initialize() method has been run,

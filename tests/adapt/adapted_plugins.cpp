@@ -64,6 +64,7 @@ void renderCB(VRDataIndex* index);
 void swapCB();
 
 VRDisplayDevice* display;
+VRMain *MVR;
 
 /*
  * Main functionality
@@ -113,12 +114,13 @@ int main(int argc, char **argv) {
   display->use(initGL);
   display->use(reshape);
 
+  MVR = new VRMain();
   if (argc > 1) {
-    VRMain::instance()->initialize(argv[1],argv[2]);
+	  MVR->initialize(argv[1],argv[2]);
   }
-  VRMain::instance()->registerEventCallback(&eventCB);
-  VRMain::instance()->registerRenderCallback(&renderCB);
-  VRMain::instance()->registerSwapCallback(&swapCB);
+  MVR->registerEventCallback(&eventCB);
+  MVR->registerRenderCallback(&renderCB);
+  MVR->registerSwapCallback(&swapCB);
 
   bool isRunning = true;
 
@@ -127,7 +129,7 @@ int main(int argc, char **argv) {
   {
 	  // Loop through new events
 
-	  VRMain::instance()->synchronizeAndProcessEvents();
+	  MVR->synchronizeAndProcessEvents();
 	  inputDevice->appendNewInputEventsSinceLastCall(dataQueue);
 	  while (dataQueue.notEmpty())
 	  {
@@ -148,11 +150,12 @@ int main(int argc, char **argv) {
 	  // Render the triangle on all displays (passing render function into display)
 	  // Includes viewports, threading, stereo displays, and custom display types
 	  display->startRendering(render);
-	  VRMain::instance()->renderEverywhere();
+	  MVR->renderEverywhere();
 	  display->finishRendering();
   }
 
   delete display;
+  delete MVR;
 }
 
 
@@ -462,7 +465,7 @@ void eventCB(const std::string &eventName, VRDataIndex *dataIndex) {
     // overrides the default radius value, it will not be affected by
     // the event.
 
-    radius = dataIndex->getValue("radius", "/MVR/VRDisplayDevices/" + VRMain::instance()->getName() + "/");
+    radius = dataIndex->getValue("radius", "/MVR/VRDisplayDevices/" + MVR->getName() + "/");
 
     std::cout << "radius: " << radius << std::endl;
 
