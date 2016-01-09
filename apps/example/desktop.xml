@@ -14,81 +14,22 @@
 </VRPlugins>
 
 <VRDisplayDevices>
-	<MainDisplay>
+	<Display1>
+		<processId type="int">0</processId>
 	    <displayType type="string">glfw_display</displayType>
 	    <xOffset type="int">0</xOffset>
 	    <yOffset type="int">0</yOffset>
 	    <width type="int">500</width>
 	    <height type="int">500</height>
-	</MainDisplay>
-<VRDisplayDevices>
-
-<VRDisplayDevices2>
-  <ThreadedDisplay>
-    <displayType type="string">thread_group</displayType>
-    <Display1>
-      <allowThreading type="int">1</allowThreading>
-      <displayType type="string">glfw_display</displayType>
-      <xOffset type="int">600</xOffset>
-      <yOffset type="int">0</yOffset>
-      <width type="int">200</width>
-      <height type="int">200</height>
-    </Display1>
-    <Display2>
-      <displayType type="string">glfw_display</displayType>
-      <allowThreading type="int">1</allowThreading>
-      <xOffset type="int">600</xOffset>
-      <yOffset type="int">250</yOffset>
-      <width type="int">200</width>
-      <height type="int">200</height>
-      <stereoFormatter>
-	<displayType type="string">sideBySideStereo</displayType>
-      </stereoFormatter>
-    </Display2>
-    <Display3>
-      <displayType type="string">glfw_display</displayType>
-      <allowThreading type="int">1</allowThreading>
-      <xOffset type="int">600</xOffset>
-      <yOffset type="int">450</yOffset>
-      <width type="int">200</width>
-      <height type="int">200</height>
-      <stereoFormatter>
-	<displayType type="string">sideBySideStereo</displayType>
-      </stereoFormatter>
-    </Display3>
-  </ThreadedDisplay>
-  <MainDisplay>
-    <displayType type="string">glfw_display</displayType>
-    <xOffset type="int">800</xOffset>
-    <yOffset type="int">0</yOffset>
-    <width type="int">300</width>
-    <height type="int">600</height>
-  </MainDisplay>
-  <OtherDisplay>
-    <displayType type="string">glfw_display</displayType>
-    <xOffset type="int">0</xOffset>
-    <yOffset type="int">0</yOffset>
-    <width type="int">600</width>
-    <height type="int">600</height>
-    <stereoFormatter>
-       <!--displayType type="string">quadbufferStereo</displayType-->
-       <displayType type="string">sideBySideStereo</displayType>
-       <topViewport>
-          <displayType type="string">viewport</displayType>
-	  <xOffset type="int">0</xOffset>
-	  <yOffset type="int">300</yOffset>
-	  <width type="int">600</width>
-	  <height type="int">300</height>
-       </topViewport>
-       <bottomViewport>
-          <displayType type="string">viewport</displayType>
-	  <xOffset type="int">0</xOffset>
-	  <yOffset type="int">0</yOffset>
-	  <width type="int">600</width>
-	  <height type="int">300</height>
-       </bottomViewport>
-     </stereoFormatter>
-  </OtherDisplay>
+	</Display1>
+	<Display2>
+		<processId type="int">1</processId>
+	    <displayType type="string">glfw_display</displayType>
+	    <xOffset type="int">500</xOffset>
+	    <yOffset type="int">0</yOffset>
+	    <width type="int">500</width>
+	    <height type="int">500</height>
+	</Display2>
 </VRDisplayDevices>
 
 </MVR>

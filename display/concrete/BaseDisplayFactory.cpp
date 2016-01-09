@@ -30,20 +30,30 @@ std::vector<VRDisplayDevice*> BaseDisplayFactory::create(VRDataIndex& config, co
 			VRContainer item = config.getValue(*f);
 			if (config.exists("displayType", *f))
 			{
+				int processId = config.getValue("/ProcessId");
 				std::string displayType = config.getValue("displayType", *f);
-				VRDisplayDevice* display = createDisplay(displayType, *f, config, factory);
-				if (display != NULL)
+				if (config.exists("processId", *f))
 				{
-					display->setName(*f);
+					processId = config.getValue("processId", *f);
+				}
 
-					newDisplays.push_back(display);
-					displays.push_back(display);
-
-					std::vector<VRDisplayDevice*> subDisplays = factory->create(config, *f, factory);
-					for (int f = 0; f < subDisplays.size(); f++)
+				if (processId == (VRInt)config.getValue("/ProcessId"))
+				{
+					VRDisplayDevice* display = createDisplay(displayType, *f, config, factory);
+					if (display != NULL)
 					{
-						subDisplays[f]->setParent(display);
-						display->addSubDisplay(subDisplays[f]);
+						display->setName(*f);
+
+						newDisplays.push_back(display);
+						displays.push_back(display);
+
+
+						std::vector<VRDisplayDevice*> subDisplays = factory->create(config, *f, factory);
+						for (int f = 0; f < subDisplays.size(); f++)
+						{
+							subDisplays[f]->setParent(display);
+							display->addSubDisplay(subDisplays[f]);
+						}
 					}
 				}
 			}
