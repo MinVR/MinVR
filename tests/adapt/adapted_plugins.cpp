@@ -1,12 +1,6 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include "plugin/PluginManager.h"
-#include "plugin/PluginInterface.h"
-#include "main/VRPluginInterface.h"
-#include "main/VRTimer.h"
-#include "display/concrete/CompositeDisplay.h"
-#include "display/concrete/CompositeDisplayFactory.h"
 #include <sstream>
 #include <fstream>
 #include <math.h>
@@ -33,12 +27,8 @@ using namespace std;
  */
 void initGL();
 void render(VRRenderState& state);
-void reshape();
 void eventCB(const std::string &eventName, VRDataIndex *dataIndex);
-void renderCB(VRDataIndex* index);
-void swapCB();
 
-VRDisplayDevice* display;
 VRMain *MVR;
 bool isRunning = true;
 
@@ -54,61 +44,17 @@ int main(int argc, char **argv) {
 	  MVR->initialize(argv[1],argv[2]);
   }
   MVR->registerEventCallback(&eventCB);
-  MVR->registerRenderCallback(&renderCB);
-  MVR->registerSwapCallback(&swapCB);
 
-  /*// Load configuration from file
-  VRDataIndex config;
-  std::string fileName = argv[2];
-  config.processXMLFile(fileName, "");
-
-  // Combine display factories into one factory for simplicity
-  CompositeDisplayFactory factory(displayFactories);
-
-  // Created the display from the factory (the display is composite,
-  // so it contains multiple displays, but acts like one display)
-  display = new CompositeDisplay(config, "MVR/VRDisplayDevices", &factory);
-  display->initialize();*/
-
-  // Create input device from factory (in this case only glfw keyboard / mouse)
-  //VRInputDevice* inputDevice = inputDeviceFactory->create(config)[0];
-
-  // Create dataIndex and dataQueue
-  VRDataQueue dataQueue;
-  VRDataIndex dataIndex;
-
-  display = MVR->getDisplay();
+  VRDisplayDevice* display = MVR->getDisplay();
 
   display->use(initGL);
-  display->use(reshape);
-
-
 
   // Loop until escape key is hit or main display is closed
   while (display->isOpen() && isRunning)
   {
-	  // Loop through new events
-
 	  MVR->synchronizeAndProcessEvents();
-	  /*inputDevice->appendNewInputEventsSinceLastCall(dataQueue);
-	  while (dataQueue.notEmpty())
-	  {
-		  // If escape is pressed, exit program
-		  std::string p = dataIndex.addSerializedValue( dataQueue.getSerializedObject() );
-		  if (p == "/keyboard")
-		  {
-			  std::string val = dataIndex.getValue("value", p);
-			  if (val == "ESC_down")
-			  {
-				  isRunning = false;
-			  }
-			  cout << val << endl;
-		  }
-		  dataQueue.pop();
-	  }*/
 
-	  // Render the triangle on all displays (passing render function into display)
-	  // Includes viewports, threading, stereo displays, and custom display types
+	  // Render the scene on all displays (passing render function into display)
 	  display->startRendering(render);
 	  MVR->renderEverywhere();
 	  display->finishRendering();
@@ -337,13 +283,6 @@ void render(VRRenderState& state) {
 	   glEnd();   // Done drawing the pyramid
 }
 
-/* Handler for window-repaint event. Called back when the window first
-   appears and whenever the window needs to be re-painted. */
-void renderCB(VRDataIndex* index) {
-
-
-}
-
 
 // The tail end of the drawing function above has been chopped off and
 // put into this swap function so it can be called in sync with all
@@ -354,32 +293,6 @@ void swapCB() {
    //glutSwapBuffers();
 }
 
-
-/* Handler for window re-size event. Called back when the window first
-   appears and whenever the window is re-sized with its new width and
-   height */
-void reshape() {  // GLsizei for non-negative integer
-
-	GLfloat width = 640;
-	GLfloat height = 480;
-
-   // Compute aspect ratio of the new window
-   if (height == 0) height = 1;                // To prevent divide by 0
-   GLfloat aspect = (GLfloat)width / (GLfloat)height;
-
-   // Set the viewport to cover the new window
-   glViewport(0, 0, (GLsizei)width, (GLsizei)height);
-
-   // Set the aspect ratio of the clipping volume to match the viewport
-   glMatrixMode(GL_PROJECTION);  // To operate on the Projection matrix
-   glLoadIdentity();             // Reset
-
-   // Enable perspective projection with fovy, aspect, zNear and zFar
-   gluPerspective(1.6*45.0f, aspect, 0.1f, 100.0f);
-
-   //The .m is the GLfloat* you are accessing
-   //glMultMatrix( GLKMatrix4MakePerspective(45.0f, aspect, 0.1f,100.0f ).m );
-}
 
 // The mouse and special key event stuff that was here is now gone.
 

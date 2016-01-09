@@ -2,8 +2,15 @@
 #include "display/concrete/CompositeDisplay.h"
 #include "display/concrete/CompositeDisplayFactory.h"
 
+void emptyEventCallbackMVR(const std::string &eventName, VRDataIndex *dataIndex) {}
+void emptyRenderCallbackMVR(VRDataIndex* index) {}
+void emptyRenderSwapMVR() {}
+
 VRMain::VRMain() : initialized(false),_vrNet(NULL), _display(NULL)
 {
+	  registerEventCallback(&emptyEventCallbackMVR);
+	  registerRenderCallback(&emptyRenderCallbackMVR);
+	  registerSwapCallback(&emptyRenderSwapMVR);
 }
 
 
@@ -112,27 +119,26 @@ VRMain::synchronizeAndProcessEvents() {
   {
 	  _inputDevices[f]->appendNewInputEventsSinceLastCall(eventsFromDevices);
   }
+  //eventsFromDevices.printQueue();
 
   // SYNCHRONIZATION POINT #1: When this function returns, we know
   // that all MinVR nodes have the same list of input events generated
   // since the last call to synchronizeAndProcessEvents(..).  So,
   // every node will process the same set of input events this frame.
   if (_vrNet != NULL) {
-    eventData = _vrNet->syncEventDataAcrossAllNodes(eventsFromDevices.getSerializedObject());
+    eventData = _vrNet->syncEventDataAcrossAllNodes(eventsFromDevices.serialize());
+  }
+  else if (eventsFromDevices.notEmpty())
+  {
+	  eventData = eventsFromDevices.serialize();
   }
 
   VRDataQueue *events = new VRDataQueue(eventData);
-
-  for (int f = 0; f < _inputDevices.size(); f++)
-  {
-	  _inputDevices[f]->appendNewInputEventsSinceLastCall(*events);
-  }
 
   // After MinVR's internal state is updated above, now the events are
   // passed on to the application programmer's event callback
   // function.
   while (events->notEmpty()) {
-
     // Step 2: Unpack the next item from the queue.
     std::string event =
       _index->addSerializedValue( events->getSerializedObject() );
