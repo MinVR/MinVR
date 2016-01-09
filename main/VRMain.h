@@ -87,6 +87,10 @@ public:
   	// Used for timing (i.e. for animation, etc...)
   void addVRTimer(MinVR::VRTimer* timer);
 
+	VRDisplayDevice* getDisplay() const {
+		return _display;
+	}
+
 private:
 
 
@@ -106,11 +110,14 @@ private:
   void (*_renderCB)(VRDataIndex *);
   void (*_swapCB)();
 
+  VRDisplayDevice* _display;
+
   // Plugin items
   MinVR::PluginManager _pluginManager;
   std::vector<MinVR::VRDisplayDeviceFactory*> _displayFactories;
   std::vector<VRInputDeviceFactory*> _inputDeviceFactories;
   std::vector<MinVR::VRTimer*> _timers;
+  std::vector<VRInputDevice*> _inputDevices;
 };
 
 #endif

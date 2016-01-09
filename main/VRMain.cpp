@@ -1,6 +1,8 @@
 #include "VRMain.h"
+#include "display/concrete/CompositeDisplay.h"
+#include "display/concrete/CompositeDisplayFactory.h"
 
-VRMain::VRMain() : initialized(false),_vrNet(NULL)
+VRMain::VRMain() : initialized(false),_vrNet(NULL), _display(NULL)
 {
 }
 
@@ -9,6 +11,10 @@ VRMain::~VRMain()
 {
   delete _index;
   delete _vrNet;
+  if (_display != NULL)
+  {
+	  delete _display;
+  }
 }
 
 
@@ -50,17 +56,37 @@ VRMain::initialize(const std::string processName, const std::string settingsFile
   // Create DisplayDevices from settings
   //std::vector<VRDisplayDevice*> displayDevices;
   //displayDevices.push_back(new ConsoleOnlyDisplay());
+  // Combine display factories into one factory for simplicity
+  MinVR::CompositeDisplayFactory factory(_displayFactories);
+
+  // Created the display from the factory (the display is composite,
+  // so it contains multiple displays, but acts like one display)
+  _display = new MinVR::CompositeDisplay(*_index, "/MVR/VRDisplayDevices", &factory);
 
   // Create a Display Manager (either the default or multi-threaded)
   // based on settings
   //_displayManager = new DisplayManager(displayDevices);
+  _display->initialize();
 
-  // Set Network Synchronization mode based on settings.  Note that
-  // these names are hard-wired in place. This is meant to be not
-  // configurable, though doubtless these names will change during
-  // development.
-  _vrNet = new VRNetClient((VRString)_index->getValue("/MVR/Server/Host"),
-                           (VRString)_index->getValue("/MVR/Server/Port"));
+  // Create input devices
+  for (int f = 0; f < _inputDeviceFactories.size(); f++)
+  {
+	  std::vector<VRInputDevice*> devices = _inputDeviceFactories[f]->create(*_index);
+	  for (int i = 0; i < devices.size(); i++)
+	  {
+		  _inputDevices.push_back(devices[i]);
+	  }
+  }
+
+  if (_index->exists("Server", "/MVR"))
+  {
+	  // Set Network Synchronization mode based on settings.  Note that
+	  // these names are hard-wired in place. This is meant to be not
+	  // configurable, though doubtless these names will change during
+	  // development.
+	  _vrNet = new VRNetClient((VRString)_index->getValue("/MVR/Server/Host"),
+							   (VRString)_index->getValue("/MVR/Server/Port"));
+  }
 
   initialized = true;
 }
@@ -81,16 +107,26 @@ VRMain::synchronizeAndProcessEvents() {
   //  (*id)->appendNewInputEventsSinceLastCall(inputEvents);
   // }
 
+  VRDataQueue eventsFromDevices;
+  for (int f = 0; f < _inputDevices.size(); f++)
+  {
+	  _inputDevices[f]->appendNewInputEventsSinceLastCall(eventsFromDevices);
+  }
 
   // SYNCHRONIZATION POINT #1: When this function returns, we know
   // that all MinVR nodes have the same list of input events generated
   // since the last call to synchronizeAndProcessEvents(..).  So,
   // every node will process the same set of input events this frame.
   if (_vrNet != NULL) {
-    eventData = _vrNet->syncEventDataAcrossAllNodes(VRDataQueue::noData);
+    eventData = _vrNet->syncEventDataAcrossAllNodes(eventsFromDevices.getSerializedObject());
   }
 
   VRDataQueue *events = new VRDataQueue(eventData);
+
+  for (int f = 0; f < _inputDevices.size(); f++)
+  {
+	  _inputDevices[f]->appendNewInputEventsSinceLastCall(*events);
+  }
 
   // After MinVR's internal state is updated above, now the events are
   // passed on to the application programmer's event callback

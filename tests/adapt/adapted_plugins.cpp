@@ -29,32 +29,6 @@ using namespace MinVR;
 using namespace std;
 
 /*
- * Display and device factories retrieved from the interface
- */
-std::vector<VRDisplayDeviceFactory*> displayFactories;
-VRInputDeviceFactory* inputDeviceFactory;
-VRTimer* mainTimer;
-
-/*
- * Simple interface for interfacing with MinVR plugins.  It inherits
- * from VRPluginInterface which defines methods that plugins look for.
- * It is possible to define custom interfaces as well, but this interface
- * is specific for the base functionality in MinVR.
- */
-class SimpleInterface : public MinVR::VRPluginInterface {
-public:
-	SimpleInterface() {}
-	virtual ~SimpleInterface() {}
-
-	// Adds the display factories for all plugins who use this interface
-	void addVRDisplayDeviceFactory(VRDisplayDeviceFactory* factory) {displayFactories.push_back(factory);}
-	// Adds the input device factories for all plugins who use this interface
-	void addVRInputDeviceFactory(VRInputDeviceFactory* factory) { inputDeviceFactory = factory; }
-	// Used for timing (i.e. for animation, etc...)
-	void addVRTimer(VRTimer* timer) { mainTimer = timer; }
-};
-
-/*
  * Render and update methods
  */
 void initGL();
@@ -66,6 +40,7 @@ void swapCB();
 
 VRDisplayDevice* display;
 VRMain *MVR;
+bool isRunning = true;
 
 /*
  * Main functionality
@@ -73,7 +48,6 @@ VRMain *MVR;
 int main(int argc, char **argv) {
   cout << "Registering plugins..." << endl;
   cout << "Plugin path: " << PLUGINPATH << endl;
-
 
   MVR = new VRMain();
   if (argc > 1) {
@@ -83,25 +57,7 @@ int main(int argc, char **argv) {
   MVR->registerRenderCallback(&renderCB);
   MVR->registerSwapCallback(&swapCB);
 
-  // Declare and initialize interface
-  SimpleInterface iface;
-
-/*  // Create plugin manager and add the MinVR interface
-  PluginManager pluginManager;
-  pluginManager.addInterface(dynamic_cast<SimpleInterface*>(&iface));
-
-    string buildType = "";
-#ifdef MinVR_DEBUG
-    buildType = "d";
-#endif
-
-  // Load specific plugins which will initialize and add factories.
-  // This can be defined inside the configuration itself
-  pluginManager.loadPlugin(std::string(PLUGINPATH) + "/MinVR_GLFW", "MinVR_GLFW" + buildType);
-  pluginManager.loadPlugin(std::string(PLUGINPATH) + "/MinVR_OpenGL", "MinVR_OpenGL" + buildType);
-  pluginManager.loadPlugin(std::string(PLUGINPATH) + "/MinVR_Threading", "MinVR_Threading" + buildType);
-*/
-  // Load configuration from file
+  /*// Load configuration from file
   VRDataIndex config;
   std::string fileName = argv[2];
   config.processXMLFile(fileName, "");
@@ -112,20 +68,21 @@ int main(int argc, char **argv) {
   // Created the display from the factory (the display is composite,
   // so it contains multiple displays, but acts like one display)
   display = new CompositeDisplay(config, "MVR/VRDisplayDevices", &factory);
-  display->initialize();
+  display->initialize();*/
 
   // Create input device from factory (in this case only glfw keyboard / mouse)
-  VRInputDevice* inputDevice = inputDeviceFactory->create(config)[0];
+  //VRInputDevice* inputDevice = inputDeviceFactory->create(config)[0];
 
   // Create dataIndex and dataQueue
   VRDataQueue dataQueue;
   VRDataIndex dataIndex;
 
+  display = MVR->getDisplay();
+
   display->use(initGL);
   display->use(reshape);
 
 
-  bool isRunning = true;
 
   // Loop until escape key is hit or main display is closed
   while (display->isOpen() && isRunning)
@@ -133,7 +90,7 @@ int main(int argc, char **argv) {
 	  // Loop through new events
 
 	  MVR->synchronizeAndProcessEvents();
-	  inputDevice->appendNewInputEventsSinceLastCall(dataQueue);
+	  /*inputDevice->appendNewInputEventsSinceLastCall(dataQueue);
 	  while (dataQueue.notEmpty())
 	  {
 		  // If escape is pressed, exit program
@@ -148,7 +105,7 @@ int main(int argc, char **argv) {
 			  cout << val << endl;
 		  }
 		  dataQueue.pop();
-	  }
+	  }*/
 
 	  // Render the triangle on all displays (passing render function into display)
 	  // Includes viewports, threading, stereo displays, and custom display types
@@ -157,7 +114,6 @@ int main(int argc, char **argv) {
 	  display->finishRendering();
   }
 
-  delete display;
   delete MVR;
 }
 
@@ -434,6 +390,17 @@ void eventCB(const std::string &eventName, VRDataIndex *dataIndex) {
   // The event can be examined here.
   //std::cout << std::endl << "examining the data..." << std::endl;
   //dataIndex->printStructure(eventName);
+
+	// If escape is pressed, exit program
+	if (eventName == "/keyboard")
+	{
+		std::string val = dataIndex->getValue("value", eventName);
+		if (val == "ESC_down")
+		{
+			isRunning = false;
+		}
+		cout << val << endl;
+	}
 
   // The event handler's actions are here.
   if (eventName.compare("/HeadAngleEvent") == 0) {
