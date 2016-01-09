@@ -23,7 +23,7 @@ public:
 	virtual bool allowThreading() = 0;
 	virtual bool isQuadbuffered() = 0;
 
-	virtual void initialize() = 0;
+	virtual void initialize();
 	void use(const MinVR::VRDisplayAction& action);
 	void startRendering(const MinVR::VRRenderer& renderer);
 	virtual void finishRendering() = 0;

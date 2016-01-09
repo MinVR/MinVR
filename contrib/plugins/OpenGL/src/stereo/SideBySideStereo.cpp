@@ -37,8 +37,7 @@ int SideBySideStereo::getHeight() {
 	return height;
 }
 
-void SideBySideStereo::startRendering(const MinVR::VRRenderer& renderer,
-		int t) {
+void SideBySideStereo::startRendering(const MinVR::VRRenderer& renderer, VRRenderState& state) {
 	glEnable(GL_SCISSOR_TEST);
 	glDrawBuffer(GL_BACK);
 
@@ -49,13 +48,13 @@ void SideBySideStereo::startRendering(const MinVR::VRRenderer& renderer,
 
 	glViewport(x,y,width,height);
 	glScissor(x,y,width,height);
-	startRenderingAllDisplays(renderer, t);
+	startRenderingAllDisplays(renderer, state);
 
 	x = x + width;
 
 	glViewport(x,y,width,height);
 	glScissor(x,y,width,height);
-	startRenderingAllDisplays(renderer, t);
+	startRenderingAllDisplays(renderer, state);
 }
 
 } /* namespace MinVR */

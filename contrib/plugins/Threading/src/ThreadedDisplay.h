@@ -10,13 +10,14 @@
 #define THREADEDDISPLAY_H_
 
 #include "plugin/PluginFramework.h"
-#include "display/VRDisplayDevice.h"
+#include "display/concrete/BaseDisplayDevice.h"
+#include "display/concrete/BaseDisplayFactory.h"
 #include "RenderThread.h"
 #include "Thread.h"
 
 namespace MinVR {
 
-class ThreadedDisplay: public VRDisplayDevice {
+class ThreadedDisplay: public BaseDisplayDevice {
 public:
 	PLUGIN_API ThreadedDisplay();
 	PLUGIN_API virtual ~ThreadedDisplay();
@@ -26,7 +27,7 @@ public:
 	PLUGIN_API void finishRendering();
 
 protected:
-	PLUGIN_API void startRendering(const MinVR::VRRenderer& renderer, int x);
+	PLUGIN_API void startRendering(const MinVR::VRRenderer& renderer, VRRenderState& state);
 
 private:
 	std::vector<RenderThread*> renderThreads;
@@ -34,7 +35,7 @@ private:
 	int frame;
 };
 
-class ThreadedDisplayFactory : public SimpleVRDisplayFactory {
+class ThreadedDisplayFactory : public BaseDisplayFactory {
 public:
 	ThreadedDisplayFactory();
 	virtual ~ThreadedDisplayFactory();

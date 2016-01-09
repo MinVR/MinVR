@@ -17,12 +17,11 @@ QuadbufferStereo::QuadbufferStereo() {
 QuadbufferStereo::~QuadbufferStereo() {
 }
 
-void QuadbufferStereo::startRendering(const MinVR::VRRenderer& renderer,
-		int x) {
+void QuadbufferStereo::startRendering(const MinVR::VRRenderer& renderer, VRRenderState& state) {
 	glDrawBuffer(GL_BACK_LEFT);
-	startRenderingAllDisplays(renderer, x);
+	startRenderingAllDisplays(renderer, state);
 	glDrawBuffer(GL_BACK_RIGHT);
-	startRenderingAllDisplays(renderer, x);
+	startRenderingAllDisplays(renderer, state);
 }
 
 void QuadbufferStereo::finishRendering() {

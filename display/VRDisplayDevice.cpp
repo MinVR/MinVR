@@ -8,6 +8,10 @@
 
 #include "display/VRDisplayDevice.h"
 
+void VRDisplayDevice::initialize()
+{
+}
+
 void VRDisplayDevice::use(const MinVR::VRDisplayAction& action)
 {
 	useDisplay(action);

@@ -57,10 +57,10 @@ void GlfwWindow::initialize() {
     VRDisplayDevice::initialize();
 }
 
-void GlfwWindow::startRendering(const MinVR::VRRenderer& renderer, int x) {
+void GlfwWindow::startRendering(const MinVR::VRRenderer& renderer, VRRenderState& state) {
 	glfwMakeContextCurrent(window);
 	glViewport(0, 0, getWidth(), getHeight());
-	startRenderingAllDisplays(renderer, x);
+	startRenderingAllDisplays(renderer, state);
 	glFlush();
 }
 

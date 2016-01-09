@@ -152,7 +152,7 @@ endif()
 
 add_definitions(-DPLUGINPATH="${CMAKE_BINARY_DIR}/plugins")
 add_executable ( test_glfw test/test.cpp )
-target_link_libraries(test_glfw ${OPENGL_LIBRARIES} debug VRPlugind optimized VRPlugin debug VRIndexd optimized VRIndex ${LIBS_ALL})
+target_link_libraries(test_glfw ${OPENGL_LIBRARIES} VRPlugin VRDisplay VRIndex ${LIBS_ALL})
 
 SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
 SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
@@ -160,7 +160,7 @@ SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/lib")
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 add_library ( ${PROJECT_NAME} SHARED ${HEADERFILES} ${SOURCEFILES} )
-target_link_libraries(${PROJECT_NAME} ${GLFW_LIBRARY} ${OPENGL_LIBRARIES} debug VRPlugind optimized VRPlugin debug VRIndexd optimized VRIndex ${LIBS_ALL})
+target_link_libraries(${PROJECT_NAME} ${GLFW_LIBRARY} ${OPENGL_LIBRARIES} VRPlugin VRDisplay VRIndex ${LIBS_ALL})
 add_dependencies( ${PROJECT_NAME} glfw)
 
 #------------------------------------------

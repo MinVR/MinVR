@@ -10,13 +10,13 @@
 #define GLFWWINDOW_H_
 
 #include "plugin/PluginFramework.h"
-#include "display/VRDisplayDevice.h"
+#include "display/concrete/BaseDisplayDevice.h"
 #include <GLFW/glfw3.h>
 #include "GlfwInputDevice.h"
 
 namespace MinVR {
 
-class GlfwWindow : public VRDisplayDevice {
+class GlfwWindow : public BaseDisplayDevice {
 public:
 	PLUGIN_API GlfwWindow(int x, int y, int width, int height);
 	PLUGIN_API virtual ~GlfwWindow();
@@ -37,11 +37,8 @@ public:
 		this->inputDevice = inputDevice;
 	}
 
-	//void addSubDisplay(VRDisplayDevice* display);
-
-
 protected:
-	PLUGIN_API void startRendering(const MinVR::VRRenderer& renderer, int x);
+	PLUGIN_API void startRendering(const MinVR::VRRenderer& renderer, VRRenderState& state);
 
 private:
 	GLFWwindow* window;

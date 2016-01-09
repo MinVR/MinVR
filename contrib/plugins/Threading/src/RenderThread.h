@@ -35,7 +35,7 @@ struct RenderThreadInfo
 
 	const VRDisplayAction* action;
 	const VRRenderer* renderer;
-	int x;
+	VRRenderState* renderState;
 };
 
 class RenderThread {

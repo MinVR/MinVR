@@ -5,7 +5,8 @@
 #include "plugin/PluginInterface.h"
 #include "main/VRPluginInterface.h"
 #include "main/VRTimer.h"
-#include "display/CompositeDisplay.h"
+#include "display/concrete/CompositeDisplay.h"
+#include "display/concrete/CompositeDisplayFactory.h"
 #include <sstream>
 #include <fstream>
 #include "OpenGLGraphics.h"

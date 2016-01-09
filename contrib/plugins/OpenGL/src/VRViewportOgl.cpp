@@ -17,7 +17,7 @@ VRViewportOgl::VRViewportOgl(int x, int y, int width, int height) : x(x), y(y), 
 VRViewportOgl::~VRViewportOgl() {
 }
 
-void VRViewportOgl::startRendering(const MinVR::VRRenderer& renderer, int t) {
+void VRViewportOgl::startRendering(const MinVR::VRRenderer& renderer, VRRenderState& state) {
 	glEnable(GL_SCISSOR_TEST);
 	int xOffset = x + getParent()->getXOffset();
 	int yOffset = y + getParent()->getYOffset();
@@ -25,7 +25,7 @@ void VRViewportOgl::startRendering(const MinVR::VRRenderer& renderer, int t) {
 	int viewportHeight = min(height, getParent()->getHeight()-y);
 	glViewport(xOffset, yOffset, viewportWidth, viewportHeight);
 	glScissor(xOffset, yOffset, viewportWidth, viewportHeight);
-	startRenderingAllDisplays(renderer, t);
+	startRenderingAllDisplays(renderer, state);
 }
 
 void VRViewportOgl::finishRendering() {

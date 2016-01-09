@@ -114,7 +114,7 @@ SET(CMAKE_INSTALL_RPATH "${VRPlugins_install_dir}/${PROJECT_NAME}/lib")
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 add_library ( ${PROJECT_NAME} SHARED ${HEADERFILES} ${SOURCEFILES} )
-target_link_libraries(${PROJECT_NAME} debug VRPlugind optimized VRPlugin debug VRIndexd optimized VRIndex ${LIBS_ALL})
+target_link_libraries(${PROJECT_NAME} VRPlugin VRDisplay VRIndex ${LIBS_ALL})
 
 #------------------------------------------
 # Install Target

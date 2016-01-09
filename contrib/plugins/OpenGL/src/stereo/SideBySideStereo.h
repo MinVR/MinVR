@@ -10,11 +10,11 @@
 #define SIDEBYSIDESTEREO_H_
 
 #include "plugin/PluginFramework.h"
-#include "display/VRDisplayDevice.h"
+#include "display/concrete/BaseDisplayDevice.h"
 
 namespace MinVR {
 
-class SideBySideStereo : public VRDisplayDevice {
+class SideBySideStereo : public BaseDisplayDevice {
 public:
 	PLUGIN_API SideBySideStereo();
 	PLUGIN_API virtual ~SideBySideStereo();
@@ -27,7 +27,7 @@ public:
 	PLUGIN_API void finishRendering();
 
 protected:
-	PLUGIN_API void startRendering(const MinVR::VRRenderer& renderer, int x);
+	PLUGIN_API void startRendering(const MinVR::VRRenderer& renderer, VRRenderState& state);
 
 private:
 	int x, y, width, height;

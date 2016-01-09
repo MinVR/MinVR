@@ -100,7 +100,7 @@ void ThreadedDisplay::finishRendering() {
 	}
 }
 
-void ThreadedDisplay::startRendering(const MinVR::VRRenderer& renderer, int x) {
+void ThreadedDisplay::startRendering(const MinVR::VRRenderer& renderer, VRRenderState& state) {
 	frame++;
 
 	threadInfo.numThreadsStarted = 0;
@@ -108,7 +108,7 @@ void ThreadedDisplay::startRendering(const MinVR::VRRenderer& renderer, int x) {
 
 	threadInfo.startActionMutex.lock();
 	threadInfo.renderer = &renderer;
-	threadInfo.x = x;
+	threadInfo.renderState = &state;
 	threadInfo.threadAction = THREADACTION_RENDER;
 	threadInfo.startActionCond.notify_all();
 	threadInfo.startActionMutex.unlock();
@@ -119,7 +119,7 @@ void ThreadedDisplay::startRendering(const MinVR::VRRenderer& renderer, int x) {
 	{
 		if (!subDisplays[f]->allowThreading())
 		{
-			VRDisplayDevice::startRendering(subDisplays[f], renderer, x);
+			VRDisplayDevice::startRendering(subDisplays[f], renderer, state);
 		}
 	}
 	//startRenderingAllDisplays(renderer, x);

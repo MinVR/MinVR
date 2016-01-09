@@ -53,7 +53,7 @@ void RenderThread::render() {
 		{
 			frame++;
 			//std::cout << "RENDER " << frame << std::endl << std::flush;
-			VRDisplayDevice::startRendering(display, *(threadInfo->renderer), threadInfo->x);
+			VRDisplayDevice::startRendering(display, *(threadInfo->renderer), *(threadInfo->renderState));
 		}
 		else if (action == THREADACTION_ACTION)
 		{

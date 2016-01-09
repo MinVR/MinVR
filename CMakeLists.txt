@@ -133,4 +133,4 @@ add_subdirectory (tests/net)
 add_subdirectory (tests/config)
 add_subdirectory (tests/adapt)
 
-#add_subdirectory (contrib)
+add_subdirectory (contrib)

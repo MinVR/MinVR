@@ -10,11 +10,11 @@
 #define VRVIEWPORTOGL_H_
 
 #include "plugin/PluginFramework.h"
-#include "display/VRDisplayDevice.h"
+#include "display/concrete/BaseDisplayDevice.h"
 
 namespace MinVR {
 
-class VRViewportOgl: public VRDisplayDevice {
+class VRViewportOgl: public BaseDisplayDevice {
 public:
 	PLUGIN_API VRViewportOgl(int x, int y, int width, int height);
 	PLUGIN_API virtual ~VRViewportOgl();
@@ -27,7 +27,7 @@ public:
 	PLUGIN_API void finishRendering();
 
 protected:
-	PLUGIN_API void startRendering(const MinVR::VRRenderer& renderer, int x);
+	PLUGIN_API void startRendering(const MinVR::VRRenderer& renderer, VRRenderState& state);
 
 private:
 	int x, y, width, height;

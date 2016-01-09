@@ -10,11 +10,11 @@
 #define DISPLAYFACTORYOGL_H_
 
 #include "plugin/PluginFramework.h"
-#include "display/VRDisplayDevice.h"
+#include "display/concrete/BaseDisplayFactory.h"
 
 namespace MinVR {
 
-class DisplayFactoryOgl : public SimpleVRDisplayFactory {
+class DisplayFactoryOgl : public BaseDisplayFactory {
 public:
 	PLUGIN_API DisplayFactoryOgl();
 	PLUGIN_API virtual ~DisplayFactoryOgl();
