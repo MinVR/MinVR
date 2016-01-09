@@ -72,7 +72,7 @@ void ThreadedDisplay::initialize() {
 		renderThreads.push_back(new RenderThread(threadedDisplays[f], &threadInfo));
 	}
 
-	VRDisplayDevice::initialize();
+	BaseDisplayDevice::initialize();
 }
 
 void ThreadedDisplay::finishRendering() {
