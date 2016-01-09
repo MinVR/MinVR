@@ -3,7 +3,8 @@
 
 #include "config/VRDataIndex.h"
 #include "net/VRNetClient.h"
-
+#include "main/VRPluginInterface.h"
+#include "plugin/PluginManager.h"
 
 /** Application programmers should use this singleton class as the
     interface to the MinVR library.
@@ -13,7 +14,7 @@
     display devices was put aside and needs to be re-implemented.
 
 */
-class VRMain {
+class VRMain : public MinVR::VRPluginInterface {
 public:
 
   VRMain();
@@ -76,9 +77,18 @@ public:
   // resources created by MinVR
   void shutdown();
 
-  std::string getName() { return _name; }
+  std::string getProcessName() { return _name; }
   
+
+  // Adds the display factories for all plugins who use this interface
+  void addVRDisplayDeviceFactory(MinVR::VRDisplayDeviceFactory* factory);
+  	// Adds the input device factories for all plugins who use this interface
+  void addVRInputDeviceFactory(VRInputDeviceFactory* factory);
+  	// Used for timing (i.e. for animation, etc...)
+  void addVRTimer(MinVR::VRTimer* timer);
+
 private:
+
 
   std::string _name;
   // This flag indicates that the initialize() method has been run,
@@ -95,6 +105,12 @@ private:
   void (*_eventCB)(const std::string &, VRDataIndex *);
   void (*_renderCB)(VRDataIndex *);
   void (*_swapCB)();
+
+  // Plugin items
+  MinVR::PluginManager _pluginManager;
+  std::vector<MinVR::VRDisplayDeviceFactory*> _displayFactories;
+  std::vector<VRInputDeviceFactory*> _inputDeviceFactories;
+  std::vector<MinVR::VRTimer*> _timers;
 };
 
 #endif

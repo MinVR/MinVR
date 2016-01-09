@@ -6,28 +6,9 @@
   <NumClients type="int">1</NumClients>
 </Server>
 
-<VRDisplayDevices>
-  <radius>20.0</radius>
-  <Display1>
-    <radius>7.0</radius>
-	  <xOffset type="int">0</xOffset>
-	  <yOffset type="int">300</yOffset>
-  </Display1>
-  <Display2>
-	  <xOffset type="int">0</xOffset>
-	  <yOffset type="int">300</yOffset>
-  </Display2>
-</VRDisplayDevices>
-</MVR>
-
-<Server>
-  <Port type="string">3490</Port>
-  <NumClients type="int">1</NumClients>
-</Server>
-
 <VRPlugins>
     <MinVRDefaultPlugins>
-        <Names type="stringarray">MinVR_glfw@MinVR_OpenGL@MinVR_Threading</Names>
+        <Names type="stringarray">MinVR_GLFW@MinVR_OpenGL@MinVR_Threading</Names>
     </MinVRDefaultPlugins>
 </VRPlugins>
 
@@ -98,3 +79,17 @@
      </stereoFormatter>
   </OtherDisplay>
 </VRDisplayDevices>
+
+<VRDisplayDevices>
+  <radius>20.0</radius>
+  <Display1>
+    <radius>7.0</radius>
+	  <xOffset type="int">0</xOffset>
+	  <yOffset type="int">300</yOffset>
+  </Display1>
+  <Display2>
+	  <xOffset type="int">0</xOffset>
+	  <yOffset type="int">300</yOffset>
+  </Display2>
+</VRDisplayDevices>
+</MVR>

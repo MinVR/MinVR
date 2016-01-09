@@ -42,6 +42,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "PluginManager.h"
 #include "Plugin.h"
+#include <iostream>
 
 namespace MinVR {
 
@@ -73,7 +74,7 @@ void PluginManager::addInterface(PluginInterface* iface) {
 	_interfaces.push_back(iface);
 }
 
-void PluginManager::loadPlugin(const std::string& filePath, const std::string& name) {
+bool PluginManager::loadPlugin(const std::string& filePath, const std::string& name) {
 #if defined(WIN32)
 	std::string path = filePath + "/bin/" + name + ".dll";
 #elif defined(__APPLE__)
@@ -89,15 +90,16 @@ void PluginManager::loadPlugin(const std::string& filePath, const std::string& n
 		version_t* getVersion = lib->loadSymbol<version_t>("getPluginFrameworkVersion");
 		if (getVersion() != getPluginFrameworkVersion())
 		{
-			//MinVR::Logger::getInstance().assertMessage(false, "Cannot load plugin: " + path + " - Incorrect framework version");
-			return;
+			std::cout << "Cannot load plugin: " << path << " - Incorrect framework version." << std::endl;
+			return false;
 		}
 
 		typedef FrameworkPlugin* load_t();
 		load_t* loadPlugin = lib->loadSymbol<load_t>("loadPlugin");
 		if (loadPlugin == NULL)
 		{
-			return;
+			std::cout << "Cannot load plugin: " << path << " - loadPlugin funciton not found." << std::endl;
+			return false;
 		}
 
 		FrameworkPlugin* plugin = loadPlugin();
@@ -121,7 +123,10 @@ void PluginManager::loadPlugin(const std::string& filePath, const std::string& n
 			delete lib;
 		}
 
+		return true;
 	}
+
+	return false;
 }
 
 } /* namespace extend */

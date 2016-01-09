@@ -288,7 +288,7 @@ void eventCB(const std::string &eventName, VRDataIndex *dataIndex) {
     // overrides the default radius value, it will not be affected by
     // the event.
     radius = dataIndex->getValue("radius", "/MVR/VRDisplayDevices/" +
-                                 MVR->getName() + "/");
+                                 MVR->getProcessName() + "/");
 
     std::cout << "radius: " << radius << std::endl;
     

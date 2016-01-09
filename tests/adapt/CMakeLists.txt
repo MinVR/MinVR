@@ -37,16 +37,7 @@ add_executable (adapted
   adapted.cpp
   )
 
-target_link_libraries (adapted VRMain VRIndex VRMath VRNet ${ALL_LIBS})
-
-add_executable (adapted_server
-  adapted_server.cpp
-  )
-
-target_link_libraries (adapted_server VRMain VRIndex VRMath VRNet ${ALL_LIBS})
-
-#----------------------plugins------------------------------
-
+#---------------- OS specific settings -------------
 # Windows Section #
 if (MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
@@ -70,6 +61,18 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	find_package(X11)
 	set(ALL_LIBS ${ALL_LIBS} ${CMAKE_THREAD_LIBS_INIT} rt Xrandr Xxf86vm Xi m dl ${X11_LIBRARIES})
 endif()
+
+#------------------------------------------
+
+target_link_libraries (adapted VRMain VRPlugin VRDisplay VRIndex VRMath VRNet ${ALL_LIBS})
+
+add_executable (adapted_server
+  adapted_server.cpp
+  )
+
+target_link_libraries (adapted_server VRMain VRPlugin VRDisplay VRIndex VRMath VRNet ${ALL_LIBS})
+
+#----------------------plugins------------------------------
 
 add_definitions(-DPLUGINPATH="${CMAKE_BINARY_DIR}/plugins")
 add_executable ( adapted_plugins adapted_plugins.cpp )

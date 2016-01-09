@@ -59,7 +59,7 @@ public:
 
 	void addInterface(PluginInterface* iface);
 
-	void loadPlugin(const std::string& filePath, const std::string& name);
+	bool loadPlugin(const std::string& filePath, const std::string& name);
 
 private:
 	std::vector<PluginInterface*> _interfaces;

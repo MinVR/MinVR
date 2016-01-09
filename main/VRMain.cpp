@@ -30,7 +30,22 @@ VRMain::initialize(const std::string processName, const std::string settingsFile
   // Load plugins from the plugin directory.  Once the available
   // plugins are identified, we can call their InputDeviceFactory and
   // DisplayDeviceFactory methods with the current settings.
-
+  _pluginManager.addInterface(dynamic_cast<VRMain*>(this));
+  if (_index->exists("MinVRDefaultPlugins", "/MVR/VRPlugins"))
+  {
+	  string buildType = "";
+#ifdef MinVR_DEBUG
+    buildType = "d";
+#endif
+	  std::vector<std::string> pluginNames = _index->getValue("Names", "/MVR/VRPlugins/MinVRDefaultPlugins");
+	  for (int f = 0; f < pluginNames.size(); f++)
+	  {
+		 if (!_pluginManager.loadPlugin(std::string(PLUGINPATH) + "/" + pluginNames[f], pluginNames[f] + buildType))
+		 {
+			 _pluginManager.loadPlugin(std::string(PLUGININSTALLPATH) + "/" + pluginNames[f], pluginNames[f] + buildType);
+		 }
+	  }
+  }
 
   // Create DisplayDevices from settings
   //std::vector<VRDisplayDevice*> displayDevices;
@@ -144,6 +159,23 @@ VRMain::renderEverywhere() {
   }
 
   (*_swapCB)();
+}
+
+// Adds the display factories for all plugins who use this interface
+void VRMain::addVRDisplayDeviceFactory(MinVR::VRDisplayDeviceFactory* factory)
+{
+	_displayFactories.push_back(factory);
+}
+
+// Adds the input device factories for all plugins who use this interface
+void VRMain::addVRInputDeviceFactory(VRInputDeviceFactory* factory)
+{
+	_inputDeviceFactories.push_back(factory);
+}
+
+// Used for timing (i.e. for animation, etc...)
+void VRMain::addVRTimer(MinVR::VRTimer* timer) {
+	_timers.push_back(timer);
 }
 
 void 

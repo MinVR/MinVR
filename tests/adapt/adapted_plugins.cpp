@@ -74,10 +74,19 @@ int main(int argc, char **argv) {
   cout << "Registering plugins..." << endl;
   cout << "Plugin path: " << PLUGINPATH << endl;
 
+
+  MVR = new VRMain();
+  if (argc > 1) {
+	  MVR->initialize(argv[1],argv[2]);
+  }
+  MVR->registerEventCallback(&eventCB);
+  MVR->registerRenderCallback(&renderCB);
+  MVR->registerSwapCallback(&swapCB);
+
   // Declare and initialize interface
   SimpleInterface iface;
 
-  // Create plugin manager and add the MinVR interface
+/*  // Create plugin manager and add the MinVR interface
   PluginManager pluginManager;
   pluginManager.addInterface(dynamic_cast<SimpleInterface*>(&iface));
 
@@ -91,7 +100,7 @@ int main(int argc, char **argv) {
   pluginManager.loadPlugin(std::string(PLUGINPATH) + "/MinVR_GLFW", "MinVR_GLFW" + buildType);
   pluginManager.loadPlugin(std::string(PLUGINPATH) + "/MinVR_OpenGL", "MinVR_OpenGL" + buildType);
   pluginManager.loadPlugin(std::string(PLUGINPATH) + "/MinVR_Threading", "MinVR_Threading" + buildType);
-
+*/
   // Load configuration from file
   VRDataIndex config;
   std::string fileName = argv[2];
@@ -102,7 +111,7 @@ int main(int argc, char **argv) {
 
   // Created the display from the factory (the display is composite,
   // so it contains multiple displays, but acts like one display)
-  display = new CompositeDisplay(config, "VRDisplayDevices", &factory);
+  display = new CompositeDisplay(config, "MVR/VRDisplayDevices", &factory);
   display->initialize();
 
   // Create input device from factory (in this case only glfw keyboard / mouse)
@@ -115,13 +124,6 @@ int main(int argc, char **argv) {
   display->use(initGL);
   display->use(reshape);
 
-  MVR = new VRMain();
-  if (argc > 1) {
-	  MVR->initialize(argv[1],argv[2]);
-  }
-  MVR->registerEventCallback(&eventCB);
-  MVR->registerRenderCallback(&renderCB);
-  MVR->registerSwapCallback(&swapCB);
 
   bool isRunning = true;
 
@@ -468,7 +470,7 @@ void eventCB(const std::string &eventName, VRDataIndex *dataIndex) {
     // overrides the default radius value, it will not be affected by
     // the event.
 
-    radius = dataIndex->getValue("radius", "/MVR/VRDisplayDevices/" + MVR->getName() + "/");
+    radius = dataIndex->getValue("radius", "/MVR/VRDisplayDevices/" + MVR->getProcessName() + "/");
 
     //std::cout << "radius: " << radius << std::endl;
 
