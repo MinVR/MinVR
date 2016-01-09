@@ -123,7 +123,7 @@ add_subdirectory (math)
 add_subdirectory (net)
 add_subdirectory (plugin)
 add_subdirectory (main)
-#add_subdirectory (apps)
+add_subdirectory (apps)
 
 # Now, build some programs, such as tests, that depend upon the MinVR libraries:
 
