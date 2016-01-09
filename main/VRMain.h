@@ -5,6 +5,7 @@
 #include "net/VRNetClient.h"
 #include "main/VRPluginInterface.h"
 #include "plugin/PluginManager.h"
+#include "display/concrete/CommandLineDisplay.h"
 
 /** Application programmers should use this singleton class as the
     interface to the MinVR library.
@@ -112,6 +113,7 @@ private:
 
   VRDisplayDevice* _display;
   VRDisplayDevice* _compositDisplay;
+  MinVR::CommandLineDisplayFactory _commandLineFactory;
 
   // Plugin items
   MinVR::PluginManager _pluginManager;

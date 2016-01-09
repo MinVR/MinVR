@@ -27,6 +27,7 @@ public:
 	virtual int getHeight();
 	virtual bool isOpen();
 	virtual bool allowThreading();
+	virtual bool allowGraphics();
 	virtual void setAllowThreading(bool allowed);
 	virtual bool isQuadbuffered();
 

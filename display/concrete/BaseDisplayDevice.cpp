@@ -24,6 +24,7 @@ int BaseDisplayDevice::getWidth() { return parent != NULL ? parent->getWidth() :
 int BaseDisplayDevice::getHeight() { return parent != NULL ? parent->getHeight() : 0; }
 bool BaseDisplayDevice::isOpen() { return parent != NULL ? parent->isOpen() : true; }
 bool BaseDisplayDevice::allowThreading() { return _allowThreading; }
+bool BaseDisplayDevice::allowGraphics() { return true; }
 void BaseDisplayDevice::setAllowThreading(bool allowed) { this->_allowThreading = allowed; }
 
 bool BaseDisplayDevice::isQuadbuffered()

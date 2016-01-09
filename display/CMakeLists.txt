@@ -6,6 +6,7 @@ set (${PROJECT_NAME}_source_files
 	VRDisplayDevice.cpp
 	concrete/BaseDisplayDevice.cpp
 	concrete/BaseDisplayFactory.cpp
+	concrete/CommandLineDisplay.cpp
 	concrete/CompositeDisplay.cpp
 	concrete/CompositeDisplayFactory.cpp
 	concrete/DataIndexWrapperDisplay.cpp

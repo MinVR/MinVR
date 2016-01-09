@@ -66,11 +66,21 @@ VRMain::initialize(const std::string processName, const std::string settingsFile
   //std::vector<VRDisplayDevice*> displayDevices;
   //displayDevices.push_back(new ConsoleOnlyDisplay());
   // Combine display factories into one factory for simplicity
+  _displayFactories.push_back(&_commandLineFactory);
   MinVR::CompositeDisplayFactory factory(_displayFactories);
 
   // Created the display from the factory (the display is composite,
   // so it contains multiple displays, but acts like one display)
   _compositDisplay = new MinVR::CompositeDisplay(*_index, "/MVR/VRDisplayDevices", &factory);
+  if (_compositDisplay->getSubDisplays().size() == 0)
+  {
+	  VRDataIndex index;
+	  index.addData("/MVR/VRDisplayDevices/CommandLine/deviceType", std::string("commandline"));
+	  VRDisplayDevice* cmd = _commandLineFactory.createDisplay("commandline", "/MVR/VRDisplayDevices/CommandLine", index, &_commandLineFactory);
+	  std::string cmdName = "/MVR/VRDisplayDevices/CommandLine";
+	  cmd->setName(cmdName);
+	  _compositDisplay->addSubDisplay(cmd);
+  }
   _display = new MinVR::DataIndexWrapperDisplay(_compositDisplay, _index);
 
   // Create a Display Manager (either the default or multi-threaded)

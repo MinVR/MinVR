@@ -95,6 +95,12 @@ void initGL() {
 /* Render function */
 void render(VRRenderState& state) {
 
+	if (!state.display->allowGraphics())
+	{
+		cout << "Command line only device: " << state.display->getName() << endl;
+		return;
+	}
+
 	//state.dataIndex->printStructure();
 
 	GLfloat width = state.display->getWidth();

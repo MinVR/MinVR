@@ -63,6 +63,7 @@
        <!--displayType type="string">quadbufferStereo</displayType-->
        <displayType type="string">sideBySideStereo</displayType>
        <topViewport>
+    	<displayType type="string">commandline</displayType>
           <displayType type="string">viewport</displayType>
 	  <xOffset type="int">0</xOffset>
 	  <yOffset type="int">300</yOffset>
