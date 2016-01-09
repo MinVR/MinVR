@@ -22,36 +22,37 @@
 using namespace MinVR;
 using namespace std;
 
-/*
- * Render and update methods
- */
+//-----------------Call back prototypes----------------
 void initGL();
 void render(VRRenderState& state);
-void eventCB(const std::string &eventName, VRDataIndex *dataIndex);
+void handleEvent(const std::string &eventName, VRDataIndex *dataIndex);
+
+//--------------------Variables-------------------------
 
 VRMain *MVR;
 bool isRunning = true;
 
-/*
- * Main functionality
- */
-int main(int argc, char **argv) {
-	cout << "Registering plugins..." << endl;
-	cout << "Plugin path: " << PLUGINPATH << endl;
+//------------------ Main Loop -------------------------
 
+int main(int argc, char **argv) {
+
+	// Initialize VRMain and register callbacks
 	MVR = new VRMain();
 	if (argc > 1) {
 		MVR->initialize(argv[1],argv[2]);
 	}
-	MVR->registerEventCallback(&eventCB);
+	MVR->registerEventCallback(&handleEvent);
 
+	// Get display device
 	VRDisplayDevice* display = MVR->getDisplay();
 
+	// Initialize display contexts
 	display->use(initGL);
 
 	// Loop until escape key is hit or main display is closed
 	while (display->isOpen() && isRunning)
 	{
+		// Synchronize events
 		MVR->synchronizeAndProcessEvents();
 
 		// Render the scene on all displays (passing render function into display)
@@ -63,9 +64,9 @@ int main(int argc, char **argv) {
 	delete MVR;
 }
 
+//-------------------Call back functions-----------------------------------
 
-//-----------------------------------
-
+/* Graphics variable */
 double cameraPos[3] = {0.0f, 0.0f, 15.0f};
 double targetPos[3] = {0.0f, 0.0f, 0.0f};
 double cameraAim[3] = {0.0f, 1.0f, 0.0f};
@@ -91,8 +92,10 @@ void initGL() {
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 }
 
+/* Render function */
 void render(VRRenderState& state) {
-	//cout << state.display->getName() << std::endl;
+
+	//state.dataIndex->printStructure();
 
 	GLfloat width = state.display->getWidth();
 	GLfloat height = state.display->getHeight();
@@ -283,22 +286,9 @@ void render(VRRenderState& state) {
 	glEnd();   // Done drawing the pyramid
 }
 
-
-// The tail end of the drawing function above has been chopped off and
-// put into this swap function so it can be called in sync with all
-// the other processes.
-void swapCB() {
-
-	// Swap the front and back frame buffers (double buffering)
-	//glutSwapBuffers();
-}
-
-
-// The mouse and special key event stuff that was here is now gone.
-
 // This is the event handler.  Takes an event name and a pointer to
 // the dataIndex where you can find that event's data.
-void eventCB(const std::string &eventName, VRDataIndex *dataIndex) {
+void handleEvent(const std::string &eventName, VRDataIndex *dataIndex) {
 
 	// If escape is pressed, exit program
 	if (eventName == "/keyboard")

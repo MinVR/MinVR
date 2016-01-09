@@ -1,12 +1,13 @@
 #include "VRMain.h"
 #include "display/concrete/CompositeDisplay.h"
 #include "display/concrete/CompositeDisplayFactory.h"
+#include "display/concrete/DataIndexWrapperDisplay.h"
 
 void emptyEventCallbackMVR(const std::string &eventName, VRDataIndex *dataIndex) {}
 void emptyRenderCallbackMVR(VRDataIndex* index) {}
 void emptyRenderSwapMVR() {}
 
-VRMain::VRMain() : initialized(false),_vrNet(NULL), _display(NULL)
+VRMain::VRMain() : initialized(false),_vrNet(NULL), _display(NULL), _compositDisplay(NULL)
 {
 	  registerEventCallback(&emptyEventCallbackMVR);
 	  registerRenderCallback(&emptyRenderCallbackMVR);
@@ -21,6 +22,7 @@ VRMain::~VRMain()
   if (_display != NULL)
   {
 	  delete _display;
+	  delete _compositDisplay;
   }
 }
 
@@ -68,7 +70,8 @@ VRMain::initialize(const std::string processName, const std::string settingsFile
 
   // Created the display from the factory (the display is composite,
   // so it contains multiple displays, but acts like one display)
-  _display = new MinVR::CompositeDisplay(*_index, "/MVR/VRDisplayDevices", &factory);
+  _compositDisplay = new MinVR::CompositeDisplay(*_index, "/MVR/VRDisplayDevices", &factory);
+  _display = new MinVR::DataIndexWrapperDisplay(_compositDisplay, _index);
 
   // Create a Display Manager (either the default or multi-threaded)
   // based on settings

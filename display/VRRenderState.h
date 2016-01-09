@@ -1,6 +1,8 @@
 #ifndef VRRENDERSTATE_H
 #define VRRENDERSTATE_H
 
+#include "config/VRDataIndex.h"
+
 class VRDisplayDevice;
 
 /** This data structure gets passed to the application programmer's draw callback function.  It holds state info 
@@ -13,6 +15,7 @@ class VRRenderState {
 public:
 
 	VRDisplayDevice* display;
+	VRDataIndex* dataIndex;
   /*VRProjectionMethod::ProjectionType projectionType;
   float *projectionMatrix;
   float *headMatrix;

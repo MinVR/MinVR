@@ -111,6 +111,7 @@ private:
   void (*_swapCB)();
 
   VRDisplayDevice* _display;
+  VRDisplayDevice* _compositDisplay;
 
   // Plugin items
   MinVR::PluginManager _pluginManager;

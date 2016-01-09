@@ -8,6 +8,7 @@ set (${PROJECT_NAME}_source_files
 	concrete/BaseDisplayFactory.cpp
 	concrete/CompositeDisplay.cpp
 	concrete/CompositeDisplayFactory.cpp
+	concrete/DataIndexWrapperDisplay.cpp
 )
 
 add_library (${PROJECT_NAME} ${${PROJECT_NAME}_source_files})
