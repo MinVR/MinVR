@@ -4,15 +4,79 @@
 #include "config/VRDataIndex.h"
 #include "display/VRRenderer.h"
 #include "display/VRDisplayAction.h"
+#include "display/VRRenderState.h"
 #include <vector>
+
+/** DisplayDevice:    An as-simple-as-possible public interface for Display Devices
+ */
+class VRDisplayDevice {
+public:
+	virtual ~VRDisplayDevice() {}
+
+	virtual int getDisplayXOffset() = 0;
+	virtual int getDisplayYOffset() = 0;
+	virtual int getXOffset() = 0;
+	virtual int getYOffset() = 0;
+	virtual int getWidth() = 0;
+	virtual int getHeight() = 0;
+	virtual bool isOpen() = 0;
+	virtual bool allowThreading() = 0;
+	virtual bool isQuadbuffered() = 0;
+
+	virtual void initialize() = 0;
+	void use(const MinVR::VRDisplayAction& action);
+	void startRendering(const MinVR::VRRenderer& renderer);
+	virtual void finishRendering() = 0;
+	void render(const MinVR::VRRenderer& renderer);
+
+	virtual VRDisplayDevice* getParent() const = 0;
+	virtual void setParent(VRDisplayDevice* parent) = 0;
+	virtual const std::vector<VRDisplayDevice*>& getSubDisplays() const = 0;
+	virtual void addSubDisplay(VRDisplayDevice* display) = 0;
+
+	template<class T>
+	void render(T *obj, void (T::*method)() const);
+	void render(void (*method)());
+
+	template<class T>
+	void use(T *obj, void (T::*method)() const);
+	void use(void (*method)());
+
+	template<class T>
+	void startRendering(T *obj, void (T::*method)() const);
+	void startRendering(void (*method)());
+	static void startRendering(VRDisplayDevice* &display, const MinVR::VRRenderer& renderer, VRRenderState& renderState);
+
+protected:
+	virtual void startRendering(const MinVR::VRRenderer& renderer, VRRenderState& renderState) = 0;
+	virtual void useDisplay(const MinVR::VRDisplayAction& action) = 0;
+};
+
+template<class T>
+void VRDisplayDevice::render(T *obj, void (T::*method)() const)
+{
+	render(MinVR::SpecificVRRenderer<T>(obj, method));
+}
+
+template<class T>
+void VRDisplayDevice::use(T *obj, void (T::*method)() const)
+{
+	use(MinVR::SpecificVRDisplayAction<T>(obj, method));
+}
+
+template<class T>
+void VRDisplayDevice::startRendering(T *obj, void (T::*method)() const)
+{
+	startRendering(MinVR::SpecificVRRenderer<T>(obj, method));
+}
 
 /** DisplayDevice:
     An as-simple-as-possible public interface for Display Devices
  */
-class VRDisplayDevice {
+/*class VRDisplayDevice2 {
 public:
-	VRDisplayDevice() : parent(NULL), _allowThreading(false) {}
-	virtual ~VRDisplayDevice() {}
+	VRDisplayDevice2() : parent(NULL), _allowThreading(false) {}
+	virtual ~VRDisplayDevice2() {}
 
 	virtual int getDisplayXOffset() { return parent != NULL ? parent->getDisplayXOffset() : 0; }
 	virtual int getDisplayYOffset() { return parent != NULL ? parent->getDisplayYOffset() : 0; }
@@ -212,5 +276,5 @@ public:
 protected:
 	std::vector<VRDisplayDevice*> displays;
 };
-
+*/
 #endif

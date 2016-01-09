@@ -59,6 +59,7 @@ void GlfwWindow::initialize() {
 
 void GlfwWindow::startRendering(const MinVR::VRRenderer& renderer, int x) {
 	glfwMakeContextCurrent(window);
+	glViewport(0, 0, getWidth(), getHeight());
 	startRenderingAllDisplays(renderer, x);
 	glFlush();
 }
