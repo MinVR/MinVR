@@ -52,6 +52,8 @@ public:
   // project.
   void initialize(const std::string settingsFile);
   void initialize(const std::string processName, const std::string settingsFile);
+  void initialize(VRDataIndex& index, const std::string valName);
+  void initialize(const std::string processName, VRDataIndex& index, const std::string valName);
 
 
   // BEGIN LOOP: YOUR PROGRAM SHOULD CONTAIN A MAIN LOOP THAT CALLS
@@ -93,6 +95,7 @@ public:
 	}
 
 private:
+	void initialize();
 
 
   std::string _name;

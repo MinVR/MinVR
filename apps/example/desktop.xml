@@ -5,6 +5,7 @@
   <Host>localhost</Host>
   <NumClients type="int">1</NumClients>
   <NumProcesses type="int">1</NumProcesses>
+  <CreateServer type="int">1</CreateServer>
 </Server>
 
 <VRPlugins>
@@ -14,22 +15,13 @@
 </VRPlugins>
 
 <VRDisplayDevices>
-	<Display1>
-		<processId type="int">0</processId>
-	    <displayType type="string">glfw_display</displayType>
+	<Desktop>
+		<displayType type="string">glfw_display</displayType>
 	    <xOffset type="int">0</xOffset>
 	    <yOffset type="int">0</yOffset>
 	    <width type="int">500</width>
 	    <height type="int">500</height>
-	</Display1>
-	<Display2>
-		<processId type="int">1</processId>
-	    <displayType type="string">glfw_display</displayType>
-	    <xOffset type="int">500</xOffset>
-	    <yOffset type="int">0</yOffset>
-	    <width type="int">500</width>
-	    <height type="int">500</height>
-	</Display2>
+	</Desktop>
 </VRDisplayDevices>
 
 </MVR>

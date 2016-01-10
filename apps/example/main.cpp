@@ -31,6 +31,7 @@ void handleEvent(const std::string &eventName, VRDataIndex *dataIndex);
 
 VRMain *MVR;
 bool isRunning = true;
+int frame = 0;
 
 //------------------ Main Loop -------------------------
 
@@ -39,8 +40,15 @@ int main(int argc, char **argv) {
 	// Initialize VRMain and register callbacks
 	MVR = new VRMain();
 	if (argc > 1) {
-		MVR->initialize(argv[1],argv[2]);
+		MVR->initialize(argv[1]);
 	}
+	else
+	{
+		VRDataIndex index;
+		index.addData("/MVR/VRDisplayDevices/CommandLine", 0);
+		MVR->initialize(index, "/MVR");
+	}
+
 	MVR->registerEventCallback(&handleEvent);
 
 	// Get display device (Composite of all available display devices, but looks like one device)
@@ -52,6 +60,8 @@ int main(int argc, char **argv) {
 	// Loop until escape key is hit or main display is closed
 	while (display->isOpen() && isRunning)
 	{
+		frame++;
+
 		// Synchronize events
 		MVR->synchronizeAndProcessEvents();
 
@@ -105,7 +115,7 @@ void render(VRRenderState& state) {
 
 	if (!state.display->allowGraphics())
 	{
-		cout << "Command line only device: " << state.display->getName() << endl;
+		cout << "Command line only device: " << state.display->getName() << " (Frame: " << frame << ")" << endl;
 		return;
 	}
 

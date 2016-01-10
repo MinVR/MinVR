@@ -37,12 +37,30 @@ VRMain::initialize(const std::string settingsFile)
   initialize("", settingsFile);
 }
 
+void VRMain::initialize(VRDataIndex& index, const std::string valName)
+{
+	  initialize("", index, valName);
+}
+
 void
 VRMain::initialize(const std::string processName, const std::string settingsFile) 
 {
   _name = processName;
   _index = new VRDataIndex();
   _index->processXMLFile(settingsFile, "/");
+  initialize();
+}
+
+void VRMain::initialize(const std::string processName, VRDataIndex& index, const std::string valName)
+{
+	_name = processName;
+	_index = new VRDataIndex();
+	_index->addSerializedValue(index.serialize(valName));
+	initialize();
+}
+
+void VRMain::initialize()
+{
 
   _index->addData("/ProcessId", 0);
 

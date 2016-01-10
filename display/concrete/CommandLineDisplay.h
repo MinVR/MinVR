@@ -20,6 +20,7 @@ public:
 	virtual ~CommandLineDisplay();
 
 	bool allowGraphics() { return false; }
+	bool allowThreading() { return true; }
 
 	void finishRendering();
 
