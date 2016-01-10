@@ -2,14 +2,14 @@
 
 ## Getting Started
 
-### Download Repository
+#### Download Repository
 
   ```
   git clone http://github.com/ivlab/MinVR2
   cd MinVR2
   ```
   
-### Configure and build
+#### Configure and build
 
 * Linux and Mac (command line)
 
@@ -38,25 +38,18 @@
     # Open project in Visual Studio and build
     ```
 
-### Other Configure Options
+#### Other Configure Options
 
-* Build debug
-
-    ```
-    cmake .. -DCMAKE_BUILD_TYPE=DEBUG
-    ```
-
-* Build with base plugins (base graphic and device plugins will be built)
-
-    ```
-    cmake .. -DBASE_PLUGINS
-    ```
-    
-* Build with base graphics plugins (base graphics plugins will be built)
-
-    ```
-    cmake .. -DBASE_GRAPHICS_PLUGINS
-    ```
+  ```
+  # Build debug
+  cmake .. -DCMAKE_BUILD_TYPE=DEBUG
+  
+  # Build with base graphics plugins (base graphics plugins will be built)
+  cmake .. -DBASE_GRAPHICS_PLUGINS
+  
+  # Build with base plugins (base graphic and device plugins will be built)
+  cmake .. -DBASE_PLUGINS
+  ```
 
 ## Overview of Directories and Current Code Status
 
