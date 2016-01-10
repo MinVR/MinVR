@@ -41,7 +41,7 @@
 #### Other Configure Options
 
   ```
-  # Build debug
+  # Build debug (makefile build)
   cmake .. -DCMAKE_BUILD_TYPE=DEBUG
   
   # Build with base graphics plugins (base graphics plugins will be built)
@@ -50,6 +50,29 @@
   # Build with base plugins (base graphic and device plugins will be built)
   cmake .. -DBASE_PLUGINS
   ```
+
+#### Run Example
+
+MinVR applications can be run with different configurations by passing in environment setup xml files.
+
+```
+cd MinVR2
+
+# Simple console application (no graphics)
+build/bin/minvr_example
+
+# Multi-threaded console application (no graphics - requires threading plugin) 
+build/bin/minvr_example apps/example/command_multithread.xml
+
+# Simple GLFW graphics application (Move the object around with the arrow keys)
+build/bin/minvr_example apps/example/desktop.xml
+
+# Example with multiple 3 multi-threaded GLFW windows and one with two viewports
+build/bin/minvr_example apps/example/cave_example.xml
+
+# Example with 3 different multi-threaded processes communicating through a shared server
+build/bin/minvr_example apps/example/cave_with_server.xml
+```
 
 ## Overview of Directories and Current Code Status
 
