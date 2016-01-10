@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<MVR>
+<Server>
+  <Port type="string">3490</Port>
+  <Host>localhost</Host>
+  <NumClients type="int">1</NumClients>
+  <NumProcesses type="int">1</NumProcesses>
+  <CreateServer type="int">1</CreateServer>
+</Server>
+
+<VRPlugins>
+    <MinVRDefaultPlugins>
+        <Names type="stringarray">MinVR_GLFW@MinVR_OpenGL@MinVR_Threading</Names>
+    </MinVRDefaultPlugins>
+</VRPlugins>
+
+<VRDisplayDevices>
+	<ThreadGroup>
+		<displayType type="string">thread_group</displayType>
+		<FrontWall>
+			<displayType type="string">glfw_display</displayType>
+		    <xOffset type="int">0</xOffset>
+		    <yOffset type="int">0</yOffset>
+		    <width type="int">300</width>
+		    <height type="int">300</height>
+		</FrontWall>
+		<Foor>
+			<displayType type="string">glfw_display</displayType>
+		    <xOffset type="int">0</xOffset>
+		    <yOffset type="int">350</yOffset>
+		    <width type="int">300</width>
+		    <height type="int">300</height>
+		</Foor>
+		<Sides>
+			<displayType type="string">glfw_display</displayType>
+		    <xOffset type="int">300</xOffset>
+		    <yOffset type="int">0</yOffset>
+		    <width type="int">600</width>
+		    <height type="int">300</height>
+		    <LeftWall>
+		        <displayType type="string">viewport</displayType>
+		        <xOffset type="int">0</xOffset>
+		        <yOffset type="int">0</yOffset>
+		        <width type="int">300</width>
+				<height type="int">300</height>
+			</LeftWall>
+		    <RightWall>
+		          <displayType type="string">viewport</displayType>
+				  <xOffset type="int">300</xOffset>
+				  <yOffset type="int">0</yOffset>
+				  <width type="int">300</width>
+				  <height type="int">300</height>
+			 </RightWall>
+		</Sides>
+	</ThreadGroup>
+</VRDisplayDevices>
+
+</MVR>

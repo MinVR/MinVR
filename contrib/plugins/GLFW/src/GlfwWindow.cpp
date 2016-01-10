@@ -42,7 +42,7 @@ void GlfwWindow::initialize() {
 		glfwWindowHint(GLFW_STEREO, true);
 	}
 
-	window = glfwCreateWindow(width, height, "Simple example", NULL, NULL);
+	window = glfwCreateWindow(width, height, getName().c_str(), NULL, NULL);
 	if (!window)
 	{
 		std::cout << "Error creating window." << std::endl;
