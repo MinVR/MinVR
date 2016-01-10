@@ -1,5 +1,63 @@
 # MinVR
 
+## Getting Started
+
+### Download Repository
+
+  ```
+  git clone http://github.com/ivlab/MinVR2
+  cd MinVR2
+  ```
+  
+### Configure and build
+
+* Linux and Mac (command line)
+
+    ```
+    mkdir build
+    cd build
+    cmake ..
+    make
+    ```
+    
+* Mac (Xcode)
+
+    ```
+    mkdir build
+    cd build
+    cmake .. -G Xcode
+    # Open project in Xcode and build
+    ```
+    
+* Windows (Visual Studio)
+
+    ```
+    mkdir build
+    cd build
+    cmake .. -G "Visual Studio 12 Win64"
+    # Open project in Visual Studio and build
+    ```
+
+### Other Configure Options
+
+* Build debug
+
+    ```
+    cmake .. -DCMAKE_BUILD_TYPE=DEBUG
+    ```
+
+* Build with base plugins (base graphic and device plugins will be built)
+
+    ```
+    cmake .. -DBASE_PLUGINS
+    ```
+    
+* Build with base graphics plugins (base graphics plugins will be built)
+
+    ```
+    cmake .. -DBASE_GRAPHICS_PLUGINS
+    ```
+
 ## Overview of Directories and Current Code Status
 
 ### main
