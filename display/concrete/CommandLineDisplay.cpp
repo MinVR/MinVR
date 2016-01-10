@@ -34,7 +34,17 @@ void CommandLineDisplay::startRendering(const VRRenderer& renderer,
 
 void CommandLineDisplay::useDisplay(const MinVR::VRDisplayAction& action) {
 	cout << "Using display" << endl;
-	useAllDisplays(action);
+    if (getSubDisplays().size() > 0)
+    {
+        for (int f = 0; f < getSubDisplays().size(); f++)
+        {
+            getSubDisplays()[f]->use(action);
+        }
+    }
+    else
+    {
+        // Do action for non graphics only
+    }
 	cout << "Finish using display" << endl;
 }
 
