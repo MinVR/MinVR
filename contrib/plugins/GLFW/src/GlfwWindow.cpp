@@ -22,6 +22,7 @@ GlfwWindow::~GlfwWindow() {
 void GlfwWindow::useDisplay(const MinVR::VRDisplayAction& action) {
 	glfwMakeContextCurrent(window);
 	action.exec();
+	glfwMakeContextCurrent(NULL);
 }
 
 int GlfwWindow::getWidth() {
@@ -54,7 +55,9 @@ void GlfwWindow::initialize() {
     glfwSwapInterval(1);
     inputDevice->registerGlfwWindow(window);
 
-    VRDisplayDevice::initialize();
+	VRDisplayDevice::initialize();
+
+	glfwMakeContextCurrent(NULL);
 }
 
 void GlfwWindow::startRendering(const MinVR::VRRenderer& renderer, VRRenderState& state) {
@@ -72,6 +75,7 @@ void GlfwWindow::finishRendering() {
 	finishRenderingAllDisplays();
 
 	glfwSwapBuffers(window);
+	glfwMakeContextCurrent(NULL);
 }
 
 //void GlfwWindow::addSubDisplay(VRDisplayDevice* display) {

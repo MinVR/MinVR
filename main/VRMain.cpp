@@ -3,7 +3,9 @@
 #include "display/concrete/CompositeDisplayFactory.h"
 #include "display/concrete/DataIndexWrapperDisplay.h"
 #include <stdio.h>
+#ifndef WIN32
 #include <unistd.h>
+#endif
 #include "net/VRNetClient.h"
 #include "net/VRNetServer.h"
 
@@ -83,6 +85,7 @@ void VRMain::initialize()
 	  }
 
 	  int currentProcess = 0;
+#ifndef WIN32
 	  while (currentProcess < numProcesses-1)
 	  {
 		  pid_t pid = fork();
@@ -99,6 +102,9 @@ void VRMain::initialize()
 		  }
 
 	  }
+#else
+	  // TODO: Add windows implementation of forking a process
+#endif
 
 	  _index->addData("/ProcessId", currentProcess);
 

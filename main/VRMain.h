@@ -1,11 +1,11 @@
 #ifndef VRMAIN_H
 #define VRMAIN_H
 
+#include "net/VRNetInterface.h"
 #include "config/VRDataIndex.h"
 #include "main/VRPluginInterface.h"
 #include "plugin/PluginManager.h"
 #include "display/concrete/CommandLineDisplay.h"
-#include "net/VRNetInterface.h"
 
 /** Application programmers should use this singleton class as the
     interface to the MinVR library.

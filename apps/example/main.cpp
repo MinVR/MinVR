@@ -7,9 +7,9 @@
 #include "main/VRMain.h"
 
 #if defined(WIN32)
-#define NOMINMAX
-#include <windows.h>
+#include <Windows.h>
 #include <GL/gl.h>
+#include <GL/glu.h>
 #elif defined(__APPLE__)
 #include <OpenGL/OpenGL.h>
 #include <OpenGL/glu.h>
@@ -108,6 +108,16 @@ void initGL() {
 	cameraAim[0] = cos(horizAngle) * sin(vertAngle);
 	cameraAim[1] = cos(vertAngle);
 	cameraAim[2] = sin(horizAngle) * sin(vertAngle);
+
+	// Compute aspect ratio of the new window
+	GLfloat aspect = (GLfloat)500 / (GLfloat)500;
+
+	// Set the aspect ratio of the clipping volume to match the viewport
+	glMatrixMode(GL_PROJECTION);  // To operate on the Projection matrix
+	glLoadIdentity();             // Reset
+
+	// Enable perspective projection with fovy, aspect, zNear and zFar
+	gluPerspective(1.6*45.0f, aspect, 0.1f, 100.0f);
 }
 
 /* Render function */
@@ -119,22 +129,10 @@ void render(VRRenderState& state) {
 		return;
 	}
 
-	GLfloat width = state.display->getWidth();
-	GLfloat height = state.display->getHeight();
+	//std::cout << state.display->getName() << std::endl;
 
-	// Compute aspect ratio of the new window
-	if (height == 0) height = 1;                // To prevent divide by 0
-	GLfloat aspect = (GLfloat)width / (GLfloat)height;
-
-	// Set the aspect ratio of the clipping volume to match the viewport
-	glMatrixMode(GL_PROJECTION);  // To operate on the Projection matrix
-	glLoadIdentity();             // Reset
-
-	// Enable perspective projection with fovy, aspect, zNear and zFar
-	gluPerspective(1.6*45.0f, aspect, 0.1f, 100.0f);
-
-	//The .m is the GLfloat* you are accessing
-	//glMultMatrix( GLKMatrix4MakePerspective(45.0f, aspect, 0.1f,100.0f ).m );
+	//GLfloat width = state.display->getWidth();
+	//GLfloat height = state.display->getHeight();
 
 	// Clear color and depth buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
