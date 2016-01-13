@@ -24,12 +24,14 @@ using namespace std;
 
 //-----------------Call back prototypes----------------
 void initGL();
+bool perFrame();
 void render(VRRenderState& state);
 void handleEvent(const std::string &eventName, VRDataIndex *dataIndex);
 
 //--------------------Variables-------------------------
 
 VRMain *MVR;
+VRDisplayDevice* display;
 bool isRunning = true;
 int frame = 0;
 
@@ -52,26 +54,34 @@ int main(int argc, char **argv) {
 	MVR->registerEventCallback(&handleEvent);
 
 	// Get display device (Composite of all available display devices, but looks like one device)
-	VRDisplayDevice* display = MVR->getDisplay();
+	display = MVR->getDisplay();
 
 	// Initialize display contexts
 	display->use(initGL);
 
 	// Loop until escape key is hit or main display is closed
-	while (display->isOpen() && isRunning)
+	while (display->renderFrame(perFrame))
+	//while (perFrame())
 	{
-		frame++;
-
-		// Synchronize events
-		MVR->synchronizeAndProcessEvents();
-
-		// Render the scene on all displays (passing render function into display)
-		display->startRendering(render);
-		MVR->renderEverywhere();
-		display->finishRendering();
+		cout << "Per Frame" << endl;
 	}
 
 	delete MVR;
+}
+
+bool perFrame()
+{
+	frame++;
+
+	// Synchronize events
+	MVR->synchronizeAndProcessEvents();
+
+	// Render the scene on all displays (passing render function into display)
+	display->startRendering(render);
+	MVR->renderEverywhere();
+	display->finishRendering();
+
+	return display->isOpen() && isRunning;
 }
 
 //-------------------Call back functions-----------------------------------
@@ -122,7 +132,6 @@ void initGL() {
 
 /* Render function */
 void render(VRRenderState& state) {
-
 	if (!state.display->allowGraphics())
 	{
 		cout << "Command line only device: " << state.display->getName() << " (Frame: " << frame << ")" << endl;

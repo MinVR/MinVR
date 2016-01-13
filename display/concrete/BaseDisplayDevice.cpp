@@ -109,6 +109,22 @@ void BaseDisplayDevice::setName(std::string& name) {
 	this->name = name;
 }
 
+MinVR::VRFrameController* BaseDisplayDevice::getFrameController() {
+	MinVR::VRFrameController* controller = NULL;
+
+	for (int f = 0; f < subDisplays.size(); f++)
+	{
+		controller = subDisplays[f]->getFrameController();
+
+		if (controller != NULL)
+		{
+			return controller;
+		}
+	}
+
+	return controller;
+}
+
 void BaseDisplayDevice::finishRenderingAllDisplays()
 {
 	for (int f = 0; f < subDisplays.size(); f++)

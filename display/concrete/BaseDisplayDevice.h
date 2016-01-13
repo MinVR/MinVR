@@ -31,13 +31,14 @@ public:
 	virtual void setAllowThreading(bool allowed);
 	virtual bool isQuadbuffered();
 
-
 	virtual void initialize();
 
 	VRDisplayDevice* getParent() const;
 	void setParent(VRDisplayDevice* parent);
 	const std::vector<VRDisplayDevice*>& getSubDisplays() const;
 	void addSubDisplay(VRDisplayDevice* display);
+
+	virtual MinVR::VRFrameController* getFrameController();
 
 protected:
 	BaseDisplayDevice();

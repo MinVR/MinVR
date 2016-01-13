@@ -13,6 +13,7 @@
 #include "display/concrete/BaseDisplayDevice.h"
 #include <GLFW/glfw3.h>
 #include "GlfwInputDevice.h"
+#include "display/concrete/InternalLoopController.h"
 
 namespace MinVR {
 
@@ -35,6 +36,12 @@ public:
 
 	PLUGIN_API void setInputDevice(GlfwInputDevice* inputDevice) {
 		this->inputDevice = inputDevice;
+	}
+
+	MinVR::VRFrameController* getFrameController()
+	{
+		static InternalLoopController controller;
+		return &controller;
 	}
 
 protected:

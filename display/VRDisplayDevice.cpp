@@ -12,6 +12,20 @@ void VRDisplayDevice::initialize()
 {
 }
 
+bool VRDisplayDevice::renderFrame(MinVR::VRDisplayFrameAction& frameAction)
+{
+	MinVR::VRFrameController* controller = getFrameController();
+	if (controller != NULL)
+	{
+		return controller->renderFrame(frameAction);
+	}
+
+	else
+	{
+		frameAction.exec();
+	}
+}
+
 void VRDisplayDevice::use(const MinVR::VRDisplayAction& action)
 {
 	useDisplay(action);
@@ -37,6 +51,12 @@ void VRDisplayDevice::render(void (*method)(VRRenderState&))
 void VRDisplayDevice::use(void (*method)())
 {
 	use(MinVR::VRDisplayActionFunctor(method));
+}
+
+bool VRDisplayDevice::renderFrame(bool (*method)())
+{
+	MinVR::VRDisplayFrameActionFunctor functor(method);
+	return renderFrame(functor);
 }
 
 void VRDisplayDevice::startRendering(void (*method)(VRRenderState&))
