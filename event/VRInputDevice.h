@@ -18,7 +18,7 @@ class VRInputDeviceFactory {
 public:
 	virtual ~VRInputDeviceFactory() {}
 
-    virtual std::vector<VRInputDevice*> create(const VRDataIndex& dataIndex) = 0;
+    virtual std::vector<VRInputDevice*> create(VRDataIndex& dataIndex) = 0;
 };
 
 #endif

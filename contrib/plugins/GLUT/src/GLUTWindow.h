@@ -13,10 +13,13 @@
 #include "display/concrete/BaseDisplayDevice.h"
 #include "display/concrete/BaseDisplayFactory.h"
 #include "display/VRFrameController.h"
+#include "event/VRInputDevice.h"
+#include "config/VRDataIndex.h"
+#include <vector>
 
 namespace MinVR {
 
-class GLUTWindow : public BaseDisplayDevice {
+class GLUTWindow : public BaseDisplayDevice, public VRInputDevice {
 public:
 	PLUGIN_API GLUTWindow(int x, int y, int width, int height);
 	PLUGIN_API virtual ~GLUTWindow();
@@ -31,11 +34,18 @@ public:
 
 	PLUGIN_API MinVR::VRFrameController* getFrameController();
 
+	PLUGIN_API void appendNewInputEventsSinceLastCall(VRDataQueue& queue);
+
 protected:
 	PLUGIN_API void startRendering(const MinVR::VRRenderer& renderer, VRRenderState& state);
 
 private:
+	static void keyboardInput(std::string key, int x, int y, std::string action);
 	static void keyboardInput(unsigned char c, int x, int y);
+	static void keyboardUpInput(unsigned char c, int x, int y);
+	static void keyboardSpecialInput(int key, int x, int y);
+	static void keyboardSpecialUpInput(int key, int x, int y);
+	static std::string determineSpecialKey(int key);
 
 	int x, y, width, height;
 };
@@ -51,13 +61,13 @@ private:
 	static void windowLoop();
 };
 
-class GLUTWindowFactory : public BaseDisplayFactory {
+class GLUTWindowFactory : public BaseDisplayFactory, public VRInputDeviceFactory {
 public:
 	PLUGIN_API GLUTWindowFactory();
 	PLUGIN_API virtual ~GLUTWindowFactory();
 
 	PLUGIN_API VRDisplayDevice* createDisplay(const std::string type, const std::string name, VRDataIndex& config, VRDisplayDeviceFactory* factory);
-
+	PLUGIN_API std::vector<VRInputDevice*> create(VRDataIndex& dataIndex);
 };
 
 } /* namespace MinVR */

@@ -3,8 +3,8 @@
 <Server>
   <Port type="string">3490</Port>
   <Host>localhost</Host>
-  <NumClients type="int">2</NumClients>
-  <NumProcesses type="int">2</NumProcesses>
+  <NumClients type="int">1</NumClients>
+  <NumProcesses type="int">1</NumProcesses>
   <CreateServer type="int">1</CreateServer>
 </Server>
 
@@ -33,7 +33,7 @@
 		</Foor>
 		<Sides>
 			<displayType type="string">glut_display</displayType>
-			<!--processId type="int">2</processId-->
+			<processId type="int">2</processId>
 		    <xOffset type="int">300</xOffset>
 		    <yOffset type="int">0</yOffset>
 		    <width type="int">600</width>

@@ -48,7 +48,7 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode,
 
 
 std::vector<VRInputDevice*> GlfwInputDeviceFactory::create(
-		const VRDataIndex& dataIndex) {
+		VRDataIndex& dataIndex) {
 	std::vector<VRInputDevice*> devices;
 	devices.push_back(device);
 	return devices;

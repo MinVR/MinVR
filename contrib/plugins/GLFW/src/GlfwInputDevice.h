@@ -36,7 +36,7 @@ public:
 	PLUGIN_API GlfwInputDeviceFactory(VRInputDevice* inputDevice) : device(inputDevice) {}
 	PLUGIN_API virtual ~GlfwInputDeviceFactory() {}
 
-	PLUGIN_API std::vector<VRInputDevice*> create(const VRDataIndex& dataIndex);
+	PLUGIN_API std::vector<VRInputDevice*> create(VRDataIndex& dataIndex);
 
 private:
 	VRInputDevice* device;

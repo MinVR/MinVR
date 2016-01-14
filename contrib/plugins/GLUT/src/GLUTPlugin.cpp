@@ -30,6 +30,7 @@ public:
 		{
 			displayFactory = new GLUTWindowFactory();
 			vrInterface->addVRDisplayDeviceFactory(displayFactory);
+			vrInterface->addVRInputDeviceFactory(displayFactory);
 			return true;
 		}
 
