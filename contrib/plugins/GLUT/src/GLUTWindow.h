@@ -35,6 +35,8 @@ protected:
 	PLUGIN_API void startRendering(const MinVR::VRRenderer& renderer, VRRenderState& state);
 
 private:
+	static void keyboardInput(unsigned char c, int x, int y);
+
 	int x, y, width, height;
 };
 
@@ -44,6 +46,9 @@ public:
 	PLUGIN_API ~GLUTFrameController();
 
 	PLUGIN_API bool renderFrame(VRDisplayFrameAction& frameAction);
+
+private:
+	static void windowLoop();
 };
 
 class GLUTWindowFactory : public BaseDisplayFactory {
@@ -52,6 +57,7 @@ public:
 	PLUGIN_API virtual ~GLUTWindowFactory();
 
 	PLUGIN_API VRDisplayDevice* createDisplay(const std::string type, const std::string name, VRDataIndex& config, VRDisplayDeviceFactory* factory);
+
 };
 
 } /* namespace MinVR */

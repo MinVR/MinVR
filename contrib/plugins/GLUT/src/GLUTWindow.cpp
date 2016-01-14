@@ -33,6 +33,10 @@ int GLUTWindow::getHeight() {
 	return height;
 }
 
+void GLUTWindow::keyboardInput(unsigned char c, int x, int y) {
+	std::cout << c << std::endl;
+}
+
 void GLUTWindow::initialize() {
 	int argc = 0;
 	char* argv[0];
@@ -41,6 +45,7 @@ void GLUTWindow::initialize() {
 	glutInitWindowSize(width, height);   // Set the window's initial width & height
 	glutInitWindowPosition(x, y); // Position the window's initial top-left corner
 	glutCreateWindow(getName().c_str());          // Create window with the given title
+	glutKeyboardFunc(keyboardInput);
 }
 
 MinVR::VRFrameController* GLUTWindow::getFrameController() {
@@ -64,12 +69,23 @@ VRDisplayDevice* GLUTWindowFactory::createDisplay(const std::string type,
 		const std::string name, VRDataIndex& config,
 		VRDisplayDeviceFactory* factory) {
 
+
 	if (type == "glut_display")
 	{
+		// Only one GLUT window per process
+		static int numWindows = 0;
+		numWindows++;
+		if (numWindows > 1)
+		{
+			std::cout << "Only one glut window is allowed per process." << std::endl;
+			return NULL;
+		}
+
 		int xOffset = config.getValue("xOffset", name);
 		int yOffset = config.getValue("yOffset", name);
 		int width = config.getValue("width", name);
 		int height = config.getValue("height", name);
+
 
 		GLUTWindow* window = new GLUTWindow(xOffset, yOffset, width, height);
 
@@ -87,7 +103,7 @@ GLUTFrameController::~GLUTFrameController() {
 
 VRDisplayFrameAction* glutFrameAction = NULL;
 
-void MinVR_glutWindowLoop()
+void GLUTFrameController::windowLoop()
 {
 	//std::cout << "in loop" << std::endl;
 	if (glutFrameAction->exec())
@@ -102,7 +118,7 @@ void MinVR_glutWindowLoop()
 
 bool GLUTFrameController::renderFrame(VRDisplayFrameAction& frameAction) {
 	glutFrameAction = &frameAction;
-	glutDisplayFunc(MinVR_glutWindowLoop);
+	glutDisplayFunc(GLUTFrameController::windowLoop);
 
 	//std::cout << "start loop" << std::endl;
 
