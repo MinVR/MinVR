@@ -3,8 +3,8 @@
 <Server>
   <Port type="string">3490</Port>
   <Host>localhost</Host>
-  <NumClients type="int">1</NumClients>
-  <NumProcesses type="int">1</NumProcesses>
+  <NumClients type="int">5</NumClients>
+  <NumProcesses type="int">5</NumProcesses>
   <CreateServer type="int">1</CreateServer>
 </Server>
 
@@ -53,6 +53,25 @@
 				  <height type="int">300</height>
 			 </RightWall>
 		</Sides>
+        <Kiosk>
+            <processId type="int">3</processId>
+            <displayType type="string">glut_display</displayType>
+            <xOffset type="int">400</xOffset>
+            <yOffset type="int">400</yOffset>
+            <width type="int">300</width>
+            <height type="int">300</height>
+        </Kiosk>
+        <HeadMountedDisplay>
+            <processId type="int">4</processId>
+            <displayType type="string">glut_display</displayType>
+            <xOffset type="int">800</xOffset>
+            <yOffset type="int">400</yOffset>
+            <width type="int">400</width>
+            <height type="int">200</height>
+            <stereoFormater>
+                <displayType type="string">sideBySideStereo</displayType>
+            </stereoFormater>
+        </HeadMountedDisplay>
 </VRDisplayDevices>
 
 </MVR>

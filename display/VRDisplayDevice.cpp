@@ -19,10 +19,9 @@ bool VRDisplayDevice::renderFrame(MinVR::VRDisplayFrameAction& frameAction)
 	{
 		return controller->renderFrame(frameAction);
 	}
-
 	else
 	{
-		frameAction.exec();
+		return frameAction.exec();
 	}
 }
 

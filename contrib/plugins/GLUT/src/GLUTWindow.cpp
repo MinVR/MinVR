@@ -7,7 +7,13 @@
  */
 
 #include <contrib/plugins/GLUT/src/GLUTWindow.h>
+
+#if defined(__APPLE__)
+#include <GLUT/glut.h>
+#else
+#define GL_GLEXT_PROTOTYPES
 #include <GL/glut.h>
+#endif
 
 namespace MinVR {
 

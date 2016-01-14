@@ -45,10 +45,10 @@
   cmake .. -DCMAKE_BUILD_TYPE=DEBUG
   
   # Build with base graphics plugins (base graphics plugins will be built)
-  cmake .. -DBASE_GRAPHICS_PLUGINS
+  cmake .. -DBASE_GRAPHICS_PLUGINS=ON
   
   # Build with base plugins (base graphic and device plugins will be built)
-  cmake .. -DBASE_PLUGINS
+  cmake .. -DBASE_PLUGINS=ON
   ```
 
 #### Run Example

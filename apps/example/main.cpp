@@ -60,11 +60,7 @@ int main(int argc, char **argv) {
 	display->use(initGL);
 
 	// Loop until escape key is hit or main display is closed
-	while (display->renderFrame(perFrame))
-	//while (perFrame())
-	{
-		//cout << "Per Frame" << endl;
-	}
+    while (display->renderFrame(perFrame)) {}
 
 	delete MVR;
 }

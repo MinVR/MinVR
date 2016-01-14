@@ -56,7 +56,7 @@
 	</ThreadGroup>
 	<Kiosk>
 		<processId type="int">1</processId>
-		<displayType type="string">glut_display</displayType>
+		<displayType type="string">glfw_display</displayType>
 	    <xOffset type="int">400</xOffset>
 	    <yOffset type="int">400</yOffset>
 	    <width type="int">300</width>
@@ -64,7 +64,7 @@
 	</Kiosk>
 	<HeadMountedDisplay>
 		<processId type="int">2</processId>
-		<displayType type="string">glut_display</displayType>
+		<displayType type="string">glfw_display</displayType>
 	    <xOffset type="int">800</xOffset>
 	    <yOffset type="int">400</yOffset>
 	    <width type="int">400</width>
