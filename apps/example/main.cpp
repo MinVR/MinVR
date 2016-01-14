@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
 	while (display->renderFrame(perFrame))
 	//while (perFrame())
 	{
-		cout << "Per Frame" << endl;
+		//cout << "Per Frame" << endl;
 	}
 
 	delete MVR;

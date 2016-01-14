@@ -38,8 +38,14 @@ endif()
 
 #------------------GLFW-----------------------------
 option(MINVR_GLFW_PLUGIN "If enabled, GLFW plugin will be installed" OFF)
-if (MINVR_GLFW OR BASE_GRAPHICS_PLUGINS)
+if (MINVR_GLFW_PLUGIN OR BASE_GRAPHICS_PLUGINS)
 	add_subdirectory (plugins/GLFW)
+endif()
+
+#------------------GLUT-----------------------------
+option(MINVR_GLUT_PLUGIN "If enabled, GLUT plugin will be installed" OFF)
+if (MINVR_GLUT_PLUGIN OR BASE_GRAPHICS_PLUGINS)
+	add_subdirectory (plugins/GLUT)
 endif()
 
 #------------------GLFW-------------------------------

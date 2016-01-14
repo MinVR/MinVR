@@ -65,6 +65,7 @@ void GlfwWindow::startRendering(const MinVR::VRRenderer& renderer, VRRenderState
 	glViewport(0, 0, getWidth(), getHeight());
 	startRenderingAllDisplays(renderer, state);
 	glFlush();
+	glfwMakeContextCurrent(NULL);
 }
 
 bool GlfwWindow::isOpen() {
@@ -72,6 +73,7 @@ bool GlfwWindow::isOpen() {
 }
 
 void GlfwWindow::finishRendering() {
+	glfwMakeContextCurrent(window);
 	finishRenderingAllDisplays();
 
 	glfwSwapBuffers(window);
