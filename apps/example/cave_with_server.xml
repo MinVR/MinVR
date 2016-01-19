@@ -10,7 +10,7 @@
 
 <VRPlugins>
     <MinVRDefaultPlugins>
-        <Names type="stringarray">MinVR_GLFW@MinVR_GLUT@MinVR_OpenGL@MinVR_Threading</Names>
+        <Names type="stringarray">MinVR_GLFW@MinVR_OpenGL@MinVR_Threading</Names>
     </MinVRDefaultPlugins>
 </VRPlugins>
 

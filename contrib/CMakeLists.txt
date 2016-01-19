@@ -44,8 +44,12 @@ endif()
 
 #------------------GLUT-----------------------------
 option(MINVR_GLUT_PLUGIN "If enabled, GLUT plugin will be installed" OFF)
-if (MINVR_GLUT_PLUGIN OR BASE_GRAPHICS_PLUGINS)
-	add_subdirectory (plugins/GLUT)
+
+find_package(GLUT)
+if (GLUT_FOUND)
+	if (MINVR_GLUT_PLUGIN OR BASE_GRAPHICS_PLUGINS)
+		add_subdirectory (plugins/GLUT)
+	endif()
 endif()
 
 #------------------GLFW-------------------------------
