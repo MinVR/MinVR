@@ -127,10 +127,7 @@ add_subdirectory (apps)
 
 # Now, build some programs, such as tests, that depend upon the MinVR libraries:
 
-add_subdirectory (tests/net)
 #add_subdirectory (tests/eventdata)
 #add_subdirectory (tests/plugin)
-add_subdirectory (tests/config)
-#add_subdirectory (tests/adapt)
 
 add_subdirectory (contrib)

@@ -2,6 +2,6 @@
   <net>
     <serverPort type="string">3490</serverPort>
     <serverHost type="string">localhost</serverHost>
-    <numClients>2</numClients>
+    <numClients>1</numClients>
   </net>
 </config>
