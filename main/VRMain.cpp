@@ -64,8 +64,10 @@ void VRMain::initialize(const std::string processName, VRDataIndex& index, const
 void VRMain::initialize()
 {
 
+	// Initialize processId to 0 which represents the main process
   _index->addData("/ProcessId", 0);
 
+  // If there is a server tag in the configuration, use server logic
   if (_index->exists("Server", "/MVR"))
   {
 	  int numProcesses = 1;
@@ -85,6 +87,9 @@ void VRMain::initialize()
 	  }
 
 	  int currentProcess = 0;
+
+	  // If the configuration specifies that there are more than one process, processes
+	  // will be forked to facilitate multiple processes.
 #ifndef WIN32
 	  while (currentProcess < numProcesses-1)
 	  {
@@ -106,12 +111,15 @@ void VRMain::initialize()
 	  // TODO: Add windows implementation of forking a process
 #endif
 
+	  // Set the current processId after forking
 	  _index->addData("/ProcessId", currentProcess);
 
-	  if (numClients > 1)
+	  // If the application doesn't create the server, it assumes process is a network client
+	  if (numClients > 1 || !createServer)
 	  {
 		  if (currentProcess == 0 && createServer)
 		  {
+			  // Create VR server which uses the same interface as a VR net client.
 			  _vrNet = new VRNetServer((VRString)_index->getValue("/MVR/Server/Port"), numClients-1);
 		  }
 		  else
