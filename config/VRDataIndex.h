@@ -105,6 +105,17 @@ Author(s) of Significant Updates/Modifications to the File:
 ///     implemented data types might make the inference step less
 ///     reliable, so bear that in mind.
 ///
+///     The VRDatum objects preserve attribute information, so you can
+///     assign attributes to your data values.  The code uses a
+///     "separator" attribute for serializing/deserializing array
+///     values, but is otherwise agnostic about attributes.  The
+///     separator attribute works like this:
+///
+///     <cora type="intarray" separator=",">3,4,5,6</cora>
+///     <nora type="stringarray">A string@B sting@C sing@D sin@E in@F i</nora>
+///
+///     If no separator is specified, the code uses '@'.
+///
 ///  3. Feed a file containing XML into processXMLFile().
 ///
 ///  Once an index has entries, they can be retrieved at your pleasure
@@ -209,8 +220,9 @@ public:
   std::string walkXML(element* node, std::string nameSpace);
   // A functional part of the walkXML apparatus.
   std::string processValue(const std::string name,
-                          VRCORETYPE_ID type,
-                          const char* valueString);
+                           VRCORETYPE_ID type,
+                           const char* valueString,
+                           const char separator);
   
   // Finds an entry in the data index, given a name and
   // namespace. Note that the name might be in a senior namespace to
@@ -305,9 +317,11 @@ public:
   VRInt deserializeInt(const char* valueString);
   VRDouble deserializeDouble(const char* valueString);
   VRString deserializeString(const char* valueString);
-  VRIntArray deserializeIntArray(const char* valueString);
-  VRDoubleArray deserializeDoubleArray(const char* valueString);
-  VRStringArray deserializeStringArray(const char* valueString);
+  VRIntArray deserializeIntArray(const char* valueString, const char separator);
+  VRDoubleArray deserializeDoubleArray(const char* valueString,
+                                       const char separator);
+  VRStringArray deserializeStringArray(const char* valueString,
+                                       const char separator);
 
   // Don't need a deserializeContainer. That happens in walkXML().
   // Process the contents of a given XML file into the index.

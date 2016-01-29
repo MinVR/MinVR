@@ -15,8 +15,9 @@
 #include <cstdlib>
 #include <sstream>
 
-// This is used to separate values in a serialized vector.
-// use static_case<char>MINVRSEPARATOR where a char is needed.
+// This is the default separator used to separate values in a
+// serialized vector.  There is a 'separator=' attribute in the
+// serialized (XML) form that can override.
 #define MINVRSEPARATOR '@'
 
 // This class is a helper to avoid having to access values with
@@ -175,6 +176,8 @@ public:
   // The 'type=' attribute is the only one that really matters to the
   // operation of the class (so is *not* stored in the attribute
   // list), but other attributes might matter to other applications.
+  // There is also a 'separator=' attribute that indicates a character
+  // to use in the serialized version of an array.
   VRAttributeList getAttributeList() { return attrList; };
   void setAttributeList(VRAttributeList newList) { attrList = newList; };
   std::string getAttributeValue(const std::string attributeName) {

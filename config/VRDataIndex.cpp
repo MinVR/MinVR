@@ -76,7 +76,8 @@ VRString VRDataIndex::deserializeString(const char* valueString) {
   return std::string(valueString);
 }
 
-VRIntArray VRDataIndex::deserializeIntArray(const char* valueString) {
+VRIntArray VRDataIndex::deserializeIntArray(const char* valueString,
+                                            const char separator) {
 
   VRIntArray vVal;
 
@@ -84,7 +85,7 @@ VRIntArray VRDataIndex::deserializeIntArray(const char* valueString) {
   std::string elem;
   VRInt iVal;
   std::stringstream ss(valueString);
-  while (std::getline(ss, elem, MINVRSEPARATOR)) {
+  while (std::getline(ss, elem, separator)) {
 
     sscanf(elem.c_str(), "%d", &iVal);
     vVal.push_back(iVal);
@@ -93,7 +94,8 @@ VRIntArray VRDataIndex::deserializeIntArray(const char* valueString) {
   return vVal;
 }
 
-VRDoubleArray VRDataIndex::deserializeDoubleArray(const char* valueString) {
+VRDoubleArray VRDataIndex::deserializeDoubleArray(const char* valueString,
+                                                  const char separator) {
 
   VRDoubleArray vVal;
 
@@ -101,7 +103,7 @@ VRDoubleArray VRDataIndex::deserializeDoubleArray(const char* valueString) {
   std::string elem;
   VRDouble fVal;
   std::stringstream ss(valueString);
-  while (std::getline(ss, elem, MINVRSEPARATOR)) {
+  while (std::getline(ss, elem, separator)) {
 
     sscanf(elem.c_str(), "%lf", &fVal);
     vVal.push_back(fVal);
@@ -110,14 +112,15 @@ VRDoubleArray VRDataIndex::deserializeDoubleArray(const char* valueString) {
   return vVal;
 }
 
-VRStringArray VRDataIndex::deserializeStringArray(const char* valueString) {
+VRStringArray VRDataIndex::deserializeStringArray(const char* valueString,
+                                                  const char separator) {
 
   VRStringArray vVal;
 
   // Separate the name space into its constituent elements.
   VRString elem;
   std::stringstream ss(valueString);
-  while (std::getline(ss, elem, MINVRSEPARATOR)) {
+  while (std::getline(ss, elem, separator)) {
 
     vVal.push_back(elem);
   }
@@ -127,7 +130,8 @@ VRStringArray VRDataIndex::deserializeStringArray(const char* valueString) {
 
 std::string VRDataIndex::processValue(const std::string name,
                                       VRCORETYPE_ID type,
-                                      const char* valueString) {
+                                      const char* valueString,
+                                      const char separator) {
 
   std::string out;
   /// Step 9 of adding a data type is adding entries to this switch.
@@ -146,15 +150,15 @@ std::string VRDataIndex::processValue(const std::string name,
     break;
 
   case VRCORETYPE_INTARRAY:
-    out = addData(name, (VRIntArray)deserializeIntArray(valueString));
+    out = addData(name, (VRIntArray)deserializeIntArray(valueString, separator));
     break;
 
   case VRCORETYPE_DOUBLEARRAY:
-    out = addData(name, (VRDoubleArray)deserializeDoubleArray(valueString));
+    out = addData(name, (VRDoubleArray)deserializeDoubleArray(valueString, separator));
     break;
 
   case VRCORETYPE_STRINGARRAY:
-    out = addData(name, (VRStringArray)deserializeStringArray(valueString));
+    out = addData(name, (VRStringArray)deserializeStringArray(valueString, separator));
     break;
 
   case VRCORETYPE_CONTAINER:
@@ -219,11 +223,19 @@ std::string VRDataIndex::walkXML(element* node, std::string nameSpace) {
           typeId = mVRTypeMap[std::string(node->get_attribute(type)->get_value())];
         }
 
-        // check for typeId == 0
+        // Need a check for typeId == 0
 
+        char separator;
+        if (node->get_attribute("separator") == NULL) {
+          separator = MINVRSEPARATOR;
+        } else {
+          separator = *(node->get_attribute("separator")->get_value());
+        }
+        
         out = processValue(qualifiedName,
                            typeId,
-                           node->get_value());
+                           node->get_value(),
+                           separator);
 
         // Any attributes to add to the list?
         VRDatum::VRAttributeList al = node->get_attribute_map();

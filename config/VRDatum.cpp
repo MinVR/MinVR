@@ -121,9 +121,18 @@ std::string VRDatumIntArray::getValueAsString() {
 
   std::string out;
   char buffer[20];
+  char separator;
 
+  VRAttributeList::iterator it = attrList.find("separator");
+  if (it == attrList.end()) {
+    separator = MINVRSEPARATOR;
+  } else {
+    separator = static_cast<char>(it->second[0]);
+  }
+  
   for (VRIntArray::iterator it = value.begin(); it != value.end(); ++it) {
-    sprintf(buffer, "%d%c", *it, MINVRSEPARATOR); // '@' is a separator
+    sprintf(buffer, "%d%c", *it, separator); 
+
     out += std::string(buffer);
   }
 
@@ -152,9 +161,17 @@ std::string VRDatumDoubleArray::getValueAsString() {
 
   std::string out;
   char buffer[20];
+  char separator;
+
+  VRAttributeList::iterator it = attrList.find("separator");
+  if (it == attrList.end()) {
+    separator = MINVRSEPARATOR;
+  } else {
+    separator = static_cast<char>(it->second[0]);
+  }
 
   for (VRDoubleArray::iterator it = value.begin(); it != value.end(); ++it) {
-    sprintf(buffer, "%f%c", *it, MINVRSEPARATOR); // '@' is a separator
+    sprintf(buffer, "%f%c", *it, separator);
     out += std::string(buffer);
   }
 
@@ -181,9 +198,17 @@ bool VRDatumStringArray::setValue(const std::vector<std::string> inVal) {
 
 std::string VRDatumStringArray::getValueAsString() {
   std::string out;
+  char separator;
+
+  VRAttributeList::iterator it = attrList.find("separator");
+  if (it == attrList.end()) {
+    separator = MINVRSEPARATOR;
+  } else {
+    separator = static_cast<char>(it->second[0]);
+  }
   
   for (VRStringArray::iterator it = value.begin(); it != value.end(); ++it) {
-    out += *it + std::string(1,MINVRSEPARATOR);
+    out += *it + std::string(1,separator);
   }
 
   return out;
