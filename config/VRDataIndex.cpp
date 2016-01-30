@@ -606,11 +606,43 @@ std::string VRDataIndex::addSerializedValue(const std::string serializedData,
   return out;
 }
 
-bool VRDataIndex::processXMLFile(std::string fileName, std::string nameSpace) {
+bool VRDataIndex::processXMLFile(const std::string fileName,
+                                 const std::string nameSpace) {
 
-  std::string xml_string="";
-  std::cout << "Reading from file = " << fileName << std::endl;
-  ifstream file(fileName.c_str());
+  std::string xml_string = "";
+
+  // A little loop to accommodate environment variables in the
+  // fileName specification. The variables are assumed to be packaged
+  // inside a '${}' combination, e.g. ${MVRHOME}/tests/config/test.xml
+  // 
+  std::string pathName = fileName;  
+  int dollarPos = 0;
+
+  dollarPos = pathName.find_first_of("$", dollarPos);
+  while (dollarPos != string::npos) {
+
+    int bracketPos = pathName.find_first_of("}", dollarPos);
+
+    if (bracketPos == string::npos) {
+      throw std::runtime_error(std::string("bad environment variable syntax"));
+    }
+
+    int bracketLen = 1 + bracketPos - dollarPos;
+    std::string envVariable = pathName.substr(dollarPos + 2, bracketLen - 3);
+
+    if (getenv(envVariable.c_str()) == NULL) {
+      throw std::runtime_error(std::string("no such environment variable:") +
+                               envVariable);
+    }
+    
+    pathName.replace(dollarPos, bracketLen, getenv(envVariable.c_str()));
+    dollarPos = pathName.find_first_of("$", dollarPos);
+
+    std::cout << "pathName: " << pathName << std::endl;
+  } // End environment variable translation.
+  
+  std::cout << "Reading from file = " << pathName << std::endl;
+  ifstream file(pathName.c_str());
 
   if(file.is_open()) {
     std::stringstream buffer;
