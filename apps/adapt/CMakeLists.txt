@@ -64,7 +64,7 @@ add_executable (adapted
   adapted.cpp
   )
 
-target_link_libraries (adapted VRMain VRPlugin VRDisplay VRIndex VRMath VRNet ${ALL_LIBS})
+target_link_libraries (adapted VRMain VRPlugin VRDisplay VRIndex VRMath VRNet ${ALL_LIBS} dl)
 
 add_executable (adapted_server
   adapted_server.cpp
@@ -76,5 +76,5 @@ target_link_libraries (adapted_server VRMain VRPlugin VRDisplay VRIndex VRMath V
 
 add_definitions(-DPLUGINPATH="${CMAKE_BINARY_DIR}/plugins")
 add_executable ( adapted_plugins adapted_plugins.cpp )
-target_link_libraries(adapted_plugins VRMain VRPlugin VRDisplay VRIndex VRMath VRNet ${ALL_LIBS})
+target_link_libraries(adapted_plugins VRMain VRPlugin VRDisplay VRIndex VRMath VRNet ${ALL_LIBS} dl)
 
