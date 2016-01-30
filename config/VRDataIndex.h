@@ -392,6 +392,10 @@ public:
   // useful to users, so made public.
   std::string validateNameSpace(const std::string nameSpace);
 
+  // Still another utility, to accommodate the use of environment
+  // variables in the file names.  Also potentially useful, so public.
+  std::string dereferenceEnvVars(const std::string fileName);
+  
   // Mostly just for debug purposes.
   void printStructure();
   void printStructure(const std::string itemName);

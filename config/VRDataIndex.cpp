@@ -606,10 +606,7 @@ std::string VRDataIndex::addSerializedValue(const std::string serializedData,
   return out;
 }
 
-bool VRDataIndex::processXMLFile(const std::string fileName,
-                                 const std::string nameSpace) {
-
-  std::string xml_string = "";
+std::string VRDataIndex::dereferenceEnvVars(const std::string fileName) {
 
   // A little loop to accommodate environment variables in the
   // fileName specification. The variables are assumed to be packaged
@@ -640,6 +637,16 @@ bool VRDataIndex::processXMLFile(const std::string fileName,
 
     std::cout << "pathName: " << pathName << std::endl;
   } // End environment variable translation.
+
+  return pathName;
+}
+
+  
+bool VRDataIndex::processXMLFile(const std::string fileName,
+                                 const std::string nameSpace) {
+
+  std::string xml_string = "";
+  std::string pathName = dereferenceEnvVars(fileName);
   
   std::cout << "Reading from file = " << pathName << std::endl;
   ifstream file(pathName.c_str());

@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
   
   // This should be identified by an environment variable, whose value
   // is decoded at this level. 
-  n->processXMLFile("tests/config/test.xml", "/");
+  n->processXMLFile("${MVRHOME}/tests/config/test.xml", "/");
   
   n->printStructure();
   
