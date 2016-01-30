@@ -36,6 +36,7 @@ class VRNetInterface {
     syncEventDataAcrossAllNodes(VRDataQueue::serialData eventData) = 0;
   virtual void syncSwapBuffersAcrossAllNodes() = 0;
 
+  virtual ~VRNetInterface() {};
  protected:
   // unique identifiers for different network messages sent as a
   // 1-byte header for each msg
