@@ -39,7 +39,7 @@ class element
     bool is_pi_element();
     bool is_comment_element();
     // Getter for the attribut by name
-    attribute* get_attribute(char* the_name);
+    attribute* get_attribute(const char* the_name);
     // Gets the next attribute in the list, starting from head and increments the counter
     attribute* get_next_attribute();
     // Gets the previous attribute in the list and decrements the counter

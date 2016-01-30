@@ -189,8 +189,6 @@ std::string VRDataIndex::walkXML(element* node, std::string nameSpace) {
   // This method will return the name of the last top-level element in
   // the input XML.  This aspect of its operation could probably use
   // more testing.
-  
-  char type[5] = "type";
 
   std::string qualifiedName;
   VRContainer childNames;
@@ -216,11 +214,11 @@ std::string VRDataIndex::walkXML(element* node, std::string nameSpace) {
 
         VRCORETYPE_ID typeId;
 
-        if (node->get_attribute(type) == NULL) {
+        if (node->get_attribute("type") == NULL) {
 
           typeId = inferType(std::string(node->get_value()));
         } else { // what does map return if no match?
-          typeId = mVRTypeMap[std::string(node->get_attribute(type)->get_value())];
+          typeId = mVRTypeMap[std::string(node->get_attribute("type")->get_value())];
         }
 
         // Need a check for typeId == 0

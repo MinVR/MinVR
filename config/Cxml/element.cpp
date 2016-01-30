@@ -100,7 +100,7 @@ bool element::add_attribute(attribute* ptr_attribute)
 }
 
 // Getter for the attribut by name
-attribute* element::get_attribute(char* the_name)
+attribute* element::get_attribute(const char* the_name)
 {
     it = m_attribute_list.begin();
     while(it != m_attribute_list.end())
