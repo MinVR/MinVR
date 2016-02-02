@@ -64,7 +64,7 @@ int main() {
     
       // Print out the entire index.
       std::cout << "Index Structure" << std::endl;
-      dataIndex->printStructure();
+      std::cout << dataIndex->printStructure();
 
       // Get the next item from the queue.
       events->pop();

@@ -914,15 +914,20 @@ std::string VRDataIndex::addNameSpace(const std::string valName) {
 }
 
 
-void VRDataIndex::printStructure() {
-  printStructure("/");
+std::string VRDataIndex::printStructure() {
+  return printStructure("/");
 }
 
-void VRDataIndex::printStructure(const std::string itemName) {
+std::string VRDataIndex::printStructure(const std::string itemName) {
+  return printStructure(itemName, 50);
+}
+
+std::string VRDataIndex::printStructure(const std::string itemName, const int lim) {
   
   // Should sort mindex here.
 
   int i;
+  std::string outBuffer;
   
   for (VRDataMap::iterator it = mindex.begin(); it != mindex.end(); ++it) {
 
@@ -939,22 +944,24 @@ void VRDataIndex::printStructure(const std::string itemName) {
 
     if (!printMe) continue;
     
-    for (i = 0; i < ((int)elems.size() - 1); i++) std::cout << " | ";
-    std::cout << elems.back();
+    for (i = 0; i < ((int)elems.size() - 1); i++) outBuffer += " | ";
+    outBuffer += elems.back();
 
     if (it->second->getType() == VRCORETYPE_CONTAINER) {
 
-      std::cout << std::endl;
+      outBuffer += "\n";
 
     } else {
 
       std::string out = serialize(elems.back(), it->second);
-      if (out.size() > 50) {
-        out = out.substr(0,49) + "...";
+      if (out.size() > lim) {
+        out = out.substr(0, (lim - 1)) + "...";
       }
-      std::cout << " = " << out << std::endl;
+      outBuffer += " = " + out + "\n";
     }
   }
+
+  return outBuffer;
 }
 
 

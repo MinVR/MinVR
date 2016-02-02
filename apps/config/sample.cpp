@@ -21,7 +21,7 @@ int main() {
 
   // Show the index structure.
   std::cout << "Index Structure" << std::endl;
-  index->printStructure();
+  std::cout << index->printStructure();
 
   VRDataQueue *queue = new VRDataQueue;
 
@@ -50,7 +50,7 @@ int main() {
   index->addData("/cora/sa", sa);
   
   std::cout << "Index Structure after changing /cora" << std::endl;
-  index->printStructure();
+  std::cout << index->printStructure();
 
   // Push the new cora onto the queue.
   queue->push(index->serialize("cora", "/"));
@@ -97,7 +97,7 @@ int main() {
     
     // Print out the entire index.
     std::cout << "Remote Index Structure" << std::endl;
-    remoteIndex->printStructure();
+    std::cout << remoteIndex->printStructure();
 
     // Perform arithmetic with some data from the index.
     int r = remoteIndex->getValue("/cora/nora");

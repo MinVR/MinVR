@@ -99,9 +99,9 @@ int main() {
     } else if (elems[0].compare("px") == 0) {
 
       if (elems.size() > 1) {
-        index->printStructure(elems[1]);
+        std::cout << index->printStructure(elems[1]);
       } else {
-        index->printStructure();
+        std::cout << index->printStructure();
       }
 
       

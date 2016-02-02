@@ -41,7 +41,7 @@ VRDataQueue::serialData makeQueue() {
   queue->push(dataIndex->serialize("/HeadMove"));
 
   std::cout << "Index Structure" << std::endl;
-  dataIndex->printStructure();
+  std::cout << dataIndex->printStructure();
 
   // Show the queue.
   std::cout << "Queue" << std::endl;

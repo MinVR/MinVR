@@ -397,8 +397,9 @@ public:
   std::string dereferenceEnvVars(const std::string fileName);
   
   // Mostly just for debug purposes.
-  void printStructure();
-  void printStructure(const std::string itemName);
+  std::string printStructure();
+  std::string printStructure(const std::string itemName);
+  std::string printStructure(const std::string itemName, const int lim);
   // Prints a vaguely tree-ish representation of an XML parse.  Just
   // an aid to debugging, really.
   bool printXML(element* node, std::string prefix);

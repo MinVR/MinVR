@@ -251,7 +251,7 @@ void eventCB(const std::string &eventName, VRDataIndex *dataIndex) {
   
   // The event can be examined here.
   std::cout << std::endl << "examining the data..." << std::endl;
-  dataIndex->printStructure(eventName);
+  std::cout << dataIndex->printStructure(eventName);
 
   // The event handler's actions are here.
   if (eventName.compare("/HeadAngleEvent") == 0) {
@@ -299,7 +299,7 @@ void eventCB(const std::string &eventName, VRDataIndex *dataIndex) {
     
   // Print out the entire index.
   //  std::cout << "Index Structure" << std::endl;
-  //  dataIndex->printStructure();
+  //  std::cout << dataIndex->printStructure();
 }
 
 // Here's the new display callback to feed to the glut mainloop.

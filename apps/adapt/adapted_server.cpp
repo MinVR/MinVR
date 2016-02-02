@@ -65,7 +65,7 @@ int main(int argc, char**argv) {
     dataIndex->processXMLFile(argv[1], VRDataIndex::rootNameSpace);
 
   // Just a check, print the contents of the file.
-  dataIndex->printStructure();
+  std::cout << dataIndex->printStructure();
 
   // The config file contains the port to listen on and the number of
   // clients to expect.
@@ -93,7 +93,7 @@ int main(int argc, char**argv) {
     // std::cout << "EVENTS:" << queue->serialize() << std::endl;
 
     // std::cout << "Index Structure" << std::endl;
-    // dataIndex->printStructure();
+    // std::cout << dataIndex->printStructure();
 
     // std::cout << "Queue" << std::endl;
     // queue->printQueue();

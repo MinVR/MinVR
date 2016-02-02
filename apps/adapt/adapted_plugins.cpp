@@ -101,7 +101,7 @@ void render(VRRenderState& state) {
 		return;
 	}
 
-	//state.dataIndex->printStructure();
+	//std::cout << state.dataIndex->printStructure();
 
 	GLfloat width = state.display->getWidth();
 	GLfloat height = state.display->getHeight();
