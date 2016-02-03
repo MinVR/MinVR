@@ -77,10 +77,13 @@ bool Cxml::get_node(char* xml_string)
                     c = xml_string[++k];
                 }
                 k+=3;
-                if(Current->get_name() != NULL)       //we have set this node, navigate to a child of it
-                    Current = Current->add_child_element();
-                Current->set_comment(szAttrNameBuff); //set it as a comment node
-                Current = Current->get_parent();      //return to the previous level
+                // MODIFIED BY TS
+                // We don't really want to process comments at all, so just
+                // discard them.
+                //if(Current->get_name() != NULL)       //we have set this node, navigate to a child of it
+                //    Current = Current->add_child_element();
+                //Current->set_comment(szAttrNameBuff); //set it as a comment node
+                //Current = Current->get_parent();      //return to the previous level
                 continue;
             }
             while(k+10 < m_length && j < 9)
