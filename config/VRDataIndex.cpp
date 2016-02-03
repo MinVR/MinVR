@@ -660,24 +660,8 @@ bool VRDataIndex::processXMLFile(const std::string fileName,
     buffer << file.rdbuf();
     xml_string = buffer.rdbuf()->str();
 
-    Cxml *xml = new  Cxml();
-    xml->parse_string((char*)xml_string.c_str());
-
-    element *xml_node = xml->get_root_element();
-    element *child = xml_node->get_next_child();
-
-    while (child != NULL) {
-
-#ifdef DEBUG
-      printXML(child, nameSpace);
-#endif
-      walkXML(child, nameSpace);
-
-      child = xml_node->get_next_child();
-    }
-
-    delete xml;
-
+    addSerializedValue(xml_string, nameSpace);
+    
   } else {
     std::cerr << "Error opening file " << fileName << std::endl;
   }
