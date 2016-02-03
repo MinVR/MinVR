@@ -136,7 +136,8 @@ std::string VRDatumIntArray::getValueAsString() {
     out += std::string(buffer);
   }
 
-  return out;
+  // Remove trailing separator.
+  return out.substr(0, out.size() - 1);
 }
 
 VRDatumPtr CreateVRDatumIntArray(void *pData) {
@@ -175,7 +176,8 @@ std::string VRDatumDoubleArray::getValueAsString() {
     out += std::string(buffer);
   }
 
-  return out;
+  // Remove trailing separator.
+  return out.substr(0, out.size() - 1);
 }
 
 VRDatumPtr CreateVRDatumDoubleArray(void *pData) {
@@ -211,7 +213,8 @@ std::string VRDatumStringArray::getValueAsString() {
     out += *it + std::string(1,separator);
   }
 
-  return out;
+  // Remove trailing separator.
+  return out.substr(0, out.size() - 1);
 }
 
 VRDatumPtr CreateVRDatumStringArray(void *pData) {
