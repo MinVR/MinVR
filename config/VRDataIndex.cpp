@@ -635,7 +635,9 @@ std::string VRDataIndex::dereferenceEnvVars(const std::string fileName) {
     pathName.replace(dollarPos, bracketLen, getenv(envVariable.c_str()));
     dollarPos = pathName.find_first_of("$", dollarPos);
 
+#ifdef DEBUG
     std::cout << "pathName: " << pathName << std::endl;
+#endif
   } // End environment variable translation.
 
   return pathName;
@@ -647,8 +649,10 @@ bool VRDataIndex::processXMLFile(const std::string fileName,
 
   std::string xml_string = "";
   std::string pathName = dereferenceEnvVars(fileName);
-  
+
+#ifdef DEBUG
   std::cout << "Reading from file = " << pathName << std::endl;
+#endif
   ifstream file(pathName.c_str());
 
   if(file.is_open()) {
@@ -675,7 +679,7 @@ bool VRDataIndex::processXMLFile(const std::string fileName,
     delete xml;
 
   } else {
-    std::cout << "Error opening file " << fileName << std::endl;
+    std::cerr << "Error opening file " << fileName << std::endl;
   }
   return true;
 }
@@ -913,7 +917,7 @@ std::string VRDataIndex::addNameSpace(const std::string valName) {
   return valName;
 }
 
-
+// Prints the whole index.
 std::string VRDataIndex::printStructure() {
   return printStructure("/");
 }
@@ -922,41 +926,73 @@ std::string VRDataIndex::printStructure(const std::string itemName) {
   return printStructure(itemName, 50);
 }
 
+// Returns a printable description of the data structure that isn't
+// XML.  You can always use 'serialize' instead, and see the XML, but
+// I find this format to be easier to understand.  Also, the
+// serialize() method does not use white space formatting and
+// newlines.
 std::string VRDataIndex::printStructure(const std::string itemName, const int lim) {
   
-  // Should sort mindex here.
-
   int i;
   std::string outBuffer;
+
+  // Get the pieces of the input name.
+  std::vector<std::string> itemElems = explodeName( itemName );
   
+  // We loop through *all* the values in the mindex, and only print
+  // the ones that are asked for.
   for (VRDataMap::iterator it = mindex.begin(); it != mindex.end(); ++it) {
 
     bool printMe = true;
 
-    std::vector<std::string> itemElems = explodeName( itemName );
+    // Get the pieces of the current name.
     std::vector<std::string> elems = explodeName( it->first );
 
+    // Is it the same as the itemName?
     for (i = 1; i < min(itemElems.size(), elems.size()); i++) {
       
       if (itemElems[i].compare(elems[i]) != 0)
         printMe = false;
     }
 
+    // No? Skip.
     if (!printMe) continue;
-    
+
+    // Yes, print it.  First calculate and print the indent.
     for (i = 0; i < ((int)elems.size() - 1); i++) outBuffer += " | ";
+
+    // The name is being printed in context, so we only need the last
+    // element of the exploded name.
     outBuffer += elems.back();
 
+    // If this is a container, we're done.  Go get the next name.
     if (it->second->getType() == VRCORETYPE_CONTAINER) {
 
       outBuffer += "\n";
 
     } else {
 
-      std::string out = serialize(elems.back(), it->second);
+      // This is not a container.  Get the value.
+      std::string out = it->second->getValueAsString();
+
+      // If there is a line limit, try to respect it in some vague fashion.
       if (out.size() > lim) {
         out = out.substr(0, (lim - 1)) + "...";
       }
+
+      // Append the type description.
+      out += " (" +  it->second->getDescription() + ")";
+
+      // Are there attributes?  If so, append them.
+      VRDatum::VRAttributeList vrl = it->second->getAttributeList();
+      
+      if (vrl.size() > 0) {
+        out += "\n";
+        // Matches the indent above.
+        for (i = 0; i < ((int)elems.size() - 1); i++) out += " | ";      
+        out += "  [" + it->second->getAttrListAsString() + " ]";
+      }
+
       outBuffer += " = " + out + "\n";
     }
   }
