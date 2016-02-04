@@ -60,7 +60,7 @@ int main() {
 
   // Show the queue.
   std::cout << "Queue" << std::endl;
-  queue->printQueue();
+  std::cout << queue->printQueue();
 
   std::cout << std::endl;
   std::cout << "serialized queue: " << queue->serialize() << std::endl;

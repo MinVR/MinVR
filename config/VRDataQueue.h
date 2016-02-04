@@ -61,7 +61,7 @@ public:
   serialData serialize();
 
   // A debug-friendly output function.
-  void printQueue(); 
+  std::string printQueue(); 
   
 };
 

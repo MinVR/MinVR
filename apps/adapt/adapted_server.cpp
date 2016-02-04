@@ -96,7 +96,7 @@ int main(int argc, char**argv) {
     // std::cout << dataIndex->printStructure();
 
     // std::cout << "Queue" << std::endl;
-    // queue->printQueue();
+    // std::cout << queue->printQueue();
 
     // Send the event queue and synchronize with all the clients.
     server.syncEventDataAcrossAllNodes(queue->serialize());

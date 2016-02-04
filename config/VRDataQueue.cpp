@@ -115,10 +115,16 @@ VRDataQueue::serialData VRDataQueue::serialize() {
 }
 
 // DEBUG only
-void VRDataQueue::printQueue() {
+std::string VRDataQueue::printQueue() {
 
+  std::string out;
+
+  char buf[3];
   int i = 0;
   for (VRDataList::iterator it = dataMap.begin(); it != dataMap.end(); ++it) {
-    std::cout << "element " << ++i << ": " << it->second << std::endl;
+    sprintf(buf, "%d", ++i);
+    out += "element " + std::string(buf) + ": " + it->second + "\n";
   }
+
+  return out;
 }

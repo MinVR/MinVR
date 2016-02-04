@@ -45,7 +45,7 @@ VRDataQueue::serialData makeQueue() {
 
   // Show the queue.
   std::cout << "Queue" << std::endl;
-  queue->printQueue();
+  std::cout << queue->printQueue();
   
   return queue->serialize();
 }
