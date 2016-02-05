@@ -49,6 +49,11 @@
 cmake_minimum_required (VERSION 2.8.2) 
 project (MinVR)
 
+set( CMAKE_BUILD_TYPE Debug CACHE STRING
+       "Choose the type of build, options are: None Debug Release RelWithDebInfo
+MinSizeRel."
+       FORCE )
+
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set (CMAKE_INSTALL_PREFIX "${${PROJECT_NAME}_SOURCE_DIR}/build/install" CACHE PATH "default install path" FORCE )
 endif()
@@ -58,12 +63,13 @@ endif()
 
 include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 
+enable_testing()
 
 # Let's follow the convention of putting all of the libs in "build/lib" and all
 # of the exes in "build/bin".  To distingusih between debugging, release, and
 # other builds, we'll add a postfix to the name of the lib or exe that we generate.
 
-set(CMAKE_DEBUG_POSTFIX "d")
+set(CMAKE_DEBUG_POSTFIX "")
 set(CMAKE_RELEASE_POSTFIX "")
 set(CMAKE_RELWITHDEBINFO_POSTFIX "rd")
 set(CMAKE_MINSIZEREL_POSTFIX "s")
@@ -128,6 +134,10 @@ add_subdirectory (apps)
 # Now, build some programs, such as tests, that depend upon the MinVR libraries:
 
 #add_subdirectory (tests/eventdata)
-#add_subdirectory (tests/plugin)
+add_subdirectory (tests/config)
 
 add_subdirectory (contrib)
+
+add_test(VRDataIndexTest bin/VRDataIndexTest)
+add_test(VRDataQueueTest bin/VRDataQueueTest)
+
