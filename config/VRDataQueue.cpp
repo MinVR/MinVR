@@ -53,7 +53,13 @@ void VRDataQueue::addSerializedQueue(const VRDataQueue::serialData serializedQue
 }
 
 VRDataQueue::serialData VRDataQueue::getSerializedObject() {
-  return dataMap.begin()->second;
+  if (dataMap.empty()) {
+      
+    return "";
+  } else {
+
+    return dataMap.begin()->second;
+  }
 }
 
 void VRDataQueue::pop() {

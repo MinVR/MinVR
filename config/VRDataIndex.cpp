@@ -546,6 +546,10 @@ std::string VRDataIndex::getTrimName(const std::string valName) {
   return trimName;
 }
 
+// Notice that you can't serialize the whole index.  That is, you need
+// to specify an object or container to serialize, and "/" is not such
+// a thing. To see why not, imagine what the serialization would look
+// like: what would be inside the first XML tag?
 std::string VRDataIndex::serialize(const std::string valName) {
 
   VRDataMap::iterator it = getEntry(valName, "");
