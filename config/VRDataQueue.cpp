@@ -91,7 +91,7 @@ void VRDataQueue::push(const VRDataQueue::serialData serializedData) {
 
 #endif
 
-  dataMap.insert(std::pair<long long,VRDataQueue::serialData>(timeStamp, serializedData));
+  push(timeStamp, serializedData);
 }
 
 void VRDataQueue::push(const long long timeStamp,
