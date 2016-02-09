@@ -18,7 +18,7 @@
     <displayType type="string">thread_group</displayType>
     <Display1>
       <allowThreading type="int">1</allowThreading>
-      <displayType type="string">glfw_display</displayType>
+      <displayType type="string" val="heavy">glfw_display</displayType>
       <xOffset type="int">600</xOffset>
       <yOffset type="int">0</yOffset>
       <width type="int">200</width>
@@ -55,6 +55,7 @@
     <height type="int">600</height>
   </MainDisplay>
   <OtherDisplay>
+    <!-- This comment should not show up in the parsed tree. -->
     <displayType type="string">glfw_display</displayType>
     <xOffset type="int">0</xOffset>
     <yOffset type="int">0</yOffset>
