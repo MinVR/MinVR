@@ -20,9 +20,13 @@ VRDataQueue::VRDataQueue(const VRDataQueue::serialData serializedQueue) {
 
 // This function does *not* process arbitrary XML, but it *does*
 // process XML that was produced by the serialize() method below.
-// This is why it looks a bit hacky, but this serialization is only
-// intended to transmit from one instance of this class to another.
+// This is why it looks a bit hacky, with mysterious constants like
+// the number 18.  This serialization is only intended to transmit
+// from one instance of this class to another, even if it more or less
+// honors the look and feel of XML.
 void VRDataQueue::addSerializedQueue(const VRDataQueue::serialData serializedQueue) {
+  
+  // Looking for the number in <VRDataQueue num="X">
   if (serializedQueue.size() < 18) return;
   
   std::size_t start, end;
@@ -32,10 +36,14 @@ void VRDataQueue::addSerializedQueue(const VRDataQueue::serialData serializedQue
   
   //std::cout << serializedQueue.substr(start, end - start) << std::endl;
   
-  int num;
-  std::istringstream( serializedQueue.substr(start,end)) >> num;
+  int numIncluded;
+  std::istringstream( serializedQueue.substr(start,end)) >> numIncluded;
   start = serializedQueue.find(">", end);
 
+  // Found the number of items.  Now parse the items, making sure to
+  // record the timeStamp of each one.
+
+  int numReceived = 0;
   long long timeStamp;
   start = serializedQueue.find("<VRDataQueueItem timeStamp=\"", start);
   while (start != std::string::npos) {
@@ -48,7 +56,12 @@ void VRDataQueue::addSerializedQueue(const VRDataQueue::serialData serializedQue
 
     start = serializedQueue.find("</VRDataQueueItem>", end);
     push(timeStamp, serializedQueue.substr(end + 2, start - end - 2) );
+    numReceived++;
     start = serializedQueue.find("<VRDataQueueItem timeStamp=\"", end);
+  }
+
+  if (numReceived != numIncluded) {
+    throw std::runtime_error(std::string("serialized queue appears corrupted"));
   }
 }
 

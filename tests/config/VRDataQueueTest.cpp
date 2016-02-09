@@ -59,8 +59,9 @@ VRDataIndex* setupIndex() {
   return n;
 }
 
-// Removes the timestamps from a queue string so they can be compared.
-std::string compressQueue(const std::string inString) {
+// Removes the timestamps from a queue string so they can be compared
+// with each other.
+std::string removeTimeStamps(const std::string inString) {
 
   std::string outString = inString;
   
@@ -90,7 +91,7 @@ int TestQueueArray() {
 
   std::string testString = "<VRDataQueue num=\"2\"><VRDataQueueItem timeStamp=\"1454671331220377\"><atestarray type=\"intarray\">0@1@2@3@4@5@6@7@8@9@10@11@12@13@14@15@16@17@18@19@20@21@22@23@24@25@26@27@28@29@30@31@32@33@34@35@36@37@38@39@40@41@42@43@44@45@46@47@48@49@50@51@52@53@54@55@56@57@58@59@60@61@62@63@64@65@66@67@68@69@70@71@72@73@74@75@76@77@78@79@80@81@82@83@84@85@86@87@88@89@90@91@92@93@94@95@96@97@98@99</atestarray></VRDataQueueItem><VRDataQueueItem timeStamp=\"1454671331220395\"><d0 type=\"doublearray\">1.200000@2.300000@3.400000@4.500000@5.600000</d0></VRDataQueueItem></VRDataQueue>";
 
-  testString = compressQueue(testString);
+  testString = removeTimeStamps(testString);
   
   VRDataIndex *n = setupIndex();
   VRDataQueue *q = new VRDataQueue;
@@ -106,7 +107,7 @@ int TestQueueArray() {
   q->push(n->serialize("atestarray", "/george/"));
   q->push(n->serialize("/donna/d0"));
   
-  std::string output = compressQueue(q->serialize());
+  std::string output = removeTimeStamps(q->serialize());
   
   //std::cout << "test:" << testString << std::endl;
   //std::cout << "outp:" << output << std::endl;
@@ -123,6 +124,7 @@ int TestQueueUnpack() {
 
   std::string testString;
 
+  // Create an index and a queue.
   VRDataIndex *n = setupIndex();
   VRDataQueue *q = new VRDataQueue;
   
@@ -132,19 +134,24 @@ int TestQueueUnpack() {
     e.push_back(i);
   }
 
+  // Add an array to the index.
   n->addData("/george/atestarray", e);
 
-  // Test unpacking the queue.
+  // Get the serialized version of an index object.
   testString = n->serialize("/george");
 
+  // Put that object into the queue.
   q->push(n->serialize("/george"));
   
   VRDataIndex* index = new VRDataIndex;
 
+  // Unpack the serialized object.
   index->addSerializedValue( q->getSerializedObject(), "/" );
 
+  // Unpack it into a different index.
   std::string output = index->serialize("/george");
 
+  // Does it match?
   int out = testString.compare(output);
 
   delete n;

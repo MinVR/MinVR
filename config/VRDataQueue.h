@@ -36,7 +36,9 @@ public:
   VRDataQueue(const serialData serializedQueue);
 
   static const serialData noData;
-  
+
+  // Process a chunk of XML into queue items and add them to the
+  // existing queue.  The constructor calls this method.
   void addSerializedQueue(const serialData serializedQueue);
   
   bool notEmpty() { return (bool)dataMap.size(); }
@@ -44,20 +46,21 @@ public:
   // Returns the object at the head of the queue, but does not remove
   // it from the queue.
   serialData getSerializedObject();
-  // Removed the object at the front of the queue.
+  // Removes the object at the front of the queue.
   void pop();
 
-  // Remove all the objects in the queue.
+  // Removes all the objects in the queue.
   void clear();
   
   // Takes a serialized bit of data and pushes it onto the end of the
   // queue.
   void push(const serialData serializedData);
+  // You can use this one if you want to generate your own time stamp.
+  // Objects in the queue will be sorted by the time stamp, and will
+  // be popped off the stack in time stamp order.
   void push(const long long timeStamp, const serialData serializedData);
 
-  // Serialize the whole queue into a piece of XML.  There is no
-  // deserialize method, but there is a constructor that takes a serialized
-  // queue as input.
+  // Serialize the whole queue into a piece of XML.  
   serialData serialize();
 
   // A debug-friendly output function.
