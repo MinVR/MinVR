@@ -1,7 +1,9 @@
 # Create some test programs from the source files in this directory.
 
 set (dataindextests datum index queue)
-set (datum_parts 1)
+# The numbers here correspond to 'case' statements in the respective
+# test program.  See, e.g., datumtest.cpp
+set (datum_parts 1 2 3 4 5 6 7)
 set (index_parts 1 2 3 4)
 set (queue_parts 1 2)
 
