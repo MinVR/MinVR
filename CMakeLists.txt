@@ -136,8 +136,6 @@ add_subdirectory (apps)
 #add_subdirectory (tests/eventdata)
 add_subdirectory (tests/config)
 
-add_subdirectory (contrib)
 
-add_test(VRDataIndexTest bin/VRDataIndexTest)
-add_test(VRDataQueueTest bin/VRDataQueueTest)
+
 

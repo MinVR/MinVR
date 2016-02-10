@@ -1,8 +1,46 @@
 #include "config/VRDataIndex.h"
 #include "config/VRDataQueue.h"
-#include "gtest/gtest.h"
 
-VRDataIndex* setupIndex() {
+int TestQueueArray();
+int TestQueueUnpack();
+
+int queuetest(int argc, char* argv[]) {
+  
+  int defaultchoice = 1;
+  
+  int choice = defaultchoice;
+
+  if (argc > 1) {
+    if(sscanf(argv[1], "%d", &choice) != 1) {
+      printf("Couldn't parse that input as a number\n");
+      return -1;
+    }
+  }
+
+  int output;
+  
+  switch(choice) {
+  case 1:
+    output = TestQueueArray();
+    break;
+    
+  case 2:
+    output = TestQueueUnpack();
+    break;
+
+    // Add case statements to handle other values.
+  default:
+    std::cout << "Test #" << choice << " does not exist!\n";
+    output = -1;
+  }
+  
+  return output;
+}
+
+// This is pretty much the same function as setupIndex() in
+// indextest.cpp, but has its name changed to avoid link conflicts in
+// the construction of test_runner.
+VRDataIndex* setupQIndex() {
 
   VRDataIndex *n = new VRDataIndex;
   
@@ -52,9 +90,10 @@ VRDataIndex* setupIndex() {
 
   n->addData("/donna/d0", d);
   
-  // This should be identified by an environment variable, whose value
-  // is decoded at this level. 
-  n->processXMLFile("${MVRHOME}/tests/config/test.xml", "/");
+  // This file is specified using the WORKING_DIRECTORY option in the
+  // ctest framework.  See the CMakeLists.txt file in this directory,
+  // and look for the add_test command.
+  n->processXMLFile("test.xml", "/");
   
   return n;
 }
@@ -93,7 +132,7 @@ int TestQueueArray() {
 
   testString = removeTimeStamps(testString);
   
-  VRDataIndex *n = setupIndex();
+  VRDataIndex *n = setupQIndex();
   VRDataQueue *q = new VRDataQueue;
   
   std::vector<int>e;
@@ -125,7 +164,7 @@ int TestQueueUnpack() {
   std::string testString;
 
   // Create an index and a queue.
-  VRDataIndex *n = setupIndex();
+  VRDataIndex *n = setupQIndex();
   VRDataQueue *q = new VRDataQueue;
   
   std::vector<int>e;
@@ -161,22 +200,3 @@ int TestQueueUnpack() {
   return out;
 }
 
-TEST(QueueCreateTest, TestQueueArray) {
-
-  EXPECT_EQ(0, TestQueueArray());
-
-}
-
-TEST(QueueCreateTest, TestQueueUnpack) {
-
-  EXPECT_EQ(0, TestQueueUnpack());
-
-}
-
-
-
-GTEST_API_ int main(int argc, char **argv) {
-  printf("Running main() from gtest_main.cc\n");
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
