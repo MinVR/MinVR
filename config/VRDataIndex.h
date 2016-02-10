@@ -208,6 +208,7 @@ private:
 public:
   VRDataIndex();
 
+  // Some constants that may be useful to users of this API.
   static std::string rootNameSpace;
   
   void setOverwrite(const int inVal) { overwrite = inVal; }

@@ -31,7 +31,7 @@ std::string VRDataIndex::serialize(const std::string trimName,
 
     return ("<" + trimName +
             " type=\"" + pdata->getDescription() + "\"" +
-            pdata->getAttrListAsString() + ">" +
+            pdata->getAttributeListAsString() + ">" +
             pdata->getValueAsString() +
             "</" + trimName + ">");
 
@@ -42,7 +42,7 @@ std::string VRDataIndex::serialize(const std::string trimName,
     //                      ... open the XML tag, with the type ...
     serialized = "<" + trimName +
       " type=\"" + pdata->getDescription() + "\"" +
-      pdata->getAttrListAsString() + ">";
+      pdata->getAttributeListAsString() + ">";
 
     // ... loop through the children (recursively) ...
     VRContainer nameList = pdata->getValue();
@@ -978,7 +978,7 @@ std::string VRDataIndex::printStructure(const std::string itemName, const int li
         out += "\n";
         // Matches the indent above.
         for (i = 0; i < ((int)elems.size() - 1); i++) out += " | ";      
-        out += "  [" + it->second->getAttrListAsString() + " ]";
+        out += "  [" + it->second->getAttributeListAsString() + " ]";
       }
 
       outBuffer += " = " + out + "\n";

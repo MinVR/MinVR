@@ -163,10 +163,6 @@ public:
   // The constructor for the native storage form.
   VRDatum(const VRCORETYPE_ID inType) : type(inType) {};
 
-  // The constructor for the serialized data form.  This extracts the
-  // necessary data from the string, and creates the type, value, and
-  // name from there.
-  VRDatum(const std::string serializedData) {};
   // virtual destructor allows concrete types to implement their own
   // destruction mechanisms.  Specifically, types that involve
   // pointers should be careful to delete their objects.
@@ -188,7 +184,7 @@ public:
     attrList[attributeName] = attributeValue;
   }
   // Returns the attribute list formatted to include in an XML tag.
-  std::string getAttrListAsString();
+  std::string getAttributeListAsString();
   
   // This array is a mapping between VRCORETYPE_ID and the string
   // description of that type that will appear in serialized data.  It

@@ -29,7 +29,7 @@ std::string VRDatum::initializeDescription(VRCORETYPE_ID t) {
 }
 
 // Returns the attribute list formatted to include in an XML tag.
-std::string VRDatum::getAttrListAsString() {
+std::string VRDatum::getAttributeListAsString() {
   std::string out = std::string("");
   for (VRAttributeList::iterator it = attrList.begin();
        it != attrList.end(); it++) {
