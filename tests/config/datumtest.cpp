@@ -17,6 +17,9 @@ int testDatumStringArray();
 // Mucks around with the attribute lists.
 int testDatumAttributes();
 
+// You can make this long to get better timing data.
+#define LOOP for (int loopctr = 0; loopctr < 10; loopctr++)
+
 // This is the primary test runner.  Accepts two args, selects one of
 // the tests to run, runs it, returns the result.  It is operated by
 // the CMake-generated RunSomeIndexTests binary.  See the
@@ -80,29 +83,32 @@ int datumtest(int argc, char* argv[]) {
 // Test the setting and retrieving of attributes.
 int testDatumAttributes() {
 
-  std::string testString = " four=\"4\" one=\"1\" three=\"3\" two=\"2\"";
-  
-  VRDatumInt a = VRDatumInt(37);
-  
-  VRDatum::VRAttributeList alist = a.getAttributeList();
-
-  alist["one"] = "11";
-  alist["two"] = "2";
-  alist["three"] = "3";
-
-  a.setAttributeList(alist);
-
-  a.setAttributeValue("one", "1");
-  a.setAttributeValue("four", "4");
-
-  std::string outString = a.getAttributeListAsString();
-
-  //  std::cout << outString << std::endl;
-  //  std::cout << testString << std::endl;
-  
   int out = 0;
 
-  out += outString.compare(testString);
+  LOOP {
+    std::string testString = " four=\"4\" one=\"1\" three=\"3\" two=\"2\"";
+  
+    VRDatumInt a = VRDatumInt(37);
+  
+    VRDatum::VRAttributeList alist = a.getAttributeList();
+
+    alist["one"] = "11";
+    alist["two"] = "2";
+    alist["three"] = "3";
+
+    a.setAttributeList(alist);
+
+    a.setAttributeValue("one", "1");
+    a.setAttributeValue("four", "4");
+
+    std::string outString = a.getAttributeListAsString();
+
+    //  std::cout << outString << std::endl;
+    //  std::cout << testString << std::endl;
+  
+    out += outString.compare(testString);
+
+  }
   
   return out;
 }
@@ -111,81 +117,99 @@ int testDatumAttributes() {
 // Test setting and retrieving values.
 int testDatumInt() {
 
-  VRDatumInt a = VRDatumInt(37);
+  int out = 0;
 
-  // Is the type description correct?
-  int out = a.getDescription().compare("int");
-
-  // Also implicitly testing the VRDatumConverter here.
-  int b = a.getValue();
+  LOOP {
   
-  out += (37 == b) ? 0 : 1;
+    VRDatumInt a = VRDatumInt(37);
 
-  // Is the type correct?
-  out += (a.getType() == VRCORETYPE_INT) ? 0 : 1;
+    // Is the type description correct?
+    out = a.getDescription().compare("int");
+    
+    // Also implicitly testing the VRDatumConverter here.
+    int b = a.getValue();
+  
+    out += (37 == b) ? 0 : 1;
 
-  // Is the serialization correct?
-  out += a.getValueAsString().compare("37");
+    // Is the type correct?
+    out += (a.getType() == VRCORETYPE_INT) ? 0 : 1;
 
+    // Is the serialization correct?
+    out += a.getValueAsString().compare("37");
+  }
+    
   return out;
 }
 
 // See testDatumInt() above.
 int testDatumDouble() {
 
-  VRDatumDouble a = VRDatumDouble(37.123);
+  int out = 0;
 
-  int out = a.getDescription().compare("double");
+  LOOP {
+    VRDatumDouble a = VRDatumDouble(37.123);
 
-  double b = a.getValue();
-  
-  out += (37.123 == b) ? 0 : 1;
-  
-  out += (a.getType() == VRCORETYPE_DOUBLE) ? 0 : 1;
+    out = a.getDescription().compare("double");
 
-  out += a.getValueAsString().compare("37.123000");
-  // std::cout << a.getValueAsString() << std::endl;
+    double b = a.getValue();
   
+    out += (37.123 == b) ? 0 : 1;
+  
+    out += (a.getType() == VRCORETYPE_DOUBLE) ? 0 : 1;
+
+    out += a.getValueAsString().compare("37.123000");
+    // std::cout << a.getValueAsString() << std::endl;
+  }
+    
   return out;
 }
 
 // See testDatumInt() above.
 int testDatumString() {
 
-  VRDatumString a = VRDatumString(std::string("this is a string"));
+  int out = 0;
 
-  int out = a.getDescription().compare("string");
-
-  std::string b = a.getValue();
-
-  std::string c = "this is a string";
+  LOOP {
   
-  out += c.compare(b);
+    VRDatumString a = VRDatumString(std::string("this is a string"));
 
-  out += (a.getType() == VRCORETYPE_STRING) ? 0 : 1;
+    out = a.getDescription().compare("string");
 
-  out += a.getValueAsString().compare("this is a string");
+    std::string b = a.getValue();
 
+    std::string c = "this is a string";
+  
+    out += c.compare(b);
+
+    out += (a.getType() == VRCORETYPE_STRING) ? 0 : 1;
+
+    out += a.getValueAsString().compare("this is a string");
+  }
+  
   return out;
 }
 
 // See testDatumInt() above.
 int testDatumIntArray() {
 
-  int someInts[] = {16,2,77,29};
-  std::vector<int> f (someInts, someInts + sizeof(someInts) / sizeof(int) );
+  int out;
+
+  LOOP {
+    int someInts[] = {16,2,77,29};
+    std::vector<int> f (someInts, someInts + sizeof(someInts) / sizeof(int) );
   
-  VRDatumIntArray a = VRDatumIntArray(f);
+    VRDatumIntArray a = VRDatumIntArray(f);
+    
+    out = a.getDescription().compare("intarray");
 
-  int out = a.getDescription().compare("intarray");
-
-  std::vector<int> b = a.getValue();
+    std::vector<int> b = a.getValue();
   
-  out += (77 == b[2]) ? 0 : 1;
+    out += (77 == b[2]) ? 0 : 1;
 
-  out += (a.getType() == VRCORETYPE_INTARRAY) ? 0 : 1;
+    out += (a.getType() == VRCORETYPE_INTARRAY) ? 0 : 1;
 
-  out += a.getValueAsString().compare("16@2@77@29");
+    out += a.getValueAsString().compare("16@2@77@29");
+  }
   
   return out;
 }
@@ -193,23 +217,27 @@ int testDatumIntArray() {
 // See testDatumInt() above.
 int testDatumDoubleArray() {
 
-  double someDoubles[] = {16.2,2.71828,77.3,29.165};
-  std::vector<double> f (someDoubles, someDoubles + sizeof(someDoubles) / sizeof(double) );
+  int out;
+
+  LOOP {
+    double someDoubles[] = {16.2,2.71828,77.3,29.165};
+    std::vector<double> f (someDoubles, someDoubles + sizeof(someDoubles) / sizeof(double) );
+ 
+    VRDatumDoubleArray a = VRDatumDoubleArray(f);
+
+    out = a.getDescription().compare("doublearray");
+
+    std::vector<double> b = a.getValue();
+    
+    out += (b[2] == 77.3) ? 0 : 1;
+
+    out += (a.getType() == VRCORETYPE_DOUBLEARRAY) ? 0 : 1;
+
+    a.setAttributeValue("separator", ",");
   
-  VRDatumDoubleArray a = VRDatumDoubleArray(f);
-
-  int out = a.getDescription().compare("doublearray");
-
-  std::vector<double> b = a.getValue();
-  
-  out += (b[2] == 77.3) ? 0 : 1;
-
-  out += (a.getType() == VRCORETYPE_DOUBLEARRAY) ? 0 : 1;
-
-  a.setAttributeValue("separator", ",");
-  
-  //std::cout << a.getValueAsString() << std::endl;
-  out += a.getValueAsString().compare("16.200000,2.718280,77.300000,29.165000");
+    //std::cout << a.getValueAsString() << std::endl;
+    out += a.getValueAsString().compare("16.200000,2.718280,77.300000,29.165000");
+  }
   
   return out;
 }
@@ -217,27 +245,32 @@ int testDatumDoubleArray() {
 // See testDatumInt() above.
 int testDatumStringArray() {
 
-  std::vector<std::string> f;
+  int out = 0;
 
-  f.push_back("one");
-  f.push_back("two");
-  f.push_back("three");
-  f.push_back("four");
-  f.push_back("five");
+  LOOP {
   
-  VRDatumStringArray a = VRDatumStringArray(f);
+    std::vector<std::string> f;
 
-  int out = a.getDescription().compare("stringarray");
+    f.push_back("one");
+    f.push_back("two");
+    f.push_back("three");
+    f.push_back("four");
+    f.push_back("five");
+    
+    VRDatumStringArray a = VRDatumStringArray(f);
 
-  std::vector<std::string> b = a.getValue();
+    out = a.getDescription().compare("stringarray");
+
+    std::vector<std::string> b = a.getValue();
   
-  out += b[2].compare("three");
+    out += b[2].compare("three");
 
-  out += (a.getType() == VRCORETYPE_STRINGARRAY) ? 0 : 1;
+    out += (a.getType() == VRCORETYPE_STRINGARRAY) ? 0 : 1;
 
-  a.setAttributeValue("separator", "/");
+    a.setAttributeValue("separator", "/");
   
-  out += a.getValueAsString().compare("one/two/three/four/five");
+    out += a.getValueAsString().compare("one/two/three/four/five");
+  }
   
   return out;
 }
