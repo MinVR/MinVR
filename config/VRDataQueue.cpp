@@ -6,6 +6,8 @@
 #else
 	#include <sys/time.h>
 #endif
+#include <stdio.h>
+#include <stdexcept>
 
 
 // Use this when the client has no new data to offer.

@@ -1,7 +1,11 @@
 #include <iostream>
 #include <stdlib.h>
 #include "config/VRDataIndex.h"
+#ifndef __linux__
 #include <malloc/malloc.h>
+#else
+#include <malloc.h>
+#endif
 
 int main(int argc, char** argv) {
 
