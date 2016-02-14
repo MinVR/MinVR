@@ -19,6 +19,7 @@ file.
 The server function makes up some events to pass along to the clients.
 You'll see that the two clients react to them in different ways
 because the "radius event" changes the value of a default radius,
-which is set up to only affect Display2, while the client in Display1
+which is set up to only affect Display2.  The client in Display1
 has an explicitly set radius that is not affected by the default
-level.  This is set up in the mvr.xml file, so look there to see.
+level.  This is set up in the mvr.xml file, so look there to see more
+detail.
