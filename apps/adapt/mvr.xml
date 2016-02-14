@@ -1,22 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <MVR>
-<Server>
-  <Port type="string">3490</Port>
-  <Host>localhost</Host>
-  <NumClients type="int">1</NumClients>
-  <CreateServer type="int">0</CreateServer>
-</Server>
+  <Server>
+    <!-- This information is read explicitly in adapted_server, and is
+         also used by the API in adapted.cpp, to set up the communication
+         between them. -->
+    <Port type="string">3490</Port>
+    <Host>localhost</Host>
+    <NumClients type="int">2</NumClients>
+    <CreateServer type="int">0</CreateServer>
+  </Server>
 
-<VRDisplayDevices>
-  <radius>20.0</radius>
-  <Display1>
-    <radius>7.0</radius>
-	  <xOffset type="int">0</xOffset>
-	  <yOffset type="int">300</yOffset>
-  </Display1>
-  <Display2>
-	  <xOffset type="int">0</xOffset>
-	  <yOffset type="int">300</yOffset>
-  </Display2>
-</VRDisplayDevices>
+  <VRDisplayDevices>
+    <!-- This radius is a default value. -->
+    <radius>20.0</radius>
+    <!-- There are two displays configured here, called 'Display1' and
+         'Display2'. -->
+    <Display1>
+      <!-- This radius only affects the Display1 context. -->
+      <radius>7.0</radius>
+	    <xOffset type="int">0</xOffset>
+	    <yOffset type="int">300</yOffset>
+    </Display1>
+    <Display2>
+      <!-- There is no radius specified here, so it uses the default
+           defined at a higher level in the XML. -->
+	    <xOffset type="int">0</xOffset>
+	    <yOffset type="int">300</yOffset>
+    </Display2>
+  </VRDisplayDevices>
 </MVR>
