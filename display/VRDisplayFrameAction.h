@@ -61,7 +61,7 @@ SpecificVRDisplayFrameAction<T>::SpecificVRDisplayFrameAction(T *obj, MethodType
 template<class T>
 bool SpecificVRDisplayFrameAction<T>::exec()
 {
-	(obj->*method)();
+	return (obj->*method)();
 }
 
 } /* namespace MinVR */
