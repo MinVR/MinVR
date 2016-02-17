@@ -192,7 +192,7 @@ int testIndexPrintDoubleArray() {
 
   std::string testString = " | donna\n |  | d0 = 1.200000@2.300000@3.400000@4.500000@5.600000 (doublearray)\n";
 
-  int out;
+  int out = 0;
 
   LOOP {
   
@@ -200,6 +200,9 @@ int testIndexPrintDoubleArray() {
 
     std::string output = n->printStructure("/donna",200);  
     delete n;
+
+    //    std::cout << "output:     " << output << std::endl;
+    //    std::cout << "testString: " << testString << std::endl;
 
     out += output.compare(testString);
   }
