@@ -7,6 +7,10 @@
  */
 
 #include "display/VRDisplayDevice.h"
+#include "display/VRCallbackDisplayAction.h"
+#include "display/VRCallbackDisplayFrameAction.h"
+#include "display/VRCallbackRenderer.h"
+
 
 void VRDisplayDevice::initialize()
 {
@@ -32,7 +36,7 @@ void VRDisplayDevice::use(const MinVR::VRDisplayAction& action)
 
 void VRDisplayDevice::startRendering(const MinVR::VRRenderer& renderer)
 {
-	VRRenderState state;
+	MinVR::VRRenderState state;
 	startRendering(renderer, state);
 }
 
@@ -42,28 +46,28 @@ void VRDisplayDevice::render(const MinVR::VRRenderer& renderer)
 	finishRendering();
 }
 
-void VRDisplayDevice::render(void (*method)(VRRenderState&))
+void VRDisplayDevice::render(void (*method)(MinVR::VRRenderState&))
 {
-	render(MinVR::VRRendererFunctor(method));
+	render(MinVR::VRCallbackRenderer(method));
 }
 
 void VRDisplayDevice::use(void (*method)())
 {
-	use(MinVR::VRDisplayActionFunctor(method));
+	use(MinVR::VRCallbackDisplayAction(method));
 }
 
 bool VRDisplayDevice::renderFrame(bool (*method)())
 {
-	MinVR::VRDisplayFrameActionFunctor functor(method);
-	return renderFrame(functor);
+	MinVR::VRCallbackDisplayFrameAction callback(method);
+	return renderFrame(callback);
 }
 
-void VRDisplayDevice::startRendering(void (*method)(VRRenderState&))
+void VRDisplayDevice::startRendering(void (*method)(MinVR::VRRenderState&))
 {
-	startRendering(MinVR::VRRendererFunctor(method));
+	startRendering(MinVR::VRCallbackRenderer(method));
 }
 
-void VRDisplayDevice::startRendering(VRDisplayDevice* &display, const MinVR::VRRenderer& renderer, VRRenderState& renderState)
+void VRDisplayDevice::startRendering(VRDisplayDevice* &display, const MinVR::VRRenderer& renderer, MinVR::VRRenderState& renderState)
 {
 	display->startRendering(renderer, renderState);
 }

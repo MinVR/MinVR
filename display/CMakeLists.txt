@@ -4,6 +4,9 @@ project (VRDisplay)
 
 set (${PROJECT_NAME}_source_files 
 	VRDisplayDevice.cpp
+	VRCallbackDisplayAction.cpp
+	VRCallbackDisplayFrameAction.cpp
+	VRCallbackRenderer.cpp
 	concrete/BaseDisplayDevice.cpp
 	concrete/BaseDisplayFactory.cpp
 	concrete/CommandLineDisplay.cpp
