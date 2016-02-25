@@ -8,6 +8,11 @@ VRCallbackDisplayFrameAction::VRCallbackDisplayFrameAction(MethodType method) :
 
 }
 
+VRCallbackDisplayFrameAction::~VRCallbackDisplayFrameAction()
+{
+	
+}
+
 bool VRCallbackDisplayFrameAction::exec()
 {
 	return (*method)();

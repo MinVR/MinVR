@@ -10,7 +10,7 @@ public:
 	typedef bool (*MethodType)();
 
 	VRCallbackDisplayFrameAction(MethodType method);
-	virtual ~VRCallbackDisplayFrameAction() {}
+	virtual ~VRCallbackDisplayFrameAction();
 
 	bool exec();
 
