@@ -81,7 +81,6 @@ int main(int argc, char **argv) {
   // Created the display from the factory (the display is composite,
   // so it contains multiple displays, but acts like one display)
   CompositeDisplay display(config, "VRDisplayDevices", &factory);
-  display.initialize();
 
   // Create input device from factory (in this case only glfw keyboard / mouse)
   VRInputDevice* inputDevice = inputDeviceFactory->create(config)[0];

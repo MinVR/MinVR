@@ -7,6 +7,16 @@
  */
 
 #include <display/concrete/BaseDisplayDevice.h>
+#include "config/VRDataIndex.h"
+#include "display/VRDisplayDevice.h"
+#include "display/VRCallbackDisplayAction.h"
+#include "display/VRCallbackDisplayFrameAction.h"
+#include "display/VRCallbackRenderer.h"
+#include "display/VRDisplayAction.h"
+#include "display/VRDisplayFrameAction.h"
+#include "display/VRFrameController.h"
+#include "display/VRRenderer.h"
+#include "display/VRRenderState.h"
 
 namespace MinVR {
 
@@ -40,14 +50,6 @@ bool BaseDisplayDevice::isQuadbuffered()
 	return false;
 }
 
-void BaseDisplayDevice::initialize()
-{
-	for (int f = 0; f < subDisplays.size(); f++)
-	{
-		subDisplays[f]->initialize();
-	}
-}
-
 VRDisplayDevice* BaseDisplayDevice::getParent() const {
 	return parent;
 }
@@ -76,7 +78,7 @@ void BaseDisplayDevice::startRenderingAllDisplays(const MinVR::VRRenderer& rende
 	{
 		for (int f = 0; f < subDisplays.size(); f++)
 		{
-			VRDisplayDevice::startRendering(subDisplays[f], renderer, state);
+			subDisplays[f]->startRendering(renderer, state);
 		}
 	}
 	else

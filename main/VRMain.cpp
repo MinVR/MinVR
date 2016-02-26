@@ -175,12 +175,10 @@ void VRMain::initialize()
 	  cmd->setName(cmdName);
 	  _compositDisplay->addSubDisplay(cmd);
   }
-  _display = new MinVR::DataIndexWrapperDisplay(_compositDisplay, _index);
-
   // Create a Display Manager (either the default or multi-threaded)
   // based on settings
   //_displayManager = new DisplayManager(displayDevices);
-  _display->initialize();
+  _display = new MinVR::DataIndexWrapperDisplay(_compositDisplay, _index);
 
   // Create input devices
   for (int f = 0; f < _inputDeviceFactories.size(); f++)

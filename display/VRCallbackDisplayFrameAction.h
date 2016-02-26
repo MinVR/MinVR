@@ -15,7 +15,7 @@ public:
 	bool exec();
 
 private:
-	MethodType method;
+	MethodType m_method;
 };
 
 }

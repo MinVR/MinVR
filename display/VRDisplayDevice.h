@@ -4,14 +4,16 @@
 #include <string>
 #include <vector>
 
-#include "config/VRDataIndex.h"
-#include "display/VRDisplayAction.h"
+class VRDataIndex;
 
-#include "display/VRDisplayFrameAction.h"
-#include "display/VRFrameController.h"
-#include "display/VRRenderer.h"
-#include "display/VRRenderState.h"
-
+namespace MinVR
+{
+	class VRDisplayAction;
+	class VRDisplayFrameAction;
+	class VRFrameController;
+	class VRRenderer;
+	class VRRenderState;
+}
 
 /** DisplayDevice:    An as-simple-as-possible public interface for Display Devices
  */
@@ -32,10 +34,9 @@ public:
 	virtual bool allowGraphics() = 0;
 	virtual bool isQuadbuffered() = 0;
 
-	virtual void initialize();
 	bool renderFrame(MinVR::VRDisplayFrameAction& frameAction);
 	void use(const MinVR::VRDisplayAction& action);
-	void startRendering(const MinVR::VRRenderer& renderer);
+	virtual void startRendering(const MinVR::VRRenderer& renderer, MinVR::VRRenderState& renderState) = 0;
 	virtual void finishRendering() = 0;
 	void render(const MinVR::VRRenderer& renderer);
 
@@ -44,17 +45,10 @@ public:
 	virtual const std::vector<VRDisplayDevice*>& getSubDisplays() const = 0;
 	virtual void addSubDisplay(VRDisplayDevice* display) = 0;
 
-	void render(void (*method)(MinVR::VRRenderState&));
-	void use(void (*method)());
-	bool renderFrame(bool (*method)());
-
-	void startRendering(void (*method)(MinVR::VRRenderState&));
-	static void startRendering(VRDisplayDevice* &display, const MinVR::VRRenderer& renderer, MinVR::VRRenderState& renderState);
-
 	virtual MinVR::VRFrameController* getFrameController() = 0;
 
 protected:
-	virtual void startRendering(const MinVR::VRRenderer& renderer, MinVR::VRRenderState& renderState) = 0;
+	
 	virtual void useDisplay(const MinVR::VRDisplayAction& action) = 0;
 };
 

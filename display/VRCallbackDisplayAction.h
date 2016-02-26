@@ -15,7 +15,7 @@ public:
 	virtual void exec() const;
 
 private:
-	MethodType method;
+	MethodType m_method;
 };
 
 }

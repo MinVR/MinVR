@@ -5,6 +5,9 @@
 #include <fstream>
 #include <math.h>
 #include "main/VRMain.h"
+#include "display/VRRenderState.h"
+#include "display/VRCallbackDisplayAction.h"
+#include "display/VRCallbackRenderer.h"
 
 #if defined(WIN32)
 #define NOMINMAX
@@ -47,7 +50,8 @@ int main(int argc, char **argv) {
 	VRDisplayDevice* display = MVR->getDisplay();
 
 	// Initialize display contexts
-	display->use(initGL);
+	MinVR::VRCallbackDisplayAction displayAction(initGL);
+	display->use(displayAction);
 
 	// Loop until escape key is hit or main display is closed
 	while (display->isOpen() && isRunning)
@@ -56,7 +60,9 @@ int main(int argc, char **argv) {
 		MVR->synchronizeAndProcessEvents();
 
 		// Render the scene on all displays (passing render function into display)
-		display->startRendering(render);
+		MinVR::VRCallbackRenderer renderer(render);
+		MinVR::VRRenderState renderState;
+		display->startRendering(renderer, renderState);
 		MVR->renderEverywhere();
 		display->finishRendering();
 	}

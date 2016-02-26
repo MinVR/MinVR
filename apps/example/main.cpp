@@ -5,6 +5,10 @@
 #include <fstream>
 #include <math.h>
 #include "main/VRMain.h"
+#include "display/VRRenderState.h"
+#include "display/VRCallbackDisplayAction.h"
+#include "display/VRCallbackDisplayFrameAction.h"
+#include "display/VRCallbackRenderer.h"
 
 #if defined(WIN32)
 #include <Windows.h>
@@ -50,17 +54,18 @@ int main(int argc, char **argv) {
 		index.addData("/MVR/VRDisplayDevices/CommandLine", 0);
 		MVR->initialize(index, "/MVR");
 	}
-
 	MVR->registerEventCallback(&handleEvent);
 
 	// Get display device (Composite of all available display devices, but looks like one device)
 	display = MVR->getDisplay();
 
 	// Initialize display contexts
-	display->use(initGL);
+	MinVR::VRCallbackDisplayAction displayAction(initGL);
+	display->use(displayAction);
 
 	// Loop until escape key is hit or main display is closed
-    while (display->renderFrame(perFrame)) {}
+	MinVR::VRCallbackDisplayFrameAction displayFrameAction(perFrame);
+    while (display->renderFrame(displayFrameAction)) {}
 
 	delete MVR;
 }
@@ -73,7 +78,9 @@ bool perFrame()
 	MVR->synchronizeAndProcessEvents();
 
 	// Render the scene on all displays (passing render function into display)
-	display->startRendering(render);
+	MinVR::VRCallbackRenderer renderer(render);
+	MinVR::VRRenderState renderState;
+	display->startRendering(renderer, renderState);
 	MVR->renderEverywhere();
 	display->finishRendering();
 

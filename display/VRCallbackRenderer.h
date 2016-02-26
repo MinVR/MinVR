@@ -15,7 +15,7 @@ public:
 	void render(VRRenderState& state) const;
 
 private:
-	MethodType method;
+	MethodType m_method;
 };
 
 }

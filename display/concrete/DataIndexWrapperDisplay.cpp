@@ -7,6 +7,7 @@
  */
 
 #include <display/concrete/DataIndexWrapperDisplay.h>
+#include "display/VRRenderState.h"
 
 namespace MinVR {
 

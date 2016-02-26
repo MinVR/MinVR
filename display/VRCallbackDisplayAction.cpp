@@ -3,7 +3,7 @@
 using namespace MinVR;
 
 VRCallbackDisplayAction::VRCallbackDisplayAction(MethodType method) : 
-	method(method)
+	m_method(method)
 {
 
 }
@@ -15,5 +15,5 @@ VRCallbackDisplayAction::~VRCallbackDisplayAction()
 
 void VRCallbackDisplayAction::exec() const
 {
-	(*method)();
+	(*m_method)();
 }
