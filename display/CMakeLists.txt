@@ -13,6 +13,7 @@ set (${PROJECT_NAME}_source_files
 	concrete/CompositeDisplay.cpp
 	concrete/CompositeDisplayFactory.cpp
 	concrete/DataIndexWrapperDisplay.cpp
+	display-graph/VRDisplayGraphNode.cpp
 )
 
 add_library (${PROJECT_NAME} ${${PROJECT_NAME}_source_files})
