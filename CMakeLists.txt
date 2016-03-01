@@ -49,10 +49,11 @@
 cmake_minimum_required (VERSION 2.8.2) 
 project (MinVR)
 
-set( CMAKE_BUILD_TYPE Debug CACHE STRING
+if(NOT CMAKE_BUILD_TYPE)
+  set( CMAKE_BUILD_TYPE Debug CACHE STRING
        "Choose the type of build, options are: None Debug Release RelWithDebInfo
-MinSizeRel."
-       FORCE )
+#MinSizeRel." FORCE)
+endif()
 
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set (CMAKE_INSTALL_PREFIX "${${PROJECT_NAME}_SOURCE_DIR}/build/install" CACHE PATH "default install path" FORCE )
@@ -69,7 +70,9 @@ enable_testing()
 # of the exes in "build/bin".  To distingusih between debugging, release, and
 # other builds, we'll add a postfix to the name of the lib or exe that we generate.
 
-set(CMAKE_DEBUG_POSTFIX "")
+if(NOT CMAKE_DEBUG_POSTFIX)
+  set(CMAKE_DEBUG_POSTFIX "")
+endif()
 set(CMAKE_RELEASE_POSTFIX "")
 set(CMAKE_RELWITHDEBINFO_POSTFIX "rd")
 set(CMAKE_MINSIZEREL_POSTFIX "s")
@@ -136,6 +139,6 @@ add_subdirectory (apps)
 #add_subdirectory (tests/eventdata)
 add_subdirectory (tests/config)
 
-
+add_subdirectory (contrib)
 
 
