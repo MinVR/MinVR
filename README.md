@@ -151,9 +151,23 @@ Lead:  Dan O.
 
 ### config
 
-Overview:  Support for XML-based config files.
+Overview: This is support for XML-based config files, but is somewhat
+more than that.  The config code creates a "data index" object, that
+can be used to maintain a collection of names and pointers to
+arbitrary data objects.  The effect is to create a dynamically typed
+computing environment in C++, a strongly-typed system.
 
-Status:  ??
+The data index supports a container type, and the concept of a
+'namespace' and scoping of its value names, so names within a
+container can override names higher in the tree hierarchy.
+
+Data values can be easily serialized for transport over a network, and
+deserialized, for receiving them, and interning the new values into
+memory.  The system supports an XML format for transmission and
+storage, and this format is used as a configuration file.
+
+
+Status:  largely complete, though doubtless with many changes still to make.
 
 Lead:  Brown team.
 
@@ -185,19 +199,4 @@ Easy to get started and to modify existing graphics programs to support VR:  We 
 
 
 
-### Build and Install
-
-Build the project:
-  ```
-  make
-  # build release
-  make opt
-  # build debug
-  make debug
-  ```
-
-Install the project:
-  ```
-  make install
-  ```
 
