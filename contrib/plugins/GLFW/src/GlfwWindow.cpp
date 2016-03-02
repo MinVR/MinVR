@@ -55,8 +55,6 @@ void GlfwWindow::initialize() {
     glfwSwapInterval(1);
     inputDevice->registerGlfwWindow(window);
 
-	VRDisplayDevice::initialize();
-
 	glfwMakeContextCurrent(NULL);
 }
 

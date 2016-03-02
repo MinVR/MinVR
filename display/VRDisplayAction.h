@@ -6,8 +6,8 @@
  * 		Dan Orban (dtorban)
  */
 
-#ifndef VRRENDERER_H_
-#define VRRENDERER_H_
+#ifndef VRDISPLAYACTION_H_
+#define VRDISPLAYACTION_H_
 
 namespace MinVR {
 
@@ -18,52 +18,6 @@ public:
 	virtual void exec() const = 0;
 };
 
-class VRDisplayActionFunctor : public VRDisplayAction {
-public:
-	typedef void (*MethodType)();
-
-	VRDisplayActionFunctor(MethodType method) : method(method) {}
-	virtual ~VRDisplayActionFunctor() {}
-
-	void exec() const;
-
-private:
-	MethodType method;
-};
-
-template<class T>
-class SpecificVRDisplayAction : public VRDisplayAction {
-public:
-	typedef void (T::*MethodType)() const;
-
-	SpecificVRDisplayAction(T *obj, MethodType method);
-	virtual ~SpecificVRDisplayAction() {}
-
-	void exec() const;
-
-private:
-	T *obj;
-	MethodType method;
-};
-
-//---------------------------------
-
-inline void VRDisplayActionFunctor::exec() const
-{
-	(*method)();
 }
 
-template<class T>
-SpecificVRDisplayAction<T>::SpecificVRDisplayAction(T *obj, MethodType method) : obj(obj), method(method)
-{
-}
-
-template<class T>
-void SpecificVRDisplayAction<T>::exec() const
-{
-	(obj->*method)();
-}
-
-} /* namespace MinVR */
-
-#endif /* VRRENDERER_H_ */
+#endif

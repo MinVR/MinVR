@@ -22,10 +22,10 @@ public:
 	bool allowGraphics() { return false; }
 	bool allowThreading() { return true; }
 
+	void startRendering(const VRRenderer& renderer, VRRenderState& state);
 	void finishRendering();
 
 protected:
-	void startRendering(const VRRenderer& renderer, VRRenderState& state);
 	void useDisplay(const MinVR::VRDisplayAction& action);
 };
 

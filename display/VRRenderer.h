@@ -6,14 +6,12 @@
  * 		Dan Orban (dtorban)
  */
 
-#ifndef VRDISPLAYACTION_H_
-#define VRDISPLAYACTION_H_
+#ifndef VRRENDERER_H_
+#define VRRENDERER_H_
 
 #include "display/VRRenderState.h"
 
 namespace MinVR {
-
-
 
 class VRRenderer {
 public:
@@ -22,52 +20,6 @@ public:
 	virtual void render(VRRenderState& state) const = 0;
 };
 
-class VRRendererFunctor : public VRRenderer {
-public:
-	typedef void (*MethodType)(VRRenderState&);
-
-	VRRendererFunctor(MethodType method) : method(method) {}
-	virtual ~VRRendererFunctor() {}
-
-	void render(VRRenderState& state) const;
-
-private:
-	MethodType method;
-};
-
-template<class T>
-class SpecificVRRenderer : public VRRenderer {
-public:
-	typedef void (T::*MethodType)(VRRenderState&) const;
-
-	SpecificVRRenderer(T *obj, MethodType method);
-	virtual ~SpecificVRRenderer() {}
-
-	void render(VRRenderState& state) const;
-
-private:
-	T *obj;
-	MethodType method;
-};
-
-//---------------------------------
-
-inline void VRRendererFunctor::render(VRRenderState& state) const
-{
-	(*method)(state);
 }
 
-template<class T>
-SpecificVRRenderer<T>::SpecificVRRenderer(T *obj, MethodType method) : obj(obj), method(method)
-{
-}
-
-template<class T>
-void SpecificVRRenderer<T>::render(VRRenderState& state) const
-{
-	(obj->*method)(state);
-}
-
-} /* namespace MinVR */
-
-#endif /* VRDISPLAYACTION_H_ */
+#endif

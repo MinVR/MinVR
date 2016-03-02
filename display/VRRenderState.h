@@ -11,6 +11,9 @@ class VRDisplayDevice;
     with the current drawing state that programmers will want an easy way to query during their application's
     draw() routine.
 */
+
+namespace MinVR {
+
 class VRRenderState {
 public:
 
@@ -22,6 +25,8 @@ public:
   float *leftEyeMatrix;
   float *rightEyeMatrix;*/
 };
+
+}
 
 #endif
 

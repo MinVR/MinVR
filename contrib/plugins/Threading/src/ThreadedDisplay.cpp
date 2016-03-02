@@ -71,8 +71,6 @@ void ThreadedDisplay::initialize() {
 	{
 		renderThreads.push_back(new RenderThread(threadedDisplays[f], &threadInfo));
 	}
-
-	BaseDisplayDevice::initialize();
 }
 
 void ThreadedDisplay::finishRendering() {

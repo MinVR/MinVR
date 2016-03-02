@@ -4,12 +4,16 @@ project (VRDisplay)
 
 set (${PROJECT_NAME}_source_files 
 	VRDisplayDevice.cpp
+	VRCallbackDisplayAction.cpp
+	VRCallbackDisplayFrameAction.cpp
+	VRCallbackRenderer.cpp
 	concrete/BaseDisplayDevice.cpp
 	concrete/BaseDisplayFactory.cpp
 	concrete/CommandLineDisplay.cpp
 	concrete/CompositeDisplay.cpp
 	concrete/CompositeDisplayFactory.cpp
 	concrete/DataIndexWrapperDisplay.cpp
+	display-graph/VRDisplayGraphNode.cpp
 )
 
 add_library (${PROJECT_NAME} ${${PROJECT_NAME}_source_files})

@@ -7,6 +7,8 @@
  */
 
 #include <display/concrete/BaseDisplayFactory.h>
+#include "config/VRCoreTypes.h"
+#include "config/VRDataIndex.h"
 
 namespace MinVR {
 
