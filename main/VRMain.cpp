@@ -1,7 +1,4 @@
 #include "VRMain.h"
-#include "display/concrete/CompositeDisplay.h"
-#include "display/concrete/CompositeDisplayFactory.h"
-#include "display/concrete/DataIndexWrapperDisplay.h"
 #include <stdio.h>
 #ifndef WIN32
 #include <unistd.h>
@@ -13,7 +10,7 @@ void emptyEventCallbackMVR(const std::string &eventName, VRDataIndex *dataIndex)
 void emptyRenderCallbackMVR(VRDataIndex* index) {}
 void emptyRenderSwapMVR() {}
 
-VRMain::VRMain() : initialized(false),_vrNet(NULL), _display(NULL), _compositDisplay(NULL)
+VRMain::VRMain() : initialized(false),_vrNet(NULL), _display(NULL)
 {
 	  registerEventCallback(&emptyEventCallbackMVR);
 	  registerRenderCallback(&emptyRenderCallbackMVR);
@@ -28,7 +25,6 @@ VRMain::~VRMain()
   if (_display != NULL)
   {
 	  delete _display;
-	  delete _compositDisplay;
   }
 }
 
@@ -156,6 +152,7 @@ void VRMain::initialize()
 	  }
   }
 
+  /*
   // Create DisplayDevices from settings
   //std::vector<VRDisplayDevice*> displayDevices;
   //displayDevices.push_back(new ConsoleOnlyDisplay());
@@ -179,6 +176,7 @@ void VRMain::initialize()
   // based on settings
   //_displayManager = new DisplayManager(displayDevices);
   _display = new MinVR::DataIndexWrapperDisplay(_compositDisplay, _index);
+  */
 
   // Create input devices
   for (int f = 0; f < _inputDeviceFactories.size(); f++)
@@ -299,7 +297,7 @@ VRMain::renderEverywhere() {
 }
 
 // Adds the display factories for all plugins who use this interface
-void VRMain::addVRDisplayDeviceFactory(MinVR::VRDisplayDeviceFactory* factory)
+void VRMain::addVRDisplayDeviceFactory(MinVR::VRDisplayGraphNodeFactory* factory)
 {
 	_displayFactories.push_back(factory);
 }

@@ -4,6 +4,7 @@ project (VRDisplay)
 
 set (${PROJECT_NAME}_source_files 
 	VRDisplayGraphNode.cpp
+	VRDisplayGraphNodeFactory.cpp
 )
 
 add_library (${PROJECT_NAME} ${${PROJECT_NAME}_source_files})

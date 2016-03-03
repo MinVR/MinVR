@@ -9,7 +9,7 @@
 #ifndef VRPLUGININTERFACE_H_
 #define VRPLUGININTERFACE_H_
 
-#include "display/VRDisplayDeviceFactory.h"
+#include "display/VRDisplayGraphNodeFactory.h"
 #include "plugin/PluginInterface.h"
 #include "main/VRTimer.h"
 #include "event/VRInputDevice.h"
@@ -20,7 +20,7 @@ class VRPluginInterface : public PluginInterface {
 public:
 	virtual ~VRPluginInterface() {}
 
-	virtual void addVRDisplayDeviceFactory(VRDisplayDeviceFactory* factory) = 0;
+	virtual void addVRDisplayDeviceFactory(VRDisplayGraphNodeFactory* factory) = 0;
 	virtual void addVRInputDeviceFactory(VRInputDeviceFactory* factory) = 0;
 	virtual void addVRTimer(VRTimer* timer) = 0;
 
