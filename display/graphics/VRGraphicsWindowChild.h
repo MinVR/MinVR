@@ -6,21 +6,21 @@
  * 		Dan Orban (dtorban)
  */
 
-#ifndef VRDISPLAYGRAPHNODEFACTORY_H_
-#define VRDISPLAYGRAPHNODEFACTORY_H_
+#ifndef VRGRAPHICSWINDOWCHILD_H_
+#define VRGRAPHICSWINDOWCHILD_H_
 
-#include "VRDisplayGraphNode.h"
-#include "config/VRDataIndex.h"
+#include "display/base/VRDisplayNode.h"
 
 namespace MinVR {
 
-class VRDisplayGraphNodeFactory {
+class VRGraphicsWindowChild : public VRDisplayNode {
 public:
-	virtual ~VRDisplayGraphNodeFactory() {}
+	VRGraphicsWindowChild();
+	virtual ~VRGraphicsWindowChild();
 
-	virtual VRDisplayGraphNode* create(VRDataIndex& config, const std::string nameSpace, VRDisplayGraphNodeFactory* factory) = 0;
+	void addChild(VRGraphicsWindowChild* child);
 };
 
 } /* namespace MinVR */
 
-#endif /* VRDISPLAYGRAPHNODEFACTORY_H_ */
+#endif /* VRGRAPHICSWINDOWCHILD_H_ */

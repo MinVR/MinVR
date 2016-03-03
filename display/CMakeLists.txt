@@ -3,8 +3,11 @@
 project (VRDisplay)
 
 set (${PROJECT_NAME}_source_files 
-	VRDisplayGraphNode.cpp
-	VRDisplayGraphNodeFactory.cpp
+	base/VRDisplayNode.cpp
+	graphics/VRGraphicsWindowChild.cpp
+	graphics/VRGraphicsWindowNode.cpp
+	graphics/stereo/VRStereoFormatter.cpp
+	graphics/structure/VRViewport.cpp
 )
 
 add_library (${PROJECT_NAME} ${${PROJECT_NAME}_source_files})

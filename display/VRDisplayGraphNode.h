@@ -3,18 +3,15 @@
 
 namespace MinVR {
 
+class VRDisplayGraphNode
+{
+public:
+	virtual ~VRDisplayGraphNode() {}
 
-	class VRDisplayGraphNode
-	{
-	public:
-
-		virtual ~VRDisplayGraphNode();
-
-		virtual void render() = 0;
-		virtual void join() = 0;
-		virtual void synchronize() = 0;
-
-	};
+	virtual void startRender() = 0;
+	virtual void waitForRenderComplete() = 0;
+	virtual void synchronize() = 0;
+};
 
 }
 

@@ -6,17 +6,18 @@
  * 		Dan Orban (dtorban)
  */
 
-#include <display/VRDisplayGraphNodeFactory.h>
+#include <display/graphics/VRGraphicsWindowChild.h>
 
 namespace MinVR {
 
-VRDisplayGraphNodeFactory::VRDisplayGraphNodeFactory() {
-	// TODO Auto-generated constructor stub
-
+VRGraphicsWindowChild::VRGraphicsWindowChild() {
 }
 
-VRDisplayGraphNodeFactory::~VRDisplayGraphNodeFactory() {
-	// TODO Auto-generated destructor stub
+VRGraphicsWindowChild::~VRGraphicsWindowChild() {
+}
+
+void VRGraphicsWindowChild::addChild(VRGraphicsWindowChild* child) {
+	VRDisplayNode::addChild(child);
 }
 
 } /* namespace MinVR */
