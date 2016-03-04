@@ -17,8 +17,6 @@ class VRGraphicsWindowChild : public VRDisplayNode {
 public:
 	VRGraphicsWindowChild();
 	virtual ~VRGraphicsWindowChild();
-
-	void addChild(VRGraphicsWindowChild* child);
 };
 
 } /* namespace MinVR */

@@ -19,6 +19,7 @@ public:
 	virtual ~VRStereoFormatter();
 
 	virtual void startRender();
+	virtual void addChild(VRGraphicsWindowChild* child);
 
 protected:
 	virtual int getNumPasses() = 0;

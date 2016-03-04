@@ -20,6 +20,8 @@ public:
 
 	void startRender();
 
+	virtual void addChild(VRGraphicsWindowChild* child);
+
 	int getHeight() const {
 		return m_height;
 	}

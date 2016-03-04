@@ -22,4 +22,8 @@ void VRViewport::startRender() {
 	VRGraphicsWindowChild::startRender();
 }
 
+void VRViewport::addChild(VRGraphicsWindowChild* child) {
+  VRDisplayNode::addChild(child);
+}
+
 } /* namespace MinVR */

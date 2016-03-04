@@ -25,4 +25,8 @@ void VRStereoFormatter::startRender() {
 	}
 }
 
+void VRStereoFormatter::addChild(VRGraphicsWindowChild* child) {
+  VRDisplayNode::addChild(child);
+}
+
 } /* namespace MinVR */

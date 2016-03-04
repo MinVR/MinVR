@@ -16,8 +16,4 @@ VRGraphicsWindowChild::VRGraphicsWindowChild() {
 VRGraphicsWindowChild::~VRGraphicsWindowChild() {
 }
 
-void VRGraphicsWindowChild::addChild(VRGraphicsWindowChild* child) {
-	VRDisplayNode::addChild(child);
-}
-
 } /* namespace MinVR */
