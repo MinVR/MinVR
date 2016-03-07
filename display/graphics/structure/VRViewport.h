@@ -18,7 +18,7 @@ public:
 	VRViewport();
 	virtual ~VRViewport();
 
-	void startRender();
+	void render();
 
 	virtual void addChild(VRGraphicsWindowChild* child);
 

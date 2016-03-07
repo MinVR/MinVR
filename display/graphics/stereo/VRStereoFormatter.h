@@ -18,7 +18,7 @@ public:
 	VRStereoFormatter();
 	virtual ~VRStereoFormatter();
 
-	virtual void startRender();
+	virtual void render();
 	virtual void addChild(VRGraphicsWindowChild* child);
 
 protected:

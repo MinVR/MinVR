@@ -23,24 +23,10 @@ VRDisplayNode::~VRDisplayNode() {
 	}
 }
 
-void VRDisplayNode::startRender() {
+void VRDisplayNode::render() {
 	for (vector<VRDisplayGraphNode*>::iterator it = m_children.begin(); it != m_children.end(); it++)
 	{
-		(*it)->startRender();
-	}
-}
-
-void VRDisplayNode::waitForRenderComplete() {
-	for (vector<VRDisplayGraphNode*>::iterator it = m_children.begin(); it != m_children.end(); it++)
-	{
-		(*it)->waitForRenderComplete();
-	}
-}
-
-void VRDisplayNode::synchronize() {
-	for (vector<VRDisplayGraphNode*>::iterator it = m_children.begin(); it != m_children.end(); it++)
-	{
-		(*it)->synchronize();
+		(*it)->render();
 	}
 }
 

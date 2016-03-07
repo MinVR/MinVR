@@ -14,6 +14,10 @@ namespace MinVR {
 class AllowsThreading {
 public:
 	virtual ~AllowsThreading() {}
+
+	virtual void startRender() = 0;
+	virtual void waitForRenderComplete() = 0;
+	virtual void synchronize() = 0;
 };
 
 } /* namespace MinVR */

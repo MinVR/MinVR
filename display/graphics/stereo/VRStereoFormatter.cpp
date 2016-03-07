@@ -16,11 +16,11 @@ VRStereoFormatter::VRStereoFormatter() {
 VRStereoFormatter::~VRStereoFormatter() {
 }
 
-void VRStereoFormatter::startRender() {
+void VRStereoFormatter::render() {
 	for (int passNum = 0; passNum < getNumPasses(); passNum++)
 	{
 		preRenderPass(passNum);
-		VRGraphicsWindowChild::startRender();
+		VRGraphicsWindowChild::render();
 		postRenderPass(passNum);
 	}
 }

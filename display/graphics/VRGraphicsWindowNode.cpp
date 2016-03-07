@@ -13,20 +13,24 @@ namespace MinVR {
 VRGraphicsWindowNode::~VRGraphicsWindowNode() {
 }
 
+void VRGraphicsWindowNode::render() {
+	startRender();
+	waitForRenderComplete();
+	synchronize();
+}
+
 void VRGraphicsWindowNode::startRender() {
 	setCurrentContext();
 	//TODO: load data
-	VRDisplayNode::startRender();
+	VRDisplayNode::render();
 	flush();
 }
 
 void VRGraphicsWindowNode::waitForRenderComplete() {
-	VRDisplayNode::waitForRenderComplete();
 	finish();
 }
 
 void VRGraphicsWindowNode::synchronize() {
-	VRDisplayNode::synchronize();
 	swapBuffers();
 }
 

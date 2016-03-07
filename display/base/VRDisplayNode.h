@@ -19,9 +19,7 @@ public:
 	VRDisplayNode();
 	virtual ~VRDisplayNode();
 
-	virtual void startRender();
-	virtual void waitForRenderComplete();
-	virtual void synchronize();
+	virtual void render();
 
 	virtual const std::vector<VRDisplayGraphNode*>& getChildren() const;
 
