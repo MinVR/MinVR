@@ -32,6 +32,7 @@ void VRGraphicsWindowNode::waitForRenderComplete() {
 
 void VRGraphicsWindowNode::synchronize() {
 	swapBuffers();
+	clearCurrentContext();
 }
 
 void VRGraphicsWindowNode::addChild(VRGraphicsWindowChild* child) {
