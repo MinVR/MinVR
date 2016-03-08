@@ -6,14 +6,14 @@
  * 		Dan Orban (dtorban)
  */
 
-#ifndef ALLOWSTHREADING_H_
-#define ALLOWSTHREADING_H_
+#ifndef SYNCHRONIZEDDISPLAY_H_
+#define SYNCHRONIZEDDISPLAY_H_
 
 namespace MinVR {
 
-class AllowsThreading {
+class SynchronizedDisplay {
 public:
-	virtual ~AllowsThreading() {}
+	virtual ~SynchronizedDisplay() {}
 
 	virtual void startRender() = 0;
 	virtual void waitForRenderComplete() = 0;

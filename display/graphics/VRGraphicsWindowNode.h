@@ -11,11 +11,11 @@
 
 #include "display/base/VRDisplayNode.h"
 #include "VRGraphicsWindowChild.h"
-#include "display/threading/AllowsThreading.h"
+#include "display/synchronization/SynchronizedDisplay.h"
 
 namespace MinVR {
 
-class VRGraphicsWindowNode : public VRDisplayNode, AllowsThreading {
+class VRGraphicsWindowNode : public VRDisplayNode, SynchronizedDisplay {
 public:
 	virtual ~VRGraphicsWindowNode();
 
