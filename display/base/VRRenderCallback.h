@@ -9,7 +9,7 @@
 #ifndef VRRENDERCALLBACK_H_
 #define VRRENDERCALLBACK_H_
 
-#include "config/VRDataIndex.h"
+#include "display/VRRenderState.h"
 
 namespace MinVR {
 
@@ -17,8 +17,8 @@ class VRRenderCallback {
 public:
 	virtual ~VRRenderCallback() {}
 
-	virtual void updateFrame(VRDataIndex& state) = 0;
-	virtual void render(VRDataIndex& state) = 0;
+	virtual void updateFrame(VRRenderState& state) = 0;
+	virtual void render(VRRenderState& state) = 0;
 };
 
 } /* namespace MinVR */

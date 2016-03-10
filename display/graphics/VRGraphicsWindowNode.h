@@ -24,7 +24,7 @@ public:
 	virtual void waitForRenderComplete();
 	virtual void synchronize();
 
-	void addChild(VRGraphicsWindowChild* child);
+	virtual void addChild(VRGraphicsWindowChild* child);
 
 protected:
 	virtual void setCurrentContext() = 0;

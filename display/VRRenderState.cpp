@@ -6,26 +6,18 @@
  * 		Dan Orban (dtorban)
  */
 
-#ifndef VRRENDERER_H_
-#define VRRENDERER_H_
-
-#include "VRRenderState.h"
+#include <display/VRRenderState.h>
 
 namespace MinVR {
 
-class VRRenderer {
-public:
-	virtual ~VRRenderer() {}
+VRRenderState::VRRenderState() : m_nameSpace("/") {
+}
 
-	virtual void updateFrame() = 0;
-	virtual void render() = 0;
+VRRenderState::~VRRenderState() {
+}
 
-	virtual VRRenderState& getState() const = 0;
-	virtual void pushState() = 0;
-	virtual void popState() = 0;
-
-};
+VRDataIndex& VRRenderState::getDataIndex() const {
+	return m_index;
+}
 
 } /* namespace MinVR */
-
-#endif /* VRRENDERER_H_ */
