@@ -6,21 +6,21 @@
  * 		Dan Orban (dtorban)
  */
 
-#ifndef VRDISPLAYDEVICEFACTORY_H_
-#define VRDISPLAYDEVICEFACTORY_H_
+#ifndef VRDISPLAYFACTORY_H_
+#define VRDISPLAYFACTORY_H_
 
-#include "VRDisplayDevice.h"
+#include "VRDisplay.h"
 #include "config/VRDataIndex.h"
 
 namespace MinVR {
 
-class VRDisplayDeviceFactory {
+class VRDisplayFactory {
 public:
-	virtual ~VRDisplayDeviceFactory() {}
+	virtual ~VRDisplayFactory() {}
 
-	virtual VRDisplayDevice* create(VRDataIndex& config, const std::string nameSpace) = 0;
+	virtual VRDisplay* create(VRDataIndex& config, const std::string nameSpace) = 0;
 };
 
 } /* namespace MinVR */
 
-#endif /* VRDISPLAYGRAPHNODEFACTORY_H_ */
+#endif /* VRDISPLAYFACTORY_H_ */

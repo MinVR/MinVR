@@ -1,14 +1,14 @@
-#ifndef VRDISPLAYDEVICE_H_
-#define VRDISPLAYDEVICE_H_
+#ifndef VRDISPLAY_H_
+#define VRDISPLAY_H_
 
 #include "VRRenderer.h"
 
 namespace MinVR {
 
-class VRDisplayDevice
+class VRDisplay
 {
 public:
-	virtual ~VRDisplayDevice() {}
+	virtual ~VRDisplay() {}
 
 	virtual void render(VRRenderer& renderer) = 0;
 };

@@ -17,24 +17,24 @@ VRDisplayNode::VRDisplayNode() {
 }
 
 VRDisplayNode::~VRDisplayNode() {
-	for (vector<VRDisplayDevice*>::iterator it = m_children.begin(); it != m_children.end(); it++)
+	for (vector<VRDisplay*>::iterator it = m_children.begin(); it != m_children.end(); it++)
 	{
 		delete (*it);
 	}
 }
 
 void VRDisplayNode::render(VRRenderer& renderer) {
-	for (vector<VRDisplayDevice*>::iterator it = m_children.begin(); it != m_children.end(); it++)
+	for (vector<VRDisplay*>::iterator it = m_children.begin(); it != m_children.end(); it++)
 	{
 		(*it)->render(renderer);
 	}
 }
 
-const std::vector<VRDisplayDevice*>& VRDisplayNode::getChildren() const {
+const std::vector<VRDisplay*>& VRDisplayNode::getChildren() const {
 	return m_children;
 }
 
-void VRDisplayNode::addChild(VRDisplayDevice* child) {
+void VRDisplayNode::addChild(VRDisplay* child) {
 	m_children.push_back(child);
 }
 

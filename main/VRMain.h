@@ -5,7 +5,7 @@
 #include "config/VRDataIndex.h"
 #include "main/VRPluginInterface.h"
 #include "plugin/PluginManager.h"
-#include "display/VRDisplayDevice.h"
+#include "display/VRDisplay.h"
 
 /** Application programmers should use this singleton class as the
     interface to the MinVR library.
@@ -84,13 +84,13 @@ public:
   
 
   // Adds the display factories for all plugins who use this interface
-  void addVRDisplayDeviceFactory(MinVR::VRDisplayDeviceFactory* factory);
+  void addVRDisplayFactory(MinVR::VRDisplayFactory* factory);
   	// Adds the input device factories for all plugins who use this interface
   void addVRInputDeviceFactory(VRInputDeviceFactory* factory);
   	// Used for timing (i.e. for animation, etc...)
   void addVRTimer(MinVR::VRTimer* timer);
 
-  MinVR::VRDisplayDevice* getDisplay() const {
+  MinVR::VRDisplay* getDisplay() const {
 		return _display;
 	}
 
@@ -114,11 +114,11 @@ private:
   void (*_renderCB)(VRDataIndex *);
   void (*_swapCB)();
 
-  MinVR::VRDisplayDevice* _display;
+  MinVR::VRDisplay* _display;
 
   // Plugin items
   MinVR::PluginManager _pluginManager;
-  std::vector<MinVR::VRDisplayDeviceFactory*> _displayFactories;
+  std::vector<MinVR::VRDisplayFactory*> _displayFactories;
   std::vector<VRInputDeviceFactory*> _inputDeviceFactories;
   std::vector<MinVR::VRTimer*> _timers;
   std::vector<VRInputDevice*> _inputDevices;
