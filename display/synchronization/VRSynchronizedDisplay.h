@@ -6,14 +6,14 @@
  * 		Dan Orban (dtorban)
  */
 
-#ifndef SYNCHRONIZEDDISPLAY_H_
-#define SYNCHRONIZEDDISPLAY_H_
+#ifndef VRSYNCHRONIZEDDISPLAY_H_
+#define VRSYNCHRONIZEDDISPLAY_H_
 
 namespace MinVR {
 
-class SynchronizedDisplay {
+class VRSynchronizedDisplay {
 public:
-	virtual ~SynchronizedDisplay() {}
+	virtual ~VRSynchronizedDisplay() {}
 
 	virtual void startRender() = 0;
 	virtual void waitForRenderComplete() = 0;

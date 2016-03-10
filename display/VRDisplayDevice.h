@@ -1,12 +1,12 @@
-#ifndef VRDISPLAYGRAPHNODE_H_
-#define VRDISPLAYGRAPHNODE_H_
+#ifndef VRDISPLAYDEVICE_H_
+#define VRDISPLAYDEVICE_H_
 
 namespace MinVR {
 
-class VRDisplayGraphNode
+class VRDisplayDevice
 {
 public:
-	virtual ~VRDisplayGraphNode() {}
+	virtual ~VRDisplayDevice() {}
 
 	virtual void render() = 0;
 };

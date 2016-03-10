@@ -297,7 +297,7 @@ VRMain::renderEverywhere() {
 }
 
 // Adds the display factories for all plugins who use this interface
-void VRMain::addVRDisplayDeviceFactory(MinVR::VRDisplayGraphNodeFactory* factory)
+void VRMain::addVRDisplayDeviceFactory(MinVR::VRDisplayDeviceFactory* factory)
 {
 	_displayFactories.push_back(factory);
 }

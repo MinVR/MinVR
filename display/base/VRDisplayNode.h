@@ -9,25 +9,25 @@
 #ifndef VRDISPLAYNODE_H_
 #define VRDISPLAYNODE_H_
 
-#include "display/VRDisplayGraphNode.h"
+#include "display/VRDisplayDevice.h"
 #include <vector>
 
 namespace MinVR {
 
-class VRDisplayNode : public VRDisplayGraphNode {
+class VRDisplayNode : public VRDisplayDevice {
 public:
 	VRDisplayNode();
 	virtual ~VRDisplayNode();
 
 	virtual void render();
 
-	virtual const std::vector<VRDisplayGraphNode*>& getChildren() const;
+	virtual const std::vector<VRDisplayDevice*>& getChildren() const;
 
 protected:
-	void addChild(VRDisplayGraphNode* child);
+	void addChild(VRDisplayDevice* child);
 
 private:
-	std::vector<VRDisplayGraphNode*> m_children;
+	std::vector<VRDisplayDevice*> m_children;
 };
 
 } /* namespace MinVR */
