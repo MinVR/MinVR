@@ -23,10 +23,10 @@ VRDisplayNode::~VRDisplayNode() {
 	}
 }
 
-void VRDisplayNode::render() {
+void VRDisplayNode::render(VRRenderer& renderer) {
 	for (vector<VRDisplayDevice*>::iterator it = m_children.begin(); it != m_children.end(); it++)
 	{
-		(*it)->render();
+		(*it)->render(renderer);
 	}
 }
 

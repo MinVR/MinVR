@@ -19,7 +19,7 @@ public:
 	VRDisplayNode();
 	virtual ~VRDisplayNode();
 
-	virtual void render();
+	virtual void render(VRRenderer& renderer);
 
 	virtual const std::vector<VRDisplayDevice*>& getChildren() const;
 

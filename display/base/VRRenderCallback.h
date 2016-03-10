@@ -6,20 +6,21 @@
  * 		Dan Orban (dtorban)
  */
 
-#ifndef VRSYNCHRONIZEDDISPLAY_H_
-#define VRSYNCHRONIZEDDISPLAY_H_
+#ifndef VRRENDERCALLBACK_H_
+#define VRRENDERCALLBACK_H_
+
+#include "config/VRDataIndex.h"
 
 namespace MinVR {
 
-class VRSynchronizedDisplay {
+class VRRenderCallback {
 public:
-	virtual ~VRSynchronizedDisplay() {}
+	virtual ~VRRenderCallback() {}
 
-	virtual void startRender(VRRenderer& renderer) = 0;
-	virtual void waitForRenderComplete() = 0;
-	virtual void synchronize() = 0;
+	virtual void updateFrame(VRDataIndex& state) = 0;
+	virtual void render(VRDataIndex& state) = 0;
 };
 
 } /* namespace MinVR */
 
-#endif /* ALLOWSTHREADING_H_ */
+#endif /* VRRENDERCALLBACK_H_ */

@@ -17,9 +17,9 @@ VRViewport::VRViewport() {
 VRViewport::~VRViewport() {
 }
 
-void VRViewport::render() {
+void VRViewport::render(VRRenderer& renderer) {
 	//TODO: set viewport inside data index
-	VRGraphicsWindowChild::render();
+	VRGraphicsWindowChild::render(renderer);
 }
 
 void VRViewport::addChild(VRGraphicsWindowChild* child) {

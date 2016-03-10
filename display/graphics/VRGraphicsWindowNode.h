@@ -19,8 +19,8 @@ class VRGraphicsWindowNode : public VRDisplayNode, VRSynchronizedDisplay {
 public:
 	virtual ~VRGraphicsWindowNode();
 
-	virtual void render();
-	virtual void startRender();
+	virtual void render(VRRenderer& renderer);
+	virtual void startRender(VRRenderer& renderer);
 	virtual void waitForRenderComplete();
 	virtual void synchronize();
 
