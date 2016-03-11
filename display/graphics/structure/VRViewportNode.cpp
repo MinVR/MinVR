@@ -17,28 +17,11 @@ VRViewportNode::~VRViewportNode() {
 }
 
 void VRViewportNode::render(VRRenderer& renderer) {
-	VRViewport* currentViewport = &m_viewport;
+	m_viewportFormatter.preRender(renderer, m_viewport);
 
-	VRViewport modifiedViewport;
-	if (renderer.getState().getValue("viewport", modifiedViewport))
-	{
-		modifiedViewport = modifiedViewport.generateChild(m_viewport);
-		currentViewport = &modifiedViewport;
-	}
+	renderAtLeaf(renderer);
 
-	renderer.pushState();
-	VRDataIndex& state = renderer.getState().getDataIndex();
-	renderer.getState().setValue("viewport", *currentViewport);
-	if (getChildren().size() > 0)
-	{
-		VRGraphicsWindowChild::render(renderer);
-	}
-	else
-	{
-		renderer.render();
-	}
-
-	renderer.popState();
+	m_viewportFormatter.postRender(renderer);
 }
 
 void VRViewportNode::addChild(VRGraphicsWindowChild* child) {

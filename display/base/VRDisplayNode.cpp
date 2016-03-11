@@ -38,4 +38,15 @@ void VRDisplayNode::addChild(VRDisplay* child) {
 	m_children.push_back(child);
 }
 
+void VRDisplayNode::renderAtLeaf(VRRenderer& renderer) {
+	if (m_children.size() > 0)
+	{
+		VRDisplayNode::render(renderer);
+	}
+	else
+	{
+		renderer.render();
+	}
+}
+
 } /* namespace MinVR */

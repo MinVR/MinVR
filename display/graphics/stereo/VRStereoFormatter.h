@@ -23,8 +23,8 @@ public:
 
 protected:
 	virtual int getNumPasses() = 0;
-	virtual void preRenderPass(int passNum) = 0;
-	virtual void postRenderPass(int passNum) = 0;
+	virtual void preRenderPass(VRRenderer& renderer, int passNum) = 0;
+	virtual void postRenderPass(VRRenderer& renderer, int passNum) = 0;
 };
 
 } /* namespace MinVR */

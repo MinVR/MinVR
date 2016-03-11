@@ -25,6 +25,7 @@ public:
 
 protected:
 	void addChild(VRDisplay* child);
+	void renderAtLeaf(VRRenderer& renderer);
 
 private:
 	std::vector<VRDisplay*> m_children;

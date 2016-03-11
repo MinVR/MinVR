@@ -19,9 +19,9 @@ VRStereoFormatter::~VRStereoFormatter() {
 void VRStereoFormatter::render(VRRenderer& renderer) {
 	for (int passNum = 0; passNum < getNumPasses(); passNum++)
 	{
-		preRenderPass(passNum);
-		VRGraphicsWindowChild::render(renderer);
-		postRenderPass(passNum);
+		preRenderPass(renderer, passNum);
+		renderAtLeaf(renderer);
+		postRenderPass(renderer, passNum);
 	}
 }
 

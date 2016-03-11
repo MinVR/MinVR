@@ -7,8 +7,10 @@ set (${PROJECT_NAME}_source_files
 	graphics/VRGraphicsWindowChild.cpp
 	graphics/VRGraphicsWindowNode.cpp
 	graphics/stereo/VRStereoFormatter.cpp
+	graphics/stereo/VRSideBySideNode.cpp
 	graphics/structure/VRViewportNode.cpp
 	graphics/structure/VRViewport.cpp
+	graphics/structure/VRViewportFormatter.cpp
 )
 
 add_library (${PROJECT_NAME} ${${PROJECT_NAME}_source_files})
