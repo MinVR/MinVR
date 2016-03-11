@@ -15,24 +15,25 @@ VRViewport::VRViewport() {
 	m_yOffset = 0;
 	m_width = 0;
 	m_height = 0;
+
 }
 
 VRViewport::~VRViewport() {
+	// TODO Auto-generated destructor stub
 }
 
-void VRViewport::render(VRRenderer& renderer) {
-	renderer.pushState();
-	VRDataIndex& state = renderer.getState().getDataIndex();
-	renderer.getState().setValue<int>("viewportX", m_xOffset);
-	renderer.getState().setValue<int>("viewportY", m_yOffset);
-	renderer.getState().setValue<int>("viewportWidth", m_width);
-	renderer.getState().setValue<int>("viewportHeight", m_height);
-	VRGraphicsWindowChild::render(renderer);
-	renderer.popState();
+void VRViewport::serialize(VRDataIndex& index, std::string name) const {
+	index.addData(name + "/xOffset", m_xOffset);
+	index.addData(name + "/yOffset", m_yOffset);
+	index.addData(name + "/width", m_width);
+	index.addData(name + "/height", m_height);
 }
 
-void VRViewport::addChild(VRGraphicsWindowChild* child) {
-  VRDisplayNode::addChild(child);
+void VRViewport::deserialize(VRDataIndex& index, std::string name) {
+	m_xOffset = index.getValue("xOffset", name);
+	m_yOffset = index.getValue("yOffset", name);
+	m_width = index.getValue("width", name);
+	m_height = index.getValue("height", name);
 }
 
 } /* namespace MinVR */

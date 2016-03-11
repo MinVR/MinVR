@@ -10,6 +10,7 @@
 #define VRRENDERSTATE_H_
 
 #include "config/VRDataIndex.h"
+#include "config/VRSerializable.h"
 
 namespace MinVR {
 
@@ -28,14 +29,23 @@ public:
 		this->m_nameSpace = nameSpace;
 	}
 
-	template<typename T>
-	T getValue(std::string name)
+	void getValue(std::string name, VRSerializable& serializable)
+	{
+		serializable.deserialize(m_index, m_nameSpace + "/" + name);
+	}
+
+	void setValue(std::string name, const VRSerializable& serializable)
+	{
+		serializable.serialize(m_index, m_nameSpace + "/" + name);
+	}
+
+	VRAnyCoreType getValue(std::string name)
 	{
 		return m_index.getValue(name, m_nameSpace);
 	}
 
 	template<typename T>
-	void setValue(std::string name, T val)
+	void setCoreTypeValue(std::string name, T val)
 	{
 		m_index.addData(m_nameSpace + "/" + name, val);
 	}

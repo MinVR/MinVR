@@ -9,18 +9,14 @@
 #ifndef VRVIEWPORT_H_
 #define VRVIEWPORT_H_
 
-#include "display/graphics/VRGraphicsWindowChild.h"
+#include "config/VRSerializable.h"
 
 namespace MinVR {
 
-class VRViewport : public VRGraphicsWindowChild {
+class VRViewport : public VRSerializable {
 public:
 	VRViewport();
 	virtual ~VRViewport();
-
-	void render(VRRenderer& renderer);
-
-	virtual void addChild(VRGraphicsWindowChild* child);
 
 	int getHeight() const {
 		return m_height;
@@ -53,6 +49,9 @@ public:
 	void setYOffset(int yOffset) {
 		m_yOffset = yOffset;
 	}
+
+	void serialize(VRDataIndex& index, std::string name) const;
+	void deserialize(VRDataIndex& index, std::string name);
 
 private:
 	int m_xOffset;
