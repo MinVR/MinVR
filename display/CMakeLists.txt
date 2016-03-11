@@ -4,6 +4,8 @@ project (VRDisplay)
 
 set (${PROJECT_NAME}_source_files 
 	base/VRDisplayNode.cpp
+	base/VRBasicRenderer.cpp
+	console/VRConsoleDisplay.cpp
 	graphics/VRGraphicsWindowChild.cpp
 	graphics/VRGraphicsWindowNode.cpp
 	graphics/stereo/VRStereoFormatter.cpp

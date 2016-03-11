@@ -6,27 +6,21 @@
  * 		Dan Orban (dtorban)
  */
 
-#ifndef VRRENDERER_H_
-#define VRRENDERER_H_
+#ifndef FRCONSOLEDISPLAY_H_
+#define VRCONSOLEDISPLAY_H_
 
-#include "VRRenderState.h"
+#include "display/VRDisplay.h"
 
 namespace MinVR {
 
-class VRRenderer {
+class VRConsoleDisplay : public VRDisplay {
 public:
-	virtual ~VRRenderer() {}
+	VRConsoleDisplay();
+	virtual ~VRConsoleDisplay();
 
-	virtual void updateFrame() = 0;
-	virtual void render() = 0;
-
-	virtual VRRenderState& getState() = 0;
-	virtual void pushState() = 0;
-	virtual void popState() = 0;
-	virtual void resetState() = 0;
-
+	void render(VRRenderer& renderer);
 };
 
 } /* namespace MinVR */
 
-#endif /* VRRENDERER_H_ */
+#endif /* CONSOLEDISPLAY_H_ */
