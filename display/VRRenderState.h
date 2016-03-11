@@ -29,9 +29,9 @@ public:
 		this->m_nameSpace = nameSpace;
 	}
 
-	void getValue(std::string name, VRSerializable& serializable)
+	bool getValue(std::string name, VRSerializable& serializable)
 	{
-		serializable.deserialize(m_index, m_nameSpace + "/" + name);
+		return serializable.deserialize(m_index, m_nameSpace + "/" + name);
 	}
 
 	void setValue(std::string name, const VRSerializable& serializable)

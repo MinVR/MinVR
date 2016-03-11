@@ -16,9 +16,10 @@ namespace MinVR {
 class VRViewport : public VRSerializable {
 public:
 	VRViewport();
+	VRViewport(double x, double y, double w, double h, bool usePercent = false);
 	virtual ~VRViewport();
 
-	int getHeight() const {
+	double getHeight() const {
 		return m_height;
 	}
 
@@ -26,7 +27,7 @@ public:
 		m_height = height;
 	}
 
-	int getWidth() const {
+	double getWidth() const {
 		return m_width;
 	}
 
@@ -34,7 +35,7 @@ public:
 		m_width = width;
 	}
 
-	int getXOffset() const {
+	double getXOffset() const {
 		return m_xOffset;
 	}
 
@@ -42,7 +43,7 @@ public:
 		m_xOffset = xOffset;
 	}
 
-	int getYOffset() const {
+	double getYOffset() const {
 		return m_yOffset;
 	}
 
@@ -50,14 +51,25 @@ public:
 		m_yOffset = yOffset;
 	}
 
+	bool isUsePercent() const {
+		return m_usePercent;
+	}
+
+	void setUsePercent(bool usePercent) {
+		m_usePercent = usePercent;
+	}
+
+	VRViewport generateChild(const VRViewport& viewport);
+
 	void serialize(VRDataIndex& index, std::string name) const;
-	void deserialize(VRDataIndex& index, std::string name);
+	bool deserialize(VRDataIndex& index, std::string name);
 
 private:
-	int m_xOffset;
-	int m_yOffset;
-	int m_width;
-	int m_height;
+	double m_xOffset;
+	double m_yOffset;
+	double m_width;
+	double m_height;
+	bool m_usePercent;
 };
 
 } /* namespace MinVR */

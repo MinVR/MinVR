@@ -18,7 +18,7 @@ public:
 	virtual ~VRSerializable() {}
 
 	virtual void serialize(VRDataIndex& index, std::string name) const = 0;
-	virtual void deserialize(VRDataIndex& index, std::string name) = 0;
+	virtual bool deserialize(VRDataIndex& index, std::string name) = 0;
 };
 
 } /* namespace MinVR */

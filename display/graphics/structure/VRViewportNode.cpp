@@ -17,9 +17,18 @@ VRViewportNode::~VRViewportNode() {
 }
 
 void VRViewportNode::render(VRRenderer& renderer) {
+	VRViewport* currentViewport = &m_viewport;
+
+	VRViewport modifiedViewport;
+	if (renderer.getState().getValue("viewport", modifiedViewport))
+	{
+		modifiedViewport = modifiedViewport.generateChild(m_viewport);
+		currentViewport = &modifiedViewport;
+	}
+
 	renderer.pushState();
 	VRDataIndex& state = renderer.getState().getDataIndex();
-	renderer.getState().setValue("viewport", m_viewport);
+	renderer.getState().setValue("viewport", *currentViewport);
 	if (getChildren().size() > 0)
 	{
 		VRGraphicsWindowChild::render(renderer);

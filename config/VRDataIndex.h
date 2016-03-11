@@ -202,6 +202,7 @@ private:
   // Another utility, meant to pull a name apart on the slashes.
   std::vector<std::string> explodeName(const std::string fullName);
 
+public:
   // Returns the namespace, derived from a long, fully-qualified, name.
   std::string getNameSpace(const std::string fullName);
 
