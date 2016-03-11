@@ -5,10 +5,7 @@
 #include <fstream>
 #include <math.h>
 #include "main/VRMain.h"
-#include "display/VRRenderState.h"
-#include "display/VRCallbackDisplayAction.h"
-#include "display/VRCallbackDisplayFrameAction.h"
-#include "display/VRCallbackRenderer.h"
+#include "display/base/VRBasicRenderer.h"
 
 #if defined(WIN32)
 #include <Windows.h>
@@ -30,12 +27,13 @@ using namespace std;
 void initGL();
 bool perFrame();
 void render(VRRenderState& state);
+void update(VRRenderState& state);
 void handleEvent(const std::string &eventName, VRDataIndex *dataIndex);
 
 //--------------------Variables-------------------------
 
 VRMain *MVR;
-VRDisplayDevice* display;
+VRDisplay* display;
 bool isRunning = true;
 int frame = 0;
 
@@ -60,12 +58,13 @@ int main(int argc, char **argv) {
 	display = MVR->getDisplay();
 
 	// Initialize display contexts
-	MinVR::VRCallbackDisplayAction displayAction(initGL);
-	display->use(displayAction);
+	//MinVR::VRCallbackDisplayAction displayAction(initGL);
+	//display->use(displayAction);
 
 	// Loop until escape key is hit or main display is closed
-	MinVR::VRCallbackDisplayFrameAction displayFrameAction(perFrame);
-    while (display->renderFrame(displayFrameAction)) {}
+	//MinVR::VRCallbackDisplayFrameAction displayFrameAction(perFrame);
+    //while (display->renderFrame(displayFrameAction)) {}
+	while (perFrame()) {}
 
 	delete MVR;
 }
@@ -78,13 +77,13 @@ bool perFrame()
 	MVR->synchronizeAndProcessEvents();
 
 	// Render the scene on all displays (passing render function into display)
-	MinVR::VRCallbackRenderer renderer(render);
-	MinVR::VRRenderState renderState;
-	display->startRendering(renderer, renderState);
+	VRFunctionRenderCallback callback(render);
+	MinVR::VRBasicRenderer renderer(callback);
+	display->render(renderer);
 	MVR->renderEverywhere();
-	display->finishRendering();
+	//display->finishRendering();
 
-	return display->isOpen() && isRunning;
+	return true;//display->isOpen() && isRunning;
 }
 
 //-------------------Call back functions-----------------------------------
@@ -135,9 +134,12 @@ void initGL() {
 
 /* Render function */
 void render(VRRenderState& state) {
-	if (!state.display->allowGraphics())
+	if (true)
 	{
-		cout << "Command line only device: " << state.display->getName() << " (Frame: " << frame << ")" << endl;
+		cout << "Command line only device: " << " (Frame: " << frame << ")" << endl;
+		state.getDataIndex().printStructure("/");
+		int val = state.getValue("isConsole", 0);
+		cout << "test " << state.getNameSpace() << " " << val << " " << std::endl;
 		return;
 	}
 

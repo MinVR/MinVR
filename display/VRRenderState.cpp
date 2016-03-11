@@ -10,13 +10,13 @@
 
 namespace MinVR {
 
-VRRenderState::VRRenderState() : m_nameSpace("/") {
+VRRenderState::VRRenderState() : m_nameSpace("") {
 }
 
 VRRenderState::~VRRenderState() {
 }
 
-VRDataIndex& VRRenderState::getDataIndex() const {
+VRDataIndex& VRRenderState::getDataIndex() {
 	return m_index;
 }
 

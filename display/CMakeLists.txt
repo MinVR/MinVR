@@ -3,8 +3,10 @@
 project (VRDisplay)
 
 set (${PROJECT_NAME}_source_files 
+	VRRenderState.cpp
 	base/VRDisplayNode.cpp
 	base/VRBasicRenderer.cpp
+	base/VRFunctionRenderCallback.cpp
 	console/VRConsoleDisplay.cpp
 	graphics/VRGraphicsWindowChild.cpp
 	graphics/VRGraphicsWindowNode.cpp

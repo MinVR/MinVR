@@ -25,7 +25,7 @@ void VRViewportFormatter::preRender(VRRenderer& renderer,
 	const VRViewport* currentViewport = &viewport;
 
 	VRViewport modifiedViewport;
-	if (renderer.getState().getValue("viewport", modifiedViewport))
+	if (renderer.getState().deserializeValue("viewport", modifiedViewport))
 	{
 		modifiedViewport = modifiedViewport.generateChild(viewport);
 		currentViewport = &modifiedViewport;
@@ -33,7 +33,7 @@ void VRViewportFormatter::preRender(VRRenderer& renderer,
 
 	renderer.pushState();
 	VRDataIndex& state = renderer.getState().getDataIndex();
-	renderer.getState().setValue("viewport", *currentViewport);
+	renderer.getState().serializeValue("viewport", *currentViewport);
 }
 
 void VRViewportFormatter::postRender(VRRenderer& renderer) {

@@ -19,7 +19,7 @@ public:
 	VRRenderState();
 	virtual ~VRRenderState();
 
-	VRDataIndex& getDataIndex() const;
+	VRDataIndex& getDataIndex();
 
 	const std::string& getNameSpace() const {
 		return m_nameSpace;
@@ -29,12 +29,12 @@ public:
 		this->m_nameSpace = nameSpace;
 	}
 
-	bool getValue(std::string name, VRSerializable& serializable)
+	bool deserializeValue(std::string name, VRSerializable& serializable)
 	{
 		return serializable.deserialize(m_index, m_nameSpace + "/" + name);
 	}
 
-	void setValue(std::string name, const VRSerializable& serializable)
+	void serializeValue(std::string name, const VRSerializable& serializable)
 	{
 		serializable.serialize(m_index, m_nameSpace + "/" + name);
 	}
@@ -45,7 +45,18 @@ public:
 	}
 
 	template<typename T>
-	void setCoreTypeValue(std::string name, T val)
+	T getValue(std::string name, T defaultValue)
+	{
+		if (!m_index.exists(name, m_nameSpace))
+		{
+			return defaultValue;
+		}
+
+		return getValue(name);
+	}
+
+	template<typename T>
+	void setValue(std::string name, T val)
 	{
 		m_index.addData(m_nameSpace + "/" + name, val);
 	}

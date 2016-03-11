@@ -11,9 +11,8 @@
 
 namespace MinVR {
 
-VRBasicRenderer::VRBasicRenderer(VRRenderCallback& renderCallback) : m_nodeNum(0) {
-	m_nameSpaces.push_back("/");
-	m_state.setNameSpace("/");
+VRBasicRenderer::VRBasicRenderer(VRRenderCallback& renderCallback) : m_nodeNum(0), m_renderCallback(&renderCallback) {
+	resetState();
 }
 
 VRBasicRenderer::~VRBasicRenderer() {
@@ -34,7 +33,7 @@ VRRenderState& VRBasicRenderer::getState() {
 void VRBasicRenderer::pushState() {
 	m_nodeNum++;
 	std::stringstream ss;
-	ss << "node" << m_nodeNum;
+	ss << m_nameSpaces[m_nameSpaces.size() - 1] << "/" << "node" << m_nodeNum;
 	m_nameSpaces.push_back(ss.str());
 	m_state.setNameSpace(m_nameSpaces[m_nameSpaces.size() - 1]);
 }
@@ -46,8 +45,8 @@ void VRBasicRenderer::popState() {
 
 void VRBasicRenderer::resetState() {
 	m_state = VRRenderState();
-	m_nameSpaces.push_back("/");
-	m_state.setNameSpace("/");
+	m_nameSpaces.push_back("/display");
+	m_state.setNameSpace("/display");
 }
 
 } /* namespace MinVR */

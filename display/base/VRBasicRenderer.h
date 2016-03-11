@@ -11,6 +11,7 @@
 
 #include "display/VRRenderer.h"
 #include "VRRenderCallback.h"
+#include "VRFunctionRenderCallback.h"
 
 namespace MinVR {
 

@@ -5,6 +5,7 @@
 #endif
 #include "net/VRNetClient.h"
 #include "net/VRNetServer.h"
+#include "display/console/VRConsoleDisplay.h"
 
 void emptyEventCallbackMVR(const std::string &eventName, VRDataIndex *dataIndex) {}
 void emptyRenderCallbackMVR(VRDataIndex* index) {}
@@ -177,6 +178,8 @@ void VRMain::initialize()
   //_displayManager = new DisplayManager(displayDevices);
   _display = new MinVR::DataIndexWrapperDisplay(_compositDisplay, _index);
   */
+
+  _display = new MinVR::VRConsoleDisplay();
 
   // Create input devices
   for (int f = 0; f < _inputDeviceFactories.size(); f++)
