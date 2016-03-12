@@ -16,7 +16,7 @@ VRTile::VRTile() : m_topLeft(), m_topRight(), m_bottomLeft(), m_bottomRight(), m
 VRTile::~VRTile() {
 }
 
-void VRTile::serialize(VRDataIndex& index, std::string name) const {
+void VRTile::write(VRDataIndex& index, std::string name) const {
 	VRPoint3 topLeft(m_topLeft);
 	index.addData(name + "/topLeft", topLeft);
 	VRPoint3 topRight(m_topRight);
@@ -29,7 +29,7 @@ void VRTile::serialize(VRDataIndex& index, std::string name) const {
 	index.addData(name + "/farClip", m_farClip);
 }
 
-bool VRTile::deserialize(VRDataIndex& index, std::string name) {
+bool VRTile::read(VRDataIndex& index, std::string name) {
 	if (!index.exists("topLeft", name)) {
 		return false;
 	}

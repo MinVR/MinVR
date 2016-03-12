@@ -51,7 +51,7 @@ VRViewport VRViewport::generateChild(const VRViewport& viewport) {
 	return newViewport;
 }
 
-void VRViewport::serialize(VRDataIndex& index, std::string name) const {
+void VRViewport::write(VRDataIndex& index, std::string name) const {
 	index.addData(name + "/xOffset", m_xOffset);
 	index.addData(name + "/yOffset", m_yOffset);
 	index.addData(name + "/width", m_width);
@@ -59,7 +59,7 @@ void VRViewport::serialize(VRDataIndex& index, std::string name) const {
 	index.addData(name + "/usePercent", m_usePercent);
 }
 
-bool VRViewport::deserialize(VRDataIndex& index, std::string name) {
+bool VRViewport::read(VRDataIndex& index, std::string name) {
 	if (!index.exists("xOffset", name)) {
 		return false;
 	}

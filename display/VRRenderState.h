@@ -10,7 +10,7 @@
 #define VRRENDERSTATE_H_
 
 #include "config/VRDataIndex.h"
-#include "config/VRSerializable.h"
+#include "config/VRWritable.h"
 
 namespace MinVR {
 
@@ -29,14 +29,14 @@ public:
 		this->m_nameSpace = nameSpace;
 	}
 
-	bool deserializeValue(std::string name, VRSerializable& serializable)
+	bool readValue(std::string name, VRWritable& writable)
 	{
-		return serializable.deserialize(m_index, m_nameSpace + "/" + name);
+		return writable.read(m_index, m_nameSpace + "/" + name);
 	}
 
-	void serializeValue(std::string name, const VRSerializable& serializable)
+	void writeValue(std::string name, const VRWritable& writable)
 	{
-		serializable.serialize(m_index, m_nameSpace + "/" + name);
+		writable.write(m_index, m_nameSpace + "/" + name);
 	}
 
 	VRAnyCoreType getValue(std::string name)

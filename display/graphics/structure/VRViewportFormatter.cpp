@@ -24,7 +24,7 @@ void VRViewportFormatter::preRender(VRRenderer& renderer,
 
 	VRViewport oldViewport;
 	VRViewport modifiedViewport;
-	if (renderer.getState().deserializeValue("viewport", oldViewport))
+	if (renderer.getState().readValue("viewport", oldViewport))
 	{
 		modifiedViewport = oldViewport.generateChild(viewport);
 		currentViewport = &modifiedViewport;
@@ -35,14 +35,14 @@ void VRViewportFormatter::preRender(VRRenderer& renderer,
 	if (m_modifyTile)
 	{
 		VRTile tile;
-		if (renderer.getState().deserializeValue("tile", tile))
+		if (renderer.getState().readValue("tile", tile))
 		{
 			tile = tile.modifyWithViewport(oldViewport, *currentViewport);
-			renderer.getState().serializeValue("tile", tile);
+			renderer.getState().writeValue("tile", tile);
 		}
 	}
 
-	renderer.getState().serializeValue("viewport", *currentViewport);
+	renderer.getState().writeValue("viewport", *currentViewport);
 }
 
 void VRViewportFormatter::postRender(VRRenderer& renderer) {

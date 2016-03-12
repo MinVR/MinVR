@@ -9,11 +9,11 @@
 #ifndef VRVIEWPORT_H_
 #define VRVIEWPORT_H_
 
-#include "config/VRSerializable.h"
+#include "config/VRWritable.h"
 
 namespace MinVR {
 
-class VRViewport : public VRSerializable {
+class VRViewport : public VRWritable {
 public:
 	VRViewport();
 	VRViewport(double x, double y, double w, double h, bool usePercent = false);
@@ -21,8 +21,8 @@ public:
 
 	VRViewport generateChild(const VRViewport& viewport);
 
-	void serialize(VRDataIndex& index, std::string name) const;
-	bool deserialize(VRDataIndex& index, std::string name);
+	void write(VRDataIndex& index, std::string name) const;
+	bool read(VRDataIndex& index, std::string name);
 
 	double getHeight() const {
 		return m_height;

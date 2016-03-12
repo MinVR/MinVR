@@ -9,19 +9,19 @@
 #ifndef VRTILE_H_
 #define VRTILE_H_
 
-#include "config/VRSerializable.h"
+#include "config/VRWritable.h"
 #include "math/VRMath.h"
 #include "VRViewport.h"
 
 namespace MinVR {
 
-class VRTile : public VRSerializable {
+class VRTile : public VRWritable {
 public:
 	VRTile();
 	virtual ~VRTile();
 
-	void serialize(VRDataIndex& index, std::string name) const;
-	bool deserialize(VRDataIndex& index, std::string name);
+	void write(VRDataIndex& index, std::string name) const;
+	bool read(VRDataIndex& index, std::string name);
 
 	VRTile modifyWithViewport(const VRViewport& oldViewport, const VRViewport& newViewport);
 

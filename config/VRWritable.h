@@ -13,12 +13,12 @@
 
 namespace MinVR {
 
-class VRSerializable {
+class VRWritable {
 public:
-	virtual ~VRSerializable() {}
+	virtual ~VRWritable() {}
 
-	virtual void serialize(VRDataIndex& index, std::string name) const = 0;
-	virtual bool deserialize(VRDataIndex& index, std::string name) = 0;
+	virtual void write(VRDataIndex& index, std::string name) const = 0;
+	virtual bool read(VRDataIndex& index, std::string name) = 0;
 };
 
 } /* namespace MinVR */
