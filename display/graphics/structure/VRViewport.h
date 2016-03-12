@@ -19,6 +19,11 @@ public:
 	VRViewport(double x, double y, double w, double h, bool usePercent = false);
 	virtual ~VRViewport();
 
+	VRViewport generateChild(const VRViewport& viewport);
+
+	void serialize(VRDataIndex& index, std::string name) const;
+	bool deserialize(VRDataIndex& index, std::string name);
+
 	double getHeight() const {
 		return m_height;
 	}
@@ -58,11 +63,6 @@ public:
 	void setUsePercent(bool usePercent) {
 		m_usePercent = usePercent;
 	}
-
-	VRViewport generateChild(const VRViewport& viewport);
-
-	void serialize(VRDataIndex& index, std::string name) const;
-	bool deserialize(VRDataIndex& index, std::string name);
 
 private:
 	double m_xOffset;

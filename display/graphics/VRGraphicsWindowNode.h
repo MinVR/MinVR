@@ -27,6 +27,7 @@ public:
 	virtual void addChild(VRGraphicsWindowChild* child);
 
 protected:
+	virtual std::string getContextType() = 0;
 	virtual void setCurrentContext() = 0;
 	virtual void clearCurrentContext() = 0;
 	virtual void swapBuffers() = 0;

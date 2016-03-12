@@ -60,7 +60,7 @@ void VRViewport::serialize(VRDataIndex& index, std::string name) const {
 }
 
 bool VRViewport::deserialize(VRDataIndex& index, std::string name) {
-	if (!index.exists(name, index.getNameSpace(name))) {
+	if (!index.exists("xOffset", name)) {
 		return false;
 	}
 

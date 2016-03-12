@@ -20,10 +20,13 @@ void VRGraphicsWindowNode::render(VRRenderer& renderer) {
 }
 
 void VRGraphicsWindowNode::startRender(VRRenderer& renderer) {
+	renderer.pushState();
 	setCurrentContext();
+	renderer.getState().setValue("graphicsContextType", getContextType());
 	renderer.updateFrame();
 	VRDisplayNode::render(renderer);
 	flush();
+	renderer.popState();
 }
 
 void VRGraphicsWindowNode::waitForRenderComplete() {

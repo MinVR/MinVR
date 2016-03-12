@@ -45,7 +45,7 @@ public:
 	}
 
 	template<typename T>
-	T getValue(std::string name, T defaultValue)
+	T getValue(std::string name, const T& defaultValue)
 	{
 		if (!m_index.exists(name, m_nameSpace))
 		{
