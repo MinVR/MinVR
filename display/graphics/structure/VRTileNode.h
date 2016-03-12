@@ -6,26 +6,27 @@
  * 		Dan Orban (dtorban)
  */
 
-#ifndef VRVIEWPORTFORMATTER_H_
-#define VRVIEWPORTFORMATTER_H_
+#ifndef VRTILENODE_H_
+#define VRTILENODE_H_
 
-#include "display/VRRenderer.h"
-#include "VRViewport.h"
+#include "VRTile.h"
+#include "display/graphics/VRGraphicsWindowChild.h"
 
 namespace MinVR {
 
-class VRViewportFormatter {
+class VRTileNode : public VRGraphicsWindowChild {
 public:
-	VRViewportFormatter(bool modifyTile = false);
-	virtual ~VRViewportFormatter();
+	VRTileNode();
+	virtual ~VRTileNode();
 
-	void preRender(VRRenderer& renderer, const VRViewport& viewport);
-	void postRender(VRRenderer& renderer);
+	void render(VRRenderer& renderer);
+
+	virtual void addChild(VRGraphicsWindowChild* child);
 
 private:
-	bool m_modifyTile;
+	VRTile m_tile;
 };
 
 } /* namespace MinVR */
 
-#endif /* VRVIEWPORTFORMATTER_H_ */
+#endif /* VRTILENODE_H_ */

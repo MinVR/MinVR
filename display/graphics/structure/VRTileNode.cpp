@@ -6,26 +6,26 @@
  * 		Dan Orban (dtorban)
  */
 
-#include <display/graphics/structure/VRViewportNode.h>
+#include <display/graphics/structure/VRTileNode.h>
 
 namespace MinVR {
 
-VRViewportNode::VRViewportNode() : m_viewportFormatter(true) {
+VRTileNode::VRTileNode() {
 }
 
-VRViewportNode::~VRViewportNode() {
+VRTileNode::~VRTileNode() {
 }
 
-void VRViewportNode::render(VRRenderer& renderer) {
-	m_viewportFormatter.preRender(renderer, m_viewport);
+void VRTileNode::render(VRRenderer& renderer) {
+	renderer.pushState();
+	renderer.getState().serializeValue("tile", m_tile);
 
 	renderAtLeaf(renderer);
 
-	m_viewportFormatter.postRender(renderer);
+	renderer.popState();
 }
 
-void VRViewportNode::addChild(VRGraphicsWindowChild* child) {
-  VRDisplayNode::addChild(child);
+void VRTileNode::addChild(VRGraphicsWindowChild* child) {
 }
 
 } /* namespace MinVR */

@@ -11,6 +11,7 @@
 
 #include "config/VRSerializable.h"
 #include "math/VRMath.h"
+#include "VRViewport.h"
 
 namespace MinVR {
 
@@ -21,6 +22,8 @@ public:
 
 	void serialize(VRDataIndex& index, std::string name) const;
 	bool deserialize(VRDataIndex& index, std::string name);
+
+	VRTile modifyWithViewport(const VRViewport& oldViewport, const VRViewport& newViewport);
 
 	const VRPoint3& getBottomLeft() const {
 		return m_bottomLeft;

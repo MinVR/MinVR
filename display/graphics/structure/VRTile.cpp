@@ -10,13 +10,10 @@
 
 namespace MinVR {
 
-VRTile::VRTile() {
-	// TODO Auto-generated constructor stub
-
+VRTile::VRTile() : m_topLeft(), m_topRight(), m_bottomLeft(), m_bottomRight(), m_nearClip(0.0), m_farClip(0.0) {
 }
 
 VRTile::~VRTile() {
-	// TODO Auto-generated destructor stub
 }
 
 void VRTile::serialize(VRDataIndex& index, std::string name) const {
@@ -47,4 +44,26 @@ bool VRTile::deserialize(VRDataIndex& index, std::string name) {
 	return true;
 }
 
+VRTile VRTile::modifyWithViewport(const VRViewport& oldViewport,
+		const VRViewport& newViewport) {
+	VRVector3 u = (m_topRight - m_topLeft).normalize();
+	VRVector3 v = (m_topLeft - m_bottomLeft).normalize();
+
+	double widthRatio = newViewport.getWidth()/oldViewport.getWidth();
+	double heightRatio = newViewport.getHeight()/oldViewport.getHeight();
+
+	double xOffsetRatio = (newViewport.getXOffset()-oldViewport.getXOffset())/oldViewport.getWidth();
+	double yOffsetRatio = (newViewport.getYOffset()-oldViewport.getYOffset())/oldViewport.getHeight();
+
+	m_bottomLeft = m_bottomLeft + u*xOffsetRatio + v*yOffsetRatio;
+
+	m_bottomRight = m_bottomLeft + u*widthRatio;
+	m_topLeft = m_bottomLeft + v*heightRatio;
+	m_topRight = m_bottomRight + v*heightRatio;
+
+	return *this;
+}
+
 } /* namespace MinVR */
+
+

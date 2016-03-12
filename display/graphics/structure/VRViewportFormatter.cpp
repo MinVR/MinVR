@@ -7,16 +7,14 @@
  */
 
 #include <display/graphics/structure/VRViewportFormatter.h>
+#include "VRTile.h"
 
 namespace MinVR {
 
-VRViewportFormatter::VRViewportFormatter() {
-	// TODO Auto-generated constructor stub
-
+VRViewportFormatter::VRViewportFormatter(bool modifyTile) : m_modifyTile(modifyTile) {
 }
 
 VRViewportFormatter::~VRViewportFormatter() {
-	// TODO Auto-generated destructor stub
 }
 
 void VRViewportFormatter::preRender(VRRenderer& renderer,
@@ -24,15 +22,26 @@ void VRViewportFormatter::preRender(VRRenderer& renderer,
 
 	const VRViewport* currentViewport = &viewport;
 
+	VRViewport oldViewport;
 	VRViewport modifiedViewport;
-	if (renderer.getState().deserializeValue("viewport", modifiedViewport))
+	if (renderer.getState().deserializeValue("viewport", oldViewport))
 	{
-		modifiedViewport = modifiedViewport.generateChild(viewport);
+		modifiedViewport = oldViewport.generateChild(viewport);
 		currentViewport = &modifiedViewport;
 	}
 
 	renderer.pushState();
-	VRDataIndex& state = renderer.getState().getDataIndex();
+
+	if (m_modifyTile)
+	{
+		VRTile tile;
+		if (renderer.getState().deserializeValue("tile", tile))
+		{
+			tile = tile.modifyWithViewport(oldViewport, *currentViewport);
+			renderer.getState().serializeValue("tile", tile);
+		}
+	}
+
 	renderer.getState().serializeValue("viewport", *currentViewport);
 }
 
