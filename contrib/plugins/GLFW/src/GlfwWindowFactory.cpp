@@ -19,25 +19,13 @@ GlfwWindowFactory::GlfwWindowFactory(GlfwInputDevice* iDevice) : inputDevice(iDe
 GlfwWindowFactory::~GlfwWindowFactory() {
 }
 
-VRDisplayDevice* GlfwWindowFactory::createDisplay(const std::string type, const std::string name,
-		VRDataIndex& config, VRDisplayDeviceFactory* factory) {
-	if (type == "glfw_display")
-	{
-		int xOffset = config.getValue("xOffset", name);
-		int yOffset = config.getValue("yOffset", name);
-		int width = config.getValue("width", name);
-		int height = config.getValue("height", name);
-
-		GlfwWindow* window = new GlfwWindow(xOffset, yOffset, width, height);
-		if (config.exists("allowThreading", name))
-		{
-			int allowThreading = config.getValue("allowThreading", name);
-			window->setAllowThreading(allowThreading == 1);
-		}
-		window->setInputDevice(inputDevice);
+VRDisplay* GlfwWindowFactory::create(VRDataIndex& config, const std::string nameSpace) {
+	//if (type == "glfw_display")
+	//{
+		GlfwWindow* window = new GlfwWindow(inputDevice);
 
 		return window;
-	}
+	//}
 
 	return NULL;
 }

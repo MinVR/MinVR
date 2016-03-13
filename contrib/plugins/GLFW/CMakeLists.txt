@@ -150,9 +150,9 @@ endif()
 # Build Target
 #------------------------------------------
 
-add_definitions(-DPLUGINPATH="${CMAKE_BINARY_DIR}/plugins")
-add_executable ( test_glfw test/test.cpp )
-target_link_libraries(test_glfw ${OPENGL_LIBRARIES} VRPlugin VRDisplay VRIndex ${LIBS_ALL})
+#add_definitions(-DPLUGINPATH="${CMAKE_BINARY_DIR}/plugins")
+#add_executable ( test_glfw test/test.cpp )
+#target_link_libraries(test_glfw ${OPENGL_LIBRARIES} VRPlugin VRDisplay VRIndex ${LIBS_ALL})
 
 SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
 SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 

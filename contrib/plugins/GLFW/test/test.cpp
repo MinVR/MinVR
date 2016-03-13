@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
 #ifdef MinVR_DEBUG
     buildType = "d";
 #endif
-    
+
   // Load specific plugins which will initialize and add factories.
   // This can be defined inside the configuration itself
   pluginManager.loadPlugin(std::string(PLUGINPATH) + "/MinVR_GLFW", "MinVR_GLFW" + buildType);

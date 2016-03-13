@@ -27,37 +27,19 @@ class GlfwPlugin : public MinVR::Plugin {
 public:
 	PLUGIN_API GlfwPlugin() : displayFactory(NULL), inputDeviceFactory(NULL), inputDevice(NULL), timer(NULL) {
 		std::cout << "GlfwPlugin created." << std::endl;
+
+	    glfwSetErrorCallback(error_callback);
+	    if (!glfwInit()) {
+	    	std::cout << "GLFW Init failed." << std::endl;
+	    	exit(0);
+	    }
+
+		inputDevice = new GlfwInputDevice();
+		displayFactory = new GlfwWindowFactory(inputDevice);
+		inputDeviceFactory = new GlfwInputDeviceFactory(inputDevice);
+		timer = new GlfwTimer();
 	}
 	PLUGIN_API virtual ~GlfwPlugin() {
-		std::cout << "GlfwPlugin destroyed." << std::endl;
-	}
-	PLUGIN_API bool registerPlugin(MinVR::PluginInterface *iface)
-	{
-		std::cout << "Registering GlfwPlugin with the following interface: " << iface->getName() << std::endl;
-
-		VRPluginInterface* vrInterface = iface->getInterface<VRPluginInterface>();
-		if (vrInterface != NULL)
-		{
-		    glfwSetErrorCallback(error_callback);
-		    if (!glfwInit())
-		        return false;
-
-			std::cout << "Adding GLFW window factory" << std::endl;
-			inputDevice = new GlfwInputDevice();
-			displayFactory = new GlfwWindowFactory(inputDevice);
-			inputDeviceFactory = new GlfwInputDeviceFactory(inputDevice);
-			timer = new GlfwTimer();
-			vrInterface->addVRDisplayDeviceFactory(displayFactory);
-			vrInterface->addVRInputDeviceFactory(inputDeviceFactory);
-			vrInterface->addVRTimer(timer);
-			return true;
-		}
-
-		return false;
-	}
-	PLUGIN_API bool unregisterPlugin(MinVR::PluginInterface *iface)
-	{
-		std::cout << "Unregistering GlfwPlugin with the following interface: " << iface->getName() << std::endl;
 
 		if (displayFactory != NULL)
 		{
@@ -77,6 +59,28 @@ public:
 		}
 
         glfwTerminate();
+
+		std::cout << "GlfwPlugin destroyed." << std::endl;
+	}
+	PLUGIN_API bool registerPlugin(MinVR::PluginInterface *iface)
+	{
+		std::cout << "Registering GlfwPlugin with the following interface: " << iface->getName() << std::endl;
+
+		VRPluginInterface* vrInterface = iface->getInterface<VRPluginInterface>();
+		if (vrInterface != NULL)
+		{
+			std::cout << "Adding GLFW window factory" << std::endl;
+			vrInterface->addVRDisplayFactory(displayFactory);
+			vrInterface->addVRInputDeviceFactory(inputDeviceFactory);
+			vrInterface->addVRTimer(timer);
+			return true;
+		}
+
+		return false;
+	}
+	PLUGIN_API bool unregisterPlugin(MinVR::PluginInterface *iface)
+	{
+		std::cout << "Unregistering GlfwPlugin with the following interface: " << iface->getName() << std::endl;
 
 		return true;
 	}

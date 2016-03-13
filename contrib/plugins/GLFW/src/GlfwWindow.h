@@ -10,48 +10,31 @@
 #define GLFWWINDOW_H_
 
 #include "plugin/PluginFramework.h"
-#include "display/concrete/BaseDisplayDevice.h"
+#include "display/graphics/VRGraphicsWindowNode.h"
 #include <GLFW/glfw3.h>
 #include "GlfwInputDevice.h"
-//#include "display/concrete/InternalLoopController.h"
 
 namespace MinVR {
 
-class GlfwWindow : public BaseDisplayDevice {
+class GlfwWindow : public VRGraphicsWindowNode {
 public:
-	PLUGIN_API GlfwWindow(int x, int y, int width, int height);
+	PLUGIN_API GlfwWindow(GlfwInputDevice* inputDevice);
 	PLUGIN_API virtual ~GlfwWindow();
-
-	PLUGIN_API int getWidth();
-	PLUGIN_API int getHeight();
-
-	PLUGIN_API void initialize();
-	PLUGIN_API bool isOpen();
-	PLUGIN_API void useDisplay(const MinVR::VRDisplayAction& action);
-	PLUGIN_API void finishRendering();
 
 	PLUGIN_API GLFWwindow* getWindow() const {
 		return window;
 	}
 
-	PLUGIN_API void setInputDevice(GlfwInputDevice* inputDevice) {
-		this->inputDevice = inputDevice;
-	}
-
-	/*MinVR::VRFrameController* getFrameController()
-	{
-		static InternalLoopController controller;
-		return &controller;
-	}*/
-
 protected:
-	PLUGIN_API void startRendering(const MinVR::VRRenderer& renderer, VRRenderState& state);
+	std::string getContextType();
+	void setCurrentContext();
+	void clearCurrentContext();
+	void swapBuffers();
+	void flush();
+	void finish();
 
 private:
 	GLFWwindow* window;
-	int x, y, width, height;
-	GlfwInputDevice* inputDevice;
-	//std::vector<VRDisplayDevice*> subDisplays;
 };
 
 } /* namespace MinVR */

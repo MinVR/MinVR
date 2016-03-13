@@ -10,17 +10,17 @@
 #define GLFWWINDOWFACTORY_H_
 
 #include "plugin/PluginFramework.h"
-#include "display/concrete/BaseDisplayFactory.h"
+#include "display/VRDisplayFactory.h"
 #include "GlfwInputDevice.h"
 
 namespace MinVR {
 
-class GlfwWindowFactory : public BaseDisplayFactory {
+class GlfwWindowFactory : public VRDisplayFactory {
 public:
 	PLUGIN_API GlfwWindowFactory(GlfwInputDevice* inputDevice);
 	PLUGIN_API virtual ~GlfwWindowFactory();
 
-	PLUGIN_API VRDisplayDevice* createDisplay(const std::string type, const std::string name, VRDataIndex& config, VRDisplayDeviceFactory* factory);
+	PLUGIN_API VRDisplay* create(VRDataIndex& config, const std::string nameSpace);
 
 private:
 	GlfwInputDevice* inputDevice;

@@ -139,6 +139,6 @@ add_subdirectory (apps)
 #add_subdirectory (tests/eventdata)
 add_subdirectory (tests/config)
 
-#add_subdirectory (contrib)
+add_subdirectory (contrib)
 
 

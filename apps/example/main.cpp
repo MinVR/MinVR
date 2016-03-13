@@ -135,14 +135,18 @@ void initGL() {
 /* Render function */
 void render(VRRenderState& state) {
 	bool isConsole = state.getValue("isConsole", 0);
+
+	std::string contextType = state.getValue("graphicsContextType", std::string("none"));
+	cout << "test " << state.getNameSpace() << " " << isConsole << " " << contextType << std::endl;
+
 	if (isConsole)
 	{
 		cout << "Command line only device: " << " (Frame: " << frame << ")" << endl;
 		state.getDataIndex().printStructure("/");
-		std::string contextType = state.getValue("graphicsContextType", std::string("none"));
-		cout << "test " << state.getNameSpace() << " " << isConsole << " " << contextType << std::endl;
 		return;
 	}
+
+	initGL();
 
 	//std::cout << state.display->getName() << std::endl;
 

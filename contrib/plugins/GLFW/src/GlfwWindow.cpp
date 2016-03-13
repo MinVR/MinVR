@@ -11,46 +11,22 @@
 
 namespace MinVR {
 
-GlfwWindow::GlfwWindow(int x, int y, int width, int height) : x(x), y(y), width(width), height(height), window(NULL) {
-	setAllowThreading(true);
-}
-
-GlfwWindow::~GlfwWindow() {
-	glfwDestroyWindow(window);
-}
-
-void GlfwWindow::useDisplay(const MinVR::VRDisplayAction& action) {
-	glfwMakeContextCurrent(window);
-	action.exec();
-	glfwMakeContextCurrent(NULL);
-}
-
-int GlfwWindow::getWidth() {
-	glfwGetFramebufferSize(window, &width, &height);
-	return width;
-}
-
-int GlfwWindow::getHeight() {
-	glfwGetFramebufferSize(window, &width, &height);
-	return height;
-}
-
-void GlfwWindow::initialize() {
+GlfwWindow::GlfwWindow(GlfwInputDevice* inputDevice) {
 	glfwDefaultWindowHints();
 
-	if (isQuadbuffered())
+	/*if (isQuadbuffered())
 	{
 		glfwWindowHint(GLFW_STEREO, true);
-	}
+	}*/
 
-	window = glfwCreateWindow(width, height, getName().c_str(), NULL, NULL);
+	window = glfwCreateWindow(500, 500, "MinVR Window", NULL, NULL);
 	if (!window)
 	{
 		std::cout << "Error creating window." << std::endl;
 	}
 
 	std::cout << "Created window." << std::endl;
-	glfwSetWindowPos(window, x, y);
+	glfwSetWindowPos(window, 0, 0);
 	glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
     inputDevice->registerGlfwWindow(window);
@@ -58,28 +34,34 @@ void GlfwWindow::initialize() {
 	glfwMakeContextCurrent(NULL);
 }
 
-void GlfwWindow::startRendering(const MinVR::VRRenderer& renderer, VRRenderState& state) {
+GlfwWindow::~GlfwWindow() {
+	glfwDestroyWindow(window);
+}
+
+std::string GlfwWindow::getContextType() {
+	return "opengl";
+}
+
+void GlfwWindow::setCurrentContext() {
 	glfwMakeContextCurrent(window);
-	glViewport(0, 0, getWidth(), getHeight());
-	startRenderingAllDisplays(renderer, state);
-	glFlush();
+}
+
+void GlfwWindow::clearCurrentContext() {
 	glfwMakeContextCurrent(NULL);
 }
 
-bool GlfwWindow::isOpen() {
-	return !glfwWindowShouldClose(window);
-}
-
-void GlfwWindow::finishRendering() {
-	glfwMakeContextCurrent(window);
-	finishRenderingAllDisplays();
-
+void GlfwWindow::swapBuffers() {
 	glfwSwapBuffers(window);
-	glfwMakeContextCurrent(NULL);
 }
 
-//void GlfwWindow::addSubDisplay(VRDisplayDevice* display) {
-//	subDisplays.push_back(display);
-//}
+void GlfwWindow::flush() {
+	glFlush();
+}
+
+void GlfwWindow::finish() {
+	glFinish();
+}
+
 
 } /* namespace MinVR */
+

@@ -179,7 +179,12 @@ void VRMain::initialize()
   _display = new MinVR::DataIndexWrapperDisplay(_compositDisplay, _index);
   */
 
-  _display = new MinVR::VRConsoleDisplay();
+  for (int f = 0; f < _displayFactories.size(); f++)
+  {
+	  _display = _displayFactories[f]->create(*_index, "/");
+  }
+
+  //_display = new MinVR::VRConsoleDisplay();
 
   // Create input devices
   for (int f = 0; f < _inputDeviceFactories.size(); f++)

@@ -24,16 +24,20 @@ void VRGraphicsWindowNode::startRender(VRRenderer& renderer) {
 	setCurrentContext();
 	renderer.getState().setValue("graphicsContextType", getContextType());
 	renderer.updateFrame();
-	VRDisplayNode::render(renderer);
+	VRDisplayNode::renderAtLeaf(renderer);
 	flush();
 	renderer.popState();
+	clearCurrentContext();
 }
 
 void VRGraphicsWindowNode::waitForRenderComplete() {
+	setCurrentContext();
 	finish();
+	clearCurrentContext();
 }
 
 void VRGraphicsWindowNode::synchronize() {
+	setCurrentContext();
 	swapBuffers();
 	clearCurrentContext();
 }
