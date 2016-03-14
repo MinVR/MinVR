@@ -23,11 +23,12 @@ int VRSideBySideNode::getNumPasses() {
 }
 
 void VRSideBySideNode::preRenderPass(VRRenderer& renderer, int passNum) {
-	m_viewportCalculator.preRender(renderer, m_viewports[passNum]);
+	renderer.pushState();
+	m_viewportCalculator.calculate(renderer.getState(), m_viewports[passNum]);
 }
 
 void VRSideBySideNode::postRenderPass(VRRenderer& renderer, int passNum) {
-	m_viewportCalculator.postRender(renderer);
+	renderer.popState();
 }
 
 } /* namespace MinVR */

@@ -17,11 +17,10 @@ VRViewportNode::~VRViewportNode() {
 }
 
 void VRViewportNode::render(VRRenderer& renderer) {
-	m_viewportCalculator.preRender(renderer, m_viewport);
-
+	renderer.pushState();
+	m_viewportCalculator.calculate(renderer.getState(), m_viewport);
 	renderAtLeaf(renderer);
-
-	m_viewportCalculator.postRender(renderer);
+	renderer.popState();
 }
 
 void VRViewportNode::addChild(VRGraphicsWindowChild* child) {

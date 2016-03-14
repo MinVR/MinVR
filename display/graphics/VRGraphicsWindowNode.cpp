@@ -10,6 +10,10 @@
 
 namespace MinVR {
 
+VRGraphicsWindowNode::VRGraphicsWindowNode(const VRViewport& viewport) : m_viewport(viewport), m_viewportCalculator(true), m_hasTile(false) {
+
+}
+
 VRGraphicsWindowNode::~VRGraphicsWindowNode() {
 }
 
@@ -23,6 +27,7 @@ void VRGraphicsWindowNode::startRender(VRRenderer& renderer) {
 	renderer.pushState();
 	setCurrentContext();
 	renderer.getState().setValue("graphicsContextType", getContextType());
+	updateState(renderer.getState());
 	renderer.updateFrame();
 	VRDisplayNode::renderAtLeaf(renderer);
 	flush();
@@ -44,6 +49,18 @@ void VRGraphicsWindowNode::synchronize() {
 
 void VRGraphicsWindowNode::addChild(VRGraphicsWindowChild* child) {
 	VRDisplayNode::addChild(child);
+}
+
+void VRGraphicsWindowNode::updateState(VRRenderState& state) {
+	VRViewport vp = m_viewportCalculator.calculate(state, m_viewport);
+	vp.setXOffset(0);
+	vp.setYOffset(0);
+	state.writeValue("viewport", vp);
+
+	if (m_hasTile)
+	{
+		state.writeValue("tile", m_tile);
+	}
 }
 
 } /* namespace MinVR */

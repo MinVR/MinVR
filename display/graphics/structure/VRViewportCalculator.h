@@ -19,8 +19,7 @@ public:
 	VRViewportCalculator(bool modifyTile = false);
 	virtual ~VRViewportCalculator();
 
-	void preRender(VRRenderer& renderer, const VRViewport& viewport);
-	void postRender(VRRenderer& renderer);
+	VRViewport calculate(VRRenderState& state, const VRViewport& viewport);
 
 private:
 	bool m_modifyTile;

@@ -17,36 +17,32 @@ VRViewportCalculator::VRViewportCalculator(bool modifyTile) : m_modifyTile(modif
 VRViewportCalculator::~VRViewportCalculator() {
 }
 
-void VRViewportCalculator::preRender(VRRenderer& renderer,
+VRViewport VRViewportCalculator::calculate(VRRenderState& state,
 		const VRViewport& viewport) {
 
 	const VRViewport* currentViewport = &viewport;
 
 	VRViewport oldViewport;
 	VRViewport modifiedViewport;
-	if (renderer.getState().readValue("viewport", oldViewport))
+	if (state.readValue("viewport", oldViewport))
 	{
 		modifiedViewport = oldViewport.generateChild(viewport);
 		currentViewport = &modifiedViewport;
 	}
 
-	renderer.pushState();
-
 	if (m_modifyTile)
 	{
 		VRTile tile;
-		if (renderer.getState().readValue("tile", tile))
+		if (state.readValue("tile", tile))
 		{
 			tile = tile.modifyWithViewport(oldViewport, *currentViewport);
-			renderer.getState().writeValue("tile", tile);
+			state.writeValue("tile", tile);
 		}
 	}
 
-	renderer.getState().writeValue("viewport", *currentViewport);
-}
+	state.writeValue("viewport", *currentViewport);
 
-void VRViewportCalculator::postRender(VRRenderer& renderer) {
-	renderer.popState();
+	return *currentViewport;
 }
 
 } /* namespace MinVR */
