@@ -10,7 +10,7 @@
 
 namespace MinVR {
 
-VRConsoleDisplay::VRConsoleDisplay() {
+VRConsoleDisplay::VRConsoleDisplay(std::ostream *stream) : m_stream(stream) {
 	// TODO Auto-generated constructor stub
 
 }
@@ -20,10 +20,25 @@ VRConsoleDisplay::~VRConsoleDisplay() {
 }
 
 void VRConsoleDisplay::render(VRRenderer& renderer) {
+
+}
+
+void VRConsoleDisplay::startRender(VRRenderer& renderer) {
 	renderer.pushState();
 	renderer.getState().setValue("isConsole", 1);
 	renderer.render();
 	renderer.popState();
 }
 
+void VRConsoleDisplay::waitForRenderComplete() {
+	*m_stream << "render complete." << std::endl;
+}
+
+void VRConsoleDisplay::synchronize() {
+	std::flush(*m_stream);
+	*m_stream << "flush." << std::endl;
+}
+
 } /* namespace MinVR */
+
+

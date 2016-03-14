@@ -156,7 +156,8 @@ void VRMain::initialize()
   // Create display
   for (int f = 0; f < _displayFactories.size(); f++)
   {
-	  _display = _displayFactories[f]->create(*_index, "/");
+	  MinVR::VRDisplay* display = _displayFactories[f]->create(*_index, "/");
+	  _display = dynamic_cast<MinVR::VRSynchronizedDisplay*>(display);
   }
 
   if (_display == NULL)
@@ -247,29 +248,50 @@ VRMain::synchronizeAndProcessEvents() {
 
 void 
 VRMain::renderEverywhere() {
+	  if (!initialized) {
+	    std::cerr << "VRMain not initialized." << std::endl;
+	    return;
+	  }
+	  // for (std::vector<DisplayDevice*>::iterator dd = _displayDevices.begin();
+	  //      dd != _displayDevices.end(); dd++) {
+	  //   // Stereo displays will have two passes, one per eye; some
+	  //   // displays might require more
+	  //   for (int pass=0; pass < (*dd)->getNumRenderingPasses(); pass++) {
+
+	  //     // The display handles setting up the correct drawing buffer and
+	  //     // projection and view matrices
+	  //     (*dd)->startRenderingPass(pass, curState);
+
+	  //     // The application programmer fills in the
+	  //     // renderCallbackFunction to draw his/her scene
+	  (*_renderCB)(_index);
+
+	  //     (*dd)->endRenderingPass(pass, curState);
+
+	  //   }
+	  // }
+
+	  // SYNCHRONIZATION POINT #2: When this function returns we know that
+	  // all nodes have finished rendering on all their attached display
+	  // devices.  So, after this, we will be ready to "swap buffers",
+	  // simultaneously displaying these new renderings on all nodes.
+	  if (_vrNet != NULL) {
+	    _vrNet->syncSwapBuffersAcrossAllNodes();
+	  }
+
+	  (*_swapCB)();
+}
+
+void
+VRMain::renderEverywhere(MinVR::VRRenderer& renderer) {
 
   if (!initialized) {
     std::cerr << "VRMain not initialized." << std::endl;
     return;
   }
-  // for (std::vector<DisplayDevice*>::iterator dd = _displayDevices.begin();
-  //      dd != _displayDevices.end(); dd++) {
-  //   // Stereo displays will have two passes, one per eye; some
-  //   // displays might require more
-  //   for (int pass=0; pass < (*dd)->getNumRenderingPasses(); pass++) {
 
-  //     // The display handles setting up the correct drawing buffer and
-  //     // projection and view matrices
-  //     (*dd)->startRenderingPass(pass, curState);
-
-  //     // The application programmer fills in the
-  //     // renderCallbackFunction to draw his/her scene
-  (*_renderCB)(_index);
-
-  //     (*dd)->endRenderingPass(pass, curState);
-      
-  //   }
-  // }
+  _display->startRender(renderer);
+  _display->waitForRenderComplete();
 
   // SYNCHRONIZATION POINT #2: When this function returns we know that
   // all nodes have finished rendering on all their attached display
@@ -279,7 +301,7 @@ VRMain::renderEverywhere() {
     _vrNet->syncSwapBuffersAcrossAllNodes();
   }
 
-  (*_swapCB)();
+  _display->synchronize();
 }
 
 // Adds the display factories for all plugins who use this interface

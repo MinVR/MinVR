@@ -15,7 +15,7 @@
 
 namespace MinVR {
 
-class VRGraphicsWindowNode : public VRDisplayNode, VRSynchronizedDisplay {
+class VRGraphicsWindowNode : public VRDisplayNode, public VRSynchronizedDisplay {
 public:
 	virtual ~VRGraphicsWindowNode();
 

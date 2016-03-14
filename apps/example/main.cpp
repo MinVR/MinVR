@@ -34,7 +34,7 @@ void handleEvent(const std::string &eventName, VRDataIndex *dataIndex);
 //--------------------Variables-------------------------
 
 VRMain *MVR;
-VRDisplay* display;
+//VRDisplay* display;
 bool isRunning = true;
 int frame = 0;
 
@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
 	MVR->registerEventCallback(&handleEvent);
 
 	// Get display device (Composite of all available display devices, but looks like one device)
-	display = MVR->getDisplay();
+	//display = MVR->getDisplay();
 
 	// Initialize display contexts
 	//MinVR::VRCallbackDisplayAction displayAction(initGL);
@@ -80,8 +80,8 @@ bool perFrame()
 	// Render the scene on all displays (passing render function into display)
 	VRFunctionRenderCallback callback(render);
 	MinVR::VRBasicRenderer renderer(callback);
-	display->render(renderer);
-	MVR->renderEverywhere();
+	//display->render(renderer);
+	MVR->renderEverywhere(renderer);
 	//display->finishRendering();
 
 	return true;//display->isOpen() && isRunning;

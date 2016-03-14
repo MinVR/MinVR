@@ -5,7 +5,7 @@
 #include "config/VRDataIndex.h"
 #include "main/VRPluginInterface.h"
 #include "plugin/PluginManager.h"
-#include "display/VRDisplay.h"
+#include "display/synchronization/VRSynchronizedDisplay.h"
 
 /** Application programmers should use this singleton class as the
     interface to the MinVR library.
@@ -73,6 +73,8 @@ public:
   // OpenGL or whatever graphics engine you are using.
   virtual void renderEverywhere();
 
+  virtual void renderEverywhere(MinVR::VRRenderer& renderer);
+
   // END LOOP
 
 
@@ -90,7 +92,7 @@ public:
   	// Used for timing (i.e. for animation, etc...)
   void addVRTimer(MinVR::VRTimer* timer);
 
-  MinVR::VRDisplay* getDisplay() const {
+  MinVR::VRSynchronizedDisplay* getDisplay() const {
 		return _display;
 	}
 
@@ -114,7 +116,7 @@ private:
   void (*_renderCB)(VRDataIndex *);
   void (*_swapCB)();
 
-  MinVR::VRDisplay* _display;
+  MinVR::VRSynchronizedDisplay* _display;
 
   // Plugin items
   MinVR::PluginManager _pluginManager;
