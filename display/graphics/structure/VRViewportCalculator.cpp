@@ -6,18 +6,18 @@
  * 		Dan Orban (dtorban)
  */
 
-#include <display/graphics/structure/VRViewportFormatter.h>
+#include <display/graphics/structure/VRViewportCalculator.h>
 #include "VRTile.h"
 
 namespace MinVR {
 
-VRViewportFormatter::VRViewportFormatter(bool modifyTile) : m_modifyTile(modifyTile) {
+VRViewportCalculator::VRViewportCalculator(bool modifyTile) : m_modifyTile(modifyTile) {
 }
 
-VRViewportFormatter::~VRViewportFormatter() {
+VRViewportCalculator::~VRViewportCalculator() {
 }
 
-void VRViewportFormatter::preRender(VRRenderer& renderer,
+void VRViewportCalculator::preRender(VRRenderer& renderer,
 		const VRViewport& viewport) {
 
 	const VRViewport* currentViewport = &viewport;
@@ -45,7 +45,7 @@ void VRViewportFormatter::preRender(VRRenderer& renderer,
 	renderer.getState().writeValue("viewport", *currentViewport);
 }
 
-void VRViewportFormatter::postRender(VRRenderer& renderer) {
+void VRViewportCalculator::postRender(VRRenderer& renderer) {
 	renderer.popState();
 }
 

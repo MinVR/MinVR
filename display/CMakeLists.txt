@@ -10,11 +10,11 @@ set (${PROJECT_NAME}_source_files
 	console/VRConsoleDisplay.cpp
 	graphics/VRGraphicsWindowChild.cpp
 	graphics/VRGraphicsWindowNode.cpp
-	graphics/stereo/VRStereoFormatter.cpp
+	graphics/stereo/VRStereoNode.cpp
 	graphics/stereo/VRSideBySideNode.cpp
 	graphics/structure/VRViewportNode.cpp
 	graphics/structure/VRViewport.cpp
-	graphics/structure/VRViewportFormatter.cpp
+	graphics/structure/VRViewportCalculator.cpp
 	graphics/structure/VRTile.cpp
 )
 

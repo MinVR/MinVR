@@ -11,7 +11,7 @@
 
 #include "display/graphics/VRGraphicsWindowChild.h"
 #include "VRViewport.h"
-#include "VRViewportFormatter.h"
+#include "VRViewportCalculator.h"
 
 namespace MinVR {
 
@@ -25,7 +25,7 @@ public:
 	virtual void addChild(VRGraphicsWindowChild* child);
 
 private:
-	VRViewportFormatter m_viewportFormatter;
+	VRViewportCalculator m_viewportCalculator;
 	VRViewport m_viewport;
 };
 

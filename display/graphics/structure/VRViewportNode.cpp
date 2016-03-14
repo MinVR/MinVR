@@ -10,18 +10,18 @@
 
 namespace MinVR {
 
-VRViewportNode::VRViewportNode() : m_viewportFormatter(true) {
+VRViewportNode::VRViewportNode() : m_viewportCalculator(true) {
 }
 
 VRViewportNode::~VRViewportNode() {
 }
 
 void VRViewportNode::render(VRRenderer& renderer) {
-	m_viewportFormatter.preRender(renderer, m_viewport);
+	m_viewportCalculator.preRender(renderer, m_viewport);
 
 	renderAtLeaf(renderer);
 
-	m_viewportFormatter.postRender(renderer);
+	m_viewportCalculator.postRender(renderer);
 }
 
 void VRViewportNode::addChild(VRGraphicsWindowChild* child) {

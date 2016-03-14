@@ -6,18 +6,18 @@
  * 		Dan Orban (dtorban)
  */
 
-#ifndef VRVIEWPORTFORMATTER_H_
-#define VRVIEWPORTFORMATTER_H_
+#ifndef VRVIEWPORTCALCULATOR_H_
+#define VRVIEWPORTCALCULATOR_H_
 
 #include "display/VRRenderer.h"
 #include "VRViewport.h"
 
 namespace MinVR {
 
-class VRViewportFormatter {
+class VRViewportCalculator {
 public:
-	VRViewportFormatter(bool modifyTile = false);
-	virtual ~VRViewportFormatter();
+	VRViewportCalculator(bool modifyTile = false);
+	virtual ~VRViewportCalculator();
 
 	void preRender(VRRenderer& renderer, const VRViewport& viewport);
 	void postRender(VRRenderer& renderer);
@@ -28,4 +28,4 @@ private:
 
 } /* namespace MinVR */
 
-#endif /* VRVIEWPORTFORMATTER_H_ */
+#endif /* VRVIEWPORTCALCULATOR_H_ */

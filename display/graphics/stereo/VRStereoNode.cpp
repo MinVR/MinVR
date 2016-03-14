@@ -6,17 +6,17 @@
  * 		Dan Orban (dtorban)
  */
 
-#include <display/graphics/stereo/VRStereoFormatter.h>
+#include <display/graphics/stereo/VRStereoNode.h>
 
 namespace MinVR {
 
-VRStereoFormatter::VRStereoFormatter() {
+VRStereoNode::VRStereoNode() {
 }
 
-VRStereoFormatter::~VRStereoFormatter() {
+VRStereoNode::~VRStereoNode() {
 }
 
-void VRStereoFormatter::render(VRRenderer& renderer) {
+void VRStereoNode::render(VRRenderer& renderer) {
 	for (int passNum = 0; passNum < getNumPasses(); passNum++)
 	{
 		preRenderPass(renderer, passNum);
@@ -25,7 +25,7 @@ void VRStereoFormatter::render(VRRenderer& renderer) {
 	}
 }
 
-void VRStereoFormatter::addChild(VRGraphicsWindowChild* child) {
+void VRStereoNode::addChild(VRGraphicsWindowChild* child) {
   VRDisplayNode::addChild(child);
 }
 

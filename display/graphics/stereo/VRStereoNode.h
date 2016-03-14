@@ -6,17 +6,17 @@
  * 		Dan Orban (dtorban)
  */
 
-#ifndef VRSTEREOFORMATTER_H_
-#define VRSTEREOFORMATTER_H_
+#ifndef VRSTEREONODE_H_
+#define VRSTEREONODE_H_
 
 #include "display/graphics/VRGraphicsWindowChild.h"
 
 namespace MinVR {
 
-class VRStereoFormatter : public VRGraphicsWindowChild {
+class VRStereoNode : public VRGraphicsWindowChild {
 public:
-	VRStereoFormatter();
-	virtual ~VRStereoFormatter();
+	VRStereoNode();
+	virtual ~VRStereoNode();
 
 	virtual void render(VRRenderer& renderer);
 	virtual void addChild(VRGraphicsWindowChild* child);

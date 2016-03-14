@@ -9,12 +9,12 @@
 #ifndef VRSIDEBYSIDENODE_H_
 #define VRSIDEBYSIDENODE_H_
 
-#include "display/graphics/stereo/VRStereoFormatter.h"
-#include "display/graphics/structure/VRViewportFormatter.h"
+#include "display/graphics/stereo/VRStereoNode.h"
+#include "display/graphics/structure/VRViewportCalculator.h"
 
 namespace MinVR {
 
-class VRSideBySideNode : public VRStereoFormatter {
+class VRSideBySideNode : public VRStereoNode {
 public:
 	VRSideBySideNode();
 	virtual ~VRSideBySideNode();
@@ -25,7 +25,7 @@ protected:
 	void postRenderPass(VRRenderer& renderer, int passNum);
 
 private:
-	VRViewportFormatter m_viewportFormatter;
+	VRViewportCalculator m_viewportCalculator;
 	VRViewport m_viewports[2];
 };
 
