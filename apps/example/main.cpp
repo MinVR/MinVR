@@ -25,10 +25,10 @@ using namespace MinVR;
 using namespace std;
 
 //-----------------Call back prototypes----------------
-void initGL();
+void initGL(VRRenderState& state);
 bool perFrame();
 void render(VRRenderState& state);
-void update(VRRenderState& state);
+void noRender(VRRenderState& state) {}
 void handleEvent(const std::string &eventName, VRDataIndex *dataIndex);
 
 //--------------------Variables-------------------------
@@ -53,6 +53,7 @@ int main(int argc, char **argv) {
 		index.addData("/MVR/VRDisplayDevices/CommandLine", 0);
 		MVR->initialize(index, "/MVR");
 	}
+
 	MVR->registerEventCallback(&handleEvent);
 
 	// Get display device (Composite of all available display devices, but looks like one device)
@@ -65,6 +66,14 @@ int main(int argc, char **argv) {
 	// Loop until escape key is hit or main display is closed
 	//MinVR::VRCallbackDisplayFrameAction displayFrameAction(perFrame);
     //while (display->renderFrame(displayFrameAction)) {}
+
+	//VRFunctionRenderCallback callback(render);
+	//MinVR::VRBasicRenderer renderer(callback);
+
+	VRFunctionRenderCallback callback(noRender, initGL);
+	VRBasicRenderer renderer(callback);
+	MVR->renderEverywhere(renderer);
+
 	while (perFrame()) {}
 
 	delete MVR;
@@ -99,7 +108,13 @@ double horizAngle = 0.0;
 double vertAngle = 0.0;
 
 /* Initialize OpenGL Graphics */
-void initGL() {
+void initGL(VRRenderState& state) {
+	bool isConsole = state.getValue("isConsole", 0);
+	if (isConsole)
+	{
+		return;
+	}
+
 	//glutInitDisplayMode (GLUT_DEPTH);
 	// Set background color to black and opaque
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -146,8 +161,6 @@ void render(VRRenderState& state) {
 		cout << "Command line only device: " << " (Frame: " << frame << ")" << endl;\
 		return;
 	}
-
-	initGL();
 
 	glEnable(GL_SCISSOR_TEST);
 	VRViewport viewport;
