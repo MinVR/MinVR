@@ -6,6 +6,7 @@
 #include <math.h>
 #include "main/VRMain.h"
 #include "display/base/VRBasicRenderer.h"
+#include "display/graphics/structure/VRViewport.h"
 
 #if defined(WIN32)
 #include <Windows.h>
@@ -134,6 +135,7 @@ void initGL() {
 
 /* Render function */
 void render(VRRenderState& state) {
+
 	bool isConsole = state.getValue("isConsole", 0);
 
 	std::string contextType = state.getValue("graphicsContextType", std::string("none"));
@@ -147,6 +149,14 @@ void render(VRRenderState& state) {
 	}
 
 	initGL();
+
+	glEnable(GL_SCISSOR_TEST);
+	VRViewport viewport;
+	if (state.readValue("viewport", viewport))
+	{
+		glScissor(viewport.getXOffset(), viewport.getYOffset(), viewport.getWidth(), viewport.getHeight());
+		glViewport(viewport.getXOffset(), viewport.getYOffset(), viewport.getWidth(), viewport.getHeight());
+	}
 
 	//std::cout << state.display->getName() << std::endl;
 

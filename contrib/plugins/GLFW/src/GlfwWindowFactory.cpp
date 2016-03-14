@@ -10,6 +10,8 @@
 #include "GlfwWindow.h"
 #include <iostream>
 #include "config/VRDataIndex.h"
+#include "display/graphics/structure/VRViewportNode.h"
+#include "display/graphics/stereo/VRSideBySideNode.h"
 
 namespace MinVR {
 
@@ -23,6 +25,10 @@ VRDisplay* GlfwWindowFactory::create(VRDataIndex& config, const std::string name
 	//if (type == "glfw_display")
 	//{
 		GlfwWindow* window = new GlfwWindow(inputDevice);
+
+		VRViewportNode* viewportNode = new VRViewportNode(VRViewport(0,0,800,400));
+		viewportNode->addChild(new VRSideBySideNode());
+		window->addChild(viewportNode);
 
 		return window;
 	//}

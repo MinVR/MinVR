@@ -10,7 +10,7 @@
 
 namespace MinVR {
 
-VRViewportNode::VRViewportNode() : m_viewportCalculator(true) {
+VRViewportNode::VRViewportNode(const VRViewport& viewport) : m_viewportCalculator(true), m_viewport(viewport) {
 }
 
 VRViewportNode::~VRViewportNode() {

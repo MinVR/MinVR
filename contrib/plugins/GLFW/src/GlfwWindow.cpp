@@ -19,7 +19,7 @@ GlfwWindow::GlfwWindow(GlfwInputDevice* inputDevice) {
 		glfwWindowHint(GLFW_STEREO, true);
 	}*/
 
-	window = glfwCreateWindow(500, 500, "MinVR Window", NULL, NULL);
+	window = glfwCreateWindow(800, 400, "MinVR Window", NULL, NULL);
 	if (!window)
 	{
 		std::cout << "Error creating window." << std::endl;
