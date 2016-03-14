@@ -12,13 +12,12 @@
 #include "plugin/PluginFramework.h"
 #include "display/graphics/VRGraphicsWindowNode.h"
 #include <GLFW/glfw3.h>
-#include "GlfwInputDevice.h"
 
 namespace MinVR {
 
 class GlfwWindow : public VRGraphicsWindowNode {
 public:
-	PLUGIN_API GlfwWindow(const VRViewport& viewport, GlfwInputDevice* inputDevice);
+	PLUGIN_API GlfwWindow(const VRViewport& viewport);
 	PLUGIN_API virtual ~GlfwWindow();
 
 	PLUGIN_API GLFWwindow* getWindow() const {

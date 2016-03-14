@@ -13,6 +13,8 @@
 #include "event/VRInputDevice.h"
 #include <vector>
 #include <GLFW/glfw3.h>
+#include "GlfwWindow.h"
+#include <map>
 
 namespace MinVR {
 
@@ -22,13 +24,15 @@ public:
 	PLUGIN_API virtual ~GlfwInputDevice();
 
 	PLUGIN_API void appendNewInputEventsSinceLastCall(VRDataQueue& queue);
-	PLUGIN_API void registerGlfwWindow(GLFWwindow* window);
+	PLUGIN_API void registerGlfwWindow(GlfwWindow* window);
 
 	PLUGIN_API void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+	PLUGIN_API void sizeCallback(GLFWwindow* window, int width, int height);
 
 private:
 	std::vector<std::string> events;
 	VRDataIndex dataIndex;
+	std::map<GLFWwindow*, GlfwWindow*> windowMap;
 };
 
 class GlfwInputDeviceFactory : public VRInputDeviceFactory {

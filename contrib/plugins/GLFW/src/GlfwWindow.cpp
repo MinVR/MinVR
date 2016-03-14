@@ -11,7 +11,7 @@
 
 namespace MinVR {
 
-GlfwWindow::GlfwWindow(const VRViewport& viewport, GlfwInputDevice* inputDevice) : VRGraphicsWindowNode(viewport) {
+GlfwWindow::GlfwWindow(const VRViewport& viewport) : VRGraphicsWindowNode(viewport) {
 	glfwDefaultWindowHints();
 
 	/*if (isQuadbuffered())
@@ -29,7 +29,6 @@ GlfwWindow::GlfwWindow(const VRViewport& viewport, GlfwInputDevice* inputDevice)
 	glfwSetWindowPos(window, viewport.getXOffset(), viewport.getYOffset());
 	glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
-    inputDevice->registerGlfwWindow(window);
 
 	glfwMakeContextCurrent(NULL);
 }

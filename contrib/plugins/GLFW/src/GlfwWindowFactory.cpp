@@ -26,7 +26,9 @@ VRDisplay* GlfwWindowFactory::create(VRDataIndex& config, const std::string name
 
 	//if (type == "glfw_display")
 	//{
-		GlfwWindow* window = new GlfwWindow(VRViewport(0,0,800,400), inputDevice);
+		GlfwWindow* window = new GlfwWindow(VRViewport(0,0,800,400));
+
+	    inputDevice->registerGlfwWindow(window);
 
 		VRTile tile;
 		tile.setTopLeft(VRPoint3(-0.5,  0.5, 0.0));

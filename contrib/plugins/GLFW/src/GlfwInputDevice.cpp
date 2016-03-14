@@ -46,6 +46,9 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode,
 	((GlfwInputDevice*)(glfwGetWindowUserPointer(window)))->keyCallback(window, key, scancode, action, mods);
 }
 
+static void glfw_size_callback(GLFWwindow* window, int width, int height) {
+	((GlfwInputDevice*)(glfwGetWindowUserPointer(window)))->sizeCallback(window, width, height);
+}
 
 std::vector<VRInputDevice*> GlfwInputDeviceFactory::create(
 		VRDataIndex& dataIndex) {
@@ -54,9 +57,11 @@ std::vector<VRInputDevice*> GlfwInputDeviceFactory::create(
 	return devices;
 }
 
-void GlfwInputDevice::registerGlfwWindow(GLFWwindow* window) {
-	glfwSetWindowUserPointer(window, this);
-	glfwSetKeyCallback(window, glfw_key_callback);
+void GlfwInputDevice::registerGlfwWindow(GlfwWindow* window) {
+	windowMap[window->getWindow()] = window;
+	glfwSetWindowUserPointer(window->getWindow(), this);
+	glfwSetKeyCallback(window->getWindow(), glfw_key_callback);
+	glfwSetWindowSizeCallback(window->getWindow(), glfw_size_callback);
 }
 
 std::string getGlfwKeyName(int key)
@@ -302,6 +307,12 @@ std::string getGlfwActionName(int action)
     return "caused unknown action";
 }
 
+void GlfwInputDevice::sizeCallback(GLFWwindow* window, int width, int height) {
+	VRViewport viewport = windowMap[window]->getViewport();
+	viewport.setWidth(width);
+	viewport.setHeight(height);
+	windowMap[window]->setViewport(viewport);
+}
 
 } /* namespace MinVR */
 
