@@ -10,7 +10,7 @@
 
 namespace MinVR {
 
-VRTileNode::VRTileNode() {
+VRTileNode::VRTileNode(const VRTile& tile) : m_tile(tile) {
 }
 
 VRTileNode::~VRTileNode() {
@@ -18,7 +18,7 @@ VRTileNode::~VRTileNode() {
 
 void VRTileNode::render(VRRenderer& renderer) {
 	renderer.pushState();
-	renderer.getState().serializeValue("tile", m_tile);
+	renderer.getState().writeValue("tile", m_tile);
 
 	renderAtLeaf(renderer);
 
@@ -26,6 +26,7 @@ void VRTileNode::render(VRRenderer& renderer) {
 }
 
 void VRTileNode::addChild(VRGraphicsWindowChild* child) {
+	VRDisplayNode::addChild(child);
 }
 
 } /* namespace MinVR */

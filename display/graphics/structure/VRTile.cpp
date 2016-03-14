@@ -29,17 +29,19 @@ void VRTile::write(VRDataIndex& index, std::string name) const {
 	index.addData(name + "/farClip", m_farClip);
 }
 
-bool VRTile::read(VRDataIndex& index, std::string name) {
-	if (!index.exists("topLeft", name)) {
+bool VRTile::read(VRDataIndex& index, std::string name, std::string nameSpace) {
+	if (!index.exists(name, nameSpace)) {
 		return false;
 	}
 
-	m_topLeft = index.getValue("topLeft", name);
-	m_topRight = index.getValue("topRight", name);
-	m_bottomLeft = index.getValue("bottomLeft", name);
-	m_bottomRight = index.getValue("bottomRight", name);
-	m_nearClip = index.getValue("nearClip", name);
-	m_farClip = index.getValue("farClip", name);
+	std::string newNamespace = index.getName(name, nameSpace);
+
+	m_topLeft = index.getValue("topLeft", newNamespace);
+	m_topRight = index.getValue("topRight", newNamespace);
+	m_bottomLeft = index.getValue("bottomLeft", newNamespace);
+	m_bottomRight = index.getValue("bottomRight", newNamespace);
+	m_nearClip = index.getValue("nearClip", newNamespace);
+	m_farClip = index.getValue("farClip", newNamespace);
 
 	return true;
 }

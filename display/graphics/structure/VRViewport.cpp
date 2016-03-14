@@ -59,16 +59,19 @@ void VRViewport::write(VRDataIndex& index, std::string name) const {
 	index.addData(name + "/usePercent", m_usePercent);
 }
 
-bool VRViewport::read(VRDataIndex& index, std::string name) {
-	if (!index.exists("xOffset", name)) {
+bool VRViewport::read(VRDataIndex& index, std::string name, std::string nameSpace) {
+	//std::cout << name << " " << nameSpace << std::endl;
+	if (!index.exists(name, nameSpace)) {
 		return false;
 	}
 
-	m_xOffset = index.getValue("xOffset", name);
-	m_yOffset = index.getValue("yOffset", name);
-	m_width = index.getValue("width", name);
-	m_height = index.getValue("height", name);
-	m_usePercent = (int)index.getValue("usePercent", name);
+	std::string newNamespace = index.getName(name, nameSpace);
+
+	m_xOffset = index.getValue("xOffset", newNamespace);
+	m_yOffset = index.getValue("yOffset", newNamespace);
+	m_width = index.getValue("width", newNamespace);
+	m_height = index.getValue("height", newNamespace);
+	m_usePercent = (int)index.getValue("usePercent", newNamespace);
 
 	return true;
 }

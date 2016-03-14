@@ -18,7 +18,7 @@ public:
 	virtual ~VRWritable() {}
 
 	virtual void write(VRDataIndex& index, std::string name) const = 0;
-	virtual bool read(VRDataIndex& index, std::string name) = 0;
+	virtual bool read(VRDataIndex& index, std::string name, std::string nameSpace) = 0;
 };
 
 } /* namespace MinVR */

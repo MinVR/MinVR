@@ -31,7 +31,7 @@ public:
 
 	bool readValue(std::string name, VRWritable& writable)
 	{
-		return writable.read(m_index, m_nameSpace + "/" + name);
+		return writable.read(m_index, name, m_nameSpace);
 	}
 
 	void writeValue(std::string name, const VRWritable& writable)

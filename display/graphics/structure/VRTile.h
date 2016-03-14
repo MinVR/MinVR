@@ -21,7 +21,7 @@ public:
 	virtual ~VRTile();
 
 	void write(VRDataIndex& index, std::string name) const;
-	bool read(VRDataIndex& index, std::string name);
+	bool read(VRDataIndex& index, std::string name, std::string nameSpace);
 
 	VRTile modifyWithViewport(const VRViewport& oldViewport, const VRViewport& newViewport);
 

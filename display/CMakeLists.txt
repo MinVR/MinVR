@@ -16,6 +16,7 @@ set (${PROJECT_NAME}_source_files
 	graphics/structure/VRViewport.cpp
 	graphics/structure/VRViewportCalculator.cpp
 	graphics/structure/VRTile.cpp
+	graphics/structure/VRTileNode.cpp
 )
 
 add_library (${PROJECT_NAME} ${${PROJECT_NAME}_source_files})

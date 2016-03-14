@@ -139,12 +139,11 @@ void render(VRRenderState& state) {
 	bool isConsole = state.getValue("isConsole", 0);
 
 	std::string contextType = state.getValue("graphicsContextType", std::string("none"));
-	cout << "test " << state.getNameSpace() << " " << isConsole << " " << contextType << std::endl;
+	cout << "test " << state.getNameSpace() << " " << isConsole << " " << contextType << " (Frame: " << frame << ")" << std::endl;
 
 	if (isConsole)
 	{
-		cout << "Command line only device: " << " (Frame: " << frame << ")" << endl;
-		state.getDataIndex().printStructure("/");
+		cout << "Command line only device: " << " (Frame: " << frame << ")" << endl;\
 		return;
 	}
 

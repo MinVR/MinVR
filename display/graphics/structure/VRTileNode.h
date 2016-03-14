@@ -16,7 +16,7 @@ namespace MinVR {
 
 class VRTileNode : public VRGraphicsWindowChild {
 public:
-	VRTileNode();
+	VRTileNode(const VRTile& tile);
 	virtual ~VRTileNode();
 
 	void render(VRRenderer& renderer);

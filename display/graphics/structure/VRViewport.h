@@ -22,7 +22,7 @@ public:
 	VRViewport generateChild(const VRViewport& viewport);
 
 	void write(VRDataIndex& index, std::string name) const;
-	bool read(VRDataIndex& index, std::string name);
+	bool read(VRDataIndex& index, std::string name, std::string nameSpace);
 
 	double getHeight() const {
 		return m_height;
