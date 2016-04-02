@@ -39,25 +39,26 @@ std::string VRDatum::getAttributeListAsString() {
 }
 
 
-VRDatumInt::VRDatumInt(const int inVal) :
-  VRDatum(VRCORETYPE_INT), value(inVal) {
+VRDatumInt::VRDatumInt(const VRInt inVal) :
+  VRDatum(VRCORETYPE_INT) {
+  value.push_front(inVal);
   description = initializeDescription(type);
 };
 
 /// Step 4 in the adding a type instructions.
-bool VRDatumInt::setValue(const int inVal) {
-  value = inVal;
+bool VRDatumInt::setValue(const VRInt inVal) {
+  value.front() = inVal;
   return true;
 }
 
 std::string VRDatumInt::getValueAsString() {
   char buffer[20];
-  sprintf(buffer, "%d", value);
+  sprintf(buffer, "%d", value.front());
   return std::string(buffer);
 }
 
 VRDatumPtr CreateVRDatumInt(void *pData) {
-  VRDatumInt *obj = new VRDatumInt(*static_cast<int *>(pData));
+  VRDatumInt *obj = new VRDatumInt(*static_cast<VRInt *>(pData));
   return VRDatumPtr(obj);
 }
 

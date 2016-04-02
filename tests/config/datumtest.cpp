@@ -12,6 +12,7 @@ int testDatumString();
 int testDatumIntArray();
 int testDatumDoubleArray();
 int testDatumStringArray();
+int testDatumPushPop();
 //int testDatumContainer();
 
 // Mucks around with the attribute lists.
@@ -71,6 +72,10 @@ int datumtest(int argc, char* argv[]) {
     output = testDatumAttributes();
     break;
 
+  case 8:
+    output = testDatumPushPop();
+    break;
+    
     // Add case statements to handle values of 2-->10
   default:
     std::cout << "Test #" << choice << " does not exist!\n";
@@ -275,3 +280,33 @@ int testDatumStringArray() {
   return out;
 }
 
+int testDatumPushPopInt() {
+
+  int out = 0;
+
+  LOOP {
+
+    VRInt f = 5;
+    VRDatumInt a = VRDatumInt(f);
+
+    a.push();
+    a.setValue(37);
+    VRInt g = a.getValue();
+    out += (37 == g) ? 0 : 1;
+
+    a.pop();
+    VRInt h = a.getValue();
+    out += (5 == h) ? 0 : 1;
+  }
+  
+  return out;
+}
+
+int testDatumPushPop() {
+
+  int out = 0;
+
+  out += testDatumPushPopInt();
+
+  return out;  
+}

@@ -168,6 +168,14 @@ public:
   // pointers should be careful to delete their objects.
   virtual ~VRDatum() {};
 
+  // These two methods allow us to "remember" a state of the data
+  // index.  The "push" function pushes a copy of the current state
+  // onto the (imaginary) stack.  You can modify and mess with the
+  // state in any way you like, and restore the original values by
+  // invoking the "pop" method.
+  virtual void push() = 0;
+  virtual void pop() = 0;  
+  
   // Some facilities for handling XML attributes within the class.
   // The 'type=' attribute is the only one that really matters to the
   // operation of the class (so is *not* stored in the attribute
@@ -249,19 +257,22 @@ typedef VRDatumConverter<VRDatum> VRAnyCoreType;
 class VRDatumInt : public VRDatum {
 private:
   // The actual data is stored here.
-  int value;
+  std::list<VRInt> value;
 
 public:
-  VRDatumInt(const int inVal);
+  VRDatumInt(const VRInt inVal);
 
   std::string getValueAsString();
 
-  int getValueInt() const { return value; };
-  bool setValue(const int inVal);
+  int getValueInt() const { return value.front(); };
+  bool setValue(const VRInt inVal);
 
   VRDatumConverter<VRDatum> getValue() {
     return VRDatumConverter<VRDatum>(this);
   }
+
+  void push() { value.push_front( value.front() ); };
+  void pop() { value.pop_front(); };  
 };
 
 // The specialization for a double.
@@ -280,6 +291,9 @@ public:
   VRDatumConverter<VRDatum> getValue() {
     return VRDatumConverter<VRDatum>(this);
   }
+
+  void push() {};
+  void pop() {};  
 };
 
 // Specialization for a string
@@ -299,6 +313,9 @@ public:
   VRDatumConverter<VRDatum> getValue() {
     return VRDatumConverter<VRDatum>(this);
   }
+
+  void push() {};
+  void pop() {};  
 };
 
 // Specialization for a vector of ints
@@ -318,6 +335,9 @@ public:
   VRDatumConverter<VRDatum> getValue() {
     return VRDatumConverter<VRDatum>(this);
   }
+
+  void push() {};
+  void pop() {};  
 };
 
 // Specialization for a vector of doubles
@@ -337,6 +357,9 @@ public:
   VRDatumConverter<VRDatum> getValue() {
     return VRDatumConverter<VRDatum>(this);
   }
+
+  void push() {};
+  void pop() {};  
 };
 
 // Specialization for a vector of strings
@@ -356,6 +379,9 @@ public:
   VRDatumConverter<VRDatum> getValue() {
     return VRDatumConverter<VRDatum>(this);
   }
+
+  void push() {};
+  void pop() {};  
 };
 
 // Specialization for a container
@@ -376,6 +402,9 @@ public:
   VRDatumConverter<VRDatum> getValue() {
     return VRDatumConverter<VRDatum>(this);
   }
+
+  void push() {};
+  void pop() {};  
 };
 
 
