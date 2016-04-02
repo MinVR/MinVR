@@ -22,8 +22,8 @@ void VRViewportOgl::startRendering(const MinVR::VRRenderer& renderer, VRRenderSt
 	glEnable(GL_SCISSOR_TEST);
 	int xOffset = x + getParent()->getXOffset();
 	int yOffset = y + getParent()->getYOffset();
-	int viewportWidth = min(width, getParent()->getWidth()-x);
-	int viewportHeight = min(height, getParent()->getHeight()-y);
+	int viewportWidth = std::min(width, getParent()->getWidth()-x);
+	int viewportHeight = std::min(height, getParent()->getHeight()-y);
 	glViewport(xOffset, yOffset, viewportWidth, viewportHeight);
 	glScissor(xOffset, yOffset, viewportWidth, viewportHeight);
 	startRenderingAllDisplays(renderer, state);

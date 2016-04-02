@@ -10,6 +10,7 @@
 #include "VRViewportOgl.h"
 #include "stereo/SideBySideStereo.h"
 #include "stereo/QuadbufferStereo.h"
+#include "config/VRDataIndex.h"
 #include <iostream>
 
 namespace MinVR {
