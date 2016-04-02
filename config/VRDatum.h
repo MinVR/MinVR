@@ -278,44 +278,44 @@ public:
 // The specialization for a double.
 class VRDatumDouble : public VRDatum {
 private:
-  double value;
+  std::list<VRDouble> value;
 
 public:
-  VRDatumDouble(const double inVal);
+  VRDatumDouble(const VRDouble inVal);
 
   std::string getValueAsString();
 
-  double getValueDouble() const { return value; };
-  bool setValue(const double inVal);
+  VRDouble getValueDouble() const { return value.front(); };
+  bool setValue(const VRDouble inVal);
 
   VRDatumConverter<VRDatum> getValue() {
     return VRDatumConverter<VRDatum>(this);
   }
 
-  void push() {};
-  void pop() {};  
+  void push() { value.push_front( value.front() ); };
+  void pop() { value.pop_front(); };  
 };
 
 // Specialization for a string
 class VRDatumString : public VRDatum {
 private:
   // The actual data is stored here.
-  std::string value;
+  std::list<VRString> value;
 
 public:
-  VRDatumString(const std::string inVal);
+  VRDatumString(const VRString inVal);
 
-  std::string getValueAsString();
+  VRString getValueAsString();
 
-  std::string getValueString() const { return value; };
-  bool setValue(const std::string inVal);
+  VRString getValueString() const { return value.front(); };
+  bool setValue(const VRString inVal);
 
   VRDatumConverter<VRDatum> getValue() {
     return VRDatumConverter<VRDatum>(this);
   }
 
-  void push() {};
-  void pop() {};  
+  void push() { value.push_front( value.front() ); };
+  void pop() { value.pop_front(); };  
 };
 
 // Specialization for a vector of ints

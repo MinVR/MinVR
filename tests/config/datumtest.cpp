@@ -302,11 +302,57 @@ int testDatumPushPopInt() {
   return out;
 }
 
+int testDatumPushPopDouble() {
+
+  int out = 0;
+
+  LOOP {
+
+    VRDouble f = 3.1415926;
+    VRDatumDouble a = VRDatumDouble(f);
+
+    a.push();
+    a.setValue(2.71828);
+    VRDouble g = a.getValue();
+    out += (2.71828 == g) ? 0 : 1;
+
+    a.pop();
+    VRDouble h = a.getValue();
+    out += (3.1415926 == h) ? 0 : 1;
+  }
+  
+  return out;
+}
+
+int testDatumPushPopString() {
+
+  int out = 0;
+
+  LOOP {
+
+    VRString f = "hello";
+    VRDatumString a = VRDatumString(f);
+
+    a.push();
+    a.setValue("good-bye");
+    VRString g = a.getValue();
+    out += g.compare("good-bye");
+
+    a.pop();
+    VRString h = a.getValue();
+    out += h.compare("hello");
+  }
+  
+  return out;
+}
+
 int testDatumPushPop() {
 
   int out = 0;
 
   out += testDatumPushPopInt();
+  out += testDatumPushPopDouble();
+  out += testDatumPushPopString();
 
   return out;  
 }

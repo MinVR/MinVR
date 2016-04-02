@@ -64,45 +64,47 @@ VRDatumPtr CreateVRDatumInt(void *pData) {
 
 ////////////////////////////////////////////
 
-VRDatumDouble::VRDatumDouble(const double inVal) :
-  VRDatum(VRCORETYPE_DOUBLE), value(inVal) {
+VRDatumDouble::VRDatumDouble(const VRDouble inVal) :
+  VRDatum(VRCORETYPE_DOUBLE) {
+  value.push_front(inVal);
   description = initializeDescription(type);
 };
 
 bool VRDatumDouble::setValue(const double inVal) {
-  value = inVal;
+  value.front() = inVal;
   return true;
 }
 
 std::string VRDatumDouble::getValueAsString() {
   char buffer[20];
-  sprintf(buffer, "%f", value);
+  sprintf(buffer, "%f", value.front());
   return std::string(buffer);
 }
 
 VRDatumPtr CreateVRDatumDouble(void *pData) {
-  VRDatumDouble *obj = new VRDatumDouble(*static_cast<double *>(pData));
+  VRDatumDouble *obj = new VRDatumDouble(*static_cast<VRDouble *>(pData));
   return VRDatumPtr(obj);
 }
 
 ////////////////////////////////////////////
 
-VRDatumString::VRDatumString(const std::string inVal) :
-  VRDatum(VRCORETYPE_STRING), value(inVal) {
+VRDatumString::VRDatumString(const VRString inVal) :
+  VRDatum(VRCORETYPE_STRING) {
+  value.push_front(inVal);
   description = initializeDescription(type);
 };
 
-bool VRDatumString::setValue(const std::string inVal) {
-  value = inVal;
+bool VRDatumString::setValue(const VRString inVal) {
+  value.front() = inVal;
   return true;
 }
 
-std::string VRDatumString::getValueAsString() {
-  return value;
+VRString VRDatumString::getValueAsString() {
+  return value.front();
 }
 
 VRDatumPtr CreateVRDatumString(void *pData) {
-  VRDatumString *obj = new VRDatumString(*static_cast<std::string *>(pData));
+  VRDatumString *obj = new VRDatumString(*static_cast<VRString *>(pData));
   return VRDatumPtr(obj);
 }
 
