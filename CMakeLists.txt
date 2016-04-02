@@ -49,6 +49,10 @@
 cmake_minimum_required (VERSION 2.8.2) 
 project (MinVR)
 
+if(POLICY CMP0042)
+  cmake_policy(SET CMP0042 NEW)
+endif()
+
 if(NOT CMAKE_BUILD_TYPE)
   set( CMAKE_BUILD_TYPE Debug CACHE STRING
        "Choose the type of build, options are: None Debug Release RelWithDebInfo
