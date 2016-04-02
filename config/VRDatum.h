@@ -322,66 +322,66 @@ public:
 class VRDatumIntArray : public VRDatum {
 private:
   // The actual data is stored here.
-  VRIntArray value;
+  std::list<VRIntArray> value;
 
 public:
-  VRDatumIntArray(const std::vector<int> inVal);
+  VRDatumIntArray(const VRIntArray inVal);
 
   std::string getValueAsString();
 
-  VRIntArray getValueIntArray() const { return value; };
-  bool setValue(const std::vector<int> inVal);
+  VRIntArray getValueIntArray() const { return value.front(); };
+  bool setValue(const VRIntArray inVal);
 
   VRDatumConverter<VRDatum> getValue() {
     return VRDatumConverter<VRDatum>(this);
   }
 
-  void push() {};
-  void pop() {};  
+  void push() { value.push_front( value.front() ); };
+  void pop() { value.pop_front(); };  
 };
 
 // Specialization for a vector of doubles
 class VRDatumDoubleArray : public VRDatum {
 private:
   // The actual data is stored here.
-  VRDoubleArray value;
+  std::list<VRDoubleArray> value;
 
 public:
-  VRDatumDoubleArray(const std::vector<double> inVal);
+  VRDatumDoubleArray(const VRDoubleArray inVal);
 
   std::string getValueAsString();
 
-  VRDoubleArray getValueDoubleArray() const { return value; };
-  bool setValue(const std::vector<double> inVal);
+  VRDoubleArray getValueDoubleArray() const { return value.front(); };
+  bool setValue(const VRDoubleArray inVal);
 
   VRDatumConverter<VRDatum> getValue() {
     return VRDatumConverter<VRDatum>(this);
   }
 
-  void push() {};
-  void pop() {};  
+  void push() { value.push_front( value.front() ); };
+  void pop() { value.pop_front(); };  
 };
 
 // Specialization for a vector of strings
 class VRDatumStringArray : public VRDatum {
 private:
   // The actual data is stored here.
-  VRStringArray value;
+  std::list<VRStringArray> value;
 
 public:
-  VRDatumStringArray(const std::vector<std::string> inVal);
+  VRDatumStringArray(const VRStringArray inVal);
 
   std::string getValueAsString();
 
-  VRStringArray getValueStringArray() const { return value; };
-  bool setValue(const std::vector<std::string> inVal);
+  VRStringArray getValueStringArray() const { return value.front(); };
+  bool setValue(const VRStringArray inVal);
 
   VRDatumConverter<VRDatum> getValue() {
     return VRDatumConverter<VRDatum>(this);
   }
 
-  void push() {};
-  void pop() {};  
+  void push() { value.push_front( value.front() ); };
+  void pop() { value.pop_front(); };  
 };
 
 // Specialization for a container

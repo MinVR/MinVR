@@ -110,13 +110,14 @@ VRDatumPtr CreateVRDatumString(void *pData) {
 
 ////////////////////////////////////////////
 
-VRDatumIntArray::VRDatumIntArray(const std::vector<int> inVal) :
-  VRDatum(VRCORETYPE_INTARRAY), value(inVal) {
+VRDatumIntArray::VRDatumIntArray(const VRIntArray inVal) :
+  VRDatum(VRCORETYPE_INTARRAY) {
+  value.push_front(inVal);
   description = initializeDescription(type);
 };
 
-bool VRDatumIntArray::setValue(const std::vector<int> inVal) {
-  value = inVal;
+bool VRDatumIntArray::setValue(const VRIntArray inVal) {
+  value.front() = inVal;
   return true;
 }
 
@@ -133,7 +134,8 @@ std::string VRDatumIntArray::getValueAsString() {
     separator = static_cast<char>(it->second[0]);
   }
   
-  for (VRIntArray::iterator it = value.begin(); it != value.end(); ++it) {
+  for (VRIntArray::iterator it = value.front().begin();
+       it != value.front().end(); ++it) {
     sprintf(buffer, "%d%c", *it, separator); 
 
     out += std::string(buffer);
@@ -151,13 +153,14 @@ VRDatumPtr CreateVRDatumIntArray(void *pData) {
 
 ////////////////////////////////////////////
 
-VRDatumDoubleArray::VRDatumDoubleArray(const std::vector<double> inVal) :
-  VRDatum(VRCORETYPE_DOUBLEARRAY), value(inVal) {
+VRDatumDoubleArray::VRDatumDoubleArray(const VRDoubleArray inVal) :
+  VRDatum(VRCORETYPE_DOUBLEARRAY) {
+  value.push_front(inVal);
   description = initializeDescription(type);
 };
 
-bool VRDatumDoubleArray::setValue(const std::vector<double> inVal) {
-  value = inVal;
+bool VRDatumDoubleArray::setValue(const VRDoubleArray inVal) {
+  value.front() = inVal;
   return true;
 }
 
@@ -174,7 +177,8 @@ std::string VRDatumDoubleArray::getValueAsString() {
     separator = static_cast<char>(it->second[0]);
   }
 
-  for (VRDoubleArray::iterator it = value.begin(); it != value.end(); ++it) {
+  for (VRDoubleArray::iterator it = value.front().begin();
+       it != value.front().end(); ++it) {
     sprintf(buffer, "%f%c", *it, separator);
     out += std::string(buffer);
   }
@@ -191,13 +195,14 @@ VRDatumPtr CreateVRDatumDoubleArray(void *pData) {
 
 ////////////////////////////////////////////
 
-VRDatumStringArray::VRDatumStringArray(const std::vector<std::string> inVal) :
-  VRDatum(VRCORETYPE_STRINGARRAY), value(inVal) {
+VRDatumStringArray::VRDatumStringArray(const VRStringArray inVal) :
+  VRDatum(VRCORETYPE_STRINGARRAY) {
+  value.push_front(inVal);
   description = initializeDescription(type);
 };
 
-bool VRDatumStringArray::setValue(const std::vector<std::string> inVal) {
-  value = inVal;
+bool VRDatumStringArray::setValue(const VRStringArray inVal) {
+  value.front() = inVal;
   return true;
 }
 
@@ -212,7 +217,8 @@ std::string VRDatumStringArray::getValueAsString() {
     separator = static_cast<char>(it->second[0]);
   }
   
-  for (VRStringArray::iterator it = value.begin(); it != value.end(); ++it) {
+  for (VRStringArray::iterator it = value.front().begin();
+       it != value.front().end(); ++it) {
     out += *it + std::string(1,separator);
   }
 

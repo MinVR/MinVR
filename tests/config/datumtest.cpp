@@ -208,8 +208,11 @@ int testDatumIntArray() {
     out = a.getDescription().compare("intarray");
 
     std::vector<int> b = a.getValue();
-  
+
+    out += (16 == b[0]) ? 0 : 1;
+    out += (2 == b[1]) ? 0 : 1;
     out += (77 == b[2]) ? 0 : 1;
+    out += (29 == b[3]) ? 0 : 1;
 
     out += (a.getType() == VRCORETYPE_INTARRAY) ? 0 : 1;
 
@@ -346,6 +349,129 @@ int testDatumPushPopString() {
   return out;
 }
 
+int testDatumPushPopIntArray() {
+
+  int out = 0;
+
+  LOOP {
+  
+    int someInts[] = {16,25,77,29};
+    VRIntArray f (someInts, someInts + sizeof(someInts) / sizeof(int) );
+  
+    VRDatumIntArray a = VRDatumIntArray(f);
+    
+    a.push();
+
+    int moreInts[] = {11,22,33,44};
+    VRIntArray g (moreInts, moreInts + sizeof(moreInts) / sizeof(int) );
+    a.setValue(g);
+
+    VRIntArray b = a.getValue();
+    out += (11 == b[0]) ? 0 : 1;
+    out += (22 == b[1]) ? 0 : 1;
+    out += (33 == b[2]) ? 0 : 1;
+    out += (44 == b[3]) ? 0 : 1;
+
+    a.pop();    
+
+    VRIntArray c = a.getValue();
+    out += (16 == c[0]) ? 0 : 1;
+    out += (25 == c[1]) ? 0 : 1;
+    out += (77 == c[2]) ? 0 : 1;
+    out += (29 == c[3]) ? 0 : 1;
+  }
+
+  return out;
+}
+
+int testDatumPushPopDoubleArray() {
+
+  int out = 0;
+
+  LOOP {
+  
+    double someDoubles[] = {3.14159,2.71828,1.41459,0.142857};
+    VRDoubleArray f (someDoubles, someDoubles + sizeof(someDoubles)/sizeof(double) );
+  
+    VRDatumDoubleArray a = VRDatumDoubleArray(f);
+    
+    a.push();
+
+    double moreDoubles[] = {1.234,2.345,3.456,4.567};
+    VRDoubleArray g (moreDoubles, moreDoubles + sizeof(moreDoubles)/sizeof(double) );
+    a.setValue(g);
+
+    VRDoubleArray b = a.getValue();
+    out += (1.234 == b[0]) ? 0 : 1;
+    out += (2.345 == b[1]) ? 0 : 1;
+    out += (3.456 == b[2]) ? 0 : 1;
+    out += (4.567 == b[3]) ? 0 : 1;
+
+    a.pop();    
+
+    VRDoubleArray c = a.getValue();
+    out += (3.14159 == c[0]) ? 0 : 1;
+    out += (2.71828 == c[1]) ? 0 : 1;
+    out += (1.41459 == c[2]) ? 0 : 1;
+    out += (0.142857 == c[3]) ? 0 : 1;
+  }
+
+  return out;
+}
+
+int testDatumPushPopStringArray() {
+
+  int out = 0;
+
+  LOOP {
+  
+    VRStringArray f;
+
+    f.push_back("one");
+    f.push_back("two");
+    f.push_back("three");
+    f.push_back("four");
+    f.push_back("five");
+    
+    VRDatumStringArray a = VRDatumStringArray(f);
+
+    a.push();
+
+    VRStringArray g;
+
+    g.push_back("six");
+    g.push_back("seven");
+    g.push_back("eight");
+    g.push_back("nine");
+    g.push_back("ten");
+
+    a.setValue(g);
+
+    
+    VRStringArray b = a.getValue();
+
+    out += b[0].compare("six");
+    out += b[1].compare("seven");
+    out += b[2].compare("eight");
+    out += b[3].compare("nine");
+    out += b[4].compare("ten");
+
+    a.pop();
+    
+    VRStringArray c = a.getValue();
+  
+    out += c[0].compare("one");
+    out += c[1].compare("two");
+    out += c[2].compare("three");
+    out += c[3].compare("four");
+    out += c[4].compare("five");
+
+  }
+  
+  return out;
+}
+
+
 int testDatumPushPop() {
 
   int out = 0;
@@ -353,6 +479,9 @@ int testDatumPushPop() {
   out += testDatumPushPopInt();
   out += testDatumPushPopDouble();
   out += testDatumPushPopString();
-
+  out += testDatumPushPopIntArray();
+  out += testDatumPushPopDoubleArray();
+  out += testDatumPushPopStringArray();
+  
   return out;  
 }
