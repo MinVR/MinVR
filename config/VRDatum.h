@@ -17,7 +17,7 @@
 // This is the default separator used to separate values in a
 // serialized vector.  There is a 'separator=' attribute in the
 // serialized (XML) form that can override.
-#define MINVRSEPARATOR '@'
+#define MINVRSEPARATOR ','
 
 // This class is a helper to avoid having to access values with
 // constructs like ptr.intVal()->getValue().  By using this helper

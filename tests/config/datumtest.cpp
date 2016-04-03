@@ -221,7 +221,7 @@ int testDatumIntArray() {
 
     out += (a.getType() == VRCORETYPE_INTARRAY) ? 0 : 1;
 
-    out += a.getValueAsString().compare("16@2@77@29");
+    out += a.getValueAsString().compare("16,2,77,29");
   }
   
   return out;
@@ -246,10 +246,10 @@ int testDatumDoubleArray() {
 
     out += (a.getType() == VRCORETYPE_DOUBLEARRAY) ? 0 : 1;
 
-    a.setAttributeValue("separator", ",");
+    a.setAttributeValue("separator", ";");
   
     //std::cout << a.getValueAsString() << std::endl;
-    out += a.getValueAsString().compare("16.200000,2.718280,77.300000,29.165000");
+    out += a.getValueAsString().compare("16.200000;2.718280;77.300000;29.165000");
   }
   
   return out;
