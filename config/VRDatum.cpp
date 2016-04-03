@@ -235,7 +235,8 @@ VRDatumPtr CreateVRDatumStringArray(void *pData) {
 ////////////////////////////////////////////
 
 VRDatumContainer::VRDatumContainer(const VRContainer inVal) :
-  VRDatum(VRCORETYPE_CONTAINER), value(inVal) {
+  VRDatum(VRCORETYPE_CONTAINER) {
+  value.push_back(inVal);
   description = initializeDescription(type);
 };
 
@@ -249,18 +250,48 @@ std::string VRDatumContainer::getValueAsString() {
 }
 
 bool VRDatumContainer::addToValue(const VRContainer inVal) {
-  std::list<std::string> inCopy = inVal;
+  VRContainer inCopy = inVal;
 
   // Remove all duplicates from the input list.
-  for (VRContainer::const_iterator it = value.begin();
-       it != value.end(); ++it) {
+  for (VRContainer::const_iterator it = value.front().begin();
+       it != value.front().end(); ++it) {
 
     inCopy.remove(*it);
-
   }
-  value.splice(value.end(), inCopy);
+  
+  value.front().splice(value.front().end(), inCopy);
   return true;
 }
+
+// This involves not only popping the values off the stack, but
+// returning a list of the strings that are in the popped VRContainer
+// object and *not* in the restored VRContainer object.
+VRContainer VRDatumContainer::popAndClean() {
+
+  VRContainer popped = value.front();
+  value.pop_front();
+  VRContainer out;
+  
+  for (VRContainer::iterator it = popped.begin(); it != popped.end(); it++) {
+    bool found = false;
+    
+    for (VRContainer::iterator jt = value.front().begin();
+         jt != value.front().end(); jt++) {
+      if ((*it).compare(*jt) == 0) {
+        found = true;
+        //break;
+      }
+    }
+
+    if (!found) {
+      out.push_back(*it);
+      found = false;
+    }
+  }
+
+  return out;
+};  
+
 
 // This simply removes an entry from a container.  The corresponding
 // name should be removed from the VRDataIndex, but that's an

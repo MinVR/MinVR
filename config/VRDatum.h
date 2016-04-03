@@ -388,14 +388,14 @@ public:
 class VRDatumContainer : public VRDatum {
 private:
   // The actual data is stored here, a collection of names.
-  VRContainer value;
+  std::list<VRContainer> value;
 
 public:
   VRDatumContainer(const VRContainer inVal);
 
   std::string getValueAsString();
 
-  VRContainer getValueContainer() const { return value; };
+  VRContainer getValueContainer() const { return value.front(); };
   bool addToValue(const VRContainer inVal);
   //bool removeValue(const std::string rmVal);
 
@@ -403,8 +403,14 @@ public:
     return VRDatumConverter<VRDatum>(this);
   }
 
-  void push() {};
-  void pop() {};  
+  void push() { value.push_front( value.front() ); };
+  // This is a more complex operation than the pop() for the other
+  // data types because we have to go through and delete any objects
+  // that were added since the push().  This means comparing the old
+  // and new lists and deleting the oddballs.
+  //  Should be this: VRContainer pop();
+  void pop() {};
+  VRContainer popAndClean();
 };
 
 

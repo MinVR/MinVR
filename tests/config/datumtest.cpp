@@ -13,7 +13,7 @@ int testDatumIntArray();
 int testDatumDoubleArray();
 int testDatumStringArray();
 int testDatumPushPop();
-//int testDatumContainer();
+int testDatumContainer();
 
 // Mucks around with the attribute lists.
 int testDatumAttributes();
@@ -73,6 +73,10 @@ int datumtest(int argc, char* argv[]) {
     break;
 
   case 8:
+    output = testDatumContainer();
+    break;
+
+  case 9:
     output = testDatumPushPop();
     break;
     
@@ -84,6 +88,7 @@ int datumtest(int argc, char* argv[]) {
   
   return output;
 }
+
 
 // Test the setting and retrieving of attributes.
 int testDatumAttributes() {
@@ -257,7 +262,7 @@ int testDatumStringArray() {
 
   LOOP {
   
-    std::vector<std::string> f;
+    VRStringArray f;
 
     f.push_back("one");
     f.push_back("two");
@@ -269,9 +274,13 @@ int testDatumStringArray() {
 
     out = a.getDescription().compare("stringarray");
 
-    std::vector<std::string> b = a.getValue();
+    VRStringArray b = a.getValue();
   
+    out += b[0].compare("one");
+    out += b[1].compare("two");
     out += b[2].compare("three");
+    out += b[3].compare("four");
+    out += b[4].compare("five");
 
     out += (a.getType() == VRCORETYPE_STRINGARRAY) ? 0 : 1;
 
@@ -282,6 +291,47 @@ int testDatumStringArray() {
   
   return out;
 }
+
+int testDatumContainer() {
+
+  int out = 0;
+
+  // A VRContainer is just a std::list of std::strings.  It gets its
+  // power by being a part of the VRDataIndex.  But we're not testing
+  // the index here.
+  
+  LOOP {
+    VRContainer f;
+
+    f.push_back("one");
+    f.push_back("two");
+    f.push_back("three");
+    f.push_back("four");
+    f.push_back("five");
+    
+    VRDatumContainer a = VRDatumContainer(f);
+
+    out = a.getDescription().compare("container");
+
+    VRContainer b = a.getValue();
+  
+    out += b.front().compare("one");
+    b.pop_front();
+    out += b.front().compare("two");
+    b.pop_front();
+    out += b.front().compare("three");
+    b.pop_front();
+    out += b.front().compare("four");
+    b.pop_front();
+    out += b.front().compare("five");
+
+    out += (a.getType() == VRCORETYPE_CONTAINER) ? 0 : 1;
+
+  }
+  
+  return out;
+}
+
 
 int testDatumPushPopInt() {
 
@@ -471,6 +521,79 @@ int testDatumPushPopStringArray() {
   return out;
 }
 
+int testDatumPushPopContainer() {
+
+  int out = 0;
+
+  // A VRContainer is just a std::list of std::strings.  It gets its
+  // power by being a part of the VRDataIndex.  But we're not testing
+  // the index here.
+  
+  LOOP {
+    VRContainer f;
+
+    f.push_back("one");
+    f.push_back("two");
+    f.push_back("three");
+    f.push_back("four");
+    f.push_back("five");
+    
+    VRDatumContainer a = VRDatumContainer(f);
+
+    out = a.getDescription().compare("container");
+
+    a.push();
+
+    VRContainer g;
+
+    g.push_back("three");
+    g.push_back("six");
+    g.push_back("seven");
+
+    a.addToValue(g);
+
+    VRContainer c = a.getValue();
+
+    out += c.front().compare("one");
+    c.pop_front();
+    out += c.front().compare("two");
+    c.pop_front();
+    out += c.front().compare("three");
+    c.pop_front();
+    out += c.front().compare("four");
+    c.pop_front();
+    out += c.front().compare("five");
+    c.pop_front();
+    out += c.front().compare("six");
+    c.pop_front();
+    out += c.front().compare("seven");
+
+    VRContainer d = a.popAndClean();
+
+    out += d.front().compare("six");
+    d.pop_front();
+    out += d.front().compare("seven");
+    
+    VRContainer b = a.getValue();
+  
+    out += b.front().compare("one");
+    b.pop_front();
+    out += b.front().compare("two");
+    b.pop_front();
+    out += b.front().compare("three");
+    b.pop_front();
+    out += b.front().compare("four");
+    b.pop_front();
+    out += b.front().compare("five");
+
+    out += (a.getType() == VRCORETYPE_CONTAINER) ? 0 : 1;
+
+  }
+  
+  return out;
+}
+
+
 
 int testDatumPushPop() {
 
@@ -482,6 +605,7 @@ int testDatumPushPop() {
   out += testDatumPushPopIntArray();
   out += testDatumPushPopDoubleArray();
   out += testDatumPushPopStringArray();
+  out += testDatumPushPopContainer();
   
   return out;  
 }

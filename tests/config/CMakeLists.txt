@@ -3,7 +3,7 @@
 set (dataindextests datum index queue)
 # The numbers here correspond to 'case' statements in the respective
 # test program.  See, e.g., datumtest.cpp
-set (datum_parts 1 2 3 4 5 6 7 8)
+set (datum_parts 1 2 3 4 5 6 7 8 9)
 set (index_parts 1 2 3 4 5)
 set (queue_parts 1 2)
 
