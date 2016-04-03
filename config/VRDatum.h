@@ -378,12 +378,6 @@ public:
 
   bool addToValue(const VRContainer inVal);
 
-  // In the context of the VRDataIndex, pop is a more complex
-  // operation for a container than the pop() for the other data types
-  // because we have to go through and delete any objects that were
-  // added since the push().  This means comparing the old and new
-  // lists and deleting the oddballs.
-  VRContainer popAndClean();
 };
 
 

@@ -195,39 +195,6 @@ bool VRDatumContainer::addToValue(const VRContainer inVal) {
   return true;
 }
 
-// This involves not only popping the values off the stack, but
-// returning a list of the strings that are in the popped VRContainer
-// object and *not* in the restored VRContainer object.
-VRContainer VRDatumContainer::popAndClean() {
-
-  std::cout << "HELLO THERE" << std::endl;
-  VRContainer out = VRContainer();
-
-  if (pushed) {
-    VRContainer popped = value.front();
-    value.pop_front();
-  
-    for (VRContainer::iterator it = popped.begin(); it != popped.end(); it++) {
-      bool found = false;
-    
-      for (VRContainer::iterator jt = value.front().begin();
-           jt != value.front().end(); jt++) {
-        if ((*it).compare(*jt) == 0) {
-          found = true;
-          //break;
-        }
-      }
-
-      if (!found) {
-        out.push_back(*it);
-        found = false;
-      }
-    }
-  }
-
-  return out;
-};  
-
 
 // This simply removes an entry from a container.  The corresponding
 // name should be removed from the VRDataIndex, but that's an
