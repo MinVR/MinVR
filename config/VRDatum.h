@@ -8,7 +8,6 @@
 #include <iostream>
 #include <stdexcept>
 #include <cstring>
-#include <iostream>
 #include <fstream>
 #include <iomanip>
 #include <algorithm>
@@ -258,20 +257,35 @@ typedef VRDatumConverter<VRDatum> VRAnyCoreType;
 /////////// that each one of these overrides one of the virtual
 /////////// accessors above, so make sure that list is complete, too.
 
-// This is the specialization for an integer.
-class VRDatumInt : public VRDatum {
-private:
-  // The actual data is stored here.
-  std::list<VRInt> value;
+template <class T, const VRCORETYPE_ID TID>
+class VRDatumSpecialized : public VRDatum {
+protected:
+  // The actual data is stored here.  It is stored as a std::list, so
+  // that we can push context frames onto the stack.
+  std::list<T> value;
 
 public:
-  VRDatumInt(const VRInt inVal);
+  VRDatumSpecialized(const T inVal): VRDatum(TID) {
+    value.push_front(inVal);
+    description = initializeDescription(type);
+  };
 
-  std::string getValueAsString();
+  // Couldn't figure out how to template-ize this one.
+  virtual std::string getValueAsString() = 0;
 
-  int getValueInt() const { return value.front(); };
-  bool setValue(const VRInt inVal);
-
+  bool setValue(const T inVal) {
+    // This is a little optimization.  You only need to push things
+    // onto the stack if the value actually changes.
+    if (needPush) {
+      value.push_front( value.front() );
+      attrList.push_front( attrList.front() );
+      needPush = false;
+      pushed = true;
+    }
+    value.front() = inVal;
+    return true;
+  }
+  
   VRDatumConverter<VRDatum> getValue() {
     return VRDatumConverter<VRDatum>(this);
   }
@@ -284,142 +298,70 @@ public:
       pushed = false; }; };  
 };
 
-// The specialization for a double.
-class VRDatumDouble : public VRDatum {
-private:
-  std::list<VRDouble> value;
-
+// This is the specialization for an integer.
+class VRDatumInt : public VRDatumSpecialized<VRInt, VRCORETYPE_INT> {
 public:
-  VRDatumDouble(const VRDouble inVal);
-
+  VRDatumInt(const VRInt inVal) :
+    VRDatumSpecialized<VRInt, VRCORETYPE_INT>(inVal) {};
   std::string getValueAsString();
+  VRInt getValueInt() const { return value.front(); };
+};
 
+// The specialization for a double.
+class VRDatumDouble : public VRDatumSpecialized<VRDouble, VRCORETYPE_DOUBLE> {
+public:
+  VRDatumDouble(const VRDouble inVal) :
+    VRDatumSpecialized<VRDouble, VRCORETYPE_DOUBLE>(inVal) {};
+  std::string getValueAsString();
   VRDouble getValueDouble() const { return value.front(); };
-  bool setValue(const VRDouble inVal);
-
-  VRDatumConverter<VRDatum> getValue() {
-    return VRDatumConverter<VRDatum>(this);
-  }
-
-  void push() { needPush = true; };
-  void pop() { if (pushed) { value.pop_front(); attrList.pop_front();
-      pushed = false; }; };  
 };
 
 // Specialization for a string
-class VRDatumString : public VRDatum {
-private:
-  // The actual data is stored here.
-  std::list<VRString> value;
-
+class VRDatumString : public VRDatumSpecialized<VRString, VRCORETYPE_STRING> {
 public:
-  VRDatumString(const VRString inVal);
-
-  VRString getValueAsString();
-
+  VRDatumString(const VRString inVal) :
+    VRDatumSpecialized<VRString, VRCORETYPE_STRING>(inVal) {};
+  std::string getValueAsString();
   VRString getValueString() const { return value.front(); };
-  bool setValue(const VRString inVal);
-
-  VRDatumConverter<VRDatum> getValue() {
-    return VRDatumConverter<VRDatum>(this);
-  }
-
-  void push() { needPush = true; };
-  void pop() { if (pushed) { value.pop_front(); attrList.pop_front();
-      pushed = false; }; };  
 };
 
 // Specialization for a vector of ints
-class VRDatumIntArray : public VRDatum {
-private:
-  // The actual data is stored here.
-  std::list<VRIntArray> value;
-
+class VRDatumIntArray : public VRDatumSpecialized<VRIntArray, VRCORETYPE_INTARRAY> {
 public:
-  VRDatumIntArray(const VRIntArray inVal);
-
+  VRDatumIntArray(const VRIntArray inVal) :
+    VRDatumSpecialized<VRIntArray, VRCORETYPE_INTARRAY>(inVal) {};
   std::string getValueAsString();
-
   VRIntArray getValueIntArray() const { return value.front(); };
-  bool setValue(const VRIntArray inVal);
-
-  VRDatumConverter<VRDatum> getValue() {
-    return VRDatumConverter<VRDatum>(this);
-  }
-
-  void push() { needPush = true; };
-  void pop() { if (pushed) { value.pop_front(); attrList.pop_front();
-      pushed = false; }; };  
 };
 
 // Specialization for a vector of doubles
-class VRDatumDoubleArray : public VRDatum {
-private:
-  // The actual data is stored here.
-  std::list<VRDoubleArray> value;
-
+class VRDatumDoubleArray : public VRDatumSpecialized<VRDoubleArray, VRCORETYPE_DOUBLEARRAY> {
 public:
-  VRDatumDoubleArray(const VRDoubleArray inVal);
-
+  VRDatumDoubleArray(const VRDoubleArray inVal) :
+    VRDatumSpecialized<VRDoubleArray, VRCORETYPE_DOUBLEARRAY>(inVal) {};
   std::string getValueAsString();
-
   VRDoubleArray getValueDoubleArray() const { return value.front(); };
-  bool setValue(const VRDoubleArray inVal);
-
-  VRDatumConverter<VRDatum> getValue() {
-    return VRDatumConverter<VRDatum>(this);
-  }
-
-  void push() { needPush = true; };
-  void pop() { if (pushed) { value.pop_front(); attrList.pop_front();
-      pushed = false; }; };  
 };
 
 // Specialization for a vector of strings
-class VRDatumStringArray : public VRDatum {
-private:
-  // The actual data is stored here.
-  std::list<VRStringArray> value;
-
+class VRDatumStringArray : public VRDatumSpecialized<VRStringArray, VRCORETYPE_STRINGARRAY> {
 public:
-  VRDatumStringArray(const VRStringArray inVal);
-
+  VRDatumStringArray(const VRStringArray inVal) :
+    VRDatumSpecialized<VRStringArray, VRCORETYPE_STRINGARRAY>(inVal) {};
   std::string getValueAsString();
-
   VRStringArray getValueStringArray() const { return value.front(); };
-  bool setValue(const VRStringArray inVal);
-
-  VRDatumConverter<VRDatum> getValue() {
-    return VRDatumConverter<VRDatum>(this);
-  }
-
-  void push() { needPush = true; };
-  void pop() { if (pushed) { value.pop_front(); attrList.pop_front();
-      pushed = false; }; };  
 };
 
 // Specialization for a container
-class VRDatumContainer : public VRDatum {
-private:
-  // The actual data is stored here, a collection of names.
-  std::list<VRContainer> value;
-
+class VRDatumContainer : public VRDatumSpecialized<VRContainer, VRCORETYPE_CONTAINER> {
 public:
-  VRDatumContainer(const VRContainer inVal);
-
+  VRDatumContainer(const VRContainer inVal) :
+    VRDatumSpecialized<VRContainer, VRCORETYPE_CONTAINER>(inVal) {};
   std::string getValueAsString();
-
   VRContainer getValueContainer() const { return value.front(); };
+
   bool addToValue(const VRContainer inVal);
-  //bool removeValue(const std::string rmVal);
 
-  VRDatumConverter<VRDatum> getValue() {
-    return VRDatumConverter<VRDatum>(this);
-  }
-
-  void push() { needPush = true; };
-  void pop() { if (pushed) { value.pop_front(); attrList.pop_front();
-      pushed = false; }; };  
   // In the context of the VRDataIndex, pop is a more complex
   // operation for a container than the pop() for the other data types
   // because we have to go through and delete any objects that were

@@ -39,24 +39,8 @@ std::string VRDatum::getAttributeListAsString() {
 }
 
 
-VRDatumInt::VRDatumInt(const VRInt inVal) :
-  VRDatum(VRCORETYPE_INT) {
-  value.push_front(inVal);
-  description = initializeDescription(type);
-};
-
 /// Step 4 in the adding a type instructions.
-bool VRDatumInt::setValue(const VRInt inVal) {
-  if (needPush) {
-    value.push_front( value.front() );
-    attrList.push_front( attrList.front() );
-    needPush = false;
-    pushed = true;
-  }
-  value.front() = inVal;
-  return true;
-}
-
+//////////////////////////////////////////// VRInt
 std::string VRDatumInt::getValueAsString() {
   char buffer[20];
   sprintf(buffer, "%d", value.front());
@@ -68,25 +52,7 @@ VRDatumPtr CreateVRDatumInt(void *pData) {
   return VRDatumPtr(obj);
 }
 
-////////////////////////////////////////////
-
-VRDatumDouble::VRDatumDouble(const VRDouble inVal) :
-  VRDatum(VRCORETYPE_DOUBLE) {
-  value.push_front(inVal);
-  description = initializeDescription(type);
-};
-
-bool VRDatumDouble::setValue(const double inVal) {
-  if (needPush) {
-    value.push_front( value.front() );
-    attrList.push_front( attrList.front() );
-    needPush = false;
-    pushed = true;
-  }
-  value.front() = inVal;
-  return true;
-}
-
+//////////////////////////////////////////// VRDouble
 std::string VRDatumDouble::getValueAsString() {
   char buffer[20];
   sprintf(buffer, "%f", value.front());
@@ -98,25 +64,7 @@ VRDatumPtr CreateVRDatumDouble(void *pData) {
   return VRDatumPtr(obj);
 }
 
-////////////////////////////////////////////
-
-VRDatumString::VRDatumString(const VRString inVal) :
-  VRDatum(VRCORETYPE_STRING) {
-  value.push_front(inVal);
-  description = initializeDescription(type);
-};
-
-bool VRDatumString::setValue(const VRString inVal) {
-  if (needPush) {
-    value.push_front( value.front() );
-    attrList.push_front( attrList.front() );
-    needPush = false;
-    pushed = true;
-  }
-  value.front() = inVal;
-  return true;
-}
-
+//////////////////////////////////////////// VRString
 VRString VRDatumString::getValueAsString() {
   return value.front();
 }
@@ -126,25 +74,7 @@ VRDatumPtr CreateVRDatumString(void *pData) {
   return VRDatumPtr(obj);
 }
 
-////////////////////////////////////////////
-
-VRDatumIntArray::VRDatumIntArray(const VRIntArray inVal) :
-  VRDatum(VRCORETYPE_INTARRAY) {
-  value.push_front(inVal);
-  description = initializeDescription(type);
-};
-
-bool VRDatumIntArray::setValue(const VRIntArray inVal) {
-  if (needPush) {
-    value.push_front( value.front() );
-    attrList.push_front( attrList.front() );
-    needPush = false;
-    pushed = true;
-  }
-  value.front() = inVal;
-  return true;
-}
-
+//////////////////////////////////////////// VRIntArray
 std::string VRDatumIntArray::getValueAsString() {
 
   std::string out;
@@ -175,25 +105,7 @@ VRDatumPtr CreateVRDatumIntArray(void *pData) {
   return VRDatumPtr(obj);
 }
 
-////////////////////////////////////////////
-
-VRDatumDoubleArray::VRDatumDoubleArray(const VRDoubleArray inVal) :
-  VRDatum(VRCORETYPE_DOUBLEARRAY) {
-  value.push_front(inVal);
-  description = initializeDescription(type);
-};
-
-bool VRDatumDoubleArray::setValue(const VRDoubleArray inVal) {
-  if (needPush) {
-    value.push_front( value.front() );
-    attrList.push_front( attrList.front() );
-    needPush = false;
-    pushed = true;
-  }
-  value.front() = inVal;
-  return true;
-}
-
+//////////////////////////////////////////// VRDoubleArray
 std::string VRDatumDoubleArray::getValueAsString() {
 
   std::string out;
@@ -223,25 +135,7 @@ VRDatumPtr CreateVRDatumDoubleArray(void *pData) {
   return VRDatumPtr(obj);
 }
 
-////////////////////////////////////////////
-
-VRDatumStringArray::VRDatumStringArray(const VRStringArray inVal) :
-  VRDatum(VRCORETYPE_STRINGARRAY) {
-  value.push_front(inVal);
-  description = initializeDescription(type);
-};
-
-bool VRDatumStringArray::setValue(const VRStringArray inVal) {
-  if (needPush) {
-    value.push_front( value.front() );
-    attrList.push_front( attrList.front() );
-    needPush = false;
-    pushed = true;
-  }
-  value.front() = inVal;
-  return true;
-}
-
+//////////////////////////////////////////// VRStringArray
 std::string VRDatumStringArray::getValueAsString() {
   std::string out;
   char separator;
@@ -268,13 +162,7 @@ VRDatumPtr CreateVRDatumStringArray(void *pData) {
   return VRDatumPtr(obj);
 }
 
-////////////////////////////////////////////
-
-VRDatumContainer::VRDatumContainer(const VRContainer inVal) :
-  VRDatum(VRCORETYPE_CONTAINER) {
-  value.push_front(inVal);
-  description = initializeDescription(type);
-};
+//////////////////////////////////////////// VRContainer
 
 // For optimization and code maintainability reasons, the
 // responsibility for assembling the serialization of a container
