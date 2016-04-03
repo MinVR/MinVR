@@ -68,8 +68,6 @@ endif()
 
 include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 
-enable_testing()
-
 # Let's follow the convention of putting all of the libs in "build/lib" and all
 # of the exes in "build/bin".  To distingusih between debugging, release, and
 # other builds, we'll add a postfix to the name of the lib or exe that we generate.
@@ -124,6 +122,14 @@ endif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 if (WIN32)
   # Windows-specific
 endif (WIN32)
+
+## The tests can be run with either 'make test' or 'ctest'.
+## You can use 'ctest -VV' to get a verbose version of the tests.
+## Execute the memory check tests with ctest -T memcheck.
+find_program(MEMORYCHECK_COMMAND NAMES valgrind)
+set(MEMORYCHECK_COMMAND_OPTIONS "--xml=yes --xml-file=${CMAKE_CURRENT_BINARY_DIR}/memcheck.xml")
+include(CTest)
+enable_testing()
 
 # Recurse into the following subdirs to build the core MinVR set of libraries:
 # (Uncomment the lines below as we add .cpp files to those directories.)

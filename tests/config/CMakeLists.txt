@@ -43,17 +43,6 @@ foreach(dataindextest ${dataindextests})
   endforeach()
 endforeach()
 
-# OK I found a possible solution. Adding these lines to my CMakeLists.txt:
-
-# ## valgrind
-# find_program(CTEST_MEMORYCHECK_COMMAND NAMES valgrind)
-# INCLUDE(Dart)
-# generates the needed DartConfiguration.tcl whatever that is, and then re-invoking:
-
-# ctest -T memcheck
-# runs all tests also checking for memory errors.
-
-
 
 project (memtest)
 

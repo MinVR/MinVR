@@ -565,6 +565,8 @@ int testDatumPushPopContainer() {
 
     out = a.getDescription().compare("container");
 
+    std::cout << "1:" << out << std::endl;
+    
     a.push();
 
     VRContainer g;
@@ -576,6 +578,8 @@ int testDatumPushPopContainer() {
     a.addToValue(g);
 
     VRContainer c = a.getValue();
+
+    out += (c.size() != 7);
 
     out += c.front().compare("one");
     c.pop_front();
@@ -591,14 +595,12 @@ int testDatumPushPopContainer() {
     c.pop_front();
     out += c.front().compare("seven");
 
-    VRContainer d = a.popAndClean();
+    a.pop();
 
-    out += d.front().compare("six");
-    d.pop_front();
-    out += d.front().compare("seven");
-    
     VRContainer b = a.getValue();
-  
+
+    out += (b.size() != 5);
+
     out += b.front().compare("one");
     b.pop_front();
     out += b.front().compare("two");
