@@ -156,14 +156,12 @@ protected:
 
   std::list<VRAttributeList> attrList;
 
-  bool needPush, pushed;
-  
   //friend std::ostream & operator<<(std::ostream &os, const VRDatum& p);
 
 public:
   // The constructor for the native storage form.
   VRDatum(const VRCORETYPE_ID inType)
-    : type(inType), needPush(false), pushed(false) {
+    : type(inType) {
     attrList.push_front(VRAttributeList());
   };
 
@@ -172,14 +170,6 @@ public:
   // pointers should be careful to delete their objects.
   virtual ~VRDatum() {};
 
-  // These two methods allow us to "remember" a state of the data
-  // index.  The "push" function pushes a copy of the current state
-  // onto the (imaginary) stack.  You can modify and mess with the
-  // state in any way you like, and restore the original values by
-  // invoking the "pop" method.
-  virtual void push() = 0;
-  virtual void pop() = 0;  
-  
   // Some facilities for handling XML attributes within the class.
   // The 'type=' attribute is the only one that really matters to the
   // operation of the class (so is *not* stored in the attribute
@@ -223,6 +213,11 @@ public:
   // actually wants.
   virtual VRDatumConverter<VRDatum> getValue() = 0;
 
+  // The easiest way to accommodate the push/pop feature of
+  // VRDatumSpecialized, below.
+  virtual void push() = 0;
+  virtual void pop() = 0;
+  
   // Less generic getValue methods.  One of these is to be overridden
   // in each specialization of this class.  The others are here to
   // prevent bad behavior, and throw an error if the programmer
@@ -264,8 +259,11 @@ protected:
   // that we can push context frames onto the stack.
   std::list<T> value;
 
+  bool needPush, pushed;
+  
 public:
-  VRDatumSpecialized(const T inVal): VRDatum(TID) {
+  VRDatumSpecialized(const T inVal):
+    VRDatum(TID), needPush(false), pushed(false) {
     value.push_front(inVal);
     description = initializeDescription(type);
   };
@@ -290,7 +288,13 @@ public:
     return VRDatumConverter<VRDatum>(this);
   }
 
-  // When a push() happens, we only push a new value onto the stack
+  // These two methods allow us to "remember" a state of the data
+  // index.  The "push" function pushes a copy of the current state
+  // onto the (imaginary) stack.  You can modify and mess with the
+  // state in any way you like, and restore the original values by
+  // invoking the "pop" method.
+  //
+  // After a push(), we only really push a new value onto the stack
   // when someone tries to change the old one.  So we only have to pop
   // it when it has been modified.
   void push() { needPush = true; };
