@@ -31,8 +31,8 @@ std::string VRDatum::initializeDescription(VRCORETYPE_ID t) {
 // Returns the attribute list formatted to include in an XML tag.
 std::string VRDatum::getAttributeListAsString() {
   std::string out = std::string("");
-  for (VRAttributeList::iterator it = attrList.begin();
-       it != attrList.end(); it++) {
+  for (VRAttributeList::iterator it = attrList.front().begin();
+       it != attrList.front().end(); it++) {
     out += " " + it->first + "=\"" + it->second + "\"";
   }
   return out;
@@ -49,6 +49,7 @@ VRDatumInt::VRDatumInt(const VRInt inVal) :
 bool VRDatumInt::setValue(const VRInt inVal) {
   if (needPush) {
     value.push_front( value.front() );
+    attrList.push_front( attrList.front() );
     needPush = false;
     pushed = true;
   }
@@ -78,6 +79,7 @@ VRDatumDouble::VRDatumDouble(const VRDouble inVal) :
 bool VRDatumDouble::setValue(const double inVal) {
   if (needPush) {
     value.push_front( value.front() );
+    attrList.push_front( attrList.front() );
     needPush = false;
     pushed = true;
   }
@@ -107,6 +109,7 @@ VRDatumString::VRDatumString(const VRString inVal) :
 bool VRDatumString::setValue(const VRString inVal) {
   if (needPush) {
     value.push_front( value.front() );
+    attrList.push_front( attrList.front() );
     needPush = false;
     pushed = true;
   }
@@ -134,6 +137,7 @@ VRDatumIntArray::VRDatumIntArray(const VRIntArray inVal) :
 bool VRDatumIntArray::setValue(const VRIntArray inVal) {
   if (needPush) {
     value.push_front( value.front() );
+    attrList.push_front( attrList.front() );
     needPush = false;
     pushed = true;
   }
@@ -147,8 +151,8 @@ std::string VRDatumIntArray::getValueAsString() {
   char buffer[20];
   char separator;
 
-  VRAttributeList::iterator it = attrList.find("separator");
-  if (it == attrList.end()) {
+  VRAttributeList::iterator it = attrList.front().find("separator");
+  if (it == attrList.front().end()) {
     separator = MINVRSEPARATOR;
   } else {
     separator = static_cast<char>(it->second[0]);
@@ -182,6 +186,7 @@ VRDatumDoubleArray::VRDatumDoubleArray(const VRDoubleArray inVal) :
 bool VRDatumDoubleArray::setValue(const VRDoubleArray inVal) {
   if (needPush) {
     value.push_front( value.front() );
+    attrList.push_front( attrList.front() );
     needPush = false;
     pushed = true;
   }
@@ -195,8 +200,8 @@ std::string VRDatumDoubleArray::getValueAsString() {
   char buffer[20];
   char separator;
 
-  VRAttributeList::iterator it = attrList.find("separator");
-  if (it == attrList.end()) {
+  VRAttributeList::iterator it = attrList.front().find("separator");
+  if (it == attrList.front().end()) {
     separator = MINVRSEPARATOR;
   } else {
     separator = static_cast<char>(it->second[0]);
@@ -229,6 +234,7 @@ VRDatumStringArray::VRDatumStringArray(const VRStringArray inVal) :
 bool VRDatumStringArray::setValue(const VRStringArray inVal) {
   if (needPush) {
     value.push_front( value.front() );
+    attrList.push_front( attrList.front() );
     needPush = false;
     pushed = true;
   }
@@ -240,8 +246,8 @@ std::string VRDatumStringArray::getValueAsString() {
   std::string out;
   char separator;
 
-  VRAttributeList::iterator it = attrList.find("separator");
-  if (it == attrList.end()) {
+  VRAttributeList::iterator it = attrList.front().find("separator");
+  if (it == attrList.front().end()) {
     separator = MINVRSEPARATOR;
   } else {
     separator = static_cast<char>(it->second[0]);
@@ -285,6 +291,7 @@ bool VRDatumContainer::addToValue(const VRContainer inVal) {
   // If we need to push a new container onto the stack, do it here.
   if (needPush) {
     value.push_front( value.front() );
+    attrList.push_front( attrList.front() );
     needPush = false;
     pushed = true;
   }

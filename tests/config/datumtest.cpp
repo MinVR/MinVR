@@ -336,20 +336,43 @@ int testDatumContainer() {
 int testDatumPushPopInt() {
 
   int out = 0;
+  std::string testString = " four=\"4\" one=\"1\" three=\"3\" two=\"2\"";
+  std::string pushTestString = " four=\"4\" one=\"01\" three=\"03\" two=\"2\"";
 
   LOOP {
 
     VRInt f = 5;
     VRDatumInt a = VRDatumInt(f);
 
+    // We'll try pushing and popping the attribute list here, too.
+    VRDatum::VRAttributeList alist = a.getAttributeList();
+
+    alist["one"] = "11";
+    alist["two"] = "2";
+    alist["three"] = "3";
+
+    a.setAttributeList(alist);
+
+    a.setAttributeValue("one", "1");
+    a.setAttributeValue("four", "4");
+
     a.push();
     a.setValue(37);
     VRInt g = a.getValue();
     out += (37 == g) ? 0 : 1;
 
+    a.setAttributeValue("one", "01");
+    a.setAttributeValue("three", "03");
+
+    std::string moreString = a.getAttributeListAsString();
+    out += moreString.compare(pushTestString);
+    
     a.pop();
     VRInt h = a.getValue();
     out += (5 == h) ? 0 : 1;
+
+    std::string outString = a.getAttributeListAsString();
+    out += outString.compare(testString);
   }
   
   return out;

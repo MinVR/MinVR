@@ -155,7 +155,7 @@ protected:
   // "string" or something like that.
   std::string description;
 
-  VRAttributeList attrList;
+  std::list<VRAttributeList> attrList;
 
   bool needPush, pushed;
   
@@ -164,7 +164,9 @@ protected:
 public:
   // The constructor for the native storage form.
   VRDatum(const VRCORETYPE_ID inType)
-    : type(inType), needPush(false), pushed(false) {};
+    : type(inType), needPush(false), pushed(false) {
+    attrList.push_front(VRAttributeList());
+  };
 
   // virtual destructor allows concrete types to implement their own
   // destruction mechanisms.  Specifically, types that involve
@@ -185,14 +187,14 @@ public:
   // list), but other attributes might matter to other applications.
   // There is also a 'separator=' attribute that indicates a character
   // to use in the serialized version of an array.
-  VRAttributeList getAttributeList() { return attrList; };
-  void setAttributeList(VRAttributeList newList) { attrList = newList; };
+  VRAttributeList getAttributeList() { return attrList.front(); };
+  void setAttributeList(VRAttributeList newList) { attrList.front() = newList; };
   std::string getAttributeValue(const std::string attributeName) {
-    return attrList[attributeName];
+    return attrList.front()[attributeName];
   }
   void setAttributeValue(const std::string attributeName,
                          const std::string attributeValue) {
-    attrList[attributeName] = attributeValue;
+    attrList.front()[attributeName] = attributeValue;
   }
   // Returns the attribute list formatted to include in an XML tag.
   std::string getAttributeListAsString();
@@ -278,7 +280,8 @@ public:
   // when someone tries to change the old one.  So we only have to pop
   // it when it has been modified.
   void push() { needPush = true; };
-  void pop() { if (pushed) { value.pop_front(); pushed = false; }; };  
+  void pop() { if (pushed) { value.pop_front(); attrList.pop_front();
+      pushed = false; }; };  
 };
 
 // The specialization for a double.
@@ -299,7 +302,8 @@ public:
   }
 
   void push() { needPush = true; };
-  void pop() { if (pushed) { value.pop_front(); pushed = false; }; };  
+  void pop() { if (pushed) { value.pop_front(); attrList.pop_front();
+      pushed = false; }; };  
 };
 
 // Specialization for a string
@@ -321,7 +325,8 @@ public:
   }
 
   void push() { needPush = true; };
-  void pop() { if (pushed) { value.pop_front(); pushed = false; }; };  
+  void pop() { if (pushed) { value.pop_front(); attrList.pop_front();
+      pushed = false; }; };  
 };
 
 // Specialization for a vector of ints
@@ -343,7 +348,8 @@ public:
   }
 
   void push() { needPush = true; };
-  void pop() { if (pushed) { value.pop_front(); pushed = false; }; };  
+  void pop() { if (pushed) { value.pop_front(); attrList.pop_front();
+      pushed = false; }; };  
 };
 
 // Specialization for a vector of doubles
@@ -365,7 +371,8 @@ public:
   }
 
   void push() { needPush = true; };
-  void pop() { if (pushed) { value.pop_front(); pushed = false; }; };  
+  void pop() { if (pushed) { value.pop_front(); attrList.pop_front();
+      pushed = false; }; };  
 };
 
 // Specialization for a vector of strings
@@ -387,7 +394,8 @@ public:
   }
 
   void push() { needPush = true; };
-  void pop() { if (pushed) { value.pop_front(); pushed = false; }; };  
+  void pop() { if (pushed) { value.pop_front(); attrList.pop_front();
+      pushed = false; }; };  
 };
 
 // Specialization for a container
@@ -410,7 +418,8 @@ public:
   }
 
   void push() { needPush = true; };
-  void pop() { if (pushed) { value.pop_front(); pushed = false; }; };  
+  void pop() { if (pushed) { value.pop_front(); attrList.pop_front();
+      pushed = false; }; };  
   // In the context of the VRDataIndex, pop is a more complex
   // operation for a container than the pop() for the other data types
   // because we have to go through and delete any objects that were
