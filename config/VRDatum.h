@@ -216,7 +216,7 @@ public:
   // The easiest way to accommodate the push/pop feature of
   // VRDatumSpecialized, below.
   virtual void push() = 0;
-  virtual void pop() = 0;
+  virtual bool pop() = 0;
   
   // Less generic getValue methods.  One of these is to be overridden
   // in each specialization of this class.  The others are here to
@@ -260,10 +260,11 @@ protected:
   std::list<T> value;
 
   bool needPush, pushed;
+  int stackFrame;
   
 public:
   VRDatumSpecialized(const T inVal):
-    VRDatum(TID), needPush(false), pushed(false) {
+    VRDatum(TID), needPush(false), pushed(false), stackFrame(1) {
     value.push_front(inVal);
     description = initializeDescription(type);
   };
@@ -297,9 +298,20 @@ public:
   // After a push(), we only really push a new value onto the stack
   // when someone tries to change the old one.  So we only have to pop
   // it when it has been modified.
-  void push() { needPush = true; };
-  void pop() { if (pushed) { value.pop_front(); attrList.pop_front();
-      pushed = false; }; };  
+  void push() { needPush = true; stackFrame++; };
+  bool pop() {
+    stackFrame--;
+    if (pushed && (stackFrame > 0)) {
+      value.pop_front();
+      attrList.pop_front();
+      pushed = false;
+    };
+    // A value with a stackFrame zero or less should be cleaned up.
+    // It would have been added to the data index in a context that no
+    // longer exists.  Use the return value from this function to
+    // indicate a datum should be cleaned up.
+    return (stackFrame <= 0);
+  };
 };
 
 // This is the specialization for an integer.

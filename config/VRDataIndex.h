@@ -339,6 +339,14 @@ public:
                                   bool includeChildren,
                                   bool fullPath);
 
+  // The data index has a state that can be pushed and popped.  All
+  // the changes to the index made after a pushState() can be rolled
+  // back by calling popState().  This works by pushing and popping
+  // values for each of the VRDatum objects represented in the index.
+  void pushState();
+  void popState();
+
+  
   // These are specialized set methods.  They seem a little unhip, but
   // it's because I find this easier than remembering how to spell the
   // pointers and casts.

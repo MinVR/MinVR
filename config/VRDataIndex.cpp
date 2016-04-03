@@ -424,6 +424,28 @@ std::string VRDataIndex::getNameSpace(const std::string fullName) {
   return out;
 }
 
+void VRDataIndex::pushState() {
+
+  for (std::map<std::string, VRDatumPtr>::iterator it = mindex.begin();
+       it != mindex.end(); it++) {
+    it->second->push();
+  }
+}
+  
+void VRDataIndex::popState() {
+
+  std::map<std::string, VRDatumPtr>::iterator it = mindex.begin();
+  while (it != mindex.end()) {
+
+    if (it->second->pop()) {
+      mindex.erase(it++);
+
+    } else {
+      
+      ++it;
+    }
+  }
+}
 
 
 // Combining the name and the namespace allows the caller to
