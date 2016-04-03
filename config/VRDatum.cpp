@@ -47,6 +47,11 @@ VRDatumInt::VRDatumInt(const VRInt inVal) :
 
 /// Step 4 in the adding a type instructions.
 bool VRDatumInt::setValue(const VRInt inVal) {
+  if (needPush) {
+    value.push_front( value.front() );
+    needPush = false;
+    pushed = true;
+  }
   value.front() = inVal;
   return true;
 }
@@ -71,6 +76,11 @@ VRDatumDouble::VRDatumDouble(const VRDouble inVal) :
 };
 
 bool VRDatumDouble::setValue(const double inVal) {
+  if (needPush) {
+    value.push_front( value.front() );
+    needPush = false;
+    pushed = true;
+  }
   value.front() = inVal;
   return true;
 }
@@ -95,6 +105,11 @@ VRDatumString::VRDatumString(const VRString inVal) :
 };
 
 bool VRDatumString::setValue(const VRString inVal) {
+  if (needPush) {
+    value.push_front( value.front() );
+    needPush = false;
+    pushed = true;
+  }
   value.front() = inVal;
   return true;
 }
@@ -117,6 +132,11 @@ VRDatumIntArray::VRDatumIntArray(const VRIntArray inVal) :
 };
 
 bool VRDatumIntArray::setValue(const VRIntArray inVal) {
+  if (needPush) {
+    value.push_front( value.front() );
+    needPush = false;
+    pushed = true;
+  }
   value.front() = inVal;
   return true;
 }
@@ -160,6 +180,11 @@ VRDatumDoubleArray::VRDatumDoubleArray(const VRDoubleArray inVal) :
 };
 
 bool VRDatumDoubleArray::setValue(const VRDoubleArray inVal) {
+  if (needPush) {
+    value.push_front( value.front() );
+    needPush = false;
+    pushed = true;
+  }
   value.front() = inVal;
   return true;
 }
@@ -202,6 +227,11 @@ VRDatumStringArray::VRDatumStringArray(const VRStringArray inVal) :
 };
 
 bool VRDatumStringArray::setValue(const VRStringArray inVal) {
+  if (needPush) {
+    value.push_front( value.front() );
+    needPush = false;
+    pushed = true;
+  }
   value.front() = inVal;
   return true;
 }
@@ -236,7 +266,7 @@ VRDatumPtr CreateVRDatumStringArray(void *pData) {
 
 VRDatumContainer::VRDatumContainer(const VRContainer inVal) :
   VRDatum(VRCORETYPE_CONTAINER) {
-  value.push_back(inVal);
+  value.push_front(inVal);
   description = initializeDescription(type);
 };
 
@@ -252,6 +282,13 @@ std::string VRDatumContainer::getValueAsString() {
 bool VRDatumContainer::addToValue(const VRContainer inVal) {
   VRContainer inCopy = inVal;
 
+  // If we need to push a new container onto the stack, do it here.
+  if (needPush) {
+    value.push_front( value.front() );
+    needPush = false;
+    pushed = true;
+  }
+  
   // Remove all duplicates from the input list.
   for (VRContainer::const_iterator it = value.front().begin();
        it != value.front().end(); ++it) {
@@ -268,24 +305,28 @@ bool VRDatumContainer::addToValue(const VRContainer inVal) {
 // object and *not* in the restored VRContainer object.
 VRContainer VRDatumContainer::popAndClean() {
 
-  VRContainer popped = value.front();
-  value.pop_front();
-  VRContainer out;
-  
-  for (VRContainer::iterator it = popped.begin(); it != popped.end(); it++) {
-    bool found = false;
-    
-    for (VRContainer::iterator jt = value.front().begin();
-         jt != value.front().end(); jt++) {
-      if ((*it).compare(*jt) == 0) {
-        found = true;
-        //break;
-      }
-    }
+  std::cout << "HELLO THERE" << std::endl;
+  VRContainer out = VRContainer();
 
-    if (!found) {
-      out.push_back(*it);
-      found = false;
+  if (pushed) {
+    VRContainer popped = value.front();
+    value.pop_front();
+  
+    for (VRContainer::iterator it = popped.begin(); it != popped.end(); it++) {
+      bool found = false;
+    
+      for (VRContainer::iterator jt = value.front().begin();
+           jt != value.front().end(); jt++) {
+        if ((*it).compare(*jt) == 0) {
+          found = true;
+          //break;
+        }
+      }
+
+      if (!found) {
+        out.push_back(*it);
+        found = false;
+      }
     }
   }
 

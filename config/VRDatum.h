@@ -156,12 +156,15 @@ protected:
   std::string description;
 
   VRAttributeList attrList;
+
+  bool needPush, pushed;
   
   //friend std::ostream & operator<<(std::ostream &os, const VRDatum& p);
 
 public:
   // The constructor for the native storage form.
-  VRDatum(const VRCORETYPE_ID inType) : type(inType) {};
+  VRDatum(const VRCORETYPE_ID inType)
+    : type(inType), needPush(false), pushed(false) {};
 
   // virtual destructor allows concrete types to implement their own
   // destruction mechanisms.  Specifically, types that involve
@@ -271,8 +274,11 @@ public:
     return VRDatumConverter<VRDatum>(this);
   }
 
-  void push() { value.push_front( value.front() ); };
-  void pop() { value.pop_front(); };  
+  // When a push() happens, we only push a new value onto the stack
+  // when someone tries to change the old one.  So we only have to pop
+  // it when it has been modified.
+  void push() { needPush = true; };
+  void pop() { if (pushed) { value.pop_front(); pushed = false; }; };  
 };
 
 // The specialization for a double.
@@ -292,8 +298,8 @@ public:
     return VRDatumConverter<VRDatum>(this);
   }
 
-  void push() { value.push_front( value.front() ); };
-  void pop() { value.pop_front(); };  
+  void push() { needPush = true; };
+  void pop() { if (pushed) { value.pop_front(); pushed = false; }; };  
 };
 
 // Specialization for a string
@@ -314,8 +320,8 @@ public:
     return VRDatumConverter<VRDatum>(this);
   }
 
-  void push() { value.push_front( value.front() ); };
-  void pop() { value.pop_front(); };  
+  void push() { needPush = true; };
+  void pop() { if (pushed) { value.pop_front(); pushed = false; }; };  
 };
 
 // Specialization for a vector of ints
@@ -336,8 +342,8 @@ public:
     return VRDatumConverter<VRDatum>(this);
   }
 
-  void push() { value.push_front( value.front() ); };
-  void pop() { value.pop_front(); };  
+  void push() { needPush = true; };
+  void pop() { if (pushed) { value.pop_front(); pushed = false; }; };  
 };
 
 // Specialization for a vector of doubles
@@ -358,8 +364,8 @@ public:
     return VRDatumConverter<VRDatum>(this);
   }
 
-  void push() { value.push_front( value.front() ); };
-  void pop() { value.pop_front(); };  
+  void push() { needPush = true; };
+  void pop() { if (pushed) { value.pop_front(); pushed = false; }; };  
 };
 
 // Specialization for a vector of strings
@@ -380,8 +386,8 @@ public:
     return VRDatumConverter<VRDatum>(this);
   }
 
-  void push() { value.push_front( value.front() ); };
-  void pop() { value.pop_front(); };  
+  void push() { needPush = true; };
+  void pop() { if (pushed) { value.pop_front(); pushed = false; }; };  
 };
 
 // Specialization for a container
@@ -403,13 +409,13 @@ public:
     return VRDatumConverter<VRDatum>(this);
   }
 
-  void push() { value.push_front( value.front() ); };
-  // This is a more complex operation than the pop() for the other
-  // data types because we have to go through and delete any objects
-  // that were added since the push().  This means comparing the old
-  // and new lists and deleting the oddballs.
-  //  Should be this: VRContainer pop();
-  void pop() {};
+  void push() { needPush = true; };
+  void pop() { if (pushed) { value.pop_front(); pushed = false; }; };  
+  // In the context of the VRDataIndex, pop is a more complex
+  // operation for a container than the pop() for the other data types
+  // because we have to go through and delete any objects that were
+  // added since the push().  This means comparing the old and new
+  // lists and deleting the oddballs.
   VRContainer popAndClean();
 };
 
