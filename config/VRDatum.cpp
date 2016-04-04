@@ -41,7 +41,7 @@ std::string VRDatum::getAttributeListAsString() {
 
 /// Step 4 in the adding a type instructions.
 //////////////////////////////////////////// VRInt
-std::string VRDatumInt::getValueAsString() {
+std::string VRDatumInt::getValueAsString() const {
   char buffer[20];
   sprintf(buffer, "%d", value.front());
   return std::string(buffer);
@@ -53,7 +53,7 @@ VRDatumPtr CreateVRDatumInt(void *pData) {
 }
 
 //////////////////////////////////////////// VRDouble
-std::string VRDatumDouble::getValueAsString() {
+std::string VRDatumDouble::getValueAsString() const {
   char buffer[20];
   sprintf(buffer, "%f", value.front());
   return std::string(buffer);
@@ -65,7 +65,7 @@ VRDatumPtr CreateVRDatumDouble(void *pData) {
 }
 
 //////////////////////////////////////////// VRString
-VRString VRDatumString::getValueAsString() {
+VRString VRDatumString::getValueAsString() const {
   return value.front();
 }
 
@@ -75,20 +75,20 @@ VRDatumPtr CreateVRDatumString(void *pData) {
 }
 
 //////////////////////////////////////////// VRIntArray
-std::string VRDatumIntArray::getValueAsString() {
+std::string VRDatumIntArray::getValueAsString() const {
 
   std::string out;
   char buffer[20];
   char separator;
 
-  VRAttributeList::iterator it = attrList.front().find("separator");
+  VRAttributeList::const_iterator it = attrList.front().find("separator");
   if (it == attrList.front().end()) {
     separator = MINVRSEPARATOR;
   } else {
     separator = static_cast<char>(it->second[0]);
   }
   
-  for (VRIntArray::iterator it = value.front().begin();
+  for (VRIntArray::const_iterator it = value.front().begin();
        it != value.front().end(); ++it) {
     sprintf(buffer, "%d%c", *it, separator); 
 
@@ -106,20 +106,20 @@ VRDatumPtr CreateVRDatumIntArray(void *pData) {
 }
 
 //////////////////////////////////////////// VRDoubleArray
-std::string VRDatumDoubleArray::getValueAsString() {
+std::string VRDatumDoubleArray::getValueAsString() const {
 
   std::string out;
   char buffer[20];
   char separator;
 
-  VRAttributeList::iterator it = attrList.front().find("separator");
+  VRAttributeList::const_iterator it = attrList.front().find("separator");
   if (it == attrList.front().end()) {
     separator = MINVRSEPARATOR;
   } else {
     separator = static_cast<char>(it->second[0]);
   }
 
-  for (VRDoubleArray::iterator it = value.front().begin();
+  for (VRDoubleArray::const_iterator it = value.front().begin();
        it != value.front().end(); ++it) {
     sprintf(buffer, "%f%c", *it, separator);
     out += std::string(buffer);
@@ -136,18 +136,18 @@ VRDatumPtr CreateVRDatumDoubleArray(void *pData) {
 }
 
 //////////////////////////////////////////// VRStringArray
-std::string VRDatumStringArray::getValueAsString() {
+std::string VRDatumStringArray::getValueAsString() const {
   std::string out;
   char separator;
 
-  VRAttributeList::iterator it = attrList.front().find("separator");
+  VRAttributeList::const_iterator it = attrList.front().find("separator");
   if (it == attrList.front().end()) {
     separator = MINVRSEPARATOR;
   } else {
     separator = static_cast<char>(it->second[0]);
   }
   
-  for (VRStringArray::iterator it = value.front().begin();
+  for (VRStringArray::const_iterator it = value.front().begin();
        it != value.front().end(); ++it) {
     out += *it + std::string(1,separator);
   }
@@ -164,13 +164,28 @@ VRDatumPtr CreateVRDatumStringArray(void *pData) {
 
 //////////////////////////////////////////// VRContainer
 
-// For optimization and code maintainability reasons, the
-// responsibility for assembling the serialization of a container
-// falls to the index class, so this function is sort of a nop, filled
-// out just to keep the compiler happy.
-std::string VRDatumContainer::getValueAsString() {
-  throw std::runtime_error(std::string("shouldn't call the getValueAsString() method of a container object."));
-  return getDescription();
+// This getValueAsString function for a container probably does not
+// do what you think it does.  Use the serialize() function of the
+// VRDataIndex for that.  This function just returns a formatted list
+// of the strings that make up a container.
+std::string VRDatumContainer::getValueAsString() const {
+  std::string out;
+  char separator;
+
+  VRAttributeList::const_iterator it = attrList.front().find("separator");
+  if (it == attrList.front().end()) {
+    separator = MINVRSEPARATOR;
+  } else {
+    separator = static_cast<char>(it->second[0]);
+  }
+  
+  for (VRContainer::const_iterator it = value.front().begin();
+       it != value.front().end(); ++it) {
+    out += *it + std::string(1,separator);
+  }
+
+  // Remove trailing separator.
+  return out.substr(0, out.size() - 1);
 }
 
 bool VRDatumContainer::addToValue(const VRContainer inVal) {
@@ -212,12 +227,11 @@ VRDatumPtr CreateVRDatumContainer(void *pData) {
 
 
 //  We should probably implement this for completeness sake.
-// std::ostream & operator<<(std::ostream &os, const VRDatum& p)
-// {
-//   return os << p.getValueAsString();
-// }
-// std::ostream & operator<<(std::ostream &os, const VRDatumPtr& p)
-// {
-//   return os << p->getValueAsString();
-// }
+std::ostream & operator<<(std::ostream &os, const VRDatum& p) {
+  return os << p.getValueAsString();
+}
+
+std::ostream & operator<<(std::ostream &os, VRDatumPtr& p) {
+  return os << p->getValueAsString();
+}
 

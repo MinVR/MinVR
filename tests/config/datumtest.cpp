@@ -146,6 +146,24 @@ int testDatumInt() {
 
     // Is the serialization correct?
     out += a.getValueAsString().compare("37");
+
+    std::ostringstream buf;
+    buf << a;
+    out += a.getValueAsString().compare(buf.str());
+
+    // This is for testing the VRDatumPtr.
+    VRInt c = 1234;
+    VRDatumPtr p = CreateVRDatumInt(&c);
+    
+    VRInt d = p->getValue();
+    out += (1234 == d) ? 0 : 1;
+    
+    out += (p->getType() == VRCORETYPE_INT) ? 0: 1;
+    out += p->getValueAsString().compare("1234");
+
+    std::ostringstream buf2;
+    buf2 << p;
+    out += p->getValueAsString().compare(buf2.str());    
   }
     
   return out;
@@ -169,6 +187,10 @@ int testDatumDouble() {
 
     out += a.getValueAsString().compare("37.123000");
     // std::cout << a.getValueAsString() << std::endl;
+
+    std::ostringstream buf;
+    buf << a;
+    out += a.getValueAsString().compare(buf.str());
   }
     
   return out;
@@ -194,6 +216,10 @@ int testDatumString() {
     out += (a.getType() == VRCORETYPE_STRING) ? 0 : 1;
 
     out += a.getValueAsString().compare("this is a string");
+
+    std::ostringstream buf;
+    buf << a;
+    out += a.getValueAsString().compare(buf.str());
   }
   
   return out;
@@ -222,6 +248,10 @@ int testDatumIntArray() {
     out += (a.getType() == VRCORETYPE_INTARRAY) ? 0 : 1;
 
     out += a.getValueAsString().compare("16,2,77,29");
+
+    std::ostringstream buf;
+    buf << a;
+    out += a.getValueAsString().compare(buf.str());
   }
   
   return out;
@@ -250,6 +280,10 @@ int testDatumDoubleArray() {
   
     //std::cout << a.getValueAsString() << std::endl;
     out += a.getValueAsString().compare("16.200000;2.718280;77.300000;29.165000");
+    
+    std::ostringstream buf;
+    buf << a;
+    out += a.getValueAsString().compare(buf.str());
   }
   
   return out;
@@ -287,6 +321,10 @@ int testDatumStringArray() {
     a.setAttributeValue("separator", "/");
   
     out += a.getValueAsString().compare("one/two/three/four/five");
+
+    std::ostringstream buf;
+    buf << a;
+    out += a.getValueAsString().compare(buf.str());
   }
   
   return out;
@@ -327,6 +365,9 @@ int testDatumContainer() {
 
     out += (a.getType() == VRCORETYPE_CONTAINER) ? 0 : 1;
 
+    std::ostringstream buf;
+    buf << a;
+    out += a.getValueAsString().compare(buf.str());
   }
   
   return out;
@@ -565,8 +606,6 @@ int testDatumPushPopContainer() {
 
     out = a.getDescription().compare("container");
 
-    std::cout << "1:" << out << std::endl;
-    
     a.push();
 
     VRContainer g;

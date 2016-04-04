@@ -156,7 +156,7 @@ protected:
 
   std::list<VRAttributeList> attrList;
 
-  //friend std::ostream & operator<<(std::ostream &os, const VRDatum& p);
+  friend std::ostream & operator<<(std::ostream &os, const VRDatum& p);
 
 public:
   // The constructor for the native storage form.
@@ -201,7 +201,7 @@ public:
   // with the description and a name, this will be ready for
   // transmission across some connection to another process or another
   // machine.
-  virtual std::string getValueAsString() = 0;
+  virtual std::string getValueAsString() const = 0;
 
   // The description of the datum is a part of the network-ready
   // serialized data.  It's in the 'type=""' part of the XML.
@@ -270,7 +270,7 @@ public:
   };
 
   // Couldn't figure out how to template-ize this one.
-  virtual std::string getValueAsString() = 0;
+  virtual std::string getValueAsString() const = 0;
 
   bool setValue(const T inVal) {
     // This is a little optimization.  You only need to push things
@@ -319,7 +319,7 @@ class VRDatumInt : public VRDatumSpecialized<VRInt, VRCORETYPE_INT> {
 public:
   VRDatumInt(const VRInt inVal) :
     VRDatumSpecialized<VRInt, VRCORETYPE_INT>(inVal) {};
-  std::string getValueAsString();
+  std::string getValueAsString() const;
   VRInt getValueInt() const { return value.front(); };
 };
 
@@ -328,7 +328,7 @@ class VRDatumDouble : public VRDatumSpecialized<VRDouble, VRCORETYPE_DOUBLE> {
 public:
   VRDatumDouble(const VRDouble inVal) :
     VRDatumSpecialized<VRDouble, VRCORETYPE_DOUBLE>(inVal) {};
-  std::string getValueAsString();
+  std::string getValueAsString() const;
   VRDouble getValueDouble() const { return value.front(); };
 };
 
@@ -337,7 +337,7 @@ class VRDatumString : public VRDatumSpecialized<VRString, VRCORETYPE_STRING> {
 public:
   VRDatumString(const VRString inVal) :
     VRDatumSpecialized<VRString, VRCORETYPE_STRING>(inVal) {};
-  std::string getValueAsString();
+  std::string getValueAsString() const;
   VRString getValueString() const { return value.front(); };
 };
 
@@ -346,7 +346,7 @@ class VRDatumIntArray : public VRDatumSpecialized<VRIntArray, VRCORETYPE_INTARRA
 public:
   VRDatumIntArray(const VRIntArray inVal) :
     VRDatumSpecialized<VRIntArray, VRCORETYPE_INTARRAY>(inVal) {};
-  std::string getValueAsString();
+  std::string getValueAsString() const;
   VRIntArray getValueIntArray() const { return value.front(); };
 };
 
@@ -355,7 +355,7 @@ class VRDatumDoubleArray : public VRDatumSpecialized<VRDoubleArray, VRCORETYPE_D
 public:
   VRDatumDoubleArray(const VRDoubleArray inVal) :
     VRDatumSpecialized<VRDoubleArray, VRCORETYPE_DOUBLEARRAY>(inVal) {};
-  std::string getValueAsString();
+  std::string getValueAsString() const;
   VRDoubleArray getValueDoubleArray() const { return value.front(); };
 };
 
@@ -364,7 +364,7 @@ class VRDatumStringArray : public VRDatumSpecialized<VRStringArray, VRCORETYPE_S
 public:
   VRDatumStringArray(const VRStringArray inVal) :
     VRDatumSpecialized<VRStringArray, VRCORETYPE_STRINGARRAY>(inVal) {};
-  std::string getValueAsString();
+  std::string getValueAsString() const;
   VRStringArray getValueStringArray() const { return value.front(); };
 };
 
@@ -373,7 +373,7 @@ class VRDatumContainer : public VRDatumSpecialized<VRContainer, VRCORETYPE_CONTA
 public:
   VRDatumContainer(const VRContainer inVal) :
     VRDatumSpecialized<VRContainer, VRCORETYPE_CONTAINER>(inVal) {};
-  std::string getValueAsString();
+  std::string getValueAsString() const;
   VRContainer getValueContainer() const { return value.front(); };
 
   bool addToValue(const VRContainer inVal);
@@ -430,7 +430,7 @@ private:
   VRDatum*  pData;         // Pointer
   VRDatumPtrRC* reference; // Reference count
 
-  //friend std::ostream & operator<<(std::ostream &os, const VRDatumPtr& p);
+  friend std::ostream & operator<<(std::ostream &os, VRDatumPtr& p);
 
 public:
   VRDatumPtr() : pData(0) { reference = new VRDatumPtrRC(1); }
