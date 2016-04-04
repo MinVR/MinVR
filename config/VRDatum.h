@@ -252,6 +252,10 @@ typedef VRDatumConverter<VRDatum> VRAnyCoreType;
 /////////// that each one of these overrides one of the virtual
 /////////// accessors above, so make sure that list is complete, too.
 
+/// This template class exists for the shared type-specific methods of
+/// the specialized VRDatum classes such as VRDatumInt and so on.  The
+/// specialized classes inherit from the template for their type.
+/// This class should never be instantiated directly.
 template <class T, const VRCORETYPE_ID TID>
 class VRDatumSpecialized : public VRDatum {
 protected:
