@@ -35,6 +35,8 @@ Author(s) of Significant Updates/Modifications to the File:
 /// into memory.  The system supports an XML format for transmission
 /// and storage.
 ///
+/// The system state can be preserved by pushing it onto a stack, and
+/// later restored by popping that stack.
 ///
 /// The XML parser used here is based on the "Simple C++ XML Parser"
 /// from the CodeProject article by "BratilaRazvan", 2010.
@@ -111,12 +113,18 @@ Author(s) of Significant Updates/Modifications to the File:
 ///     values, but is otherwise agnostic about attributes.  The
 ///     separator attribute works like this:
 ///
-///     <cora type="intarray" separator=",">3,4,5,6</cora>
-///     <nora type="stringarray">A string@B sting@C sing@D sin@E in@F i</nora>
+///     <cora type="intarray">3,4,5,6</cora>
+///     <nora type="stringarray" separator="@">A string@B sting@C sing@D sin@E in@F i</nora>
 ///
-///     If no separator is specified, the code uses '@'.
+///     If no separator is specified, the code uses ','.
 ///
-///  3. Feed a file containing XML into processXMLFile().
+///  3. Feed a file containing XML into processXMLFile().  There is no
+///     validation of the XML done, and there are some ways in which
+///     this is not an arbitrary XML parser.  For example, the parser
+///     assumes uniqueness of names within an element.  Two elements
+///     of the same name within some parent element will overwrite one
+///     another.  Validation of the XML is left to some other process,
+///     hopefully with a schema that enforces this limitation.
 ///
 ///  Once an index has entries, they can be retrieved at your pleasure
 ///  with getValue() and serialize().  The getValue() method returns
