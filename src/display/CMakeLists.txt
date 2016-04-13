@@ -1,14 +1,16 @@
 # Create a library from the source files in this directory.
 
-project (VRMain)
+project (VRDisplay)
 
 set (${PROJECT_NAME}_source_files 
-	VRFactory.cpp
-	VRMain.cpp
+	VRConsoleNode.cpp
+	VRDisplayNode.cpp
+	VRGraphicsWindowNode.cpp
+	VRGroupNode.cpp
+	VROffAxisProjectionNode.cpp
+	VRStereoNode.cpp
+	VRViewportNode.cpp
 )
-
-add_definitions(-DPLUGINPATH="${CMAKE_BINARY_DIR}/plugins")
-add_definitions(-DPLUGININSTALLPATH="${CMAKE_INSTALL_PREFIX}/plugins")
 
 add_library (${PROJECT_NAME} ${${PROJECT_NAME}_source_files})
 

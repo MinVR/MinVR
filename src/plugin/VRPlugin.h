@@ -67,7 +67,7 @@ extern "C"
 /** Abstract interface for VRPlugin objects.  The convention is that each
     shared lib will define just one VRPlugin object, which is returned
     to the VRPluginManager after the shared library is loaded and the
-    shared lib's extern "C" createPlugin() function is called.
+    shared lib's extern "C" createVRPlugin() function is called.
 */
 class VRPlugin {
 

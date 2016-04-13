@@ -62,7 +62,10 @@ endif()
 # Use the root of the MinVR tree as an include dir, then include headers like this:
 # #include <event/VREvent.h>
 
-include_directories (${CMAKE_CURRENT_SOURCE_DIR})
+include_directories (
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
 
 enable_testing()
 
@@ -124,21 +127,16 @@ endif (WIN32)
 # Recurse into the following subdirs to build the core MinVR set of libraries:
 # (Uncomment the lines below as we add .cpp files to those directories.)
 
-add_subdirectory (config)
-#add_subdirectory (data)
-add_subdirectory (display)
-add_subdirectory (event)
-add_subdirectory (math)
-add_subdirectory (net)
-add_subdirectory (plugin)
-add_subdirectory (main)
-add_subdirectory (apps)
+#add_subdirectory (examples)
+add_subdirectory (src)
+add_subdirectory (plugins)
 
 # Now, build some programs, such as tests, that depend upon the MinVR libraries:
 
+#add_subdirectory (tests)
 #add_subdirectory (tests/eventdata)
 add_subdirectory (tests/config)
 
-add_subdirectory (contrib)
+
 
 

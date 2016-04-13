@@ -1,17 +1,15 @@
 project (MinVR_GLFW)
 
 set (SOURCEFILES 
-  src/GlfwInputDevice.cpp
-  src/GlfwPlugin.cpp
-  src/GlfwTimer.cpp
-  src/GlfwWindow.cpp
+  src/VRGLFWInputDevice.cpp
+  src/VRGLFWPlugin.cpp
+  src/VRGLFWWindowNode.cpp
   src/GlfwWindowFactory.cpp
 )
 
 set (HEADERFILES
-  src/GlfwInputDevice.h
-  src/GlfwTimer.h
-  src/GlfwWindow.h
+  src/VRGLFWInputDevice.h
+  src/VRGLFWWindowNode.h
   src/GlfwWindowFactory.h
 )
 
@@ -160,7 +158,7 @@ SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/lib")
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 add_library ( ${PROJECT_NAME} SHARED ${HEADERFILES} ${SOURCEFILES} )
-target_link_libraries(${PROJECT_NAME} ${GLFW_LIBRARY} ${OPENGL_LIBRARIES} VRPlugin VRDisplay VRIndex VRMath ${LIBS_ALL})
+target_link_libraries(${PROJECT_NAME} ${GLFW_LIBRARY} ${OPENGL_LIBRARIES} VRMain VRPlugin VRDisplay VRIndex VRMath ${LIBS_ALL})
 add_dependencies( ${PROJECT_NAME} glfw)
 
 #------------------------------------------

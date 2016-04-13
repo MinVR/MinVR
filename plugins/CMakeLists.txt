@@ -26,7 +26,7 @@ endif(BASE_PLUGINS)
 if(false)
 option(MINVR_OPENGL_PLUGIN "If enabled, OpenGL plugin will be installed" OFF)
 if (MINVR_OPENGL_PLUGIN OR BASE_GRAPHICS_PLUGINS)
-	add_subdirectory (plugins/OpenGL)
+	add_subdirectory (OpenGL)
 endif()
 
 #------------------Threading-----------------------------
@@ -39,7 +39,7 @@ endif()
 #------------------GLFW-----------------------------
 option(MINVR_GLFW_PLUGIN "If enabled, GLFW plugin will be installed" OFF)
 if (MINVR_GLFW_PLUGIN OR BASE_GRAPHICS_PLUGINS)
-	add_subdirectory (plugins/GLFW)
+	add_subdirectory (GLFW)
 endif()
 
 if(false)
