@@ -1,0 +1,78 @@
+
+### TV CAVE CONFIG FILE ###
+
+# This is where it all starts, VRMain begins by looking for this keyword.  If more than one VRSetup is listed, 
+# then the name of the setup to use for this process must be specified on the command line.
+<VRSetup>TVComputer</VRSetup>
+
+
+### VRSETUPS ###
+
+<TVComputer>
+# Do I have to specify that it is a server even if there are no clients? That seems weird to me. 
+	#<Type>VRServer</Type>
+
+	# These 3 keywords are understood by VRMain.  Each VRSetup will have either input devices or a
+	# display graph or both.  And, most will require plugins.  
+	<VRInputDevices>Kinect</VRInputDevices>
+	<DisplayGraph>TVRootNode</VRDisplayGraph>
+	<VRPlugins>GLFWPlugin, OpenGLPlugin</VRPlugins>
+</TVComputer>
+
+
+
+### VRINPUTDEVICES ###
+
+<Kinect>
+	<Type>VRPNImageDevice</Type>
+	<IPAddress>trackingserver.umn.edu:3940</IPAddress>
+	<EventsToGenerate>Kinect_Image, Kinect_Skeleton</EventsToGenerate>
+</Kinect>
+
+### VRDISPLAYGRAPH ###
+
+
+# Common settings
+<WindowToolkit>GLFWWindow</WindowToolkit>
+<GraphicsToolkit>OpenGLGraphicsToolkit</GraphicsToolkit>
+<StereoFormat>RowInterlacedStereo</StereoFormat>
+
+<TVRootNode>
+	<Type>VRWindowNode</Type>
+	<Children>CameraNode</Children>
+	
+	<XOffset>-1280</XOffset>
+	<YOffset>0</YOffset>
+	<Width>1920</Width>
+	<Height>1080</Height>
+	<TopLeft>…</TopLeft>
+	<TopRightt>…</TopRight>
+	<BottomLeft>…</BottomLeft>
+	<BottomRight>…</BottomRight>
+</TVRootNode>
+
+<CameraNode>
+	<Type>VRCameraPairNode</Type>
+	<HeadTrackingEvent>User1_Head_Move</HeadTrackingEvent>
+	<EyeSeparation>0.065</EyeSeparation>
+	<ProjectionType>TrackedTile</ProjectionType>
+	<NearClip>0.01</NearClip>
+	<FarClip>1000.0</FarClip>
+	<DefaultPos>0,0,1</DefaultPos>
+	<DefaultRot>1,0,0, 0,1,0, 0,0,1</DefaultRot>
+</CameraNode>
+
+
+
+### VRPLUGINS ###
+
+<GLFWPlugin hint=“VRWindowToolkit”>
+	<Path>../plugins</Path>
+	<File>GLFWWindowToolkit</File>
+</GLFWPlugin>
+
+<OpenGLPlugin hint=“VRGraphicsToolkit”>
+	<Path>../plugins</Path>
+	<File>OpenGLGraphicsToolkit</File>
+</OpenGLPlugin>
+

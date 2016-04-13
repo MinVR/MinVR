@@ -1,0 +1,159 @@
+
+### UMN IV/LAB CAVE CONFIG FILE ###
+
+# This is where it all starts, VRMain begins by looking for this keyword.  If more than one VRSetup is listed, 
+# then the name of the setup to use for this process must be specified on the command line.
+<VRSetups>CaveComputer</VRSetups>
+
+
+### VRSETUPS ###
+
+<CaveComputer>
+	<Type>VRServer</Type>
+
+	# These 5 keywords are understood by VRMain.  Each VRSetup will have either input devices or a
+	# display graph or both.  And, most will require plugins.  
+	<VRPlugins>GLFWPlugin@OpenGLPlugin</VRPlugins>
+	<VRInputDevices>Optitrack1@WandBtns</VRInputDevices>
+	<VRDisplayGraph>CaveRootNode</VRDisplayGraph>
+	<VRWindowToolkits>GLFW</VRWindowToolkits>
+	<VRGraphicsToolkits>OpenGL</VRGraphicsToolkits>
+</CaveComputer>
+
+
+
+### VRPLUGINS ###
+
+<GLFWPlugin>
+	<Path>../plugins</Path>
+	<File>GLFWPlugin</File>
+</GLFWPlugin>
+
+<OpenGLPlugin>
+	<Path>../plugins</Path>
+	<File>OpenGLPlugin</File>
+</OpenGLPlugin>
+
+
+
+### VRINPUTDEVICES ###
+
+<Optitrack1>
+	<Type>VRPNTrackerDevice</Type>
+
+	<IPAddress>trackingserver.umn.edu:3940</IPAddress>
+	<EventsToGenerate>User1_Head_Move@User1_Wand_Move</EventsToGenerate>
+</Optitrack1>
+
+<WandBtns>
+	<Type>VRPNButtonDevice</Type>
+
+	<IPAddress>localhost:3941</IPAddress>
+	<EventsToGenerate>User1_Wand_LeftBtn@User1_Wand_RightBtn</EventsToGenerate>
+</WandBtns>
+
+
+### WINDOW AND GRAPHICS TOOLKITS ###
+
+<GLFW>
+	<Type>GLFWWindowToolkit</Type>
+</GLFW>
+
+<OpenGL>
+	<Type>OpenGLGraphicsToolkit</Type>
+</OpenGL>
+
+
+### VRDISPLAYGRAPH ###
+
+<WindowToolkit>GLFWWindowToolkit</WindowToolkit>
+<GraphicsToolkit>OpenGLGraphicsToolkit</GraphicsToolkit>
+<StereoFormat>QuadBuffered</StereoFormat>
+
+<CaveRootNode>
+	<Type>VRGroupNode</Type>
+	<Children>LeftAndRightNode@FrontNode@FloorNode</Children>
+</CaveRootNode>
+
+<FrontNode>
+	<Type>VRWindowNode</Type>
+	<Children>TrackingNode</Children>
+
+	<XPos>0</XPos>
+	<YPos>0</YPos>
+	<Width>1280</Width>
+	<Height>1024</Height>
+	<TopLeft>…</TopLeft>
+	<TopRightt>…</TopRight>
+	<BottomLeft>…</BottomLeft>
+	<BottomRight>…</BottomRight>
+</FrontNode>
+
+<LeftAndRightNode>
+	<Type>VRWindowNode</Type>
+	<Children>LeftWall@RightWall</Children>
+</LeftAndRightNode>
+
+<LeftNode>
+	<Type>VRViewportNode</Type>
+	<Children>TrackingNode</Children>
+
+	<XOffset>0</XOffset>
+	<YOffset>0</YOffset>
+	<Width>1280</Width>
+	<Height>1024</Height>
+	<TopLeft>…</TopLeft>
+	<TopRightt>…</TopRight>
+	<BottomLeft>…</BottomLeft>
+	<BottomRight>…</BottomRight>
+</LeftNode>
+
+<RightNode>
+	<Type>VRViewportNode</Type>
+	<Children>TrackingNode</Children>
+
+	<XOffset>0</XOffset>
+	<YOffset>0</YOffset>
+	<Width>1280</Width>
+	<Height>1024</Height>
+	<TopLeft>…</TopLeft>
+	<TopRightt>…</TopRight>
+	<BottomLeft>…</BottomLeft>
+	<BottomRight>…</BottomRight>
+</RightNode>
+
+<FloorNode>
+	<Type>VRWindowNode</Type>
+	<Children>TrackingNode</Children>
+
+	<XOffset>0</XOffset>
+	<YOffset>0</YOffset>
+	<Width>1280</Width>
+	<Height>1024</Height>
+	<TopLeft>…</TopLeft>
+	<TopRightt>…</TopRight>
+	<BottomLeft>…</BottomLeft>
+	<BottomRight>…</BottomRight>
+</FloorNode>
+
+<TrackingNode>
+	<Type>VRTrackedNode</Type>
+	<Children>CameraNode</Children>
+
+	<TrackingEvent>User1_Head_Move</TrackingEvent>
+</TrackingNode>
+
+<CameraNode>
+	<Type>VRCameraPairNode</Type>
+
+	<EyeSeparation>0.065</EyeSeparation>
+	<ProjectionType>TrackedTile</ProjectionType>
+	<NearClip>0.01</NearClip>
+	<FarClip>1000.0</FarClip>
+	<DefaultPos>0,0,1</DefaultPos>
+	<DefaultRot>1,0,0, 0,1,0, 0,0,1</DefaultRot>
+</CameraNode>
+
+
+
+
