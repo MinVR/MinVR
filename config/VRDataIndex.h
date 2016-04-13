@@ -211,16 +211,15 @@ private:
   std::vector<std::string> explodeName(const std::string fullName);
 
 public:
-  // Returns the namespace, derived from a long, fully-qualified, name.
-  std::string getNameSpace(const std::string fullName);
-
-public:
   VRDataIndex();
 
   // Some constants that may be useful to users of this API.
   static std::string rootNameSpace;
   
   void setOverwrite(const int inVal) { overwrite = inVal; }
+
+  // Returns the namespace, derived from a long, fully-qualified, name.
+  std::string getNameSpace(const std::string fullName);
 
   // Tries to guess a data type from the ASCII representation.
   VRCORETYPE_ID inferType(const std::string valueString);
