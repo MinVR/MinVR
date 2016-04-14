@@ -40,13 +40,30 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # ================================================================================ 
  
+
+
+project (MinVRCore)
+
+set (${PROJECT_NAME}_source_files 
+)
+
 add_subdirectory (config)
-add_subdirectory (plugin)
 add_subdirectory (math)
-add_subdirectory (display)
 add_subdirectory (net)
-add_subdirectory (main)
 
+message(${${PROJECT_NAME}_source_files})
 
+#add_subdirectory (plugin)
+#add_subdirectory (display)
+#add_subdirectory (main)
+
+add_library (${PROJECT_NAME} ${${PROJECT_NAME}_source_files})
+
+install(DIRECTORY ${PROJECT_SOURCE_DIR}  DESTINATION "include" FILES_MATCHING PATTERN "*.h")
+
+install( TARGETS ${PROJECT_NAME}
+         LIBRARY DESTINATION lib
+         ARCHIVE DESTINATION lib
+         RUNTIME DESTINATION bin)
 
 

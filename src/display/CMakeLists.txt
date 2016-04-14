@@ -1,22 +1,15 @@
 # Create a library from the source files in this directory.
 
-project (VRDisplay)
 
-set (${PROJECT_NAME}_source_files 
-	VRConsoleNode.cpp
-	VRDisplayNode.cpp
-	VRGraphicsWindowNode.cpp
-	VRGroupNode.cpp
-	VROffAxisProjectionNode.cpp
-	VRStereoNode.cpp
-	VRViewportNode.cpp
-)
 
-add_library (${PROJECT_NAME} ${${PROJECT_NAME}_source_files})
-
-install(DIRECTORY ${PROJECT_SOURCE_DIR}  DESTINATION "include" FILES_MATCHING PATTERN "*.h")
-
-install( TARGETS ${PROJECT_NAME}
-         LIBRARY DESTINATION lib
-         ARCHIVE DESTINATION lib
-         RUNTIME DESTINATION bin)
+set(${PROJECT_NAME}_source_files
+	${${PROJECT_NAME}_source_files}
+  	${CMAKE_CURRENT_SOURCE_DIR}/VRConsoleNode.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/VRDisplayNode.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/VRGraphicsWindowNode.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/VRGroupNode.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/VROffAxisProjectionNode.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/VRStereoNode.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/VRViewportNode.cpp
+	PARENT_SCOPE
+ )
