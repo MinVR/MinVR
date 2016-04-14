@@ -6,34 +6,25 @@
  * 		Dan Orban (dtorban)
  */
 
-#include <GLFW/glfw3.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <iostream>
 #include <plugin/VRPlugin.h>
-#include <display/VRWindowToolkit.h>
-#include "VRGLFWWindowToolkit.h"
-
-
+#include "VROpenGLGraphicsToolkit.h"
 
 namespace MinVR {
 
-
-
-class VRGLFWPlugin : public VRPlugin {
+class VROpenGLPlugin : public VRPlugin {
 public:
-	PLUGIN_API VRGLFWPlugin() {
-		std::cout << "GlfwPlugin created." << std::endl;
+	PLUGIN_API VROpenGLPlugin() {
+		std::cout << "OpenGLPlugin created." << std::endl;
 	}
-
-	PLUGIN_API virtual ~VRGLFWPlugin() {
-		std::cout << "GlfwPlugin destroyed." << std::endl;
+	PLUGIN_API virtual ~VROpenGLPlugin() {
+		std::cout << "OpenGLPlugin destroyed." << std::endl;
 	}
 
 	PLUGIN_API bool registerWithMinVR(VRMainInterface *vrMain)
 	{
-		std::cout << "Registering VRGLFWPlugin." << std::endl;
-		vrMain->getFactory()->addSubFactory(new VRGLFWWindowToolkitFactory());
+		std::cout << "Registering VROpenGLPlugin." << std::endl;
+		vrMain->getFactory()->addSubFactory(new VROpenGLGraphicsToolkitFactory());
 		return true;
 	}
 
@@ -47,11 +38,10 @@ public:
 
 } // end namespace
 
-
 extern "C"
 {
 	PLUGIN_API MinVR::Plugin* createPlugin() {
-		return new MinVR::VRGLFWPlugin();
+		return new MinVR::VROpenGLPlugin();
 	}
 }
 

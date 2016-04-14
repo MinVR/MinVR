@@ -7,6 +7,7 @@ namespace MinVR {
 #include "display/VRGraphicsToolkit.h"
 #include "display/VRWindowToolkit.h"
 #include "input/VRInputDevice.h"
+#include "main/VRMainInterface.h"
 
 
 class VRMain;
@@ -23,7 +24,7 @@ class VRDisplayNodeFactory {
 public:
   virtual ~VRDisplayNodeFactory() {}
 
-  VRDisplayNode* create(VRMain *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) = 0;
+  VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) = 0;
 };
 
 
@@ -33,7 +34,7 @@ class VRInputDeviceFactory {
 public:
   virtual ~VRInputDeviceFactory() {}
 
-  VRInputDevice* create(VRMain *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) = 0;
+  VRInputDevice* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) = 0;
 };
 
 /**
@@ -42,7 +43,7 @@ class VRGraphicsToolkitFactory {
 public:
   virtual ~VRGraphicsToolkitFactory() {}
 
-  VRGraphicsToolkit* create(VRMain *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) = 0;
+  VRGraphicsToolkit* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) = 0;
 };
 
 
@@ -52,7 +53,7 @@ class VRWindowToolkitFactory {
 public:
   virtual ~VRWindowToolkitFactory() {}
 
-  VRWindowToolkit* create(VRMain *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) = 0;
+  VRWindowToolkit* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) = 0;
 };
 
 
@@ -68,16 +69,16 @@ public:
   virtual ~VRFactory() {}
 
   /// Creates a new display node and children from config data using the VRDisplayNode sub-factories as needed.
-  VRDisplayNode* createDisplayNode(VRMain *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
+  VRDisplayNode* createDisplayNode(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
 
   /// Creates a new input device from config data using the VRInputDevice sub-factories as needed.
-  VRInputDevice* createInputDevice(VRMain *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
+  VRInputDevice* createInputDevice(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
 
   /// Creates a new graphics toolkit from sub-factories.
-  VRGraphicsToolkit* createGraphicsToolkit(VRMain *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
+  VRGraphicsToolkit* createGraphicsToolkit(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
 
   /// Creates a new window toolkit from sub-factories.
-  VRWindowToolkit* createWindowToolkit(VRMain *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
+  VRWindowToolkit* createWindowToolkit(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
 
 
   /// Plugins call this mehod to add a new "sub-factory" to this master factory

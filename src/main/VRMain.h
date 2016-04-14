@@ -1,6 +1,7 @@
 #ifndef VRMAIN_H
 #define VRMAIN_H
 
+#include "main/VRMainHooks.h"
 #include "config/VRDataIndex.h"
 #include "display/VRDisplayDeviceFactory.h"
 #include "input/VRInputDeviceFactory.h"
@@ -16,7 +17,7 @@ namespace MinVR {
     programmer through a set of 5 steps needed to add MinVR to an existing
     graphics program or get started with writing a new program.
 */
-class VRMain {
+class VRMain : public VRMainHooks {
 public:
 
   VRMain();
@@ -87,25 +88,11 @@ public:
 
   VRFactory* getFactory() { return _factory; }
 
-  VRGraphicsToolkit* getGraphicsToolkit(const std::string &name) {
-    for (std::vector<VRGraphicsToolkit*>::iterator it = _gfxToolkits.begin(); it < _gfxToolkits.end(); ++it) {
-      if ((*it)->getName() == name) {
-        return *it;
-      }
-    }
-    return NULL;
-  }
-
-  VRWindowToolkit* getWindowToolkit(const std::string &name) {
-    for (std::vector<VRWindowToolkit*>::iterator it = _winToolkits.begin(); it < _winToolkits.end(); ++it) {
-      if ((*it)->getName() == name) {
-        return *it;
-      }
-    }
-    return NULL;
-  }
-
-  
+  void addInputDevice(VRInputDevice* dev);
+ 
+  VRGraphicsToolkit* getGraphicsToolkit(const std::string &name);
+  VRWindowToolkit* getWindowToolkit(const std::string &name);
+   
 private:
 
   void initialize();

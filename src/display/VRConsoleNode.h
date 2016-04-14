@@ -27,6 +27,8 @@ public:
 	/// Overridden here in order to generate an error - a console node cannot have children.
 	void addChild(VRDisplayNode* child);
 
+	void println(const std::string &output);
+
 private:
 	std::ostream* m_stream;
 };

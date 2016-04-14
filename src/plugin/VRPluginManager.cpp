@@ -41,11 +41,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ================================================================================ */
 
 #include "VRPluginManager.h"
+#include <main/VRMainInterface.h>
 #include <iostream>
 
 namespace MinVR {
 
-VRPluginManager::VRPluginManager(VRMain *vrMain) : _vrMain(vrMain) {
+VRPluginManager::VRPluginManager(VRMainInterface *vrMain) : _vrMain(vrMain) {
 }
 
 PluginManager::~PluginManager() {

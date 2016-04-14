@@ -6,7 +6,7 @@
  * 		Dan Orban (dtorban)
  */
 
-#include <GlfwInputDevice.h>
+#include <VRGLFWInputDevice.h>
 #include <ctime>
 #include <cctype>
 
@@ -16,56 +16,54 @@ std::string getGlfwKeyName(int key);
 std::string getGlfwKeyValue(int key, int mods);
 std::string getGlfwActionName(int action);
 
-GlfwInputDevice::GlfwInputDevice() {
-}
-
-GlfwInputDevice::~GlfwInputDevice() {
-}
-
-void GlfwInputDevice::appendNewInputEventsSinceLastCall(VRDataQueue& queue) {
-    glfwPollEvents();
-    for (int f = 0; f < events.size(); f++)
-    {
-    	queue.push(events[f]);
-    }
-
-    events.clear();
-}
-
-void GlfwInputDevice::keyCallback(GLFWwindow* window, int key, int scancode,
-		int action, int mods) {
-
-	std::string event = getGlfwKeyName(key) + "_" + getGlfwActionName(action);
-	dataIndex.addData("/keyboard/value", event);
-	dataIndex.addData("/keyboard/timestamp", (int)clock());
-	events.push_back(dataIndex.serialize("/keyboard"));
-}
-
 static void glfw_key_callback(GLFWwindow* window, int key, int scancode,
-		int action, int mods) {
-	((GlfwInputDevice*)(glfwGetWindowUserPointer(window)))->keyCallback(window, key, scancode, action, mods);
+        int action, int mods) {
+    ((VRGLFWInputDevice*)(glfwGetWindowUserPointer(window)))->keyCallback(window, key, scancode, action, mods);
 }
 
 static void glfw_size_callback(GLFWwindow* window, int width, int height) {
-	((GlfwInputDevice*)(glfwGetWindowUserPointer(window)))->sizeCallback(window, width, height);
+    ((VRGLFWInputDevice*)(glfwGetWindowUserPointer(window)))->sizeCallback(window, width, height);
 }
 
-std::vector<VRInputDevice*> GlfwInputDeviceFactory::create(
-		VRDataIndex& dataIndex) {
-	std::vector<VRInputDevice*> devices;
-	devices.push_back(device);
-	return devices;
+
+VRGLFWInputDevice::VRGLFWInputDevice() {
 }
 
-void GlfwInputDevice::registerGlfwWindow(GlfwWindow* window) {
+VRGLFWInputDevice::~VRGLFWInputDevice() {
+}
+
+void VRGLFWInputDevice::appendNewInputEventsSinceLastCall(VRDataQueue& queue) {
+    glfwPollEvents();
+    for (int f = 0; f < _events.size(); f++)
+    {
+    	queue.push(_events[f]);
+    }
+
+    _events.clear();
+}
+
+void VRGLFWInputDevice::addWindow(GLFWwindow* window) {
 	windowMap[window->getWindow()] = window;
-	glfwSetWindowUserPointer(window->getWindow(), this);
-	glfwSetKeyCallback(window->getWindow(), glfw_key_callback);
-	glfwSetWindowSizeCallback(window->getWindow(), glfw_size_callback);
+	glfwSetWindowUserPointer(window, this);
+	glfwSetKeyCallback(window, glfw_key_callback);
+	glfwSetWindowSizeCallback(window, glfw_size_callback);
+    _windows.push_back(window);
 }
 
-std::string getGlfwKeyName(int key)
-{
+void VRGLFWInputDevice::keyCallback(GLFWwindow* window, int key, int scancode,
+        int action, int mods) {
+
+    std::string event = getGlfwKeyName(key) + "_" + getGlfwActionName(action);
+    _dataIndex.addData("/keyboard/value", event);
+    _dataIndex.addData("/keyboard/timestamp", (int)clock());
+    _events.push_back(dataIndex.serialize("/keyboard"));
+}
+
+void VRGLFWInputDevice::sizeCallback(GLFWwindow* window, int width, int height) {
+    // TODO: create an event reporting to MinVR that the size has changed
+}
+
+std::string getGlfwKeyName(int key) {
     switch (key)
     {
         // Printable keys
@@ -307,12 +305,7 @@ std::string getGlfwActionName(int action)
     return "caused unknown action";
 }
 
-void GlfwInputDevice::sizeCallback(GLFWwindow* window, int width, int height) {
-	VRRect r = windowMap[window]->getRect();
-	r.setWidth(width);
-	r.setHeight(height);
-	windowMap[window]->setRect(r);
-}
+
 
 } /* namespace MinVR */
 

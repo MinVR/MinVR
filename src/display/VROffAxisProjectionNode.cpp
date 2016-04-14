@@ -71,10 +71,13 @@ VROffAxisProjectionNodeFactory::create(VRMain *vrMain, VRDataIndex *config, cons
 	VRVector3 botLeft = config->getValue("BotLeft", nodeNameSpace);
 	VRVector3 topRight = config->getValue("TopRight", nodeNameSpace);
 	VRVector3 botRight = config->getValue("BotRight", nodeNameSpace);
-	float iod = config->getValue("IOD", nodeNameSpace);
+	float iod = config->getValue("EyeSeparation", nodeNameSpace);
+	// TODO: NearClip
+	// TODO: FarClip
+	std::string trackingEvent = config->getValue("HeadTrackingEvent", nodeNameSpace);
 	VRMatrix4 headMatrix = config->getValue("InitialHeadMatrix", nodeNameSpace);
 
-	VRDisplayNode *node = new VROffAxisProjectionNode(valName, topLeft, botLeft, topRight, botRight, iod, headMatrix);
+	VRDisplayNode *node = new VROffAxisProjectionNode(valName, topLeft, botLeft, topRight, botRight, iod, trackingEvent, headMatrix);
 
 	std::vector<std::string> childrenNames = config->getValue("Children", nameSpace);
 	for (std::vector<std::string>::iterator it = childrenNames.begin(); it < childrenNames.end(); ++it) {

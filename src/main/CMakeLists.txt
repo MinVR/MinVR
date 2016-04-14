@@ -3,8 +3,8 @@
 project (VRMain)
 
 set (${PROJECT_NAME}_source_files 
-	VRFactory.cpp
 	VRMain.cpp
+	VRMain.h
 )
 
 add_definitions(-DPLUGINPATH="${CMAKE_BINARY_DIR}/plugins")

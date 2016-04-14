@@ -173,8 +173,8 @@ VRMain::initialize(const std::string &configFile, const std::string &vrSetups)
   	_net = new VRNetServer(port, numClients);
   }
   else if (type == "VRClient") {
+    std::string port = _index->getValue("Port", _name);
   	std::string ipAddress = _index->getValue("ServerIP", _name); 
-  	std::string port = _index->getValue("ServerPort", _name);
   	_net = new VRNetClient(ipAddress, port);
   }
   else { // type == "VRStandAlone"
@@ -326,6 +326,31 @@ VRMain::addRenderHandler(VRRenderHandler* renderHandler)
 	_renderHandlers.push_back(renderHandler);
 }
 
+
+VRGraphicsToolkit* 
+VRMain::getGraphicsToolkit(const std::string &name) {
+  for (std::vector<VRGraphicsToolkit*>::iterator it = _gfxToolkits.begin(); it < _gfxToolkits.end(); ++it) {
+    if ((*it)->getName() == name) {
+      return *it;
+    }
+  }
+  return NULL;
+}
+
+VRWindowToolkit* 
+VRMain::getWindowToolkit(const std::string &name) {
+  for (std::vector<VRWindowToolkit*>::iterator it = _winToolkits.begin(); it < _winToolkits.end(); ++it) {
+    if ((*it)->getName() == name) {
+      return *it;
+    }
+  }
+  return NULL;
+}
+
+void 
+VRMain::addInputDevice(VRInputDevice* dev) {
+  _inputDevices.push_back(dev);
+}
 
 
 

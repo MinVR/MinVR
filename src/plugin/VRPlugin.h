@@ -44,6 +44,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define PLUGIN_H_
 
 #include <memory>
+#include <main/VRMainInterface.h>
 
 namespace MinVR {
 
@@ -76,10 +77,10 @@ class VRPlugin {
 	/// InputDevices and DisplayDevices, the registration involves adding
 	/// a factory method to VRMain for creating the InputDevice or 
 	/// DisplayDevice provided by the plugin.
-	virtual void registerWithMinVR(VRMain *vrMain) = 0;
+	virtual void registerWithMinVR(VRMainInterface *vrMain) = 0;
 
 	/// Needed?
-	virtual void unregisterWithMinVR(VRMain *vrMain) = 0;
+	virtual void unregisterWithMinVR(VRMainInterface *vrMain) = 0;
 };
 
 }/* namespace MinVR */

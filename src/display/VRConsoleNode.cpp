@@ -22,8 +22,6 @@ void VRConsoleNode::render(VRDataIndex *renderState, VRRenderHandler *renderHand
 	rederState->pushState();
 	renderState->setValue("IsConsole", 1);
 
-	*m_stream << "Console output:" << std::endl;
-
 	renderHandler->onVRRenderContext(renderState);
 	renderHandler->onVRRenderScene(renderState);
 
@@ -32,6 +30,10 @@ void VRConsoleNode::render(VRDataIndex *renderState, VRRenderHandler *renderHand
 
 void VRConsoleNode::displayTheFinishedRendering() {
 	std::flush(*m_stream);
+}
+
+void VRConsoleNode::println(const std::string &output) {
+	*m_stream << output << std::endl;
 }
 
 

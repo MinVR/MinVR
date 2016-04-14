@@ -1,1 +1,41 @@
-TODO
+
+<VRSetups>Desktop</VRSetups>
+
+<Desktop>
+	<Type>VRStandAlone</Type>
+	<VRPlugins>GLFWPlugin,OpenGLPlugin</VRPlugins>
+	<VRDisplayGraph>RootNode</VRDisplayGraph>
+</Desktop>
+
+<GLFWPlugin>
+	<Path>../plugins</Path>
+	<File>GLFWPlugin</File>
+</GLFWPlugin>
+
+<OpenGLPlugin>
+	<Path>../plugins</Path>
+	<File>OpenGLPlugin</File>
+</OpenGLPlugin>
+
+<RootNode>
+	<Type>VRWindowNode</Type>
+	<WindowToolkit>GLFWWindowToolkit</WindowToolkit>
+	<GraphicsToolkit>OpenGLGraphicsToolkit</GraphicsToolkit>
+	<StereoFormat>Mono</StereoFormat>
+	<NearClip>0.01</NearClip>
+	<FarClip>1000.0</FarClip>
+	<InitialHeadMatrix>1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,2,1</InitialHeadMatrix>
+	<XPos>0</XPos>
+	<YPos>0</YPos>
+	<Width>1280</Width>
+	<Height>1024</Height>
+</RootNode>
+
+<GLFWToolkit>
+	<Type>GLFWWindowToolkit</Type>
+</GLFWToolkit>
+
+<OpenGLToolkit>
+	<Type>OpenGLGraphicsToolkit</Type>
+</OpenGLToolkit>
+

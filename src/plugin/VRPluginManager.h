@@ -50,18 +50,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace MinVR {
 
-class VRMain;
+class VRMainInterface;
 
 class VRPluginManager {
 public:
-	VRPluginManager(VRMain *_vrMain);
+	VRPluginManager(VRMainInterface *_vrMain);
 	virtual ~VRPluginManager();
 
 	/// Argument provides the path to the shared lib that contains the plugin
 	bool loadPlugin(const std::string& filePath, const std::string& baseFileName);
 
 private:
-	VRMain *_vrMain;
+	VRMainInterface *_vrMain;
 	std::vector<VRPlugin*> _plugins;
 	std::vector<VRSharedLibrary*> _libraries;
 };

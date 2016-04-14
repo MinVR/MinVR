@@ -1,0 +1,26 @@
+#ifndef VRMAININTERFACE_H
+#define VRMAININTERFACE_H
+
+namespace MinVR {
+
+
+/** The hooks needed for plugins to communicate with VRMain are defined
+    here in an abstract base class that should have only minimal changes
+    as MinVR evolves.  This is to avoid versioning issues where even a
+    small change in the implementation of VRMain or VRFactory might 
+    force all the plugins to need to be recompiled.
+*/
+class VRMainInterface {
+public:
+  virtual void addEventHandler(VREventHandler *eHandler) = 0;
+  virtual void addRenderHandler(VRRenderHandler *rHandler) = 0;
+  virtual void addInputDevice(VRInputDevice *dev) = 0;
+  virtual VRGraphicsToolkit* getGraphicsToolkit(const std::string &name) = 0;  
+  virtual VRWindowToolkit* getWindowToolkit(const std::string &name) = 0;
+  virtual VRFactory* getFactory() = 0;
+};
+
+
+} // end namespace
+
+#endif

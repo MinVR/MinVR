@@ -29,13 +29,17 @@ class VRWindowToolkit {
 public:
 	~VRWindowToolkit() {}
 
-	int createWindow(VRWindowSettings settings) = 0;
+	virtual int createWindow(VRWindowSettings settings) = 0;
 
-	void makeWindowCurrent(int windowID) {
+	virtual void destroyWindow(int windowID) {
+		std::cerr << "destroyWindow() not enabled in this VRWindowToolkit." << std::cerr;		
+	}
+
+	virtual void makeWindowCurrent(int windowID) {
 		std::cerr << "makeWindowCurrent() not enabled in this VRWindowToolkit." << std::cerr;
 	}
 
-	void swapBuffers(int windowID) {
+	virtual void swapBuffers(int windowID) {
 		std::cerr << "swapBuffers() not enabled in this VRWindowToolkit." << std::cerr;
 	}
 };

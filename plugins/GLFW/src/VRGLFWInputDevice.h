@@ -18,33 +18,30 @@
 
 namespace MinVR {
 
-class GlfwInputDevice : public VRInputDevice {
+/** A VRInputDevice that polls input events (mouse, keyboard, window resize, etc.) 
+    for all of the active GLFWWindows and returns input in MinVR event format.
+ */
+class VRGLFWInputDevice : public VRInputDevice {
 public:
-	PLUGIN_API GlfwInputDevice();
-	PLUGIN_API virtual ~GlfwInputDevice();
+	PLUGIN_API VRGLFWInputDevice();
+	PLUGIN_API virtual ~VRGLFWInputDevice();
 
 	PLUGIN_API void appendNewInputEventsSinceLastCall(VRDataQueue& queue);
-	PLUGIN_API void registerGlfwWindow(GlfwWindow* window);
+
+	PLUGIN_API void addWindow(GLFWWindow* window);
+	// TODO: removeWindow()?
+	// TODO: switch to using the windowID's used by VRGLFWWindowToolkit rather than
+	// GLFWwindow pointers?
 
 	PLUGIN_API void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	PLUGIN_API void sizeCallback(GLFWwindow* window, int width, int height);
 
 private:
-	std::vector<std::string> events;
-	VRDataIndex dataIndex;
-	std::map<GLFWwindow*, GlfwWindow*> windowMap;
+	std::vector<std::string> _events;
+	VRDataIndex _dataIndex;
+	std::vector<GLFWWindow*> _windows;
 };
 
-class GlfwInputDeviceFactory : public VRInputDeviceFactory {
-public:
-	PLUGIN_API GlfwInputDeviceFactory(VRInputDevice* inputDevice) : device(inputDevice) {}
-	PLUGIN_API virtual ~GlfwInputDeviceFactory() {}
-
-	PLUGIN_API std::vector<VRInputDevice*> create(VRDataIndex& dataIndex);
-
-private:
-	VRInputDevice* device;
-};
 
 } /* namespace MinVR */
 
