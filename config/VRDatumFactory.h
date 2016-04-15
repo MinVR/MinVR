@@ -23,8 +23,6 @@ public:
   bool RegisterVRDatum(int VRDatumId,
                        CreateVRDatumCallback Creator);
 
-  bool UnRegisterVRDatum(int VRDatumId);
-
 private:
   // the typedef simplifies the implementation
   typedef std::map<int, CreateVRDatumCallback> CallbackMap;
