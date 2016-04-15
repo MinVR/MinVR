@@ -16,17 +16,16 @@ const VRDatum::VRTypePair VRDatum::VRTypeMap[VRCORETYPE_NTYPES] = {
   {"container", VRCORETYPE_CONTAINER}
 };
 
-// This is just a convenience for initializing the description field
-// in each object.  Note that it has no error checking, so get the
-// VRCORETYPE_NTYPES correct, please.
-std::string VRDatum::initializeDescription(VRCORETYPE_ID t) {
+  // The constructor for the native storage form.
+VRDatum::VRDatum(const VRCORETYPE_ID inType) : type(inType) {
+
+  attrList.push_front(VRAttributeList());
   for (int i = 0; i < VRCORETYPE_NTYPES; i++) {
-    if (VRTypeMap[i].second == t) {
-      return VRTypeMap[i].first;
+    if (VRTypeMap[i].second == inType) {
+      description = VRTypeMap[i].first;
     }
   }
-  return VRTypeMap[0].first; // Should never reach here.
-}
+};
 
 // Returns the attribute list formatted to include in an XML tag.
 std::string VRDatum::getAttributeListAsString() {

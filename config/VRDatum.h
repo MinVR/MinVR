@@ -105,7 +105,7 @@ public:
 //      the sense that we're supposed to pretend they are, and so long
 //      as no one lets on, the secret will be safe.  Ok?  The syntax
 //      for using setValue() is annoying, so users shouldn't really be
-//      using it anyway.
+//      using it anyway, they should use VRDataIndex->addData() instead.
 //
 //   5. Add a method to the VRDatumPtr that will return the new
 //      data type.  See intVal() and doubleVal() for models.
@@ -159,11 +159,7 @@ protected:
   friend std::ostream & operator<<(std::ostream &os, const VRDatum& p);
 
 public:
-  // The constructor for the native storage form.
-  VRDatum(const VRCORETYPE_ID inType)
-    : type(inType) {
-    attrList.push_front(VRAttributeList());
-  };
+  VRDatum(const VRCORETYPE_ID inType);
 
   // virtual destructor allows concrete types to implement their own
   // destruction mechanisms.  Specifically, types that involve
@@ -195,7 +191,6 @@ public:
   // VRDataIndex).
   typedef struct { std::string first; VRCORETYPE_ID second; } VRTypePair;
   static const VRTypePair VRTypeMap[VRCORETYPE_NTYPES];
-  std::string initializeDescription(VRCORETYPE_ID t);
 
   // This produces the serialized version of the datum.  When packaged
   // with the description and a name, this will be ready for
@@ -270,7 +265,6 @@ public:
   VRDatumSpecialized(const T inVal):
     VRDatum(TID), needPush(false), pushed(false), stackFrame(1) {
     value.push_front(inVal);
-    description = initializeDescription(type);
   };
 
   // Couldn't figure out how to template-ize this one.
