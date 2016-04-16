@@ -163,7 +163,7 @@ Author(s) of Significant Updates/Modifications to the File:
 ///    newIndex->addSerializedValue(s);
 ///    int b = newIndex->getValue("/george");
 ///
-///  The b variable now comtains the same value as a, with the same
+///  The b variable now contains the same value as a, with the same
 ///  name.
 ///
 ///
@@ -384,7 +384,7 @@ public:
     VRDataMap::iterator it = mindex.find(valName);
     if (it == mindex.end()) {
 
-      // No? Create it and stick it in index.
+      // Still no? Create it and stick it in index.
       VRDatumPtr obj = factory.CreateVRDatum(TID, &value);
       mindex.insert(VRDataMap::value_type(valName, obj));
 
@@ -393,13 +393,14 @@ public:
       cValue.push_back(valName);
       std::string ns = getNameSpace(valName);
       // The parent container is the namespace minus the trailing /.
-      if (ns.compare("/") != 0) addData(ns.substr(0,ns.size()-1), cValue);
+      if (ns.compare("/") != 0) addData(ns.substr(0, ns.size() - 1), cValue);
 
     } else {
-      // Overwrite value
+      // Quietly overwrite value
       if (overwrite > 0) {
         setValueSpecialized(it->second, (T)value);
       } else if (overwrite == 0) {
+
         throw std::runtime_error(std::string("overwriting values not allowed"));
       }
     }
