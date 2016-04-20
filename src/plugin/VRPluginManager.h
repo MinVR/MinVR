@@ -45,13 +45,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <string>
 #include <vector>
-#include "VRSharedLibrary.h"
-#include "VRPlugin.h"
+
+#include <plugin/VRPlugin.h>
+#include <plugin/VRSharedLibrary.h>
 
 namespace MinVR {
 
 class VRMainInterface;
-
+  
 class VRPluginManager {
 public:
 	VRPluginManager(VRMainInterface *_vrMain);

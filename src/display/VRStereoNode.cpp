@@ -6,11 +6,11 @@
  * 		Dan Orban (dtorban)
  */
 
-#include "display/VRStereoNode.h"
+#include <display/VRStereoNode.h>
 
 namespace MinVR {
 
-VRStereoNode::VRStereoNode(const std::string &name, VRGraphicsToolkit, *gfxToolkit, VRStereoFormat format) : 
+VRStereoNode::VRStereoNode(const std::string &name, VRGraphicsToolkit *gfxToolkit, VRStereoFormat format) :
 	VRDisplayNode(name), _gfxToolkit(gfxToolkit), _format(format) {
 }
 
@@ -19,26 +19,26 @@ VRStereoNode::~VRStereoNode() {
 
 
 void VRStereoNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler) {
-	renderState->pushState();
+  //renderState->pushState();
 
-	if (format == VRSTEREOFORMAT_MONO) {
-		renderState->addValue("StereoFormat", "Mono");
-		renderState->addValue("Eye", "Cyclops");
+	if (_format == VRSTEREOFORMAT_MONO) {
+		renderState->addData("StereoFormat", "Mono");
+		renderState->addData("Eye", "Cyclops");
 		_gfxToolkit->setDrawBuffer(VRGraphicsToolkit::VRDRAWBUFFER_BACK);
 		renderRestOfGraph(renderState, renderHandler);
 	}
-	else if (format == VRSTEREOFORMAT_QUADBUFFERED) {
-		renderState->addValue("StereoFormat", "QuadBuffered");
-		renderState->addValue("Eye", "Left");
+	else if (_format == VRSTEREOFORMAT_QUADBUFFERED) {
+		renderState->addData("StereoFormat", "QuadBuffered");
+		renderState->addData("Eye", "Left");
 		_gfxToolkit->setDrawBuffer(VRGraphicsToolkit::VRDRAWBUFFER_BACKLEFT);
 		renderRestOfGraph(renderState, renderHandler);
 
-		renderState->addValue("Eye", "Right");
+		renderState->addData("Eye", "Right");
 		_gfxToolkit->setDrawBuffer(VRGraphicsToolkit::VRDRAWBUFFER_BACKRIGHT);
 		renderRestOfGraph(renderState, renderHandler);
 	}
-	else if (format == VRSTEREOFORMAT_SIDEBYSIDE) {
-		renderState->addValue("StereoFormat", "SideBySide");
+	else if (_format == VRSTEREOFORMAT_SIDEBYSIDE) {
+		renderState->addData("StereoFormat", "SideBySide");
 		int w,h;
 		if (renderState->exists("ViewportX", "/")) {
 			w = renderState->getValue("ViewportWidth");
@@ -48,21 +48,21 @@ void VRStereoNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandl
 			w = renderState->getValue("WindowWidth");
 			h = renderState->getValue("WindowHeight");
 		}
-		renderState->addValue("Eye", "Left");
+		renderState->addData("Eye", "Left");
 		_gfxToolkit->setViewport(VRRect(0,0,w/2,h/2));
 		renderRestOfGraph(renderState, renderHandler);
 
-		renderState->addValue("Eye", "Right");
+		renderState->addData("Eye", "Right");
 		_gfxToolkit->setViewport(VRRect(w/2+1,h/2+1,w/2,h/2));
 		renderRestOfGraph(renderState, renderHandler);
 	}
-	else if (format == VRSTEREOFORMAT_COLUMNINTERLACED) {
-		renderState->addValue("StereoFormat", "ColumnInterlaced");
-		renderState->addValue("Eye", "Left");
+	else if (_format == VRSTEREOFORMAT_COLUMNINTERLACED) {
+		renderState->addData("StereoFormat", "ColumnInterlaced");
+		renderState->addData("Eye", "Left");
 		_gfxToolkit->disableDrawingOnEvenColumns();
 		renderRestOfGraph(renderState, renderHandler);
 
-		renderState->addValue("Eye", "Right");
+		renderState->addData("Eye", "Right");
 		_gfxToolkit->disableDrawingOnOddColumns();
 		renderRestOfGraph(renderState, renderHandler);
 
@@ -70,12 +70,12 @@ void VRStereoNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandl
 	}
 
 
-	renderState->pushState();
+  //renderState->pushState();
 }
 
 
 void VRStereoNode::renderRestOfGraph(VRDataIndex *renderState, VRRenderHandler *renderHandler) {
-	if (m_children.size() == 0) {
+	if (_children.size() == 0) {
 		renderHandler->onVRRenderScene(renderState, this);
 	}
 	else {
@@ -84,12 +84,12 @@ void VRStereoNode::renderRestOfGraph(VRDataIndex *renderState, VRRenderHandler *
 }
 
 
-VRDisplayNode* VRStereoNodeFactory::create(VRMain *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) 
+VRDisplayNode* VRStereoNodeFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace)
 {
 	std::string nodeNameSpace = nameSpace + "/" + valName;
 
 	std::string type = config->getValue("Type", nodeNameSpace);
-	if (type != getType()) {
+	if (type != "VRStereoNode") {
 		// This factory cannot create the type specified
 		return NULL;
 	}
@@ -97,15 +97,15 @@ VRDisplayNode* VRStereoNodeFactory::create(VRMain *vrMain, VRDataIndex *config, 
 	VRGraphicsToolkit *gfxToolkit = vrMain->getGraphicsToolkit(config->getValue("GraphicsToolkit", nodeNameSpace));
 
 	std::string formatStr = config->getValue("StereoFormat", nodeNameSpace);
-	VRStereoFormat format = VRSTEREOFORMAT_MONO;
+	VRStereoNode::VRStereoFormat format = VRStereoNode::VRSTEREOFORMAT_MONO;
 	if (formatStr == "QuadBuffered") {
-		format = VRSTEREOFORMAT_QUADBUFFERED;
+		format = VRStereoNode::VRSTEREOFORMAT_QUADBUFFERED;
 	}
 	else if (formatStr == "SideBySide") {
-		format = VRSTEREOFORMAT_SIDEBYSIDE;
+		format = VRStereoNode::VRSTEREOFORMAT_SIDEBYSIDE;
 	}
 	else if (formatStr == "ColumnInterlaced") {
-		format = VRSTEREOFORMAT_COLUMNINTERLACED;
+		format = VRStereoNode::VRSTEREOFORMAT_COLUMNINTERLACED;
 	}
 
 	VRDisplayNode *node = new VRStereoNode(valName, gfxToolkit, format);

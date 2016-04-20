@@ -1,12 +1,17 @@
 #ifndef VRMAIN_H
 #define VRMAIN_H
 
-#include "main/VRMainHooks.h"
-#include "config/VRDataIndex.h"
-#include "display/VRDisplayDeviceFactory.h"
-#include "input/VRInputDeviceFactory.h"
-#include "net/VRNetInterface.h"
-#include "plugin/PluginManager.h"
+#include <config/VRDataIndex.h>
+#include <display/VRDisplayNode.h>
+#include <display/VRGraphicsToolkit.h>
+#include <display/VRWindowToolkit.h>
+#include <input/VRInputDevice.h>
+#include <main/VREventHandler.h>
+#include <main/VRFactory.h>
+#include <main/VRMainInterface.h>
+#include <main/VRRenderHandler.h>
+#include <net/VRNetInterface.h>
+#include <plugin/VRPluginManager.h>
 
 namespace MinVR {
 
@@ -17,7 +22,7 @@ namespace MinVR {
     programmer through a set of 5 steps needed to add MinVR to an existing
     graphics program or get started with writing a new program.
 */
-class VRMain : public VRMainHooks {
+class VRMain : public VRMainInterface {
 public:
 
   VRMain();

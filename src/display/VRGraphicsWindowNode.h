@@ -9,9 +9,13 @@
 #ifndef VRGRAPHICSWINDOWNODE_H_
 #define VRGRAPHICSWINDOWNODE_H_
 
-#include "VRDisplayNode.h"
-#include "VRWindwoToolkit.h"
-#include "math/VRRect.h"
+#include <string>
+
+#include <display/VRDisplayNode.h>
+#include <display/VRGraphicsToolkit.h>
+#include <display/VRWindowToolkit.h>
+#include <main/VRFactory.h>
+#include <math/VRRect.h>
 
 namespace MinVR {
 
@@ -21,7 +25,7 @@ namespace MinVR {
  */
 class VRGraphicsWindowNode : public VRDisplayNode {
 public:
-	VRGraphicsWindowNode(const std::string &name, VRGraphicsToolkit, *gfxToolkit, VRWindowToolkit *winToolkit, const VRWindowSettings &settings);
+	VRGraphicsWindowNode(const std::string &name, VRGraphicsToolkit *gfxToolkit, VRWindowToolkit *winToolkit, const VRWindowSettings &settings);
 	virtual ~VRGraphicsWindowNode();
 
 	virtual std::string getType() { return "VRGraphicsWindowNode"; }
@@ -42,7 +46,7 @@ class VRGraphicsWindowNodeFactory : public VRDisplayNodeFactory {
 public:
 	virtual ~VRGraphicsWindowNodeFactory() {}
 
-	VRDisplayNode* create(VRMain *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
+	VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
 };
 
 

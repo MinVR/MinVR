@@ -2,7 +2,7 @@
 #define VRINPUTDEVICE_H
 
 #include <vector>
-#include "data/VRDataIndex.h"
+#include <config/VRDataQueue.h>
 
 /** Abstract base class for Input Devices.  Input devices are polled once per frame by
 	VRMain and should return any new events generated since the last call.

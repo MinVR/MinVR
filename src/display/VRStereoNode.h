@@ -9,7 +9,9 @@
 #ifndef VRSTEREONODE_H_
 #define VRSTEREONODE_H_
 
-#include "display/VRDisplayNode.h"
+#include <display/VRDisplayNode.h>
+#include <display/VRGraphicsToolkit.h>
+#include <main/VRFactory.h>
 
 namespace MinVR {
 
@@ -25,7 +27,7 @@ public:
 		// ..
 	};
 
-	VRStereoNode(const std::string &name, VRGraphicsToolkit, *gfxToolkit, VRStereoFormat format);
+	VRStereoNode(const std::string &name, VRGraphicsToolkit *gfxToolkit, VRStereoFormat format);
 	virtual ~VRStereoNode();
 
 	virtual std::string getType() { return "VRStereoNode"; }
@@ -44,9 +46,9 @@ protected:
 
 class VRStereoNodeFactory : public VRDisplayNodeFactory {
 public:
-	virtual ~VRStereoFactory() {}
+	virtual ~VRStereoNodeFactory() {}
 
-	VRDisplayNode* create(VRMain *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
+	VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
 };
 
 } /* namespace MinVR */

@@ -44,6 +44,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define PLUGIN_H_
 
 #include <memory>
+
 #include <main/VRMainInterface.h>
 
 namespace MinVR {
@@ -71,7 +72,10 @@ extern "C"
     shared lib's extern "C" createVRPlugin() function is called.
 */
 class VRPlugin {
+public:
 
+    virtual ~VRPlugin() {}
+  
 	/// When a plugin is loaded it must somehow register itself with MinVR
 	/// so that MinVR can call functions within the plugin.  In the case of
 	/// InputDevices and DisplayDevices, the registration involves adding

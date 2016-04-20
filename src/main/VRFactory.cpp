@@ -1,14 +1,14 @@
-#include "VRFactory.h"
+#include <main/VRFactory.h>
 
 namespace MinVR {
 
 VRDisplayNode* 
 VRFactory::createDisplayNode(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) 
 {
-  for (_dispDevFactories::iterator it = _dispDevFactories.begin(); it < _dispDevFactories.end(); ++it) {
-    VRDisplayDevicee* dev = it->create(vrMain, config, valName, nameSpace);
-    if (dev != NULL) {
-      return dev;
+  for (std::vector<VRDisplayNodeFactory*>::iterator it = _dispNodeFactories.begin(); it < _dispNodeFactories.end(); ++it) {
+    VRDisplayNode *node = (*it)->create(vrMain, config, valName, nameSpace);
+    if (node != NULL) {
+      return node;
     }
   }
   return NULL;
@@ -17,8 +17,8 @@ VRFactory::createDisplayNode(VRMainInterface *vrMain, VRDataIndex *config, const
 VRInputDevice* 
 VRFactory::createInputDevice(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace)
 {
-  for (_inputDevFactories::iterator it = _inputDevFactories.begin(); it < _inputDevFactories.end(); ++it) {
-    VRInputDevicee* dev = it->create(vrMain, config, valName, nameSpace);
+  for (std::vector<VRInputDeviceFactory*>::iterator it = _inputDevFactories.begin(); it < _inputDevFactories.end(); ++it) {
+    VRInputDevice* dev = (*it)->create(vrMain, config, valName, nameSpace);
     if (dev != NULL) {
       return dev;
     }
@@ -29,8 +29,8 @@ VRFactory::createInputDevice(VRMainInterface *vrMain, VRDataIndex *config, const
 VRGraphicsToolkit* 
 VRFactory::createGraphicsToolkit(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace)
 {
-  for (_gfxToolkitFactories::iterator it = _gfxToolkitFactories.begin(); it < _gfxToolkitFactories.end(); ++it) {
-    VRGraphicsToolkit* tk = it->create(vrMain, config, valName, nameSpace);
+  for (std::vector<VRGraphicsToolkitFactory*>::iterator it = _gfxToolkitFactories.begin(); it < _gfxToolkitFactories.end(); ++it) {
+    VRGraphicsToolkit* tk = (*it)->create(vrMain, config, valName, nameSpace);
     if (tk != NULL) {
       return tk;
     }
@@ -42,8 +42,8 @@ VRFactory::createGraphicsToolkit(VRMainInterface *vrMain, VRDataIndex *config, c
 VRWindowToolkit* 
 VRFactory::createWindowToolkit(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace)
 {
-  for (_winToolkitFactories::iterator it = _winToolkitFactories.begin(); it < _winToolkitFactories.end(); ++it) {
-    VRWindowToolkit* tk = it->create(vrMain, config, valName, nameSpace);
+  for (std::vector<VRWindowToolkitFactory*>::iterator it = _winToolkitFactories.begin(); it < _winToolkitFactories.end(); ++it) {
+    VRWindowToolkit* tk = (*it)->create(vrMain, config, valName, nameSpace);
     if (tk != NULL) {
       return tk;
     }

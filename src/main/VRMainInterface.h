@@ -1,9 +1,19 @@
 #ifndef VRMAININTERFACE_H
 #define VRMAININTERFACE_H
 
+#include <display/VRGraphicsToolkit.h>
+#include <display/VRWindowToolkit.h>
+#include <input/VRInputDevice.h>
+#include <main/VREventHandler.h>
+#include <main/VRRenderHandler.h>
+
+
+
+
 namespace MinVR {
 
-
+class VRFactory;
+  
 /** The hooks needed for plugins to communicate with VRMain are defined
     here in an abstract base class that should have only minimal changes
     as MinVR evolves.  This is to avoid versioning issues where even a

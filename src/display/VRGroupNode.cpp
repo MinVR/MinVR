@@ -1,6 +1,5 @@
 
-#include "VRGroupNode.h"
-#include "VRFactory.h"
+#include <display/VRGroupNode.h>
 
 namespace MinVR {
 
@@ -15,11 +14,11 @@ VRGroupNode::~VRGroupNode()
 
 
 VRDisplayNode*
-VRGroupNodeFactory::create(VRMain *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) {
+VRGroupNodeFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) {
 	std::string nodeNameSpace = nameSpace + "/" + valName;
 
 	std::string type = config->getValue("Type", nodeNameSpace);
-	if (type != getType()) {
+	if (type != "VRDisplayNode") {
 		// This factory cannot create the type specified
 		return NULL;
 	}

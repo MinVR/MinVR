@@ -9,8 +9,10 @@
 #ifndef VRCONSOLENODE_H_
 #define VRCONSOLENODE_H_
 
-#include "display/VRDisplayNode.h"
 #include <iostream>
+
+#include "VRDisplayNode.h"
+#include <main/VRFactory.h>
 
 namespace MinVR {
 
@@ -22,7 +24,7 @@ public:
 	virtual std::string getType() { return "VRConsoleNode"; }
 
 	void render(VRDataIndex *renderState, VRRenderHandler* renderHandler);
-	void displayTheFinishedRendering(VRDataIndex *renderState);
+	void displayFinishedRendering(VRDataIndex *renderState);
 
 	/// Overridden here in order to generate an error - a console node cannot have children.
 	void addChild(VRDisplayNode* child);
@@ -41,7 +43,7 @@ class VRConsoleNodeFactory : public VRDisplayNodeFactory {
 public:
 	virtual ~VRConsoleNodeFactory() {}
 
-	VRDisplayNode* create(VRMain *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
+	VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
 };
 
 } /* namespace MinVR */

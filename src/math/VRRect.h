@@ -40,20 +40,20 @@ public:
 		m_width = width;
 	}
 
-	double getXOffset() const {
+	double getX() const {
 		return m_xOffset;
 	}
 
-	void setXOffset(double xOffset) {
-		m_xOffset = xOffset;
+	void setX(double x) {
+		m_xOffset = x;
 	}
 
-	double getYOffset() const {
+	double getY() const {
 		return m_yOffset;
 	}
 
-	void setYOffset(double yOffset) {
-		m_yOffset = yOffset;
+	void setY(double y) {
+		m_yOffset = y;
 	}
 
 	bool isUsePercent() const {

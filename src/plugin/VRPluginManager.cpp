@@ -40,16 +40,17 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ================================================================================ */
 
-#include "VRPluginManager.h"
-#include <main/VRMainInterface.h>
 #include <iostream>
+
+#include <main/VRMainInterface.h>
+#include <plugin/VRPluginManager.h>
 
 namespace MinVR {
 
 VRPluginManager::VRPluginManager(VRMainInterface *vrMain) : _vrMain(vrMain) {
 }
 
-PluginManager::~PluginManager() {
+VRPluginManager::~VRPluginManager() {
 	for (int f = 0; f < _plugins.size(); f++)
 	{
 		_plugins[f]->unregisterWithMinVR(_vrMain);
@@ -62,7 +63,7 @@ PluginManager::~PluginManager() {
 	}
 }
 
-bool PluginManager::loadPlugin(const std::string& filePath, const std::string& name) {
+bool VRPluginManager::loadPlugin(const std::string& filePath, const std::string& name) {
 #if defined(WIN32)
 	std::string path = filePath + "/bin/" + name + ".dll";
 #elif defined(__APPLE__)
@@ -71,7 +72,7 @@ bool PluginManager::loadPlugin(const std::string& filePath, const std::string& n
 	std::string path = filePath + "/lib/lib" + name + ".so";
 #endif
 
-	SharedLibrary* lib = new SharedLibrary(path);
+	VRSharedLibrary* lib = new VRSharedLibrary(path);
 	if (lib->isLoaded())
 	{
 		typedef int version_t();
@@ -82,7 +83,7 @@ bool PluginManager::loadPlugin(const std::string& filePath, const std::string& n
 			return false;
 		}
 
-		typedef Plugin* create_t();
+		typedef VRPlugin* create_t();
 		create_t* createVRPlugin = lib->loadSymbol<create_t>("createVRPlugin");
 		if (createVRPlugin == NULL)
 		{

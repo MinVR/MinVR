@@ -1,4 +1,9 @@
 
+#ifndef VRWINDOWTOOLKIT_H
+#define VRWINDOWTOOLKIT_H
+
+
+namespace MinVR {
 
 /** New window settings are likely to be introduced over time, and there will be
     a long list of settings, so these are stored in a settings data structure to
@@ -29,6 +34,8 @@ class VRWindowToolkit {
 public:
 	~VRWindowToolkit() {}
 
+    virtual std::string getName() = 0;
+
 	virtual int createWindow(VRWindowSettings settings) = 0;
 
 	virtual void destroyWindow(int windowID) {
@@ -44,3 +51,7 @@ public:
 	}
 };
 
+
+} // end namespace
+
+#endif

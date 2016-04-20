@@ -1,12 +1,13 @@
-#include "VRMain.h"
+#include <main/VRMain.h>
 
 #include <stdio.h>
 #ifndef WIN32
 #include <unistd.h>
 #endif
 
-#include "net/VRNetClient.h"
-#include "net/VRNetServer.h"
+#include <net/VRNetClient.h>
+#include <net/VRNetServer.h>
+#include <plugin/VRPluginManager.h>
 
 namespace MinVR {
 
@@ -30,25 +31,29 @@ public:
   }
   virtual ~VRCompositeRenderHandler() {}
 
-  virtual void onVRRenderScene(const VRDataIndex &renderState, VRData) {
-    for (vector<VRRenderHandler*>::iterator it = _handlers.begin(); it != _handlers.end(); it++) {
-      (*it)->onVRRenderScene(renderState);
+  virtual void onVRRenderScene(VRDataIndex *renderState, VRDisplayNode *callingNode) {
+    for (std::vector<VRRenderHandler*>::iterator it = _handlers.begin(); it != _handlers.end(); it++) {
+      (*it)->onVRRenderScene(renderState, callingNode);
     }
   }
 
-  virtual void onVRRenderContext(const VRDataIndex &renderState) {
-   for (vector<VRRenderHandler*>::iterator it = _handlers.begin(); it != _handlers.end(); it++) {
-      (*it)->onVRRenderContext(renderState);
+  virtual void onVRRenderContext(VRDataIndex *renderState, VRDisplayNode *callingNode) {
+    for (std::vector<VRRenderHandler*>::iterator it = _handlers.begin(); it != _handlers.end(); it++) {
+      (*it)->onVRRenderContext(renderState, callingNode);
     }
   }
+  
+protected:
+  std::vector<VRRenderHandler*> _handlers;
 };
 
 
 
-VRMain::VRMain() : _initialized(false), _config(NULL), _displayGraph(NULL), _factory(NULL), _index(NULL), _net(NULL), _pluginMgr(NULL)
+  
+VRMain::VRMain() : _initialized(false), _config(NULL), _net(NULL), _factory(NULL), _pluginMgr(NULL), _displayGraph(NULL)
 {
   _factory = new VRFactory();
-  _pluginMgr = new VRPluginMgr(this);
+  _pluginMgr = new VRPluginManager(this);
 }
 
 
@@ -66,8 +71,8 @@ VRMain::~VRMain()
   	delete _factory;
   }
 
-  if (_index) {
-  	delete _index;
+  if (_config) {
+  	delete _config;
   }
 
   if (_net) {
@@ -83,21 +88,21 @@ VRMain::~VRMain()
 void 
 VRMain::initialize(const std::string &configFile, const std::string &vrSetups) 
 {
-  _index = new VRDataIndex();
-  _index->processXMLFile(configFile);
+  _config = new VRDataIndex();
+  _config->processXMLFile(configFile, "/");
 
 
   // IDENTIFY THE VRSETUP(S) TO CONFIGURE
 
-  if (!_index->exists("VRSetups","/")) {
+  if (!_config->exists("VRSetups","/")) {
     cerr << "VRMain Error:  No VRSetups tag found in the config file " << configFile << endl;
   	exit(1);
   }
 
-  std::vector<std::string> vrSetupsInConfig = _index->getValue("VRSetups", "/");
+  std::vector<std::string> vrSetupsInConfig = _config->getValue("VRSetups", "/");
   if (vrSetupsInConfig.size() == 1) {
     // only one VRSetup is defined in the config file, use it.
-    _name = vrSetupList[0];
+    _name = vrSetupsInConfig[0];
   }
   else {
     // more than one VRSetup is defined in this config file
@@ -146,11 +151,11 @@ VRMain::initialize(const std::string &configFile, const std::string &vrSetups)
   // LOAD PLUGINS:
 
   // Load plugins from the plugin directory.  This will add their factories to the master VRFactory.
-  std::vector<std::string> pList = _index->getValue("VRPlugins", _name);
+  std::vector<std::string> pList = _config->getValue("VRPlugins", _name);
   for (std::vector<std::string>::iterator it = pList.begin(); it < pList.end(); ++it) {
   	
-  	std::string path = _index->getValue("Path", _name + *it);
-  	std::string file = _index->getValue("File", _name + *it);
+  	std::string path = _config->getValue("Path", _name + *it);
+  	std::string file = _config->getValue("File", _name + *it);
 
     string buildType = "";
     #ifdef MinVR_DEBUG
@@ -166,15 +171,15 @@ VRMain::initialize(const std::string &configFile, const std::string &vrSetups)
   // CONFIGURE NETWORKING:
 
   // check the type of this VRSetup, it should be either "VRServer", "VRClient", or "VRStandAlone"
-  std::string type = _index->getValue("Type", _name);
+  std::string type = _config->getValue("Type", _name);
   if (type == "VRServer") {
-  	std::string port = _index->getValue("Port", _name);
-  	int numClients = _index->getValue("NumClients", _name);  	
+  	std::string port = _config->getValue("Port", _name);
+  	int numClients = _config->getValue("NumClients", _name);  	
   	_net = new VRNetServer(port, numClients);
   }
   else if (type == "VRClient") {
-    std::string port = _index->getValue("Port", _name);
-  	std::string ipAddress = _index->getValue("ServerIP", _name); 
+    std::string port = _config->getValue("Port", _name);
+  	std::string ipAddress = _config->getValue("ServerIP", _name); 
   	_net = new VRNetClient(ipAddress, port);
   }
   else { // type == "VRStandAlone"
@@ -183,11 +188,11 @@ VRMain::initialize(const std::string &configFile, const std::string &vrSetups)
 
 
   // CONFIGURE INPUT DEVICES:
-  if (_index->exists("VRInputDevices", _name)) {
-    std::vector<std::string> idList = _index->getValue("VRInputDevices", _name);
+  if (_config->exists("VRInputDevices", _name)) {
+    std::vector<std::string> idList = _config->getValue("VRInputDevices", _name);
 	  for (std::vector<std::string>::iterator it = idList.begin(); it < idList.end(); ++it) {
 	    // create a new input device for each one in the list
-	    VRInputDevice *dev = VRFactory::createInputDevice(this, _index, *it, _name);
+	    VRInputDevice *dev = _factory->createInputDevice(this, _config, *it, _name);
 	    if (dev) {
 	  	  _inputDevices.push_back(dev);
 	    }
@@ -196,11 +201,11 @@ VRMain::initialize(const std::string &configFile, const std::string &vrSetups)
 
 
   // CONFIGURE GRAPHICS TOOLKITS
-  if (_index->exists("VRGraphicsToolkits", _name)) {
-    std::vector<std::string> idList = _index->getValue("VRGraphicsToolkits", _name);
+  if (_config->exists("VRGraphicsToolkits", _name)) {
+    std::vector<std::string> idList = _config->getValue("VRGraphicsToolkits", _name);
     for (std::vector<std::string>::iterator it = idList.begin(); it < idList.end(); ++it) {
       // create a new graphics toolkit for each one in the list
-      VRGraphicsToolkit *tk = VRFactory::createGraphicsToolkit(this, _index, *it, _name);
+      VRGraphicsToolkit *tk = _factory->createGraphicsToolkit(this, _config, *it, _name);
       if (tk) {
         _gfxToolkits.push_back(tk);
       }
@@ -208,11 +213,11 @@ VRMain::initialize(const std::string &configFile, const std::string &vrSetups)
   }
 
   // CONFIGURE WINDOW TOOLKITS
-  if (_index->exists("VRWindowToolkits", _name)) {
-    std::vector<std::string> idList = _index->getValue("VRWindowToolkits", _name);
+  if (_config->exists("VRWindowToolkits", _name)) {
+    std::vector<std::string> idList = _config->getValue("VRWindowToolkits", _name);
     for (std::vector<std::string>::iterator it = idList.begin(); it < idList.end(); ++it) {
       // create a new graphics toolkit for each one in the list
-      VRWindowToolkit *tk = VRFactory::createWindowToolkit(this, _index, *it, _name);
+      VRWindowToolkit *tk = _factory->createWindowToolkit(this, _config, *it, _name);
       if (tk) {
         _winToolkits.push_back(tk);
       }
@@ -220,9 +225,9 @@ VRMain::initialize(const std::string &configFile, const std::string &vrSetups)
   }
 
   // CONFIGURE THE DISPLAY GRAPH:
-  if (_index->exists("VRDisplayGraph", _name)) {
-    std::string dgstr = _index->getValue("VRDisplayGraph", _name);
-    _displayGraph = VRFactory::createDisplayNode(this, _index, dgstr, _name);
+  if (_config->exists("VRDisplayGraph", _name)) {
+    std::string dgstr = _config->getValue("VRDisplayGraph", _name);
+    _displayGraph = _factory->createDisplayNode(this, _config, dgstr, _name);
   }
 
   _initialized = true;
@@ -231,7 +236,7 @@ VRMain::initialize(const std::string &configFile, const std::string &vrSetups)
 void 
 VRMain::synchronizeAndProcessEvents() 
 {
-  if (!initialized) {
+  if (!_initialized) {
     std::cerr << "VRMain not initialized." << std::endl;
     return;
   }
@@ -247,8 +252,8 @@ VRMain::synchronizeAndProcessEvents()
   // since the last call to synchronizeAndProcessEvents(..).  So,
   // every node will process the same set of input events this frame.
   VRDataQueue::serialData eventData;
-  if (_vrNet != NULL) {
-    eventData = _vrNet->syncEventDataAcrossAllNodes(eventsFromDevices.serialize());
+  if (_net != NULL) {
+    eventData = _net->syncEventDataAcrossAllNodes(eventsFromDevices.serialize());
   }
   else if (eventsFromDevices.notEmpty()) {
   	// TODO: There is no need to serialize here if we are not a network node
@@ -258,11 +263,11 @@ VRMain::synchronizeAndProcessEvents()
   VRDataQueue *events = new VRDataQueue(eventData);
   while (events->notEmpty()) {
     // Unpack the next item from the queue.
-    std::string event = _index->addSerializedValue( events->getSerializedObject() );
+    std::string event = _config->addSerializedValue( events->getSerializedObject() );
 
     // Invoke the user's callback on the new event
     for (int f = 0; f < _eventHandlers.size(); f++) {
-      _eventHandlers[f]->onVREvent(event, _index);
+      _eventHandlers[f]->onVREvent(event, _config);
     }
 
     // Get the next item from the queue.
@@ -275,7 +280,7 @@ VRMain::synchronizeAndProcessEvents()
 void
 VRMain::renderOnAllDisplays() 
 {
-  if (!initialized) {
+  if (!_initialized) {
     std::cerr << "VRMain not initialized." << std::endl;
     return;
   }
@@ -283,14 +288,15 @@ VRMain::renderOnAllDisplays()
   VRDataIndex renderState;
 
   if (_displayGraph != NULL) {
-    _displayGraph->render(renderState, VRCompositeRenderHandler(_renderHandlers));
+    VRCompositeRenderHandler compositeHandler(_renderHandlers);
+    _displayGraph->render(&renderState, &compositeHandler);
  
     // TODO: Advanced: if you are really trying to optimize performance, this 
     // is where you might want to add an idle callback.  Here, it's
     // possible that the CPU is idle, but the GPU is still processing
     // graphics comamnds.
 
-    _displayGraph->waitForRenderToComplete(renderState);
+    _displayGraph->waitForRenderToComplete(&renderState);
   }
 
   // SYNCHRONIZATION POINT #2: When this function returns we know that
@@ -302,7 +308,7 @@ VRMain::renderOnAllDisplays()
   }
 
   if (_displayGraph != NULL) {
-    _displayGraph->displayTheFinishedRendering(renderState);
+    _displayGraph->displayFinishedRendering(&renderState);
   }
 }
 

@@ -9,7 +9,12 @@
 #ifndef VROFFAXISPROJECTIONNODE_H
 #define VROFFAXISPROJECTIONNODE_H
 
-#include "display/VRDisplayNode.h"
+#include <string>
+
+#include <display/VRDisplayNode.h>
+#include <main/VREventHandler.h>
+#include <main/VRFactory.h>
+#include <math/VRMath.h>
 
 namespace MinVR {
 
@@ -48,7 +53,7 @@ class VROffAxisProjectionNodeFactory : public VRDisplayNodeFactory {
 public:
 	virtual ~VROffAxisProjectionNodeFactory() {}
 
-	VRDisplayNode* create(VRMain *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
+	VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
 };
 
 } // end namespace

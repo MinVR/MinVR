@@ -9,7 +9,8 @@
 #ifndef VRGROUPNODE_H
 #define VRGROUPNODE_H
 
-#include "display/VRDisplayNode.h"
+#include "VRDisplayNode.h"
+#include <main/VRFactory.h>
 
 namespace MinVR {
 
@@ -32,7 +33,7 @@ class VRGroupNodeFactory : public VRDisplayNodeFactory {
 public:
 	virtual ~VRGroupNodeFactory() {}
 
-	VRDisplayNode* create(VRMain *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
+	VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
 };
 
 } // end namespace

@@ -6,7 +6,7 @@
  * 		Dan Orban (dtorban)
  */
 
-#include <display/VRDisplayNode.h>
+#include "VRDisplayNode.h"
 
 namespace MinVR {
 
@@ -18,42 +18,42 @@ VRDisplayNode::~VRDisplayNode() {
 	clearChildren(true);
 }
 
-void VRDisplayNode::render(VRDataIndex *renderState, VRRenderHandler* renderHandler) {
-	if (m_children.size() > 0) {
-		for (vector<VRDisplayNode*>::iterator it = m_children.begin(); it != m_children.end(); it++) {
+void VRDisplayNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler) {
+    if (_children.size() > 0) {
+		for (vector<VRDisplayNode*>::iterator it = _children.begin(); it != _children.end(); it++) {
 			(*it)->render(renderState, renderHandler);
 		}
 	}
 }
 
 void VRDisplayNode::waitForRenderToComplete(VRDataIndex *renderState) {
-	for (vector<VRDisplayNode*>::iterator it = m_children.begin(); it != m_children.end(); it++) {
+	for (vector<VRDisplayNode*>::iterator it = _children.begin(); it != _children.end(); it++) {
 		(*it)->waitForRenderToComplete(renderState);
 	}
 }
 
-void VRDisplayNode::displayTheFinishedRendering(VRDataIndex *renderState) {
-	for (vector<VRDisplayNode*>::iterator it = m_children.begin(); it != m_children.end(); it++) {
-		(*it)->displayTheFinishedRendering(renderState);
+void VRDisplayNode::displayFinishedRendering(VRDataIndex *renderState) {
+	for (vector<VRDisplayNode*>::iterator it = _children.begin(); it != _children.end(); it++) {
+		(*it)->displayFinishedRendering(renderState);
 	}
 }
 
 const std::vector<VRDisplayNode*>& VRDisplayNode::getChildren() const {
-	return m_children;
+	return _children;
 }
 
 void VRDisplayNode::addChild(VRDisplayNode* child) {
-	m_children.push_back(child);
+	_children.push_back(child);
 }
 
 void VRDisplayNode::clearChildren(bool destroyChildren) {
 	if (destroyChildren) {
-		for (vector<VRDisplayNode*>::iterator it = m_children.begin(); it != m_children.end(); it++) {
+		for (vector<VRDisplayNode*>::iterator it = _children.begin(); it != _children.end(); it++) {
 				delete (*it);
 		}
 	}
 
-	m_children.clear();
+	_children.clear();
 }
 
 } /* namespace MinVR */

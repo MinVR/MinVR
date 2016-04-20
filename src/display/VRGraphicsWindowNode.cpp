@@ -13,20 +13,20 @@ namespace MinVR {
 VRGraphicsWindowNode::VRGraphicsWindowNode(const std::string &name, VRGraphicsToolkit *gfxToolkit, VRWindowToolkit *winToolkit, const VRWindowSettings &settings) : 
 	VRDisplayNode(name), _gfxToolkit(gfxToolkit), _winToolkit(winToolkit), _settings(settings) 
 {
-	_windowID = _toolkit->createWindow(_settings);
+	_windowID = _winToolkit->createWindow(_settings);
 }
 
 VRGraphicsWindowNode::~VRGraphicsWindowNode() {
 }
 
 void VRGraphicsWindowNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler) {
-	renderState->pushState();
+  //renderState->pushState();
 
 	// Is this the kind of state information we expect to pass from one node to the next?
-	renderState->addValue("WindowX", settings.xpos);
-	renderState->addValue("WindowY", settings.ypos);
-	renderState->addValue("WindowWidth", settings.width);
-	renderState->addValue("WindowHeight", settings.height);
+	renderState->addData("WindowX", _settings.xpos);
+	renderState->addData("WindowY", _settings.ypos);
+	renderState->addData("WindowWidth", _settings.width);
+	renderState->addData("WindowHeight", _settings.height);
 
 	_winToolkit->makeWindowCurrent(_windowID);
 	_gfxToolkit->clearScreen();
@@ -34,7 +34,7 @@ void VRGraphicsWindowNode::render(VRDataIndex *renderState, VRRenderHandler *ren
 	// windows should call the application programmer's context-level callback
 	renderHandler->onVRRenderContext(renderState, this);
 
-	if (m_children.size() == 0) {
+	if (_children.size() == 0) {
 		// if the window node is a leaf node, then call the onRenderScene callback		
 		renderHandler->onVRRenderScene(renderState, this);
 	}
@@ -45,7 +45,7 @@ void VRGraphicsWindowNode::render(VRDataIndex *renderState, VRRenderHandler *ren
 
 	_gfxToolkit->flushGraphics();
 
-	renderState->popState();
+  //renderState->popState();
 }
 
 void VRGraphicsWindowNode::waitForRenderToComplete(VRDataIndex *renderState) {
@@ -54,20 +54,20 @@ void VRGraphicsWindowNode::waitForRenderToComplete(VRDataIndex *renderState) {
 	_gfxToolkit->finishGraphics();
 }
 
-void VRGraphicsWindowNode::displayTheFinishedRendering(VRDataIndex *renderState) {
-	VRDisplayNode::displayTheFinishedRendering(renderState);
+void VRGraphicsWindowNode::displayFinishedRendering(VRDataIndex *renderState) {
+	VRDisplayNode::displayFinishedRendering(renderState);
 	_winToolkit->makeWindowCurrent(_windowID);
-	_winToolkit->swapBuffers();
+	_winToolkit->swapBuffers(_windowID);
 }
 
 
 
-VRDisplayNode* VRGraphicsWindowFactory::create(VRMain *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) 
+VRDisplayNode* VRGraphicsWindowNodeFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace)
 {
 	std::string nodeNameSpace = nameSpace + "/" + valName;
 
 	std::string type = config->getValue("Type", nodeNameSpace);
-	if (type != getType()) {
+	if (type != "VRGraphicsWindowNode") {
 		// This factory cannot create the type specified
 		return NULL;
 	}
@@ -80,10 +80,10 @@ VRDisplayNode* VRGraphicsWindowFactory::create(VRMain *vrMain, VRDataIndex *conf
 	settings.ypos = config->getValue("YPos", nodeNameSpace);
 	settings.width = config->getValue("Width", nodeNameSpace);
 	settings.height = config->getValue("Height", nodeNameSpace);
-	settings.border = config->getValue("Border", nodeNameSpace);
-	settings.caption = config->getValue("Caption", nodeNameSpace);
-	settings.quadBuffered = config->getValue("QuadBuffered", nodeNameSpace);
-	settings.gpuAffinity = config->getValue("GPUAffinity", nodeNameSpace);
+	settings.border = (int)config->getValue("Border", nodeNameSpace);
+    settings.caption = std::string(config->getValue("Caption", nodeNameSpace));
+	settings.quadBuffered = (int)config->getValue("QuadBuffered", nodeNameSpace);
+    settings.gpuAffinity = std::string(config->getValue("GPUAffinity", nodeNameSpace));
 
 	VRDisplayNode *node = new VRGraphicsWindowNode(valName, gfxToolkit, winToolkit, settings);
 

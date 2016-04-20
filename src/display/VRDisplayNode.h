@@ -9,8 +9,11 @@
 #ifndef VRDISPLAYNODE_H_
 #define VRDISPLAYNODE_H_
 
-#include "main/VRRenderHandler.h"
 #include <vector>
+#include <string>
+
+#include <config/VRDataIndex.h>
+#include <main/VRRenderHandler.h>
 
 namespace MinVR {
 
@@ -56,8 +59,9 @@ public:
 	/// Clears the children in a node
 	void clearChildren(bool destroyChildren = false);
 
-private:
-	std::vector<VRDisplayNode*> m_children;
+protected:
+	std::vector<VRDisplayNode*> _children;
+    std::string _name;
 };
 
 }

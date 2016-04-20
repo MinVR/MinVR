@@ -9,16 +9,16 @@
 #ifndef VRVIEWPORTNODE_H_
 #define VRVIEWPORTNODE_H_
 
-#include "display/VRDisplayNode.h"
-#include "math/VRRect.h"
-#include "display/factories/VRDisplayFactory.h"
-#include "main/VRSystem.h"
+#include <display/VRDisplayNode.h>
+#include <display/VRGraphicsToolkit.h>
+#include <main/VRFactory.h>
+#include <math/VRRect.h>
 
 namespace MinVR {
 
 class VRViewportNode : public VRDisplayNode {
 public:
-	VRViewportNode(const std::string &name, VRGraphicsToolkit, *gfxToolkit, const VRRect& rect);
+	VRViewportNode(const std::string &name, VRGraphicsToolkit *gfxToolkit, const VRRect& rect);
 	virtual ~VRViewportNode();
 
 	virtual std::string getType() { return "VRViewportNode"; }
@@ -35,7 +35,7 @@ class VRViewportNodeFactory : public VRDisplayNodeFactory {
 public:
 	virtual ~VRViewportNodeFactory() {}
 
-	VRDisplayNode* create(VRMain *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
+	VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
 };
 
 

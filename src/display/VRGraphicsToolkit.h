@@ -1,6 +1,13 @@
+#ifndef VRGRAPHICSTOOLKIT_H
+#define VRGRAPHICSTOOLKIT_H
 
 
+#include <math/VRRect.h>
 
+
+namespace MinVR {
+  
+  
 /** Abstract base class for graphics toolkits that are implemented in plugins.  Examples
     are OpenGL, DirectX, Processing.org, Blender, etc.. 
  */
@@ -8,6 +15,8 @@ class VRGraphicsToolkit {
 public:
 	~VRGraphicsToolkit() {}
 
+    virtual std::string getName() = 0;
+  
 	void clearScreen() {
 		std::cerr << "clearScreen() not enabled in this VRGraphicsToolkit." << std::cerr;
 	}
@@ -50,3 +59,6 @@ public:
 
 };
 
+} // end namespace
+
+#endif

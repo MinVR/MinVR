@@ -1,15 +1,15 @@
 #ifndef VRFACTORY_H
 #define VRFACTORY_H
 
+
+#include <display/VRDisplayNode.h>
+#include <display/VRGraphicsToolkit.h>
+#include <display/VRWindowToolkit.h>
+#include <input/VRInputDevice.h>
+#include <main/VRMainInterface.h>
+
 namespace MinVR {
-
-#include "display/VRDisplayNode.h"
-#include "display/VRGraphicsToolkit.h"
-#include "display/VRWindowToolkit.h"
-#include "input/VRInputDevice.h"
-#include "main/VRMainInterface.h"
-
-
+  
 class VRMain;
 
 
@@ -24,7 +24,7 @@ class VRDisplayNodeFactory {
 public:
   virtual ~VRDisplayNodeFactory() {}
 
-  VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) = 0;
+  virtual VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) = 0;
 };
 
 
@@ -34,7 +34,7 @@ class VRInputDeviceFactory {
 public:
   virtual ~VRInputDeviceFactory() {}
 
-  VRInputDevice* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) = 0;
+  virtual VRInputDevice* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) = 0;
 };
 
 /**
@@ -43,7 +43,7 @@ class VRGraphicsToolkitFactory {
 public:
   virtual ~VRGraphicsToolkitFactory() {}
 
-  VRGraphicsToolkit* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) = 0;
+  virtual VRGraphicsToolkit* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) = 0;
 };
 
 
@@ -53,7 +53,7 @@ class VRWindowToolkitFactory {
 public:
   virtual ~VRWindowToolkitFactory() {}
 
-  VRWindowToolkit* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) = 0;
+  virtual VRWindowToolkit* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) = 0;
 };
 
 

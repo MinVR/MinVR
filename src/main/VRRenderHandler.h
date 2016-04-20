@@ -1,8 +1,13 @@
 #ifndef VRRENDERHANDLER_H
 #define VRRENDERHANDLER_H
 
+#include <config/VRDataIndex.h>
+
+
 namespace MinVR {
 
+class VRDisplayNode;
+  
 /** This abstract interface class provides the hook / callback mechanism for
     application programmers to render graphics, audio, haptics or other content.
     Application programmers should subclass from VRRenderHandler and then register
