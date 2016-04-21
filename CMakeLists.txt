@@ -214,6 +214,7 @@ set(vr_plugin_cpp
 set(vr_plugin_h
   ${vr_src_dir}/plugin/VRPlugin.h
   ${vr_src_dir}/plugin/VRPluginManager.h
+  ${vr_src_dir}/plugin/VRPluginVersion.h
   ${vr_src_dir}/plugin/VRSharedLibrary.h
 )
 
@@ -257,7 +258,7 @@ add_library(MinVR ${vr_sources})
 # separately from the MinVR Core lib
 
 #add_subdirectory (plugins)
-#add_subdirectory (examples)
+add_subdirectory(examples/SimpleOpenGLGLFW)
 #add_subdirectory (tests)
 
 

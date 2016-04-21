@@ -1,15 +1,35 @@
 #include <string>
 #include <iostream>
 
+#include <display/VRConsoleNode.h>
 #include <main/VRMain.h>
 #include <main/VREventHandler.h>
 #include <main/VRRenderHandler.h>
+#include <math/VRMath.h>
+
+
+#if defined(WIN32)
+#define NOMINMAX
+#include <windows.h>
+#include <GL/gl.h>
+#elif defined(__APPLE__)
+#include <OpenGL/OpenGL.h>
+#include <OpenGL/glu.h>
+#else
+#define GL_GLEXT_PROTOTYPES
+#include <GL/gl.h>
+#include <GL/glu.h>
+#endif
+
+using namespace MinVR;
+
 
 class MyVRApp : public VREventHandler, public VRRenderHandler {
+public:
 	MyVRApp(const std::string &configFile, const std::string vrSetups) : _vrMain(NULL), _quit(false) {
 		_vrMain = new VRMain();
-		_vrMain->initialize(argv[1], argv[2]);
-		_vrMain->addEventHandler(this);
+        _vrMain->initialize(configFile, vrSetups);
+      	_vrMain->addEventHandler(this);
 		_vrMain->addRenderHandler(this);
 	}
 
@@ -28,15 +48,15 @@ class MyVRApp : public VREventHandler, public VRRenderHandler {
 
 	// Callback for rendering, inherited from VRRenderHandler
 	virtual void onVRRenderScene(VRDataIndex *renderState, VRDisplayNode *callingNode) {
-		if (renderState->exists("IsConsole")) {
-			VRConsoleNode *console = dynamic_cast<VRConsoleNode>(callingNode);
+		if (renderState->exists("IsConsole", "/")) {
+			VRConsoleNode *console = dynamic_cast<VRConsoleNode*>(callingNode);
 			console->println("Console output...");
 		}
 		else {
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
 			VRMatrix4 P = renderState->getValue("ProjectionMatrix", "/");
-			glLoadMatrix(P.m);
+			glLoadMatrixd(P.m);
 
 			glBegin(GL_QUADS);              // Begin drawing the color cube with 6 quads
 			// Top face (y = 1.0f)
@@ -99,16 +119,23 @@ protected:
 
 int main(int argc, char **argv) {
 
-	if ((argc < 2) || (argc > 3) || ((argc==1) && (std::string(argv[1]) == "-h"))) {
+	if ((argc < 2) || (argc > 3) || ((argc==2) && (std::string(argv[1]) == "-h"))) {
 		std::cout << "Usage:" << std::endl;
 		std::cout << "vrexample <config-file-name.xml> [vrsetup-name]" << std::endl;
 		std::cout << "     <config-file-name.xml> is required and is the name of a MinVR config file." << std::endl;
 		std::cout << "     [vrsetup-name] is optional and is a comma-separated list of VRSetups" << std::endl;
 		std::cout << "     to load in this process.  If more than one VRSetup is listed, new" << std::endl;
 		std::cout << "     processes will be forked." << std::endl;
+        exit(0);
 	}
 
-	MyVRApp app(argv[1], argv[2]);
+    std::string config = argv[1];
+    std::string setup = "";
+    if (argc >= 3) {
+      setup = argv[2];
+    }
+  
+    MyVRApp app(config, setup);
 	app.run();
 
 	exit(0);

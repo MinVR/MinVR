@@ -1,6 +1,8 @@
 #ifndef VRMAIN_H
 #define VRMAIN_H
 
+#include <plugin/VRPluginManager.h>
+
 #include <config/VRDataIndex.h>
 #include <display/VRDisplayNode.h>
 #include <display/VRGraphicsToolkit.h>
@@ -11,7 +13,6 @@
 #include <main/VRMainInterface.h>
 #include <main/VRRenderHandler.h>
 #include <net/VRNetInterface.h>
-#include <plugin/VRPluginManager.h>
 
 namespace MinVR {
 

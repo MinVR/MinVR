@@ -48,7 +48,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <main/VRMainInterface.h>
 
 namespace MinVR {
-
+  
 #define PLUGIN_FRAMEWORK_VERSION 0
 
 #if defined(WIN32)
@@ -58,13 +58,15 @@ namespace MinVR {
 #endif
 
 
-extern "C"
-{
-	PLUGIN_API int getPluginFrameworkVersion() {
-		return PLUGIN_FRAMEWORK_VERSION;
-	}
-}
 
+  //extern "C"
+  //{
+  //	PLUGIN_API int getPluginFrameworkVersion() {
+  //		return PLUGIN_FRAMEWORK_VERSION;
+  //	}
+  //}
+
+  
 
 /** Abstract interface for VRPlugin objects.  The convention is that each
     shared lib will define just one VRPlugin object, which is returned
@@ -74,7 +76,7 @@ extern "C"
 class VRPlugin {
 public:
 
-    virtual ~VRPlugin() {}
+  virtual ~VRPlugin() {}
   
 	/// When a plugin is loaded it must somehow register itself with MinVR
 	/// so that MinVR can call functions within the plugin.  In the case of

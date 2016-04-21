@@ -44,6 +44,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <main/VRMainInterface.h>
 #include <plugin/VRPluginManager.h>
+#include <plugin/VRPluginVersion.h>
 
 namespace MinVR {
 

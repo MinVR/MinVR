@@ -16,7 +16,11 @@ VRConsoleNode::VRConsoleNode(const std::string &name, std::ostream *stream) : VR
 VRConsoleNode::~VRConsoleNode() {
 }
 
-
+void VRConsoleNode::addChild(VRDisplayNode *child) {
+  std::cerr << "Cannot add a child to a console node" << std::endl;
+}
+  
+  
 void VRConsoleNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler) {
 
   //renderState->pushState();

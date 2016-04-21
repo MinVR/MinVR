@@ -89,17 +89,17 @@ void
 VRMain::initialize(const std::string &configFile, const std::string &vrSetups) 
 {
   _config = new VRDataIndex();
-  _config->processXMLFile(configFile, "/");
+  _config->processXMLFile(configFile, "MinVR");
 
 
   // IDENTIFY THE VRSETUP(S) TO CONFIGURE
 
-  if (!_config->exists("VRSetups","/")) {
+  if (!_config->exists("VRSetups","/MinVR")) {
     cerr << "VRMain Error:  No VRSetups tag found in the config file " << configFile << endl;
   	exit(1);
   }
 
-  std::vector<std::string> vrSetupsInConfig = _config->getValue("VRSetups", "/");
+  std::vector<std::string> vrSetupsInConfig = _config->getValue("VRSetups", "/MinVR");
   if (vrSetupsInConfig.size() == 1) {
     // only one VRSetup is defined in the config file, use it.
     _name = vrSetupsInConfig[0];
@@ -111,7 +111,7 @@ VRMain::initialize(const std::string &configFile, const std::string &vrSetups)
   	if (found == std::string::npos) {
   	  // no comma found in the vrSetups argument, so continue with just a single process and
   	  // configure based on the single vrSetup that was the user asked to start.
-  	  _name = vrSetups;
+  	  _name = "/MinVR/" + vrSetups;
   	}
   	else {
   	  // the vrSetups argument is a comma separated list of vrSetups, fork a new process for each
@@ -128,7 +128,7 @@ VRMain::initialize(const std::string &configFile, const std::string &vrSetups)
           if (pid == 0) {
             break;
           }
-		  _name = vrSetupStrings[i];
+		  _name = "/MinVR/" + vrSetupStrings[i];
         }
       #else
         // TODO: Add windows implementation of forking a process
@@ -147,26 +147,31 @@ VRMain::initialize(const std::string &configFile, const std::string &vrSetups)
   // for everything from this point on, the VRSetup name for this process is stored in _name, and this
   // becomes the base namespace for all of the VRDataIndex lookups that we do.
 
+  
+  std::cout << "Config Structure: " << std::endl;
+  _config->printStructure();
+  
 
   // LOAD PLUGINS:
 
   // Load plugins from the plugin directory.  This will add their factories to the master VRFactory.
-  std::vector<std::string> pList = _config->getValue("VRPlugins", _name);
-  for (std::vector<std::string>::iterator it = pList.begin(); it < pList.end(); ++it) {
-  	
-  	std::string path = _config->getValue("Path", _name + *it);
-  	std::string file = _config->getValue("File", _name + *it);
-
-    string buildType = "";
-    #ifdef MinVR_DEBUG
+  if (_config->exists("VRPlugins", _name)) {
+    std::vector<std::string> pList = _config->getValue("VRPlugins", _name);
+    for (std::vector<std::string>::iterator it = pList.begin(); it < pList.end(); ++it) {
+      
+      std::string path = _config->getValue("Path", _name + *it);
+      std::string file = _config->getValue("File", _name + *it);
+      
+      string buildType = "";
+#ifdef MinVR_DEBUG
       buildType = "d";
-    #endif
-  	
-  	if (!_pluginMgr->loadPlugin(path, file + buildType)) {
-  	  cerr << "VRMain Error: Problem loading plugin " << path << file << buildType << endl;
-  	}
+#endif
+      
+      if (!_pluginMgr->loadPlugin(path, file + buildType)) {
+        cerr << "VRMain Error: Problem loading plugin " << path << file << buildType << endl;
+      }
+    }
   }
-
 
   // CONFIGURE NETWORKING:
 

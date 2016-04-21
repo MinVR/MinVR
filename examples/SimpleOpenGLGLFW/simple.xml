@@ -1,0 +1,14 @@
+<MinVR>
+
+<VRSetups type="stringarray">Simple</VRSetups>
+
+<Simple>
+	<Type>VRStandAlone</Type>
+	<VRDisplayGraph>RootNode</VRDisplayGraph>
+</Simple>
+
+<RootNode>
+	<Type>VRConsoleNode</Type>
+</RootNode>
+
+</MinVR>
