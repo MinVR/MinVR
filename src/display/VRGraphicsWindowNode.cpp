@@ -72,8 +72,17 @@ VRDisplayNode* VRGraphicsWindowNodeFactory::create(VRMainInterface *vrMain, VRDa
 		return NULL;
 	}
 
-	VRGraphicsToolkit *gfxToolkit = vrMain->getGraphicsToolkit(config->getValue("GraphicsToolkit", nodeNameSpace));
-	VRWindowToolkit *winToolkit = vrMain->getWindowToolkit(config->getValue("WindowToolkit", nodeNameSpace));
+    std::string gtk = config->getValue("GraphicsToolkit", nodeNameSpace);
+	VRGraphicsToolkit *gfxToolkit = vrMain->getGraphicsToolkit(gtk);
+    if (gfxToolkit == NULL) {
+      std::cerr << "Cannot get the graphics toolkit named: " << gtk << std::endl;
+    }
+
+    std::string wtk = config->getValue("WindowToolkit", nodeNameSpace);
+    VRWindowToolkit *winToolkit = vrMain->getWindowToolkit(wtk);
+    if (winToolkit == NULL) {
+      std::cerr << "Cannot get the window toolkit named: " << wtk << std::endl;
+    }
 
 	VRWindowSettings settings;
 	settings.xpos = config->getValue("XPos", nodeNameSpace);
@@ -87,14 +96,15 @@ VRDisplayNode* VRGraphicsWindowNodeFactory::create(VRMainInterface *vrMain, VRDa
 
 	VRDisplayNode *node = new VRGraphicsWindowNode(valName, gfxToolkit, winToolkit, settings);
 
-	std::vector<std::string> childrenNames = config->getValue("Children", nameSpace);
-	for (std::vector<std::string>::iterator it = childrenNames.begin(); it < childrenNames.end(); ++it) {
-		VRDisplayNode *child = vrMain->getFactory()->createDisplayNode(vrMain, config, *it, "/");
-		if (child != NULL) {
-			node->addChild(child);
-		}
-	}
-
+    if (config->exists("Children", nodeNameSpace)) {
+	    std::vector<std::string> childrenNames = config->getValue("Children", nodeNameSpace);
+	    for (std::vector<std::string>::iterator it = childrenNames.begin(); it < childrenNames.end(); ++it) {
+		    VRDisplayNode *child = vrMain->getFactory()->createDisplayNode(vrMain, config, *it, "/");
+		    if (child != NULL) {
+			    node->addChild(child);
+		    }
+	    }
+    }
 	return node;
 }
 

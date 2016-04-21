@@ -10,6 +10,10 @@
 #include <plugin/VRPlugin.h>
 #include "VROpenGLGraphicsToolkit.h"
 
+// special: include this only once in one .cpp file per plugin
+#include <plugin/VRPluginVersion.h>
+
+
 namespace MinVR {
 
 class VROpenGLPlugin : public VRPlugin {
@@ -25,14 +29,12 @@ public:
 	{
 		std::cout << "Registering VROpenGLPlugin." << std::endl;
 		vrMain->getFactory()->addSubFactory(new VROpenGLGraphicsToolkitFactory());
-		return true;
 	}
 
 	PLUGIN_API void unregisterWithMinVR(VRMainInterface *vrMain)
 	{
 		std::cout << "Unregistering GlfwPlugin." << std::endl;
 		// TODO
-		return true;
 	}
 };
 

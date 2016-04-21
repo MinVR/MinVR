@@ -655,9 +655,9 @@ bool VRDataIndex::processXMLFile(const std::string fileName,
   std::string xml_string = "";
   std::string pathName = dereferenceEnvVars(fileName);
 
-  //#ifdef DEBUG
+#ifdef DEBUG
   std::cout << "Reading from file = " << pathName << std::endl;
-  //#endif
+#endif
   ifstream file(pathName.c_str());
 
   if(file.is_open()) {
@@ -666,7 +666,6 @@ bool VRDataIndex::processXMLFile(const std::string fileName,
     xml_string = buffer.rdbuf()->str();
 
     std::string ret = addSerializedValue(xml_string, nameSpace);
-    std::cout << "adding: " << ret << std::endl;
     
   } else {
     std::cerr << "Error opening file " << fileName << std::endl;

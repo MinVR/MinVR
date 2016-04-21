@@ -15,6 +15,9 @@
 #include "VRGLFWWindowToolkit.h"
 
 
+// special: include this only once in one .cpp file per plugin
+#include <plugin/VRPluginVersion.h>
+
 
 namespace MinVR {
 

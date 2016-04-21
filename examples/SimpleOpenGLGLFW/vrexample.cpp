@@ -46,6 +46,14 @@ public:
 		}
 	}
 
+  
+    virtual void onVRRenderContext(VRDataIndex *renderState, VRDisplayNode *callingNode) {
+        if (!renderState->exists("IsConsole", "/")) {
+            glClearColor(0.f, 0.f, 0.f, 1.f);
+        }
+    }
+
+  
 	// Callback for rendering, inherited from VRRenderHandler
 	virtual void onVRRenderScene(VRDataIndex *renderState, VRDisplayNode *callingNode) {
 		if (renderState->exists("IsConsole", "/")) {
@@ -55,8 +63,10 @@ public:
 		else {
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
-			VRMatrix4 P = renderState->getValue("ProjectionMatrix", "/");
-			glLoadMatrixd(P.m);
+            if (renderState->exists("ProjectionMatrix", "/")) {
+			    VRMatrix4 P = renderState->getValue("ProjectionMatrix", "/");
+			    glLoadMatrixd(P.m);
+            }
 
 			glBegin(GL_QUADS);              // Begin drawing the color cube with 6 quads
 			// Top face (y = 1.0f)

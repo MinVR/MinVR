@@ -171,8 +171,8 @@ VRMain::initialize(const std::string &configFile, const std::string &vrSetups)
     std::vector<std::string> pList = _config->getValue("VRPlugins", _name);
     for (std::vector<std::string>::iterator it = pList.begin(); it < pList.end(); ++it) {
       
-      std::string path = _config->getValue("Path", _name + *it);
-      std::string file = _config->getValue("File", _name + *it);
+      std::string path = _config->getValue("Path", "/MinVR/" + *it);
+      std::string file = _config->getValue("File", "/MinVR/" + *it);
       
       string buildType = "";
 #ifdef MinVR_DEBUG
@@ -226,6 +226,9 @@ VRMain::initialize(const std::string &configFile, const std::string &vrSetups)
       if (tk) {
         _gfxToolkits.push_back(tk);
       }
+      else {
+        std::cerr << "Problem creating graphics toolkit: " << *it << std::endl;
+      }
     }
   }
 
@@ -238,6 +241,9 @@ VRMain::initialize(const std::string &configFile, const std::string &vrSetups)
       if (tk) {
         _winToolkits.push_back(tk);
       }
+      else {
+        std::cerr << "Problem creating window toolkit: " << *it << std::endl;
+      }
     }
   }
 
@@ -246,7 +252,7 @@ VRMain::initialize(const std::string &configFile, const std::string &vrSetups)
     std::string dgstr = _config->getValue("VRDisplayGraph", _name);
     _displayGraph = _factory->createDisplayNode(this, _config, dgstr, "/MinVR");
     if (_displayGraph == NULL) {
-      std::cerr << "Problem creating display graph" << std::endl;
+      std::cerr << "Problem creating display graph: " << dgstr << std::endl;
     }
   }
 
@@ -356,16 +362,19 @@ VRMain::addRenderHandler(VRRenderHandler* renderHandler)
 VRGraphicsToolkit* 
 VRMain::getGraphicsToolkit(const std::string &name) {
   for (std::vector<VRGraphicsToolkit*>::iterator it = _gfxToolkits.begin(); it < _gfxToolkits.end(); ++it) {
+    std::cout << (*it)->getName() << std::endl;
     if ((*it)->getName() == name) {
       return *it;
     }
   }
+  
   return NULL;
 }
 
 VRWindowToolkit* 
 VRMain::getWindowToolkit(const std::string &name) {
   for (std::vector<VRWindowToolkit*>::iterator it = _winToolkits.begin(); it < _winToolkits.end(); ++it) {
+    std::cout << (*it)->getName() << std::endl;
     if ((*it)->getName() == name) {
       return *it;
     }

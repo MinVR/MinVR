@@ -1,28 +1,34 @@
 
 <MinVR>
 
-<VRSetups>Desktop</VRSetups>
+<VRSetups type="stringarray">Desktop</VRSetups>
 
 <Desktop>
 	<Type>VRStandAlone</Type>
-	<VRPlugins>GLFWPlugin,OpenGLPlugin</VRPlugins>
+	<VRPlugins type="stringarray">GLFWPlugin@OpenGLPlugin</VRPlugins>
 	<VRDisplayGraph>RootNode</VRDisplayGraph>
+    <VRWindowToolkits type="stringarray">GLFWToolkit</VRWindowToolkits>
+    <VRGraphicsToolkits type="stringarray">OpenGLToolkit</VRGraphicsToolkits>
 </Desktop>
 
 <GLFWPlugin>
-	<Path>../plugins</Path>
-	<File>GLFWPlugin</File>
+<Path>../../build/plugins/MinVR_GLFW</Path>
+	<File>MinVR_GLFW</File>
 </GLFWPlugin>
 
 <OpenGLPlugin>
-	<Path>../plugins</Path>
-	<File>OpenGLPlugin</File>
+	<Path>../../build/plugins/MinVR_OpenGL</Path>
+	<File>MinVR_OpenGL</File>
 </OpenGLPlugin>
 
 <RootNode>
-	<Type>VRWindowNode</Type>
-	<WindowToolkit>GLFWWindowToolkit</WindowToolkit>
-	<GraphicsToolkit>OpenGLGraphicsToolkit</GraphicsToolkit>
+	<Type>VRGraphicsWindowNode</Type>
+	<WindowToolkit>VRGLFWWindowToolkit</WindowToolkit>
+	<GraphicsToolkit>VROpenGLGraphicsToolkit</GraphicsToolkit>
+    <Border>0</Border>
+    <Caption>Desktop</Caption>
+    <QuadBuffered>0</QuadBuffered>
+    <GPUAffinity>None</GPUAffinity>
 	<StereoFormat>Mono</StereoFormat>
 	<NearClip>0.01</NearClip>
 	<FarClip>1000.0</FarClip>
@@ -34,11 +40,11 @@
 </RootNode>
 
 <GLFWToolkit>
-	<Type>GLFWWindowToolkit</Type>
+	<Type>VRGLFWWindowToolkit</Type>
 </GLFWToolkit>
 
 <OpenGLToolkit>
-	<Type>OpenGLGraphicsToolkit</Type>
+	<Type>VROpenGLGraphicsToolkit</Type>
 </OpenGLToolkit>
 
 </MinVR>
