@@ -49,7 +49,7 @@ ExternalProject_add(glfw
 		BINARY_DIR ${glfw_build_dir}
 )
  
-set_property(TARGET glfw PROPERTY FOLDER "Dependencies")
+#set_property(TARGET glfw PROPERTY FOLDER "Dependencies")
 
 set(GLFW_INCLUDE_DIR ${glfw_INSTALL_DIR}/include CACHE INTERNAL "Directory of GLFW header files")
 if(MSVC)

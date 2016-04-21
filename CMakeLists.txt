@@ -132,4 +132,9 @@ add_subdirectory(tests/config)
 set_property(TARGET SimpleOpenGLGLFW PROPERTY FOLDER "examples")
 set_property(TARGET memtest PROPERTY FOLDER "tests")
 set_property(TARGET RunSomeIndexTests PROPERTY FOLDER "tests")
+set_property(TARGET MinVR_OpenGL PROPERTY FOLDER "plugins")
+set_property(TARGET MinVR_GLFW PROPERTY FOLDER "plugins")
+set_property(TARGET glfw PROPERTY FOLDER "plugins/MinVR_GLFW/libGLFW")
+set_property(TARGET MinVR_OpenGL PROPERTY FOLDER "plugins")
+
 
