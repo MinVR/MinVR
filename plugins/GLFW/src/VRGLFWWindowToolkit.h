@@ -14,6 +14,7 @@
 #include <GLFW/glfw3.h>
 #include <display/VRWindowToolkit.h>
 #include <main/VRFactory.h>
+#include <main/VRMainInterface.h>
 #include "VRGLFWInputDevice.h"
 
 
@@ -30,10 +31,14 @@ public:
 	PLUGIN_API VRGLFWWindowToolkit(VRMainInterface *vrMain);
 	PLUGIN_API virtual ~VRGLFWWindowToolkit();
 
+    PLUGIN_API std::string getName() { return "VRGLFWWindowToolkit"; }
+  
 	PLUGIN_API int createWindow(VRWindowSettings settings);
 
 	PLUGIN_API void makeWindowCurrent(int windowID);
 
+    PLUGIN_API void destroyWindow(int windowID);
+  
 	PLUGIN_API void swapBuffers(int windowID);
 
 	PLUGIN_API GLFWwindow* getWindow(int windowID) {
@@ -49,7 +54,7 @@ private:
 
 class VRGLFWWindowToolkitFactory : public VRWindowToolkitFactory {
 public:
-	VRWindowToolkit* create(VRMain *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
+	VRWindowToolkit* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
 };
 
 

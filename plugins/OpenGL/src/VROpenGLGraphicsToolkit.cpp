@@ -13,7 +13,7 @@ VROpenGLGraphicsToolkit::~VROpenGLGraphicsToolkit() {
 }
 
 void VROpenGLGraphicsToolkit::clearScreen() {
-	glClear(true, true, true);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void VROpenGLGraphicsToolkit::setDrawBuffer(VRDRAWBUFFER buffer) {
@@ -39,12 +39,8 @@ void VROpenGLGraphicsToolkit::setDrawBuffer(VRDRAWBUFFER buffer) {
 
 void VROpenGLGraphicsToolkit::setViewport(VRRect rect) {
 	glEnable(GL_SCISSOR_TEST);
-	int xOffset = x + getParent()->getXOffset();
-	int yOffset = y + getParent()->getYOffset();
-	int viewportWidth = min(width, getParent()->getWidth()-x);
-	int viewportHeight = min(height, getParent()->getHeight()-y);
-	glViewport(xOffset, yOffset, viewportWidth, viewportHeight);
-	glScissor(xOffset, yOffset, viewportWidth, viewportHeight);
+	glViewport(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
+  	glScissor(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
 }
 
 void VROpenGLGraphicsToolkit::flushGraphics() {
@@ -58,9 +54,9 @@ void VROpenGLGraphicsToolkit::finishGraphics() {
 
 VRGraphicsToolkit*
 VROpenGLGraphicsToolkitFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) {
-	std::string nameSpace = nameSpace + "/" + valName;
+	std::string tkNameSpace = nameSpace + "/" + valName;
 
-	std::string type = config->getValue("Type", nodeNameSpace);
+	std::string type = config->getValue("Type", tkNameSpace);
 	if (type != "VROpenGLGraphicsToolkit") {
 		// This factory cannot create the type specified
 		return NULL;
@@ -72,5 +68,3 @@ VROpenGLGraphicsToolkitFactory::create(VRMainInterface *vrMain, VRDataIndex *con
 
 
 } // end namespace
-
-#endif

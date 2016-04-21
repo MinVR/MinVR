@@ -44,7 +44,7 @@ VRGLFWWindowToolkit::createWindow(VRWindowSettings settings) {
 		glfwWindowHint(GLFW_STEREO, true);
 	}
 
-	GLFWwindow* window = glfwCreateWindow(settings.width, settings.height, settings.caption, NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(settings.width, settings.height, settings.caption.c_str(), NULL, NULL);
 	if (!window) {
 		std::cout << "Error creating window." << std::endl;
 	}
@@ -91,9 +91,9 @@ VRGLFWWindowToolkit::swapBuffers(int windowID) {
 
 VRWindowToolkit*
 VRGLFWWindowToolkitFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) {
-	std::string nameSpace = nameSpace + "/" + valName;
+	std::string tkNameSpace = nameSpace + "/" + valName;
 
-	std::string type = config->getValue("Type", nodeNameSpace);
+	std::string type = config->getValue("Type", tkNameSpace);
 	if (type != "VRGLFWWindowToolkit") {
 		// This factory cannot create the type specified
 		return NULL;

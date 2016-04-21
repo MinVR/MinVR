@@ -23,26 +23,28 @@ if (BASE_PLUGINS)
 endif(BASE_PLUGINS)
 
 #------------------OpenGL-----------------------------
-if(false)
 option(MINVR_OPENGL_PLUGIN "If enabled, OpenGL plugin will be installed" OFF)
 if (MINVR_OPENGL_PLUGIN OR BASE_GRAPHICS_PLUGINS)
 	add_subdirectory (OpenGL)
 endif()
 
-#------------------Threading-----------------------------
-
-option(MINVR_THREADING_PLUGIN "If enabled, GLFW plugin will be installed" OFF)
-if (MINVR_THREADING_PLUGIN OR BASE_GRAPHICS_PLUGINS)
-	add_subdirectory (plugins/Threading)
-endif()
-endif()
 #------------------GLFW-----------------------------
 option(MINVR_GLFW_PLUGIN "If enabled, GLFW plugin will be installed" OFF)
 if (MINVR_GLFW_PLUGIN OR BASE_GRAPHICS_PLUGINS)
 	add_subdirectory (GLFW)
 endif()
 
+
+
+
 if(false)
+
+#------------------Threading-----------------------------
+option(MINVR_THREADING_PLUGIN "If enabled, Threading plugin will be installed" OFF)
+if (MINVR_THREADING_PLUGIN OR BASE_GRAPHICS_PLUGINS)
+	add_subdirectory (plugins/Threading)
+endif()
+
 #------------------GLUT-----------------------------
 option(MINVR_GLUT_PLUGIN "If enabled, GLUT plugin will be installed" OFF)
 
@@ -52,7 +54,11 @@ if (GLUT_FOUND)
 		add_subdirectory (plugins/GLUT)
 	endif()
 endif()
+
 endif()
+
+
+
 #------------------GLFW-------------------------------
 
 if (false)

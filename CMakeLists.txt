@@ -125,7 +125,7 @@ include_directories(
 
 
 add_subdirectory(src)
-#add_subdirectory(plugins)
+add_subdirectory(plugins)
 add_subdirectory(examples/SimpleOpenGLGLFW)
 add_subdirectory(tests/config)
 

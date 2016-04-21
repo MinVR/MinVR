@@ -9,12 +9,17 @@
 #ifndef GLFWINPUTDEVICE_H_
 #define GLFWINPUTDEVICE_H_
 
-#include "plugin/PluginFramework.h"
-#include "event/VRInputDevice.h"
-#include <vector>
-#include <GLFW/glfw3.h>
-#include "GlfwWindow.h"
+
 #include <map>
+#include <vector>
+#include <string>
+
+#include <GLFW/glfw3.h>
+
+#include <config/VRDataQueue.h>
+#include <input/VRInputDevice.h>
+#include <plugin/VRPlugin.h>
+
 
 namespace MinVR {
 
@@ -28,7 +33,7 @@ public:
 
 	PLUGIN_API void appendNewInputEventsSinceLastCall(VRDataQueue& queue);
 
-	PLUGIN_API void addWindow(GLFWWindow* window);
+    PLUGIN_API void addWindow(::GLFWwindow* window);
 	// TODO: removeWindow()?
 	// TODO: switch to using the windowID's used by VRGLFWWindowToolkit rather than
 	// GLFWwindow pointers?
@@ -39,7 +44,7 @@ public:
 private:
 	std::vector<std::string> _events;
 	VRDataIndex _dataIndex;
-	std::vector<GLFWWindow*> _windows;
+    std::vector< ::GLFWwindow*> _windows;
 };
 
 

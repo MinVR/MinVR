@@ -2,6 +2,9 @@
 #ifndef VRWINDOWTOOLKIT_H
 #define VRWINDOWTOOLKIT_H
 
+#include <string>
+#include <iostream>
+
 
 namespace MinVR {
 

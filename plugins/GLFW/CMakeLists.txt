@@ -3,14 +3,12 @@ project (MinVR_GLFW)
 set (SOURCEFILES 
   src/VRGLFWInputDevice.cpp
   src/VRGLFWPlugin.cpp
-  src/VRGLFWWindowNode.cpp
-  src/GlfwWindowFactory.cpp
+  src/VRGLFWWindowToolkit.cpp
 )
 
 set (HEADERFILES
   src/VRGLFWInputDevice.h
-  src/VRGLFWWindowNode.h
-  src/GlfwWindowFactory.h
+  src/VRGLFWWindowToolkit.h
 )
 
 source_group("Header Files" FILES ${HEADERFILES})
@@ -79,7 +77,9 @@ link_directories(${CMAKE_BINARY_DIR}/lib)
 
 # Include Directories
 include_directories (
+  ${vr_src_dir}
   src
+  deps/glfw/include
 )
 
 #------------------------------------------
@@ -150,7 +150,7 @@ endif()
 
 #add_definitions(-DPLUGINPATH="${CMAKE_BINARY_DIR}/plugins")
 #add_executable ( test_glfw test/test.cpp )
-#target_link_libraries(test_glfw ${OPENGL_LIBRARIES} VRPlugin VRDisplay VRIndex ${LIBS_ALL})
+#target_link_libraries(test_glfw ${OPENGL_LIBRARIES} MinVR ${LIBS_ALL})
 
 SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
 SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
@@ -158,7 +158,7 @@ SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/lib")
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 add_library ( ${PROJECT_NAME} SHARED ${HEADERFILES} ${SOURCEFILES} )
-target_link_libraries(${PROJECT_NAME} ${GLFW_LIBRARY} ${OPENGL_LIBRARIES} VRMain VRPlugin VRDisplay VRIndex VRMath ${LIBS_ALL})
+target_link_libraries(${PROJECT_NAME} ${GLFW_LIBRARY} ${OPENGL_LIBRARIES} MinVR ${LIBS_ALL})
 add_dependencies( ${PROJECT_NAME} glfw)
 
 #------------------------------------------

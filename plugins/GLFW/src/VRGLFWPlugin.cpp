@@ -30,18 +30,16 @@ public:
 		std::cout << "GlfwPlugin destroyed." << std::endl;
 	}
 
-	PLUGIN_API bool registerWithMinVR(VRMainInterface *vrMain)
+	PLUGIN_API void registerWithMinVR(VRMainInterface *vrMain)
 	{
 		std::cout << "Registering VRGLFWPlugin." << std::endl;
 		vrMain->getFactory()->addSubFactory(new VRGLFWWindowToolkitFactory());
-		return true;
 	}
 
-	PLUGIN_API bool unregisterWithMinVR(VRMainInterface *vrMain)
+	PLUGIN_API void unregisterWithMinVR(VRMainInterface *vrMain)
 	{
 		std::cout << "Unregistering GlfwPlugin." << std::endl;
 		// TODO
-		return true;
 	}
 };
 
@@ -50,7 +48,7 @@ public:
 
 extern "C"
 {
-	PLUGIN_API MinVR::Plugin* createPlugin() {
+	PLUGIN_API MinVR::VRPlugin* createPlugin() {
 		return new MinVR::VRGLFWPlugin();
 	}
 }

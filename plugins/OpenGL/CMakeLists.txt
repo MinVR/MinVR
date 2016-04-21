@@ -1,18 +1,13 @@
 project (MinVR_OpenGL)
 
 set (SOURCEFILES 
-  src/stereo/QuadbufferStereo.cpp
-  src/stereo/SideBySideStereo.cpp
-  src/DisplayFactoryOgl.cpp
-  src/OpenGLPlugin.cpp
-  src/VRViewportOgl.cpp
+  src/VROpenGLGraphicsToolkit.cpp
+  src/VROpenGLPlugin.cpp
 )
 
 set (HEADERFILES
-  src/stereo/QuadbufferStereo.h
-  src/stereo/SideBySideStereo.h
-  src/DisplayFactoryOgl.h
-  src/VRViewportOgl.h
+src/VROpenGLGraphicsToolkit.h
+src/VROpenGLHeaders.h
 )
 
 source_group("Header Files" FILES ${HEADERFILES})
@@ -123,7 +118,7 @@ SET(CMAKE_INSTALL_RPATH "${VRPlugins_install_dir}/${PROJECT_NAME}/lib")
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 add_library ( ${PROJECT_NAME} SHARED ${HEADERFILES} ${SOURCEFILES} )
-target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} VRPlugin VRDisplay VRIndex ${LIBS_ALL})
+target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} MinVR ${LIBS_ALL})
 
 #------------------------------------------
 # Install Target

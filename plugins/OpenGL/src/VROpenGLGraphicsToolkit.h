@@ -2,9 +2,13 @@
 #define VROPENGLGRAPHICSTOOLKIT_H
 
 #include <display/VRGraphicsToolkit.h>
+#include <main/VRFactory.h>
+
 
 namespace MinVR {
 
+  
+  
 /** OpenGL Implementation for the MinVR VRGraphicsToolkit abstraction.
  */
 class VROpenGLGraphicsToolkit : public VRGraphicsToolkit {
@@ -12,6 +16,8 @@ public:
 	VROpenGLGraphicsToolkit();
 	virtual ~VROpenGLGraphicsToolkit();
 
+    std::string getName() { return "VROpenGLGraphicsToolkit"; }
+  
 	void clearScreen();
 	void setDrawBuffer(VRDRAWBUFFER buffer);
 	void setViewport(VRRect rect);

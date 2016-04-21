@@ -43,7 +43,6 @@ void VRGLFWInputDevice::appendNewInputEventsSinceLastCall(VRDataQueue& queue) {
 }
 
 void VRGLFWInputDevice::addWindow(GLFWwindow* window) {
-	windowMap[window->getWindow()] = window;
 	glfwSetWindowUserPointer(window, this);
 	glfwSetKeyCallback(window, glfw_key_callback);
 	glfwSetWindowSizeCallback(window, glfw_size_callback);
@@ -56,7 +55,7 @@ void VRGLFWInputDevice::keyCallback(GLFWwindow* window, int key, int scancode,
     std::string event = getGlfwKeyName(key) + "_" + getGlfwActionName(action);
     _dataIndex.addData("/keyboard/value", event);
     _dataIndex.addData("/keyboard/timestamp", (int)clock());
-    _events.push_back(dataIndex.serialize("/keyboard"));
+    _events.push_back(_dataIndex.serialize("/keyboard"));
 }
 
 void VRGLFWInputDevice::sizeCallback(GLFWwindow* window, int width, int height) {
