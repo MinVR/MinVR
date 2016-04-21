@@ -49,7 +49,7 @@ public:
   
     virtual void onVRRenderContext(VRDataIndex *renderState, VRDisplayNode *callingNode) {
         if (!renderState->exists("IsConsole", "/")) {
-            glClearColor(0.f, 0.f, 0.f, 1.f);
+          glClearColor(0.5, 0.5, 0.5, 1.f);
         }
     }
 
@@ -61,13 +61,24 @@ public:
 			console->println("Console output...");
 		}
 		else {
-			glMatrixMode(GL_PROJECTION);
-			glLoadIdentity();
             if (renderState->exists("ProjectionMatrix", "/")) {
+                glMatrixMode(GL_PROJECTION);
+                glLoadIdentity();
 			    VRMatrix4 P = renderState->getValue("ProjectionMatrix", "/");
 			    glLoadMatrixd(P.m);
             }
+            else {
+                glMatrixMode(GL_PROJECTION);
+                glLoadIdentity();
+                gluPerspective(1.6*45.f, 1.f, 0.1f, 100.0f);
+                glMatrixMode(GL_MODELVIEW);
+                glLoadIdentity();
+                gluLookAt(5.f, 5.f, 5.f,  0.f, 0.f, 0.f,  0.f, 1.f, 0.f);
+            }
 
+            glEnable(GL_DEPTH_TEST);
+            glDepthFunc(GL_LEQUAL);
+          
 			glBegin(GL_QUADS);              // Begin drawing the color cube with 6 quads
 			// Top face (y = 1.0f)
 			glColor3f(0.0f, 0.5f, 0.0f);    // Green
@@ -111,6 +122,7 @@ public:
 			glVertex3f(1.0f, -1.0f,  1.0f);
 			glVertex3f(1.0f, -1.0f, -1.0f);
 			glEnd();                         // End of drawing color-cube
+          
 		}
 	}
 

@@ -38,22 +38,21 @@ VRGLFWWindowToolkit::~VRGLFWWindowToolkit() {
 
 int
 VRGLFWWindowToolkit::createWindow(VRWindowSettings settings) {
-	glfwDefaultWindowHints();
+    glfwDefaultWindowHints();
 
-	if (settings.quadBuffered) {
-		glfwWindowHint(GLFW_STEREO, true);
-	}
+    if (settings.quadBuffered) {
+  		glfwWindowHint(GLFW_STEREO, true);
+    }
 
 	GLFWwindow* window = glfwCreateWindow(settings.width, settings.height, settings.caption.c_str(), NULL, NULL);
 	if (!window) {
 		std::cout << "Error creating window." << std::endl;
 	}
 
-	std::cout << "Created window." << std::endl;
-	glfwSetWindowPos(window, settings.xpos, settings.ypos);
+    glfwSetWindowPos(window, settings.xpos, settings.ypos);
 	glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
-	glfwMakeContextCurrent(NULL);
+    glfwMakeContextCurrent(NULL);
 
 	_inputDev->addWindow(window);
 	if (_windows.size() == 0) {
@@ -75,17 +74,17 @@ VRGLFWWindowToolkit::destroyWindow(int windowID) {
 void 
 VRGLFWWindowToolkit::makeWindowCurrent(int windowID) {
 	if ((windowID >=0) && (windowID < _windows.size())) {
-		glfwMakeContextCurrent(_windows[windowID]);
+      	glfwMakeContextCurrent(_windows[windowID]);
 	}
 	else {
-		glfwMakeContextCurrent(NULL);
+      	glfwMakeContextCurrent(NULL);
 	}
 }
 
 void 
 VRGLFWWindowToolkit::swapBuffers(int windowID) {
-	glfwMakeContextCurrent(_windows[windowID]);
-	glfwSwapBuffers(_windows[windowID]);
+    glfwMakeContextCurrent(_windows[windowID]);
+  	glfwSwapBuffers(_windows[windowID]);
 }
 
 

@@ -26,22 +26,22 @@ namespace MinVR {
 class VRGLFWPlugin : public VRPlugin {
 public:
 	PLUGIN_API VRGLFWPlugin() {
-		std::cout << "GlfwPlugin created." << std::endl;
+      //std::cout << "GlfwPlugin created." << std::endl;
 	}
 
 	PLUGIN_API virtual ~VRGLFWPlugin() {
-		std::cout << "GlfwPlugin destroyed." << std::endl;
+      //std::cout << "GlfwPlugin destroyed." << std::endl;
 	}
 
 	PLUGIN_API void registerWithMinVR(VRMainInterface *vrMain)
 	{
-		std::cout << "Registering VRGLFWPlugin." << std::endl;
+      //std::cout << "Registering VRGLFWPlugin." << std::endl;
 		vrMain->getFactory()->addSubFactory(new VRGLFWWindowToolkitFactory());
 	}
 
 	PLUGIN_API void unregisterWithMinVR(VRMainInterface *vrMain)
 	{
-		std::cout << "Unregistering GlfwPlugin." << std::endl;
+      //std::cout << "Unregistering GlfwPlugin." << std::endl;
 		// TODO
 	}
 };

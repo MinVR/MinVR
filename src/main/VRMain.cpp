@@ -362,7 +362,7 @@ VRMain::addRenderHandler(VRRenderHandler* renderHandler)
 VRGraphicsToolkit* 
 VRMain::getGraphicsToolkit(const std::string &name) {
   for (std::vector<VRGraphicsToolkit*>::iterator it = _gfxToolkits.begin(); it < _gfxToolkits.end(); ++it) {
-    std::cout << (*it)->getName() << std::endl;
+    //std::cout << (*it)->getName() << std::endl;
     if ((*it)->getName() == name) {
       return *it;
     }
@@ -374,7 +374,7 @@ VRMain::getGraphicsToolkit(const std::string &name) {
 VRWindowToolkit* 
 VRMain::getWindowToolkit(const std::string &name) {
   for (std::vector<VRWindowToolkit*>::iterator it = _winToolkits.begin(); it < _winToolkits.end(); ++it) {
-    std::cout << (*it)->getName() << std::endl;
+    //std::cout << (*it)->getName() << std::endl;
     if ((*it)->getName() == name) {
       return *it;
     }
