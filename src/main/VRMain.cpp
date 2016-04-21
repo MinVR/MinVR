@@ -89,12 +89,15 @@ void
 VRMain::initialize(const std::string &configFile, const std::string &vrSetups) 
 {
   _config = new VRDataIndex();
-  _config->processXMLFile(configFile, "MinVR");
+  if (!_config->processXMLFile(configFile,"/")) {
+    std::cout << "error reading" << std::endl;
+  }
+  std::cout << "done reading" << std::endl;
 
 
   // IDENTIFY THE VRSETUP(S) TO CONFIGURE
 
-  if (!_config->exists("VRSetups","/MinVR")) {
+  if (!_config->exists("VRSetups","/")) {
     cerr << "VRMain Error:  No VRSetups tag found in the config file " << configFile << endl;
   	exit(1);
   }

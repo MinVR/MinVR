@@ -1,4 +1,4 @@
-<MinVR>
+
 
 <VRSetups type="stringarray">Simple</VRSetups>
 
@@ -11,4 +11,3 @@
 	<Type>VRConsoleNode</Type>
 </RootNode>
 
-</MinVR>
