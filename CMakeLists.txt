@@ -259,7 +259,7 @@ add_library(MinVR ${vr_sources})
 
 #add_subdirectory (plugins)
 add_subdirectory(examples/SimpleOpenGLGLFW)
-#add_subdirectory (tests)
+add_subdirectory(tests/config)
 
 
 

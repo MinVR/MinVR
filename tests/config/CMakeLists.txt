@@ -24,7 +24,7 @@ endforeach()
 
 create_test_sourcelist(srclist RunSomeIndexTests.cpp ${dataindextestsrc})
 add_executable(RunSomeIndexTests ${srclist})
-target_link_libraries(RunSomeIndexTests VRIndex)
+target_link_libraries(RunSomeIndexTests MinVR)
 
 # When it's compiled you can run the RunSomeIndexTests executable and
 # specify a particular test and subtest:
@@ -58,6 +58,6 @@ endforeach()
 project (memtest)
 
 add_executable (memtest memtest.cpp)
-target_link_libraries (memtest VRIndex)
+target_link_libraries (memtest MinVR)
 
 
