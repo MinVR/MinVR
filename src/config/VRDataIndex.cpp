@@ -389,8 +389,7 @@ std::string VRDataIndex::validateNameSpace(const std::string nameSpace) {
     // Otherwise look for it in the index and throw an error if
     // it isn't there.
     if (mindex.find(out.substr(0, out.size() - 1)) == mindex.end()) {
-
-        throw("Can't find a namespace called " + nameSpace);
+      std::runtime_error(std::string("Can't find a namespace called ") + nameSpace);
 
     }
   }
@@ -458,8 +457,10 @@ VRDataIndex::getEntry(const std::string valName,
 
   } else {
 
+    std::string validatedNameSpace = validateNameSpace(nameSpace);
+    
     // Separate the name space into its constituent elements.
-    std::vector<std::string> elems = explodeName(nameSpace);
+    std::vector<std::string> elems = explodeName(validatedNameSpace);
 
     // We start from the longest name space and peel off the rightmost
     // element each iteration until we find a match, or not.  This
