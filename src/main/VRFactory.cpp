@@ -11,6 +11,7 @@ VRFactory::createDisplayNode(VRMainInterface *vrMain, VRDataIndex *config, const
       return node;
     }
   }
+  std::cerr << "VRFactory:  Could not create a VRDisplayNode from: " << nameSpace << valName << std::endl;
   return NULL;
 }
 

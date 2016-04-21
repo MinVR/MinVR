@@ -1,4 +1,4 @@
-
+<MinVR>
 
 <VRSetups type="stringarray">Simple</VRSetups>
 
@@ -9,5 +9,7 @@
 
 <RootNode>
 	<Type>VRConsoleNode</Type>
+    <Stream>cout</Stream>
 </RootNode>
 
+</MinVR>

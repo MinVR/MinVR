@@ -1,6 +1,8 @@
 
 ### UMN IV/LAB CAVE CONFIG FILE ###
 
+<MinVR>
+
 # This is where it all starts, VRMain begins by looking for this keyword.  If more than one VRSetup is listed, 
 # then the name of the setup to use for this process must be specified on the command line.
 <VRSetups>Server,FrontWall,Floor,SideWalls</VRSetups>
@@ -200,4 +202,4 @@
 	<Type>OpenGLGraphicsToolkit</Type>
 </OpenGLToolkit>
 
-
+</MinVR>

@@ -1,4 +1,6 @@
 
+<MinVR>
+
 <VRSetups>Desktop</VRSetups>
 
 <Desktop>
@@ -39,3 +41,4 @@
 	<Type>OpenGLGraphicsToolkit</Type>
 </OpenGLToolkit>
 
+</MinVR>

@@ -5,6 +5,12 @@
 #include <unistd.h>
 #endif
 
+#include <display/VRConsoleNode.h>
+#include <display/VRGraphicsWindowNode.h>
+#include <display/VRGroupNode.h>
+#include <display/VROffAxisProjectionNode.h>
+#include <display/VRStereoNode.h>
+#include <display/VRViewportNode.h>
 #include <net/VRNetClient.h>
 #include <net/VRNetServer.h>
 #include <plugin/VRPluginManager.h>
@@ -53,6 +59,15 @@ protected:
 VRMain::VRMain() : _initialized(false), _config(NULL), _net(NULL), _factory(NULL), _pluginMgr(NULL), _displayGraph(NULL)
 {
   _factory = new VRFactory();
+  
+  // add sub-factories that are part of the MinVR core library right away
+  _factory->addSubFactory(new VRConsoleNodeFactory());
+  _factory->addSubFactory(new VRGraphicsWindowNodeFactory());
+  _factory->addSubFactory(new VRGroupNodeFactory());
+  _factory->addSubFactory(new VROffAxisProjectionNodeFactory());
+  _factory->addSubFactory(new VRStereoNodeFactory());
+  _factory->addSubFactory(new VRViewportNodeFactory());
+  
   _pluginMgr = new VRPluginManager(this);
 }
 
@@ -90,22 +105,20 @@ VRMain::initialize(const std::string &configFile, const std::string &vrSetups)
 {
   _config = new VRDataIndex();
   if (!_config->processXMLFile(configFile,"/")) {
-    std::cout << "error reading" << std::endl;
   }
-  std::cout << "done reading" << std::endl;
 
 
   // IDENTIFY THE VRSETUP(S) TO CONFIGURE
 
-  if (!_config->exists("VRSetups","/")) {
+  if (!_config->exists("VRSetups","/MinVR/")) {
     cerr << "VRMain Error:  No VRSetups tag found in the config file " << configFile << endl;
   	exit(1);
   }
 
-  std::vector<std::string> vrSetupsInConfig = _config->getValue("VRSetups", "/MinVR");
+  std::vector<std::string> vrSetupsInConfig = _config->getValue("VRSetups", "/MinVR/");
   if (vrSetupsInConfig.size() == 1) {
     // only one VRSetup is defined in the config file, use it.
-    _name = vrSetupsInConfig[0];
+    _name = "/MinVR/" + vrSetupsInConfig[0] + "/";
   }
   else {
     // more than one VRSetup is defined in this config file
@@ -114,7 +127,7 @@ VRMain::initialize(const std::string &configFile, const std::string &vrSetups)
   	if (found == std::string::npos) {
   	  // no comma found in the vrSetups argument, so continue with just a single process and
   	  // configure based on the single vrSetup that was the user asked to start.
-  	  _name = "/MinVR/" + vrSetups;
+  	  _name = "/MinVR/" + vrSetups + "/";
   	}
   	else {
   	  // the vrSetups argument is a comma separated list of vrSetups, fork a new process for each
@@ -150,10 +163,6 @@ VRMain::initialize(const std::string &configFile, const std::string &vrSetups)
   // for everything from this point on, the VRSetup name for this process is stored in _name, and this
   // becomes the base namespace for all of the VRDataIndex lookups that we do.
 
-  
-  std::cout << "Config Structure: " << std::endl;
-  _config->printStructure();
-  
 
   // LOAD PLUGINS:
 
@@ -200,7 +209,7 @@ VRMain::initialize(const std::string &configFile, const std::string &vrSetups)
     std::vector<std::string> idList = _config->getValue("VRInputDevices", _name);
 	  for (std::vector<std::string>::iterator it = idList.begin(); it < idList.end(); ++it) {
 	    // create a new input device for each one in the list
-	    VRInputDevice *dev = _factory->createInputDevice(this, _config, *it, _name);
+	    VRInputDevice *dev = _factory->createInputDevice(this, _config, *it, "/MinVR");
 	    if (dev) {
 	  	  _inputDevices.push_back(dev);
 	    }
@@ -213,7 +222,7 @@ VRMain::initialize(const std::string &configFile, const std::string &vrSetups)
     std::vector<std::string> idList = _config->getValue("VRGraphicsToolkits", _name);
     for (std::vector<std::string>::iterator it = idList.begin(); it < idList.end(); ++it) {
       // create a new graphics toolkit for each one in the list
-      VRGraphicsToolkit *tk = _factory->createGraphicsToolkit(this, _config, *it, _name);
+      VRGraphicsToolkit *tk = _factory->createGraphicsToolkit(this, _config, *it, "/MinVR");
       if (tk) {
         _gfxToolkits.push_back(tk);
       }
@@ -225,7 +234,7 @@ VRMain::initialize(const std::string &configFile, const std::string &vrSetups)
     std::vector<std::string> idList = _config->getValue("VRWindowToolkits", _name);
     for (std::vector<std::string>::iterator it = idList.begin(); it < idList.end(); ++it) {
       // create a new graphics toolkit for each one in the list
-      VRWindowToolkit *tk = _factory->createWindowToolkit(this, _config, *it, _name);
+      VRWindowToolkit *tk = _factory->createWindowToolkit(this, _config, *it, "/MinVR");
       if (tk) {
         _winToolkits.push_back(tk);
       }
@@ -235,7 +244,10 @@ VRMain::initialize(const std::string &configFile, const std::string &vrSetups)
   // CONFIGURE THE DISPLAY GRAPH:
   if (_config->exists("VRDisplayGraph", _name)) {
     std::string dgstr = _config->getValue("VRDisplayGraph", _name);
-    _displayGraph = _factory->createDisplayNode(this, _config, dgstr, _name);
+    _displayGraph = _factory->createDisplayNode(this, _config, dgstr, "/MinVR");
+    if (_displayGraph == NULL) {
+      std::cerr << "Problem creating display graph" << std::endl;
+    }
   }
 
   _initialized = true;
