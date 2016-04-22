@@ -40,7 +40,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # ================================================================================ 
  
-project(MinVR)
+project(MinVR_Project)
 
 
 # CMakeLists files in this project can refer to the root source directory of the 
@@ -112,7 +112,6 @@ if (WIN32)
   # Windows-specific
 endif (WIN32)
 
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 enable_testing()
 
@@ -123,18 +122,20 @@ include_directories(
 )
 
 
-
 add_subdirectory(src)
 add_subdirectory(plugins)
 add_subdirectory(examples/SimpleOpenGLGLFW)
 add_subdirectory(tests/config)
 
+
+# Organize folder structure for Xcode, Visual Studio, etc.
+
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(TARGET SimpleOpenGLGLFW PROPERTY FOLDER "examples")
 set_property(TARGET memtest PROPERTY FOLDER "tests")
 set_property(TARGET RunSomeIndexTests PROPERTY FOLDER "tests")
 set_property(TARGET MinVR_OpenGL PROPERTY FOLDER "plugins")
 set_property(TARGET MinVR_GLFW PROPERTY FOLDER "plugins")
 set_property(TARGET glfw PROPERTY FOLDER "plugins/MinVR_GLFW/libGLFW")
-set_property(TARGET MinVR_OpenGL PROPERTY FOLDER "plugins")
 
 

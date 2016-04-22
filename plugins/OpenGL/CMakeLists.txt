@@ -1,4 +1,4 @@
-project (MinVR_OpenGL)
+project(MinVR_OpenGL)
 
 set (SOURCEFILES 
   src/VROpenGLGraphicsToolkit.cpp

@@ -1,4 +1,4 @@
-project (MinVR_GLFW)
+project(MinVR_GLFW)
 
 set (SOURCEFILES 
   src/VRGLFWInputDevice.cpp

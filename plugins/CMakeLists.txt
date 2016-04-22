@@ -1,6 +1,3 @@
-# Create a library from the source files in this directory.
-
-project (VRPlugins)
 
 set(VRPlugins_checkout_dir ${PROJECT_SOURCE_DIR}/plugins)
 set(VRPlugins_build_dir ${CMAKE_BINARY_DIR}/plugins)
