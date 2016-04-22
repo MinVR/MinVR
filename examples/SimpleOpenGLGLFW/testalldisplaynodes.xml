@@ -1,0 +1,94 @@
+
+<MinVR>
+
+	<VRSetups type="stringarray">Desktop</VRSetups>
+
+	<Desktop>
+		<Type>VRStandAlone</Type>
+		<VRPlugins type="stringarray">GLFWPlugin@OpenGLPlugin</VRPlugins>
+		<VRDisplayGraph>RootNode</VRDisplayGraph>
+	    <VRWindowToolkits type="stringarray">GLFWToolkit</VRWindowToolkits>
+	    <VRGraphicsToolkits type="stringarray">OpenGLToolkit</VRGraphicsToolkits>
+	</Desktop>
+
+	<GLFWPlugin>
+	<Path>../../build/plugins/MinVR_GLFW</Path>
+		<File>MinVR_GLFW</File>
+	</GLFWPlugin>
+
+	<OpenGLPlugin>
+		<Path>../../build/plugins/MinVR_OpenGL</Path>
+		<File>MinVR_OpenGL</File>
+	</OpenGLPlugin>
+
+
+	<WindowToolkit>VRGLFWWindowToolkit</WindowToolkit>
+	<GraphicsToolkit>VROpenGLGraphicsToolkit</GraphicsToolkit>
+
+	<RootNode>
+		<Type>VRGraphicsWindowNode</Type>
+
+	    <Border>0</Border>
+	    <Caption>Desktop</Caption>
+	    <QuadBuffered>0</QuadBuffered>
+	    <GPUAffinity>None</GPUAffinity>
+		<XPos>0</XPos>
+		<YPos>0</YPos>
+		<Width>1280</Width>
+		<Height>1024</Height>
+
+		<Children type="stringarray">GroupNode</Children>
+	</RootNode>
+
+	<GroupNode>
+		<Type>VRGroupNode</Type>
+		<Children type="stringarray">Viewport1Node@Viewport2Node</Children>
+	</GroupNode>
+
+	<Viewport1Node>
+		<Type>VRViewportNode</Type>
+		<XPos type="int">100</XPos>
+		<YPos type="int">100</YPos>
+		<Width type="int">400</Width>
+		<Height type="int">400</Height>
+		<Children type="stringarray">StereoNode</Children>
+	</Viewport1Node>
+
+	<Viewport2Node>
+		<Type>VRViewportNode</Type>
+		<XPos type="int">600</XPos>
+		<YPos type="int">100</YPos>
+		<Width type="int">400</Width>
+		<Height type="int">400</Height>
+		<Children type="stringarray">StereoNode</Children>
+	</Viewport2Node>
+
+	<StereoNode>
+		<Type>VRStereoNode</Type>
+		<StereoFormat>SideBySide</StereoFormat>
+		<Children type="stringarray">ProjNode</Children>
+	</StereoNode>
+
+	<ProjNode>
+		<Type>VROffAxisProjectionNode</Type>
+		<TopLeft type="doublearray">-1,1,5</TopLeft>
+		<BotLeft type="doublearray">-1,-1,5</BotLeft>
+		<TopRight type="doublearray">1,1,5</TopRight>
+		<BotRight type="doublearray">1,-1,5</BotRight>
+		<NearClip>0.01</NearClip>
+		<FarClip>1000.0</FarClip>
+		<EyeSeparation>0.2</EyeSeparation>
+		<HeadTrackingEvent>User1Head_move</HeadTrackingEvent>
+		<InitialHeadMatrix type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,10,1</InitialHeadMatrix>	
+	</ProjNode>
+
+
+	<GLFWToolkit>
+		<Type>VRGLFWWindowToolkit</Type>
+	</GLFWToolkit>
+
+	<OpenGLToolkit>
+		<Type>VROpenGLGraphicsToolkit</Type>
+	</OpenGLToolkit>
+
+</MinVR>

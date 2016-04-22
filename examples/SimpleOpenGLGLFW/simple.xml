@@ -1,15 +1,15 @@
 <MinVR>
 
-<VRSetups type="stringarray">Simple</VRSetups>
+	<VRSetups type="stringarray">Simple</VRSetups>
 
-<Simple>
-	<Type>VRStandAlone</Type>
-	<VRDisplayGraph>RootNode</VRDisplayGraph>
-</Simple>
+	<Simple>
+		<Type>VRStandAlone</Type>
+		<VRDisplayGraph>RootNode</VRDisplayGraph>
+	</Simple>
 
-<RootNode>
-	<Type>VRConsoleNode</Type>
-    <Stream>cout</Stream>
-</RootNode>
+	<RootNode>
+		<Type>VRConsoleNode</Type>
+	    <Stream>cout</Stream>
+	</RootNode>
 
 </MinVR>

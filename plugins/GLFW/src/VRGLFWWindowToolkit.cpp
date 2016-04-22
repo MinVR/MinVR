@@ -90,7 +90,7 @@ VRGLFWWindowToolkit::swapBuffers(int windowID) {
 
 VRWindowToolkit*
 VRGLFWWindowToolkitFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) {
-	std::string tkNameSpace = nameSpace + "/" + valName;
+	std::string tkNameSpace = config->validateNameSpace(nameSpace + valName);
 
 	std::string type = config->getValue("Type", tkNameSpace);
 	if (type != "VRGLFWWindowToolkit") {

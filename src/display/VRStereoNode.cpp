@@ -39,21 +39,25 @@ void VRStereoNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandl
 	}
 	else if (_format == VRSTEREOFORMAT_SIDEBYSIDE) {
 		renderState->addData("StereoFormat", "SideBySide");
-		int w,h;
+		int x,y,w,h;
 		if (renderState->exists("ViewportX", "/")) {
+            x = renderState->getValue("ViewportX");
+            y = renderState->getValue("ViewportY");
 			w = renderState->getValue("ViewportWidth");
 			h = renderState->getValue("ViewportHeight");
 		}
 		else {
+            x = 0;
+            y = 0;
 			w = renderState->getValue("WindowWidth");
 			h = renderState->getValue("WindowHeight");
 		}
 		renderState->addData("Eye", "Left");
-		_gfxToolkit->setViewport(VRRect(0,0,w/2,h/2));
+		_gfxToolkit->setViewport(VRRect(x,y,w/2,h));
 		renderRestOfGraph(renderState, renderHandler);
 
 		renderState->addData("Eye", "Right");
-		_gfxToolkit->setViewport(VRRect(w/2+1,h/2+1,w/2,h/2));
+		_gfxToolkit->setViewport(VRRect(x+w/2+1,y,w/2,h));
 		renderRestOfGraph(renderState, renderHandler);
 	}
 	else if (_format == VRSTEREOFORMAT_COLUMNINTERLACED) {
@@ -86,7 +90,7 @@ void VRStereoNode::renderRestOfGraph(VRDataIndex *renderState, VRRenderHandler *
 
 VRDisplayNode* VRStereoNodeFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace)
 {
-	std::string nodeNameSpace = nameSpace + "/" + valName;
+	std::string nodeNameSpace = config->validateNameSpace(nameSpace + valName);
 
 	std::string type = config->getValue("Type", nodeNameSpace);
 	if (type != "VRStereoNode") {
@@ -110,13 +114,15 @@ VRDisplayNode* VRStereoNodeFactory::create(VRMainInterface *vrMain, VRDataIndex 
 
 	VRDisplayNode *node = new VRStereoNode(valName, gfxToolkit, format);
 
-	std::vector<std::string> childrenNames = config->getValue("Children", nameSpace);
-	for (std::vector<std::string>::iterator it = childrenNames.begin(); it < childrenNames.end(); ++it) {
-		VRDisplayNode *child = vrMain->getFactory()->createDisplayNode(vrMain, config, *it, "/");
+    if (config->exists("Children", nodeNameSpace)) {
+	  std::vector<std::string> childrenNames = config->getValue("Children", nodeNameSpace);
+	  for (std::vector<std::string>::iterator it = childrenNames.begin(); it < childrenNames.end(); ++it) {
+		VRDisplayNode *child = vrMain->getFactory()->createDisplayNode(vrMain, config, *it, "/MinVR/");
 		if (child != NULL) {
 			node->addChild(child);
 		}
-	}
+	  }
+    }
 
 	return node;
 }

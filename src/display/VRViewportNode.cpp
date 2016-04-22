@@ -22,11 +22,11 @@ void VRViewportNode::render(VRDataIndex *renderState, VRRenderHandler *renderHan
   //renderState->pushState();
 
 	// Is this the kind of state information we expect to pass from one node to the next?
-	renderState->addData("ViewportX", _rect.getX());
-	renderState->addData("ViewportY", _rect.getY());
-	renderState->addData("ViewportWidth", _rect.getWidth());
-	renderState->addData("ViewportHeight", _rect.getHeight());
-
+	renderState->addData("ViewportX", (int)_rect.getX());
+	renderState->addData("ViewportY", (int)_rect.getY());
+	renderState->addData("ViewportWidth", (int)_rect.getWidth());
+	renderState->addData("ViewportHeight", (int)_rect.getHeight());
+  
 	_gfxToolkit->setViewport(_rect);
 
 	if (_children.size() == 0) {
@@ -46,7 +46,7 @@ void VRViewportNode::render(VRDataIndex *renderState, VRRenderHandler *renderHan
 
 VRDisplayNode* VRViewportNodeFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace)
 {
-	std::string nodeNameSpace = nameSpace + "/" + valName;
+	std::string nodeNameSpace = config->validateNameSpace(nameSpace + valName);
 
 	std::string type = config->getValue("Type", nodeNameSpace);
 	if (type != "VRViewportNode") {
@@ -63,13 +63,15 @@ VRDisplayNode* VRViewportNodeFactory::create(VRMainInterface *vrMain, VRDataInde
 
 	VRDisplayNode *node = new VRViewportNode(valName, gfxToolkit, VRRect(xpos, ypos, width, height));
 
-	std::vector<std::string> childrenNames = config->getValue("Children", nameSpace);
-	for (std::vector<std::string>::iterator it = childrenNames.begin(); it < childrenNames.end(); ++it) {
-		VRDisplayNode *child = vrMain->getFactory()->createDisplayNode(vrMain, config, *it, "/");
+    if (config->exists("Children", nodeNameSpace)) {
+	  std::vector<std::string> childrenNames = config->getValue("Children", nodeNameSpace);
+	  for (std::vector<std::string>::iterator it = childrenNames.begin(); it < childrenNames.end(); ++it) {
+		VRDisplayNode *child = vrMain->getFactory()->createDisplayNode(vrMain, config, *it, "/MinVR/");
 		if (child != NULL) {
 			node->addChild(child);
 		}
-	}
+	  }
+    }
 
 	return node;
 }

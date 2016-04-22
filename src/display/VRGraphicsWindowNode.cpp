@@ -29,6 +29,7 @@ void VRGraphicsWindowNode::render(VRDataIndex *renderState, VRRenderHandler *ren
 	renderState->addData("WindowHeight", _settings.height);
 
 	_winToolkit->makeWindowCurrent(_windowID);
+    _gfxToolkit->setViewport(VRRect(_settings.xpos, _settings.ypos, _settings.width, _settings.height));
 	_gfxToolkit->clearScreen();
 	
 	// windows should call the application programmer's context-level callback
@@ -64,7 +65,7 @@ void VRGraphicsWindowNode::displayFinishedRendering(VRDataIndex *renderState) {
 
 VRDisplayNode* VRGraphicsWindowNodeFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace)
 {
-	std::string nodeNameSpace = nameSpace + "/" + valName;
+	std::string nodeNameSpace = config->validateNameSpace(nameSpace + valName);
 
 	std::string type = config->getValue("Type", nodeNameSpace);
 	if (type != "VRGraphicsWindowNode") {
@@ -99,7 +100,7 @@ VRDisplayNode* VRGraphicsWindowNodeFactory::create(VRMainInterface *vrMain, VRDa
     if (config->exists("Children", nodeNameSpace)) {
 	    std::vector<std::string> childrenNames = config->getValue("Children", nodeNameSpace);
 	    for (std::vector<std::string>::iterator it = childrenNames.begin(); it < childrenNames.end(); ++it) {
-		    VRDisplayNode *child = vrMain->getFactory()->createDisplayNode(vrMain, config, *it, "/");
+		    VRDisplayNode *child = vrMain->getFactory()->createDisplayNode(vrMain, config, *it, "/MinVR/");
 		    if (child != NULL) {
 			    node->addChild(child);
 		    }
