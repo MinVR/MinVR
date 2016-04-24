@@ -12,6 +12,7 @@
 #define NOMINMAX
 #include <windows.h>
 #include <GL/gl.h>
+#include <gl/GLU.h>
 #elif defined(__APPLE__)
 #include <OpenGL/OpenGL.h>
 #include <OpenGL/glu.h>

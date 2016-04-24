@@ -7,6 +7,16 @@
 #include <sstream>
 #include <iostream>
 
+#ifdef WIN32
+	#include <winsock2.h> // must be included before windows.h because we are also using it in net
+	#include <windows.h>  
+	#include <ctime>  
+#else
+	#include <sys/time.h>
+#endif
+#include <stdio.h>
+#include <stdexcept>
+
 
 // This object maintains a queue (FIFO) of serialized VRDatum objects.
 // Serialization turns them into strings, so this is basically just a

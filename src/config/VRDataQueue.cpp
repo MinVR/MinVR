@@ -1,15 +1,5 @@
 #include "VRDataQueue.h"
 
-#ifdef WIN32
-	#include <windows.h>  
-	#include <ctime>  
-#else
-	#include <sys/time.h>
-#endif
-#include <stdio.h>
-#include <stdexcept>
-
-
 // Use this when the client has no new data to offer.
 const VRDataQueue::serialData VRDataQueue::noData = "";
 

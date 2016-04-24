@@ -1,7 +1,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include "config/VRDataIndex.h"
-#ifndef __linux__
+#ifdef __APPLE__
 #include <malloc/malloc.h>
 #else
 #include <malloc.h>
