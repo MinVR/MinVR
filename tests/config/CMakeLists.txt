@@ -60,4 +60,7 @@ project (memtest)
 add_executable (memtest memtest.cpp)
 target_link_libraries (memtest MinVR)
 
+set_property(TARGET memtest PROPERTY FOLDER "tests")
+set_property(TARGET RunSomeIndexTests PROPERTY FOLDER "tests")
+
 

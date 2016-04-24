@@ -26,3 +26,5 @@ add_executable(SimpleOpenGLGLFW ${vr_example_source_files} ${vr_example_config_f
 
 target_link_libraries(SimpleOpenGLGLFW MinVR ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY})
 
+set_property(TARGET SimpleOpenGLGLFW PROPERTY FOLDER "examples")
+
