@@ -130,29 +130,38 @@ VRMain::initialize(const std::string &configFile, const std::string &vrSetups)
   	  _name = "/MinVR/" + vrSetups + "/";
   	}
   	else {
-  	  // the vrSetups argument is a comma separated list of vrSetups, fork a new process for each
-  	  // additional vrSetup.
+  	  // the vrSetups command line argument is a comma separated list of vrSetups,
+      //fork a new process for each additional vrSetup.
 
-  	  /**  TODO:
-	
-	  first, split the vrSetups string into an array vrSetupStrings
+      
+      VRStringArray vrSetupsToStart;
+      VRString elem;
+      std::stringstream ss(vrSetups);
+      while (std::getline(ss, elem, ',')) {
+        vrSetupsToStart.push_back(elem);
+      }
 
-	  #ifndef WIN32
-	    _name = vrSetupStrings[0]; // name of process 0
-	    for (int i=1;i<vrSetupStrings.size();i++) {
-	      pid_t pid = fork();
-          if (pid == 0) {
-            break;
-          }
-		  _name = "/MinVR/" + vrSetupStrings[i];
+      // This process will be the first one listed
+      _name = "/MinVR/" + vrSetupsToStart[0] + "/";
+
+      // Fork a new process for each remaining process
+#ifdef WIN32
+      // Windows doesn't have forking, but we are so early in the execution at this
+      // point, it should work fine to use the Windows CreateProcess() function to
+      // startup the same exe with the cmd line arguments:  configFile vrSetupsToStart[i]
+      std::cerr << "Forking processes not yet implemented on windows." << std::endl;
+#else
+      for (int i=1; i < vrSetupsToStart.size(); i++) {
+        pid_t pid = fork();
+        if (pid == 0) {
+          break;
         }
-      #else
-        // TODO: Add windows implementation of forking a process
-      #endif
-
-	  **/
+        _name = "/MinVR/" + vrSetupsToStart[i] + "/";
+      }
+#endif
   	}
 
+    
   	// sanity check to make sure the vrSetup we are continuing with is actually defined in the config file
     if (std::find(vrSetupsInConfig.begin(), vrSetupsInConfig.end(), _name) == vrSetupsInConfig.end()) {
   	  cerr << "VRMain Error: The VRSetup " << _name << " was not found in the config file " << configFile << endl;
