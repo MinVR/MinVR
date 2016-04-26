@@ -35,8 +35,8 @@
 	<InitialHeadMatrix>1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,2,1</InitialHeadMatrix>
 	<XPos>0</XPos>
 	<YPos>0</YPos>
-	<Width>1280</Width>
-	<Height>1024</Height>
+	<Width>640</Width>
+	<Height>400</Height>
 </RootNode>
 
 <GLFWToolkit>

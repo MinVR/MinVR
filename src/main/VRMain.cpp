@@ -101,7 +101,7 @@ VRMain::~VRMain()
 
 
 void 
-VRMain::initialize(const std::string &configFile, const std::string &vrSetups) 
+VRMain::initialize(const std::string &configFile, const std::string &vrSetupsToStart)
 {
   _config = new VRDataIndex();
   if (!_config->processXMLFile(configFile,"/")) {
@@ -112,63 +112,53 @@ VRMain::initialize(const std::string &configFile, const std::string &vrSetups)
 
   if (!_config->exists("VRSetups","/MinVR/")) {
     cerr << "VRMain Error:  No VRSetups tag found in the config file " << configFile << endl;
-  	exit(1);
+    exit(1);
   }
 
-  std::vector<std::string> vrSetupsInConfig = _config->getValue("VRSetups", "/MinVR/");
-  if (vrSetupsInConfig.size() == 1) {
-    // only one VRSetup is defined in the config file, use it.
-    _name = "/MinVR/" + vrSetupsInConfig[0] + "/";
+  
+  VRStringArray vrSetupsToStartArray;
+  if (vrSetupsToStart == "") {
+    // no vrSetupsToStart are specified, start all of VRSetups listed in the config file
+    vrSetupsToStartArray = _config->getValue("VRSetups", "/MinVR/");
   }
   else {
-    // more than one VRSetup is defined in this config file
+    // a comma-separated list of vrSetupsToStart was provided
+    VRString elem;
+    std::stringstream ss(vrSetupsToStart);
+    while (std::getline(ss, elem, ',')) {
+      vrSetupsToStartArray.push_back(elem);
+    }
+  }
+  
+  // This process will be the first one listed
+  _name = vrSetupsToStartArray[0];
 
-	std::size_t found = vrSetups.find(",");
-  	if (found == std::string::npos) {
-  	  // no comma found in the vrSetups argument, so continue with just a single process and
-  	  // configure based on the single vrSetup that was the user asked to start.
-  	  _name = "/MinVR/" + vrSetups + "/";
-  	}
-  	else {
-  	  // the vrSetups command line argument is a comma separated list of vrSetups,
-      //fork a new process for each additional vrSetup.
-
-      
-      VRStringArray vrSetupsToStart;
-      VRString elem;
-      std::stringstream ss(vrSetups);
-      while (std::getline(ss, elem, ',')) {
-        vrSetupsToStart.push_back(elem);
-      }
-
-      // This process will be the first one listed
-      _name = "/MinVR/" + vrSetupsToStart[0] + "/";
-
-      // Fork a new process for each remaining process
+  // Fork a new process for each remaining process
 #ifdef WIN32
-      // Windows doesn't have forking, but we are so early in the execution at this
-      // point, it should work fine to use the Windows CreateProcess() function to
-      // startup the same exe with the cmd line arguments:  configFile vrSetupsToStart[i]
-      std::cerr << "Forking processes not yet implemented on windows." << std::endl;
+  // Windows doesn't have forking, but we are so early in the execution at this
+  // point, it should work fine to use the Windows CreateProcess() function to
+  // startup the same exe with the cmd line arguments:  configFile vrSetupsToStartArray[i]
+  std::cerr << "Forking processes not yet implemented on windows." << std::endl;
 #else
-      for (int i=1; i < vrSetupsToStart.size(); i++) {
-        pid_t pid = fork();
-        if (pid == 0) {
-          break;
-        }
-        _name = "/MinVR/" + vrSetupsToStart[i] + "/";
-      }
+  for (int i=1; i < vrSetupsToStartArray.size(); i++) {
+    pid_t pid = fork();
+    if (pid == 0) {
+      break;
+    }
+    _name = vrSetupsToStartArray[i];
+  }
 #endif
-  	}
 
-    
-  	// sanity check to make sure the vrSetup we are continuing with is actually defined in the config file
-    if (std::find(vrSetupsInConfig.begin(), vrSetupsInConfig.end(), _name) == vrSetupsInConfig.end()) {
-  	  cerr << "VRMain Error: The VRSetup " << _name << " was not found in the config file " << configFile << endl;
-  	  exit(1);
-  	}
+  // sanity check to make sure the vrSetup we are continuing with is actually defined in the config file
+  std::vector<std::string> vrSetupsInConfig = _config->getValue("VRSetups", "/MinVR/");
+  if (std::find(vrSetupsInConfig.begin(), vrSetupsInConfig.end(), _name) == vrSetupsInConfig.end()) {
+    cerr << "VRMain Error: The VRSetup " << _name << " was not found in the config file " << configFile << endl;
+    exit(1);
   }
 
+  _name = "/MinVR/" + _name + "/";
+  
+  
   // for everything from this point on, the VRSetup name for this process is stored in _name, and this
   // becomes the base namespace for all of the VRDataIndex lookups that we do.
 

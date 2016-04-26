@@ -54,11 +54,11 @@ public:
 
   // STEP 2:  INITIALIZE MINVR BASED ON CONFIG FILE SETTINGS
 
-  /// If the configFile lists more than one VRSetup in it, then the vrSetups
+  /// If the configFile lists more than one VRSetup in it, then the vrSetupsToStart
   /// argument is interpreted as a comma separated list of the VRSetups to start
   /// and new processes are forked as needed so that we have one process per
   /// vrSetup.
-  void initialize(const std::string &configFile, const std::string &vrSetups = "");
+  void initialize(const std::string &configFile, const std::string &vrSetupsToStart = "");
 
 
   // STEP 3:  CALL MINVR'S MAINLOOP() FUNCTION OR INCORPORATE THE FOLLOWING
