@@ -33,8 +33,8 @@
 	<NearClip>0.01</NearClip>
 	<FarClip>1000.0</FarClip>
 	<InitialHeadMatrix>1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,2,1</InitialHeadMatrix>
-	<XPos>0</XPos>
-	<YPos>0</YPos>
+	<XPos>100</XPos>
+	<YPos>100</YPos>
 	<Width>640</Width>
 	<Height>400</Height>
 </RootNode>

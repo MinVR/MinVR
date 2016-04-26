@@ -27,10 +27,9 @@ void VRGraphicsWindowNode::render(VRDataIndex *renderState, VRRenderHandler *ren
 	renderState->addData("WindowY", _settings.ypos);
 	renderState->addData("WindowWidth", _settings.width);
 	renderState->addData("WindowHeight", _settings.height);
-
+  
 	_winToolkit->makeWindowCurrent(_windowID);
-    _gfxToolkit->setViewport(VRRect(_settings.xpos, _settings.ypos, _settings.width, _settings.height));
-	_gfxToolkit->clearScreen();
+    _gfxToolkit->clearScreen();
 	
 	// windows should call the application programmer's context-level callback
 	renderHandler->onVRRenderContext(renderState, this);
