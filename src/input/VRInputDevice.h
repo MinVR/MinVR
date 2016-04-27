@@ -10,7 +10,7 @@
 class VRInputDevice {
 public:
 	virtual ~VRInputDevice() {}
-	virtual void appendNewInputEventsSinceLastCall(VRDataQueue &inputEvents) = 0;
+	virtual void appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents) = 0;
 };
 
 #endif

@@ -31,6 +31,11 @@ if (MINVR_GLFW_PLUGIN OR BASE_GRAPHICS_PLUGINS)
 	add_subdirectory (GLFW)
 endif()
 
+#------------------VRPN-----------------------------
+option(MINVR_VRPN_PLUGIN "If enabled, VRPN plugin will be installed" OFF)
+if (MINVR_VRPN_PLUGIN OR BASE_PLUGINS)
+	add_subdirectory (VRPN)
+endif()
 
 
 

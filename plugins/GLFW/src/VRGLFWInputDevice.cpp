@@ -32,11 +32,11 @@ VRGLFWInputDevice::VRGLFWInputDevice() {
 VRGLFWInputDevice::~VRGLFWInputDevice() {
 }
 
-void VRGLFWInputDevice::appendNewInputEventsSinceLastCall(VRDataQueue& queue) {
+void VRGLFWInputDevice::appendNewInputEventsSinceLastCall(VRDataQueue* queue) {
     glfwPollEvents();
     for (int f = 0; f < _events.size(); f++)
     {
-    	queue.push(_events[f]);
+    	queue->push(_events[f]);
     }
 
     _events.clear();
@@ -52,10 +52,10 @@ void VRGLFWInputDevice::addWindow(GLFWwindow* window) {
 void VRGLFWInputDevice::keyCallback(GLFWwindow* window, int key, int scancode,
         int action, int mods) {
 
-    std::string event = getGlfwKeyName(key) + "_" + getGlfwActionName(action);
-    _dataIndex.addData("/keyboard/value", event);
-    _dataIndex.addData("/keyboard/timestamp", (int)clock());
-    _events.push_back(_dataIndex.serialize("/keyboard"));
+    std::string event = "Kbd_" + getGlfwKeyName(key) + "_" + getGlfwActionName(action);
+    _dataIndex.addData(event + "/KeyString", getGlfwKeyName(key));
+    _dataIndex.addData(event + "/EventString", getGlfwActionName(action));
+    _events.push_back(_dataIndex.serialize(event));
 }
 
 void VRGLFWInputDevice::sizeCallback(GLFWwindow* window, int width, int height) {
@@ -294,11 +294,11 @@ std::string getGlfwActionName(int action)
     switch (action)
     {
         case GLFW_PRESS:
-            return "down";
+            return "Down";
         case GLFW_RELEASE:
-            return "up";
+            return "Up";
         case GLFW_REPEAT:
-            return "repeat";
+            return "Repeat";
     }
 
     return "caused unknown action";

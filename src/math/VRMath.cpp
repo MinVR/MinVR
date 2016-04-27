@@ -237,7 +237,11 @@ double VRMatrix4::operator()(const int r, const int c) const {
 double& VRMatrix4::operator()(const int r, const int c) { 
   return m[c*4+r]; 
 }
-	
+
+double* VRMatrix4::operator[](const int c) {
+  return &m[c*4];
+}
+
 VRMatrix4 VRMatrix4::scale(const VRVector3& v) {
   return VRMatrix4(v[0], 0, 0, 0,
                    0, v[1], 0, 0, 
@@ -297,7 +301,20 @@ VRMatrix4 VRMatrix4::rotation(const VRPoint3& p, const VRVector3& v, const doubl
   return transBack * invA * invB * C * B * A * transToOrigin;
 }
 
-VRMatrix4 VRMatrix4::transpose() {
+
+VRMatrix4 VRMatrix4::orthonormal() const {
+  VRVector3 x = getColumn(0).normalize();
+  VRVector3 y = getColumn(1);
+  y = (y - y.dot(x)*x).normalize();
+  VRVector3 z = x.cross(y).normalize();
+  return VRMatrix4(x[0], y[0], z[0], m[3],
+                   x[1], y[1], z[1], m[7],
+                   x[2], y[2], z[2], m[11],
+                   m[12], m[13], m[14], m[15]);
+}
+
+
+VRMatrix4 VRMatrix4::transpose() const {
   return VRMatrix4(m[0], m[1], m[2], m[3], 
                    m[4], m[5], m[6], m[7], 
                    m[8], m[9], m[10], m[11], 
@@ -308,7 +325,7 @@ VRMatrix4 VRMatrix4::transpose() {
 // from the 4x4 matrix.  The formula for the determinant of a 3x3 is discussed on
 // page 705 of Hill & Kelley, but note that there is a typo within the m_ij indices in the 
 // equation in the book that corresponds to the cofactor02 line in the code below.
-double VRMatrix4::subDeterminant(int excludeRow, int excludeCol) {
+double VRMatrix4::subDeterminant(int excludeRow, int excludeCol) const {
   // Compute non-excluded row and column indices
   int row[3];
   int col[3];
@@ -339,7 +356,7 @@ double VRMatrix4::subDeterminant(int excludeRow, int excludeCol) {
 // of the corresponding element m_ij in M.  The cofactor of each element m_ij is defined as (-1)^(i+j) times 
 // the determinant of the "submatrix" formed by deleting the i-th row and j-th column from M.
 // See the definition in section A2.1.4 (page 705) in Hill & Kelley.   
-VRMatrix4 VRMatrix4::cofactor() {
+VRMatrix4 VRMatrix4::cofactor() const {
   VRMatrix4 out;
   // We'll use i to incrementally compute -1^(r+c)
   int i = 1;
@@ -357,7 +374,7 @@ VRMatrix4 VRMatrix4::cofactor() {
 
 // Returns the determinant of the 4x4 matrix
 // See the hint in step 2 in Appendix A2.1.5 (page 706) in Hill & Kelley to learn how to compute this
-double VRMatrix4::determinant() {
+double VRMatrix4::determinant() const {
   // The determinant is the dot product of any row of C (the cofactor matrix of m) with the corresponding row of m
   VRMatrix4 C = cofactor();
   return C(0,0)*(*this)(0,0) + C(0,1)*(*this)(0,1) + C(0,2)*(*this)(0,2) + C(0,3)*(*this)(0,3);
@@ -365,7 +382,7 @@ double VRMatrix4::determinant() {
 
 // Returns the inverse of the 4x4 matrix if it is nonsingular.  If it is singular, then returns the
 // identity matrix. 
-VRMatrix4 VRMatrix4::inverse() {
+VRMatrix4 VRMatrix4::inverse() const {
   // Check for singular matrix
   double det = determinant();
   if (fabs(det) < 1e-8) {
@@ -383,6 +400,12 @@ VRMatrix4 VRMatrix4::inverse() {
   // 4. Scale each element of Ctrans by (1/det)
   return Ctrans * (1.0f / det);
 }
+
+
+VRVector3 VRMatrix4::getColumn(int c) const {
+  return VRVector3(m[c*4], m[c*4+1], m[c*4+2]);
+}
+
 
 VRDoubleArray VRMatrix4::toVRDoubleArray() {
   VRDoubleArray a;

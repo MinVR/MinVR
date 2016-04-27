@@ -268,7 +268,7 @@ VRMain::synchronizeAndProcessEvents()
   
   VRDataQueue eventsFromDevices;
   for (int f = 0; f < _inputDevices.size(); f++) {
-	_inputDevices[f]->appendNewInputEventsSinceLastCall(eventsFromDevices);
+	_inputDevices[f]->appendNewInputEventsSinceLastCall(&eventsFromDevices);
   }
   //eventsFromDevices.printQueue();
 

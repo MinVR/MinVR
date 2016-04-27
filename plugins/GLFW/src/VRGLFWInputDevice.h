@@ -31,7 +31,7 @@ public:
 	PLUGIN_API VRGLFWInputDevice();
 	PLUGIN_API virtual ~VRGLFWInputDevice();
 
-	PLUGIN_API void appendNewInputEventsSinceLastCall(VRDataQueue& queue);
+	PLUGIN_API void appendNewInputEventsSinceLastCall(VRDataQueue* queue);
 
     PLUGIN_API void addWindow(::GLFWwindow* window);
 	// TODO: removeWindow()?

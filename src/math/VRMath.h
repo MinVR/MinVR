@@ -179,12 +179,22 @@ public:
   /// Matrix assignment operator
   VRMatrix4& operator=(const VRMatrix4& m2);
   
-  /// Returns the (r,c) elment of the matrix
-  double operator()(const int r, const int c) const;
   
-  /// Returns the (r,c) elment of the matrix
+  
+  /// TODO: It's strange that these use row-major indexing when the matrix is
+  /// stored in column-major following the OpenGL convention.  Remove this in
+  /// favor of the [] operator.
+  double operator()(const int r, const int c) const;
   double& operator()(const int r, const int c);
-	
+
+  /// Returns a pointer to a double array for the c-th column of the matrix so
+  /// that elements of the matrix may be accessed using a syntax like:
+  /// VRMatrix4 mat;  mat[0][0] = 1.0;
+  double* operator[](const int c);
+  
+  VRVector3 getColumn(int c) const;
+  
+  
 
   // --- Static Constructors for Special Matrices ---
 
@@ -209,22 +219,29 @@ public:
 
   // --- Transpose, Inverse, and Other General Matrix Functions ---
 
-  /// Returns transpose of the matrix
-  VRMatrix4 transpose();
+  /// Returns an orthonormal version of the matrix, i.e., guarantees that the
+  /// rotational component of the matrix is built from column vectors that are
+  /// all unit vectors and orthogonal to each other.
+  VRMatrix4 orthonormal() const;
+  
+  /// Returns the transpose of the matrix
+  VRMatrix4 transpose() const;
 
   // Returns the determinant of the 3x3 matrix formed by excluding the specified row and column
   // from the 4x4 matrix.
-  double subDeterminant(int excludeRow, int excludeCol);
+  double subDeterminant(int excludeRow, int excludeCol) const;
 
   // Returns the cofactor matrix.
-  VRMatrix4 cofactor();
+  VRMatrix4 cofactor() const;
 
   // Returns the determinant of the 4x4 matrix
-  double determinant();
+  double determinant() const;
 
   // Returns the inverse of the 4x4 matrix if it is nonsingular.  If it is singular, then returns the
   // identity matrix. 
-  VRMatrix4 inverse();
+  VRMatrix4 inverse() const;
+  
+  
   
   /// Converts the point to a VRDoubleArray for data in a VRDataIndex
   VRDoubleArray toVRDoubleArray();
