@@ -48,24 +48,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <main/VRMainInterface.h>
 
 namespace MinVR {
-  
-#define PLUGIN_FRAMEWORK_VERSION 0
 
 #if defined(WIN32)
 #define PLUGIN_API __declspec(dllexport)
 #else
 #define PLUGIN_API
 #endif
-
-
-
-  //extern "C"
-  //{
-  //	PLUGIN_API int getPluginFrameworkVersion() {
-  //		return PLUGIN_FRAMEWORK_VERSION;
-  //	}
-  //}
-
   
 
 /** Abstract interface for VRPlugin objects.  The convention is that each
