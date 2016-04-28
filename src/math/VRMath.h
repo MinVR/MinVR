@@ -216,6 +216,8 @@ public:
   /// Returns the rotation matrix around the vector v placed at point p, rotate by angle a
   static VRMatrix4 rotation(const VRPoint3& p, const VRVector3& v, const double a);
 
+  /// Returns a projection matrix based on clipping
+  static VRMatrix4 projection(double right, double left, double top, double bottom, double near, double far);
 
   // --- Transpose, Inverse, and Other General Matrix Functions ---
 

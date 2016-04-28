@@ -301,6 +301,14 @@ VRMatrix4 VRMatrix4::rotation(const VRPoint3& p, const VRVector3& v, const doubl
   return transBack * invA * invB * C * B * A * transToOrigin;
 }
 
+VRMatrix4 VRMatrix4::projection(double right, double left, double top,
+		double bottom, double near, double far) {
+	return VRMatrix4(2.0*near/(right-left), 0, (right+left)/(right-left), 0,
+		           0, 2.0*near/(top-bottom), (top+bottom)/(top-bottom), 0,
+		           0, 0, -(far+near)/(far-near), -2.0*far*near/(far-near),
+		           0, 0, -1, 0);
+}
+
 
 VRMatrix4 VRMatrix4::orthonormal() const {
   VRVector3 x = getColumn(0).normalize();

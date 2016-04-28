@@ -67,6 +67,10 @@ public:
                 glLoadIdentity();
 			    VRMatrix4 P = renderState->getValue("ProjectionMatrix", "/");
 			    glLoadMatrixd(P.m);
+			    glMatrixMode(GL_MODELVIEW);
+			    glLoadIdentity();
+			    VRMatrix4 V = renderState->getValue("ViewMatrix", "/");
+			    glLoadMatrixd(V.m);
             }
             else {
                 glMatrixMode(GL_PROJECTION);

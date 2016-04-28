@@ -25,7 +25,7 @@ class VROffAxisProjectionNode : public VRDisplayNode, public VREventHandler {
 public:
 
 	VROffAxisProjectionNode(const std::string &name, VRVector3 topLeft, VRVector3 botLeft, VRVector3 topRight, VRVector3 botRight, 
-		float interOcularDist, const std::string &headTrackingEventName, VRMatrix4 initialHeadMatrix);
+		float interOcularDist, const std::string &headTrackingEventName, VRMatrix4 initialHeadMatrix, double nearClip, double farClip);
 	virtual ~VROffAxisProjectionNode();
 
 	virtual std::string getType() { return "VROffAxisProjectionNode"; }
@@ -43,6 +43,8 @@ protected:
 	float     _iod;
 	VRMatrix4 _headMatrix;
 	std::string _trackingEvent;
+	double _nearClip;
+	double _farClip;
 };
 
 
