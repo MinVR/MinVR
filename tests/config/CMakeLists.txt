@@ -3,8 +3,8 @@
 set (dataindextests datum index queue)
 # The numbers here correspond to 'case' statements in the respective
 # test program.  See, e.g., datumtest.cpp
-set (datum_parts 1 2 3 4 5 6 7)
-set (index_parts 1 2 3 4 5)
+set (datum_parts 1 2 3 4 5 6 7 8 9)
+set (index_parts 1 2 3 4 5 6)
 set (queue_parts 1 2)
 
 # For tests where a list of parts has not been defined we add a default of 1:
@@ -42,17 +42,6 @@ foreach(dataindextest ${dataindextests})
       FAIL_REGULAR_EXPRESSION "ERROR;FAIL;Test failed")
   endforeach()
 endforeach()
-
-# OK I found a possible solution. Adding these lines to my CMakeLists.txt:
-
-# ## valgrind
-# find_program(CTEST_MEMORYCHECK_COMMAND NAMES valgrind)
-# INCLUDE(Dart)
-# generates the needed DartConfiguration.tcl whatever that is, and then re-invoking:
-
-# ctest -T memcheck
-# runs all tests also checking for memory errors.
-
 
 
 project (memtest)

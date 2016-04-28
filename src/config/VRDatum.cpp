@@ -16,121 +16,79 @@ const VRDatum::VRTypePair VRDatum::VRTypeMap[VRCORETYPE_NTYPES] = {
   {"container", VRCORETYPE_CONTAINER}
 };
 
-// This is just a convenience for initializing the description field
-// in each object.  Note that it has no error checking, so get the
-// VRCORETYPE_NTYPES correct, please.
-std::string VRDatum::initializeDescription(VRCORETYPE_ID t) {
+  // The constructor for the native storage form.
+VRDatum::VRDatum(const VRCORETYPE_ID inType) : type(inType) {
+
+  attrList.push_front(VRAttributeList());
   for (int i = 0; i < VRCORETYPE_NTYPES; i++) {
-    if (VRTypeMap[i].second == t) {
-      return VRTypeMap[i].first;
+    if (VRTypeMap[i].second == inType) {
+      description = VRTypeMap[i].first;
     }
   }
-  return VRTypeMap[0].first; // Should never reach here.
-}
+};
 
 // Returns the attribute list formatted to include in an XML tag.
 std::string VRDatum::getAttributeListAsString() {
   std::string out = std::string("");
-  for (VRAttributeList::iterator it = attrList.begin();
-       it != attrList.end(); it++) {
+  for (VRAttributeList::iterator it = attrList.front().begin();
+       it != attrList.front().end(); it++) {
     out += " " + it->first + "=\"" + it->second + "\"";
   }
   return out;
 }
 
 
-VRDatumInt::VRDatumInt(const int inVal) :
-  VRDatum(VRCORETYPE_INT), value(inVal) {
-  description = initializeDescription(type);
-};
-
 /// Step 4 in the adding a type instructions.
-bool VRDatumInt::setValue(const int inVal) {
-  value = inVal;
-  return true;
-}
-
-std::string VRDatumInt::getValueAsString() {
+//////////////////////////////////////////// VRInt
+std::string VRDatumInt::getValueAsString() const {
   char buffer[20];
-  sprintf(buffer, "%d", value);
+  sprintf(buffer, "%d", value.front());
   return std::string(buffer);
 }
 
 VRDatumPtr CreateVRDatumInt(void *pData) {
-  VRDatumInt *obj = new VRDatumInt(*static_cast<int *>(pData));
+  VRDatumInt *obj = new VRDatumInt(*static_cast<VRInt *>(pData));
   return VRDatumPtr(obj);
 }
 
-////////////////////////////////////////////
-
-VRDatumDouble::VRDatumDouble(const double inVal) :
-  VRDatum(VRCORETYPE_DOUBLE), value(inVal) {
-  description = initializeDescription(type);
-};
-
-bool VRDatumDouble::setValue(const double inVal) {
-  value = inVal;
-  return true;
-}
-
-std::string VRDatumDouble::getValueAsString() {
+//////////////////////////////////////////// VRDouble
+std::string VRDatumDouble::getValueAsString() const {
   char buffer[20];
-  sprintf(buffer, "%f", value);
+  sprintf(buffer, "%f", value.front());
   return std::string(buffer);
 }
 
 VRDatumPtr CreateVRDatumDouble(void *pData) {
-  VRDatumDouble *obj = new VRDatumDouble(*static_cast<double *>(pData));
+  VRDatumDouble *obj = new VRDatumDouble(*static_cast<VRDouble *>(pData));
   return VRDatumPtr(obj);
 }
 
-////////////////////////////////////////////
-
-VRDatumString::VRDatumString(const std::string inVal) :
-  VRDatum(VRCORETYPE_STRING), value(inVal) {
-  description = initializeDescription(type);
-};
-
-bool VRDatumString::setValue(const std::string inVal) {
-  value = inVal;
-  return true;
-}
-
-std::string VRDatumString::getValueAsString() {
-  return value;
+//////////////////////////////////////////// VRString
+VRString VRDatumString::getValueAsString() const {
+  return value.front();
 }
 
 VRDatumPtr CreateVRDatumString(void *pData) {
-  VRDatumString *obj = new VRDatumString(*static_cast<std::string *>(pData));
+  VRDatumString *obj = new VRDatumString(*static_cast<VRString *>(pData));
   return VRDatumPtr(obj);
 }
 
-////////////////////////////////////////////
-
-VRDatumIntArray::VRDatumIntArray(const std::vector<int> inVal) :
-  VRDatum(VRCORETYPE_INTARRAY), value(inVal) {
-  description = initializeDescription(type);
-};
-
-bool VRDatumIntArray::setValue(const std::vector<int> inVal) {
-  value = inVal;
-  return true;
-}
-
-std::string VRDatumIntArray::getValueAsString() {
+//////////////////////////////////////////// VRIntArray
+std::string VRDatumIntArray::getValueAsString() const {
 
   std::string out;
   char buffer[20];
   char separator;
 
-  VRAttributeList::iterator it = attrList.find("separator");
-  if (it == attrList.end()) {
+  VRAttributeList::const_iterator it = attrList.front().find("separator");
+  if (it == attrList.front().end()) {
     separator = MINVRSEPARATOR;
   } else {
     separator = static_cast<char>(it->second[0]);
   }
   
-  for (VRIntArray::iterator it = value.begin(); it != value.end(); ++it) {
+  for (VRIntArray::const_iterator it = value.front().begin();
+       it != value.front().end(); ++it) {
     sprintf(buffer, "%d%c", *it, separator); 
 
     out += std::string(buffer);
@@ -146,32 +104,22 @@ VRDatumPtr CreateVRDatumIntArray(void *pData) {
   return VRDatumPtr(obj);
 }
 
-////////////////////////////////////////////
-
-VRDatumDoubleArray::VRDatumDoubleArray(const std::vector<double> inVal) :
-  VRDatum(VRCORETYPE_DOUBLEARRAY), value(inVal) {
-  description = initializeDescription(type);
-};
-
-bool VRDatumDoubleArray::setValue(const std::vector<double> inVal) {
-  value = inVal;
-  return true;
-}
-
-std::string VRDatumDoubleArray::getValueAsString() {
+//////////////////////////////////////////// VRDoubleArray
+std::string VRDatumDoubleArray::getValueAsString() const {
 
   std::string out;
   char buffer[20];
   char separator;
 
-  VRAttributeList::iterator it = attrList.find("separator");
-  if (it == attrList.end()) {
+  VRAttributeList::const_iterator it = attrList.front().find("separator");
+  if (it == attrList.front().end()) {
     separator = MINVRSEPARATOR;
   } else {
     separator = static_cast<char>(it->second[0]);
   }
 
-  for (VRDoubleArray::iterator it = value.begin(); it != value.end(); ++it) {
+  for (VRDoubleArray::const_iterator it = value.front().begin();
+       it != value.front().end(); ++it) {
     sprintf(buffer, "%f%c", *it, separator);
     out += std::string(buffer);
   }
@@ -186,30 +134,20 @@ VRDatumPtr CreateVRDatumDoubleArray(void *pData) {
   return VRDatumPtr(obj);
 }
 
-////////////////////////////////////////////
-
-VRDatumStringArray::VRDatumStringArray(const std::vector<std::string> inVal) :
-  VRDatum(VRCORETYPE_STRINGARRAY), value(inVal) {
-  description = initializeDescription(type);
-};
-
-bool VRDatumStringArray::setValue(const std::vector<std::string> inVal) {
-  value = inVal;
-  return true;
-}
-
-std::string VRDatumStringArray::getValueAsString() {
+//////////////////////////////////////////// VRStringArray
+std::string VRDatumStringArray::getValueAsString() const {
   std::string out;
   char separator;
 
-  VRAttributeList::iterator it = attrList.find("separator");
-  if (it == attrList.end()) {
+  VRAttributeList::const_iterator it = attrList.front().find("separator");
+  if (it == attrList.front().end()) {
     separator = MINVRSEPARATOR;
   } else {
     separator = static_cast<char>(it->second[0]);
   }
   
-  for (VRStringArray::iterator it = value.begin(); it != value.end(); ++it) {
+  for (VRStringArray::const_iterator it = value.front().begin();
+       it != value.front().end(); ++it) {
     out += *it + std::string(1,separator);
   }
 
@@ -223,35 +161,54 @@ VRDatumPtr CreateVRDatumStringArray(void *pData) {
   return VRDatumPtr(obj);
 }
 
-////////////////////////////////////////////
+//////////////////////////////////////////// VRContainer
 
-VRDatumContainer::VRDatumContainer(const VRContainer inVal) :
-  VRDatum(VRCORETYPE_CONTAINER), value(inVal) {
-  description = initializeDescription(type);
-};
+// This getValueAsString function for a container probably does not
+// do what you think it does.  Use the serialize() function of the
+// VRDataIndex for that.  This function just returns a formatted list
+// of the strings that make up a container.
+std::string VRDatumContainer::getValueAsString() const {
+  std::string out;
+  char separator;
 
-// For optimization and code maintainability reasons, the
-// responsibility for assembling the serialization of a container
-// falls to the index class, so this function is sort of a nop, filled
-// out just to keep the compiler happy.
-std::string VRDatumContainer::getValueAsString() {
-  throw std::runtime_error(std::string("shouldn't call the getValueAsString() method of a container object."));
-  return getDescription();
+  VRAttributeList::const_iterator it = attrList.front().find("separator");
+  if (it == attrList.front().end()) {
+    separator = MINVRSEPARATOR;
+  } else {
+    separator = static_cast<char>(it->second[0]);
+  }
+  
+  for (VRContainer::const_iterator it = value.front().begin();
+       it != value.front().end(); ++it) {
+    out += *it + std::string(1,separator);
+  }
+
+  // Remove trailing separator.
+  return out.substr(0, out.size() - 1);
 }
 
 bool VRDatumContainer::addToValue(const VRContainer inVal) {
-  std::list<std::string> inCopy = inVal;
+  VRContainer inCopy = inVal;
 
+  // If we need to push a new container onto the stack, do it here.
+  if (needPush) {
+    value.push_front( value.front() );
+    attrList.push_front( attrList.front() );
+    needPush = false;
+    pushed = true;
+  }
+  
   // Remove all duplicates from the input list.
-  for (VRContainer::const_iterator it = value.begin();
-       it != value.end(); ++it) {
+  for (VRContainer::const_iterator it = value.front().begin();
+       it != value.front().end(); ++it) {
 
     inCopy.remove(*it);
-
   }
-  value.splice(value.end(), inCopy);
+  
+  value.front().splice(value.front().end(), inCopy);
   return true;
 }
+
 
 // This simply removes an entry from a container.  The corresponding
 // name should be removed from the VRDataIndex, but that's an
@@ -269,12 +226,11 @@ VRDatumPtr CreateVRDatumContainer(void *pData) {
 
 
 //  We should probably implement this for completeness sake.
-// std::ostream & operator<<(std::ostream &os, const VRDatum& p)
-// {
-//   return os << p.getValueAsString();
-// }
-// std::ostream & operator<<(std::ostream &os, const VRDatumPtr& p)
-// {
-//   return os << p->getValueAsString();
-// }
+std::ostream & operator<<(std::ostream &os, const VRDatum& p) {
+  return os << p.getValueAsString();
+}
+
+std::ostream & operator<<(std::ostream &os, VRDatumPtr& p) {
+  return os << p->getValueAsString();
+}
 

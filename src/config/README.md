@@ -6,13 +6,17 @@ without the procedural commands of a language.
 
 The data index supports namespaces, allowing it to be used for
 configuring complicated systems, with lots of individual entities.
-You can define a set of global defaults that can be overridden by
-individual entities, or by groups of entities.  The data index can be
-exported to a character-string, in a vaguely XML syntax, and can be
-read back in that same syntax.  This makes it ideal both for
-configuration files, and for inter-process communication.
+(Think of it as a kind of lexical scoping.)  You can define a set of
+global defaults that can be overridden by individual entities within a
+nested scope, or by groups of entities.  The data index can be
+exported to a character-string, using XML syntax, and can be read back
+in that same syntax.  (There is no defined schema; that's your job.)
+This makes it ideal both for configuration files, and for
+inter-process communication.  The index also supports a context
+"stack" allowing modifications after a certain time to be rolled back
+en masse.
 
-Tom Sgouros 12/13/15
+Tom Sgouros 4/3/2016
 
 
 --------------------------------------------
@@ -140,5 +144,11 @@ When these are unpacked, they'll come out in the right time order.
   remoteIndex->addSerializedValue(newq->getSerializedObject());
   int n = remoteIndex->getValue("/cora/nora")  ==> n = 6
   
+INDEX STATE
 
-
+The data index supports swapping of the context "state", allowing
+changes to the index to be rolled back en masse.  Specify a point in
+time with the pushState() method.  Changes made subsequent to that
+call can be rolled back all at once with the accomanying popState()
+method.  There is no limit to the number of states that may be pushed
+onto the stack.

@@ -19,10 +19,10 @@ VROffAxisProjectionNode::~VROffAxisProjectionNode()
 void 
 VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 {
-  //renderState->pushState();
+	renderState->pushState();
 
+	// Determine which eye is being used
 	int eye = 0;
-
     if (std::string(renderState->getValue("Eye", "/")) == "Left") {
     	eye = 0;
 	}
@@ -30,13 +30,17 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
     	eye = 1;
 	}
 
+    // Calculate headFrame offset based on inter ocular distance
 	VRMatrix4 headFrame = _headMatrix * VRMatrix4::translation(VRVector3(-_iod/2.0 + _iod*(eye), 0, 0));
 
+	// Use the tile to calculate half values
 	double halfWidth = (_topRight - _topLeft).length() / 2.0;
 	double halfHeight = (_topRight - _botRight).length() / 2.0;
 
+	// Calculate the center of the tile
 	VRVector3 center = (_topLeft + _topRight + _botLeft + _botRight) / 4.0;
 
+	// Calculate tile to room matrix
 	VRVector3 x = (_topRight - _topLeft).normalize();
 	VRVector3 y = (_topLeft - _botLeft).normalize();
 	VRVector3 z = x.cross(y).normalize();
@@ -45,12 +49,15 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
 						x.z, y.z, z.z, center.z,
 						0, 0, 0, 1);
 
+	// Calculate room to tile matrix
 	VRMatrix4 room2tile = tile2room.inverse();
 
+	// Calculate the camera frame and position
 	VRMatrix4 camera2Room = headFrame;
 	VRMatrix4 cameraFrame = room2tile * camera2Room;
 	VRVector3 cameraPos(cameraFrame(0,3), cameraFrame(1,3), cameraFrame(2,3));
 
+	// Calculate projection parameters
 	double lcamera = (-halfWidth - cameraPos.x);
 	double rcamera = (halfWidth - cameraPos.x);
 	double b = (-halfHeight - cameraPos.y);
@@ -58,6 +65,7 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
 	double dist = cameraPos.z;
 	double k = _nearClip / dist;
 
+	// Calculate view matrix based on the camera position and room tile
 	VRMatrix4 view = VRMatrix4::translation(-cameraPos) *room2tile;
 
 	static VRMatrix4 invertXYMat(-1,  0, 0, 0,
@@ -65,6 +73,7 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
 						  0,  0, 1, 0,
 						  0,  0, 0, 1);
 
+	// Calculate off axis projection matrix
 	VRMatrix4 projMat = invertXYMat * VRMatrix4::projection(lcamera*k, rcamera*k, b*k, t*k, _nearClip, _farClip);
 
 	renderState->addData("ViewMatrix", view);
@@ -77,7 +86,7 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
 		VRDisplayNode::render(renderState, renderHandler);
 	}	
 
-  //renderState->popState();
+	renderState->popState();
 }
 
 void

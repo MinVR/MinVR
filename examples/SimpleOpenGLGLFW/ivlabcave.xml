@@ -17,7 +17,7 @@
 		<Type>VRServer</Type>
 		<NumClients>3</NumClients>
 		<VRPlugins>VRPNPlugin</VRPlugins>
-		<VRInputDevices>Optitrack1@Optitrack2@Optitrack3@RedWandBtns@BlueWandBtns</VRInputDevices>
+		<VRInputDevices>Optitrack1,Optitrack2,Optitrack3,RedWandBtns,BlueWandBtns</VRInputDevices>
 		<VRDisplayGraph>ConsoleOnly</VRDisplayGraph>
 	</Server>
 
@@ -103,13 +103,13 @@
 	<RedStylusBtns>
 		<Type>VRVRPNButtonDevice</Type>
 		<VRPNDeviceName type="string">Wixel0@tcp:127.0.0.1:3883</VRPNDeviceName>
-		<EventsToGenerate type="stringarray">RedStylusFrontBtn@RedStylusBackBtn</EventsToGenerate>
+		<EventsToGenerate type="stringarray">RedStylusFrontBtn,RedStylusBackBtn</EventsToGenerate>
 	</RedStylusBtns>
 
     <BlueStylusBtns>
         <Type>VRVRPNButtonDevice</Type>
         <VRPNDeviceName type="string">Wixel1@tcp:127.0.0.1:3883</VRPNDeviceName>
-        <EventsToGenerate type="stringarray">BlueStylusFrontBtn@BlueStylusBackBtn</EventsToGenerate>
+        <EventsToGenerate type="stringarray">BlueStylusFrontBtn,BlueStylusBackBtn</EventsToGenerate>
     </BlueStylusBtns>
 
 
@@ -150,7 +150,7 @@
 
 	<LeftAndRightNode>
 		<Type>VRWindowNode</Type>
-		<Children>LeftWall@RightWall</Children>
+		<Children>LeftWall,RightWall</Children>
 		<XPos>1921</XPos>
 		<YPos>0</YPos>
 		<Width>2550</Width>

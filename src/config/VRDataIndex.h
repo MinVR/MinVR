@@ -35,6 +35,8 @@ Author(s) of Significant Updates/Modifications to the File:
 /// into memory.  The system supports an XML format for transmission
 /// and storage.
 ///
+/// The system state can be preserved by pushing it onto a stack, and
+/// later restored by popping that stack.
 ///
 /// The XML parser used here is based on the "Simple C++ XML Parser"
 /// from the CodeProject article by "BratilaRazvan", 2010.
@@ -111,12 +113,18 @@ Author(s) of Significant Updates/Modifications to the File:
 ///     values, but is otherwise agnostic about attributes.  The
 ///     separator attribute works like this:
 ///
-///     <cora type="intarray" separator=",">3,4,5,6</cora>
-///     <nora type="stringarray">A string@B sting@C sing@D sin@E in@F i</nora>
+///     <cora type="intarray">3,4,5,6</cora>
+///     <nora type="stringarray" separator="@">A string@B sting@C sing@D sin@E in@F i</nora>
 ///
-///     If no separator is specified, the code uses '@'.
+///     If no separator is specified, the code uses ','.
 ///
-///  3. Feed a file containing XML into processXMLFile().
+///  3. Feed a file containing XML into processXMLFile().  There is no
+///     validation of the XML done, and there are some ways in which
+///     this is not an arbitrary XML parser.  For example, the parser
+///     assumes uniqueness of names within an element.  Two elements
+///     of the same name within some parent element will overwrite one
+///     another.  Validation of the XML is left to some other process,
+///     hopefully with a schema that enforces this limitation.
 ///
 ///  Once an index has entries, they can be retrieved at your pleasure
 ///  with getValue() and serialize().  The getValue() method returns
@@ -155,7 +163,7 @@ Author(s) of Significant Updates/Modifications to the File:
 ///    newIndex->addSerializedValue(s);
 ///    int b = newIndex->getValue("/george");
 ///
-///  The b variable now comtains the same value as a, with the same
+///  The b variable now contains the same value as a, with the same
 ///  name.
 ///
 ///
@@ -339,6 +347,67 @@ public:
                                   bool includeChildren,
                                   bool fullPath);
 
+  // The data index has a state that can be pushed and popped.  All
+  // the changes to the index made after a pushState() can be rolled
+  // back by calling popState().  This works by pushing and popping
+  // values for each of the VRDatum objects represented in the index.
+  void pushState();
+  void popState();
+
+  void setValueSpecialized(VRDatumPtr p, VRInt value) {
+    p.intVal()->setValue(value);
+  }
+  
+  void setValueSpecialized(VRDatumPtr p, VRDouble value) {
+    p.doubleVal()->setValue(value);
+  }
+  
+  void setValueSpecialized(VRDatumPtr p, VRString value) {
+    p.stringVal()->setValue(value);
+  }
+  
+  void setValueSpecialized(VRDatumPtr p, VRIntArray value) {
+    p.intArrayVal()->setValue(value);
+  }
+  
+  void setValueSpecialized(VRDatumPtr p, VRDoubleArray value) {
+    p.doubleArrayVal()->setValue(value);
+  }
+  
+  void setValueSpecialized(VRDatumPtr p, VRStringArray value) {
+    p.stringArrayVal()->setValue(value);
+  }
+  
+  template <typename T, const VRCORETYPE_ID TID>
+  std::string addDataSpecialized(const std::string valName, T value) {
+
+    // Check if the name is already in use.
+    VRDataMap::iterator it = mindex.find(valName);
+    if (it == mindex.end()) {
+
+      // Still no? Create it and stick it in index.
+      VRDatumPtr obj = factory.CreateVRDatum(TID, &value);
+      mindex.insert(VRDataMap::value_type(valName, obj));
+
+      // Add this value to the parent container, if any.
+      VRContainer cValue;
+      cValue.push_back(valName);
+      std::string ns = getNameSpace(valName);
+      // The parent container is the namespace minus the trailing /.
+      if (ns.compare("/") != 0) addData(ns.substr(0, ns.size() - 1), cValue);
+
+    } else {
+      // Quietly overwrite value
+      if (overwrite > 0) {
+        setValueSpecialized(it->second, (T)value);
+      } else if (overwrite == 0) {
+
+        throw std::runtime_error(std::string("overwriting values not allowed"));
+      }
+    }
+    return valName;
+  }
+  
   // These are specialized set methods.  They seem a little unhip, but
   // it's because I find this easier than remembering how to spell the
   // pointers and casts.
@@ -499,5 +568,22 @@ public:
 //   - After those are done, the VRDataIndex::addData() methods can
 //     probably be template-ized, too.
 //
-//   -
+//
+//
+//   - We are adding a "list" of index objects.  These are an ordered
+//     collection of VRDataIndex objects, all with more or less the
+//     same name, but differentiated by index.  They can be as motley
+//     a collection of objects as you care to try to manage, but
+//     managing them is your problem.  We will refer to this as an
+//     "imaginary" type called VRList.
+//
+//     This is implemented by including the index value with the name,
+//     so an object might be called "nancy[0]" and another called
+//     "nancy[1]".  These are two different objects, linked by a
+//     similarity in their names.  The idea is only that we will leave
+//     this as a similarity, and inform the various sorting and
+//     comparing functions that the index value is an appendix to the
+//     actual name.
+//
+//
 #endif

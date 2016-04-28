@@ -5,7 +5,7 @@
 
 <Desktop>
 	<Type>VRStandAlone</Type>
-	<VRPlugins type="stringarray">GLFWPlugin@OpenGLPlugin</VRPlugins>
+	<VRPlugins type="stringarray">GLFWPlugin,OpenGLPlugin</VRPlugins>
 	<VRDisplayGraph>RootNode</VRDisplayGraph>
     <VRWindowToolkits type="stringarray">GLFWToolkit</VRWindowToolkits>
     <VRGraphicsToolkits type="stringarray">OpenGLToolkit</VRGraphicsToolkits>
