@@ -104,8 +104,9 @@ void VRVRPNAnalogDevice::sendEventIfChanged(int channelNumber, double data)
 	if (_channelValues[channelNumber] != data) {
 		//_pendingEvents.push_back(EventRef(new Event(_eventNames[channelNumber], data, nullptr, channelNumber, msg_time)));
 		VRDataIndex di;
-		di.addData(_eventNames[channelNumber] + "/Analog", data);
-		_pendingEvents.push(di.serialize(_eventNames[channelNumber]));
+        std::string name = _eventNames[channelNumber] + "_Change";
+		di.addData(name + "/AnalogValue", data);
+		_pendingEvents.push(di.serialize(name));
 		_channelValues[channelNumber] = data;
 	}
 }

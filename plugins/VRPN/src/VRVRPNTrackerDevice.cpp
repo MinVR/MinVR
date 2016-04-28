@@ -170,8 +170,9 @@ void VRVRPNTrackerDevice::processEvent(const VRMatrix4 &vrpnEvent, int sensorNum
 	}
 
 	VRDataIndex di;
-	di.addData(getEventName(sensorNum) + "/Transform", eventRoom);
-    _pendingEvents.push(di.serialize(getEventName(sensorNum)));
+    std::string name = getEventName(sensorNum) + "_Move";
+	di.addData(name + "/Transform", eventRoom);
+    _pendingEvents.push(di.serialize(name));
 }
 
 std::string VRVRPNTrackerDevice::getEventName(int trackerNumber)

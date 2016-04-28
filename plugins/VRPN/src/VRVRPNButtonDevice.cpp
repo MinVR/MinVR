@@ -96,16 +96,17 @@ std::string VRVRPNButtonDevice::getEventName(int buttonNumber)
 
 void VRVRPNButtonDevice::sendEvent(int buttonNumber, bool down)
 {
-	std::string ename = getEventName(buttonNumber);
+    VRDataIndex di;
+	std::string name = getEventName(buttonNumber);
 	if (down) {
-		VRDataIndex di;
-		di.addData(ename + "_down/id", buttonNumber);
-	    _pendingEvents.push(di.serialize(ename + "_down"));
+        name = name + "_Down";
+		di.addData(name + "/id", buttonNumber);
+	    _pendingEvents.push(di.serialize(name));
 	}
 	else {
-        VRDataIndex di;
-		di.addData(ename + "_up/id", buttonNumber);
-	    _pendingEvents.push(di.serialize(ename + "_up"));
+        name = name + "_Up";
+		di.addData(name + "/id", buttonNumber);
+	    _pendingEvents.push(di.serialize(name));
 	}
 }
 

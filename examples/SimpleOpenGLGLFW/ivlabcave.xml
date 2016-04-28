@@ -10,18 +10,18 @@
 
 	### VRSETUPS ###
 
-	# The port number is common to both the server and the clients
+	# Common to both the server and the clients
 	<Port>3456</Port>
 
 	<Server>
 		<Type>VRServer</Type>
 		<NumClients>3</NumClients>
 		<VRPlugins>VRPNPlugin</VRPlugins>
-		<VRInputDevices>Optitrack1@WandBtns</VRInputDevices>
+		<VRInputDevices>Optitrack1@Optitrack2@Optitrack3@RedWandBtns@BlueWandBtns</VRInputDevices>
 		<VRDisplayGraph>ConsoleOnly</VRDisplayGraph>
 	</Server>
 
-	# These are common to all of the clients
+	# Common to all of the clients
 	<ServerIP>localhost</ServerIP>
 	<VRPlugins>GLFWPlugin,OpenGLPlugin</VRPlugins>
 
@@ -63,18 +63,54 @@
 
 	### VRINPUTDEVICES ###
 
+    # Common to all three Optitrack virtual devices
+    <ConvertLHtoRH>0</ConvertLHtoRH>
+    <IgnoreZeroes>1</IgnoreZeroes>
+    <WaitForNewReportInPoll>0</WaitForNewReportInPoll>
+    <TrackerUnitsToRoomUnitsScale>3.28084</TrackerUnitsToRoomUnitsScale>
+    <DeviceToRoom type="doublearray">-1,0,0,0, 0,1,0,0, 0,0,-1,0, 0,0,0,1</DeviceToRoom>
+
 	<Optitrack1>
-		<Type>VRPNTrackerDevice</Type>
-		<IPAddress>trackingserver.umn.edu:3940</IPAddress>
-		<EventsToGenerate>User1_Head_Move@User1_Wand_Move</EventsToGenerate>
+		<Type>VRVRPNTrackerDevice</Type>
+		<VRPNDeviceName type="string">head@tcp:134.84.121.67:3884</VRPNDeviceName>
+		<EventsToGenerate type="stringarray">Head</EventsToGenerate>
+        <Head_Move>
+            <PropToTracker type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</PropToTracker>
+            <FinalOffset type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+        </Head_Move>
 	</Optitrack1>
 
-	<WandBtns>
-		<Type>VRPNButtonDevice</Type>
-		<IPAddress>localhost:3941</IPAddress>
-		<EventsToGenerate>User1_Wand_LeftBtn@User1_Wand_RightBtn</EventsToGenerate>
-	</WandBtns>
+    <Optitrack2>
+        <Type>VRVRPNTrackerDevice</Type>
+        <VRPNDeviceName type="string">stylus0@tcp:134.84.121.67:3884</VRPNDeviceName>
+        <EventsToGenerate type="stringarray">RedStylus</EventsToGenerate>
+        <RedStylus_Move>
+            <PropToTracker type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0.25, 0,0,0,1</PropToTracker>
+            <FinalOffset type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+        </RedStylus_Move>
+    </Optitrack2>
 
+    <Optitrack3>
+        <Type>VRVRPNTrackerDevice</Type>
+        <VRPNDeviceName type="string">stylus1@tcp:134.84.121.67:3884</VRPNDeviceName>
+        <EventsToGenerate type="stringarray">BlueStylus</EventsToGenerate>
+        <BlueStylus_Move>
+            <PropToTracker type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0.25, 0,0,0,1</PropToTracker>
+            <FinalOffset type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+        </BlueStylus_Move>
+    </Optitrack3>
+
+	<RedStylusBtns>
+		<Type>VRVRPNButtonDevice</Type>
+		<VRPNDeviceName type="string">Wixel0@tcp:127.0.0.1:3883</VRPNDeviceName>
+		<EventsToGenerate type="stringarray">RedStylusFrontBtn@RedStylusBackBtn</EventsToGenerate>
+	</RedStylusBtns>
+
+    <BlueStylusBtns>
+        <Type>VRVRPNButtonDevice</Type>
+        <VRPNDeviceName type="string">Wixel1@tcp:127.0.0.1:3883</VRPNDeviceName>
+        <EventsToGenerate type="stringarray">BlueStylusFrontBtn@BlueStylusBackBtn</EventsToGenerate>
+    </BlueStylusBtns>
 
 
 	### VRDISPLAYGRAPH ###
@@ -86,16 +122,16 @@
 	<EyeSeparation>0.065</EyeSeparation>
 	<NearClip>0.01</NearClip>
 	<FarClip>1000.0</FarClip>
-	<InitialHeadMatrix>1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</InitialHeadMatrix>
-	<HeadTrackingEvent>User1_Head_Move</HeadTrackingEvent>
+	<InitialHeadMatrix type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</InitialHeadMatrix>
+	<HeadTrackingEvent>Head_Move</HeadTrackingEvent>
 
 	<FrontNode>
 		<Type>VRWindowNode</Type>
 		<Children>FrontStereoNode</Children>
-		<XPos>0</XPos>
+		<XPos>4480</XPos>
 		<YPos>0</YPos>
 		<Width>1280</Width>
-		<Height>1024</Height>
+		<Height>1300</Height>
 	</FrontNode>
 
 	<FrontStereoNode>
@@ -105,20 +141,20 @@
 
 	<FrontProjectionNode>
 		<Type>VROffAxisProjectionNode</Type>
-		<TopLeft>-4,4,-4</TopLeft>
-		<TopRight>4,4,-4</TopRight>
-		<BottomLeft>-4,-4,-4</BottomLeft>
-		<BottomRight>4,-4,-4</BottomRight>
+		<TopLeft type="doublearray">-4,4,-4</TopLeft>
+		<TopRight type="doublearray">4,4,-4</TopRight>
+		<BottomLeft type="doublearray">-4,-4,-4</BottomLeft>
+		<BottomRight type="doublearray">4,-4,-4</BottomRight>
 	</FrontProjectionNode>
 
 
 	<LeftAndRightNode>
 		<Type>VRWindowNode</Type>
 		<Children>LeftWall@RightWall</Children>
-		<XPos>1281</XPos>
+		<XPos>1921</XPos>
 		<YPos>0</YPos>
-		<Width>2560</Width>
-		<Height>1024</Height>
+		<Width>2550</Width>
+		<Height>1300</Height>
 	</LeftAndRightNode>
 
 
@@ -128,7 +164,7 @@
 		<XPos>0</XOffset>
 		<YPos>0</YOffset>
 		<Width>1280</Width>
-		<Height>1024</Height>
+		<Height>1300</Height>
 	</LeftNode>
 
 	<LeftStereoNode>
@@ -138,20 +174,20 @@
 
 	<LeftProjectionNode>
 		<Type>VROffAxisProjectionNode</Type>
-		<TopLeft>-4,4,4</TopLeft>
-		<TopRightt>-4,4,-4</TopRight>
-		<BottomLeft>-4,-4,4</BottomLeft>
-		<BottomRight>-4,-4,-4</BottomRight>
+		<TopLeft type="doublearray">-4,4,4</TopLeft>
+		<TopRight type="doublearray">-4,4,-4</TopRight>
+		<BottomLeft type="doublearray">-4,-4,4</BottomLeft>
+		<BottomRight type="doublearray">-4,-4,-4</BottomRight>
 	</LeftProjectionNode>
 
 
 	<RightNode>
 		<Type>VRViewportNode</Type>
 		<Children>RightStereoNode</Children>
-		<XPos>1281</XOffset>
+		<XPos>1280</XOffset>
 		<YPos>0</YOffset>
 		<Width>1280</Width>
-		<Height>1024</Height>
+		<Height>1300</Height>
 	</RightNode>
 
 	<RightStereoNode>
@@ -161,20 +197,20 @@
 
 	<RightProjectionNode>
 		<Type>VROffAxisProjectionNode</Type>
-		<TopLeft>4,4,-4</TopLeft>
-		<TopRightt>4,4,4</TopRight>
-		<BottomLeft>4,-4,-4</BottomLeft>
-		<BottomRight>4,-4,4</BottomRight>
+		<TopLeft type="doublearray">4,4,-4</TopLeft>
+		<TopRight type="doublearray">4,4,4</TopRight>
+		<BottomLeft type="doublearray">4,-4,-4</BottomLeft>
+		<BottomRight type="doublearray">4,-4,4</BottomRight>
 	</RightProjectionNode>
 
 
 	<FloorNode>
 		<Type>VRWindowNode</Type>
 		<Children>FloorStereoNode</Children>
-		<XPos>3840</XPos>
+		<XPos>5760</XPos>
 		<YPos>0</YPos>
 		<Width>1280</Width>
-		<Height>1024</Height>
+		<Height>1300</Height>
 	</FloorNode>
 
 	<FloorStereoNode>
@@ -184,10 +220,10 @@
 
 	<FloorProjectionNode>
 		<Type>VROffAxisProjectionNode</Type>
-		<TopLeft>-4,-4,-4</TopLeft>
-		<TopRightt>4,-4,-4</TopRight>
-		<BottomLeft>-4,-4,4</BottomLeft>
-		<BottomRight>4,-4,4</BottomRight>
+		<TopLeft type="doublearray">-4,-4,-4</TopLeft>
+		<TopRight type="doublearray">4,-4,-4</TopRight>
+		<BottomLeft type="doublearray">-4,-4,4</BottomLeft>
+		<BottomRight type="doublearray">4,-4,4</BottomRight>
 	</FloorProjectionNode>
 
 
