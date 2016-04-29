@@ -67,7 +67,7 @@ namespace MinVR {
 // Callback function for VRPN, void* pointer points to a VRPNTrackerDevice
 void VRPN_CALLBACK trackerHandler(void *thisPtr, const vrpn_TRACKERCB info)
 {
-	VRMatrix4 vrpnEvent;
+	VRMatrix4 vrpnEvent = VRMatrix4::translation(VRVector3(info.pos[0], info.pos[1], info.pos[2]));
   //vrpnEvent = glm::mat4_cast(glm::quat(info.quat[3],info.quat[0], info.quat[1],info.quat[2]));
   //vrpnEvent = glm::column(vrpnEvent, 3, glm::dvec4(info.pos[0],info.pos[1],info.pos[2], 1.0));
 

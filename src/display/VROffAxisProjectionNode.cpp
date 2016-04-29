@@ -4,7 +4,7 @@
 namespace MinVR {
 
 
-VROffAxisProjectionNode::VROffAxisProjectionNode(const std::string &name, VRVector3 topLeft, VRVector3 botLeft, VRVector3 topRight, VRVector3 botRight, 
+	VROffAxisProjectionNode::VROffAxisProjectionNode(const std::string &name, VRPoint3 topLeft, VRPoint3 botLeft, VRPoint3 topRight, VRPoint3 botRight,
 		float interOcularDist, const std::string &headTrackingEventName, VRMatrix4 initialHeadMatrix, double nearClip, double farClip) :
 	VRDisplayNode(name), _topLeft(topLeft), _botLeft(botLeft), _topRight(topRight), _botRight(botRight), 
 		_iod(interOcularDist), _headMatrix(initialHeadMatrix), _trackingEvent(headTrackingEventName), _nearClip(nearClip), _farClip(farClip)
@@ -22,7 +22,7 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
 	renderState->pushState();
 
 	// Determine which eye is being used
-	int eye = 0;
+	float eye = 0;
     if (std::string(renderState->getValue("Eye", "/")) == "Left") {
     	eye = 0;
 	}
@@ -38,8 +38,8 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
 	double halfHeight = (_topRight - _botRight).length() / 2.0;
 
 	// Calculate the center of the tile
-	VRVector3 center = (_topLeft + _topRight + _botLeft + _botRight) / 4.0;
-
+	VRPoint3 center = _topLeft + 0.5*(_topRight - _topLeft) + 0.5*(_botLeft - _topLeft);
+	
 	// Calculate tile to room matrix
 	VRVector3 x = (_topRight - _topLeft).normalize();
 	VRVector3 y = (_topLeft - _botLeft).normalize();
@@ -55,8 +55,8 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
 	// Calculate the camera frame and position
 	VRMatrix4 camera2Room = headFrame;
 	VRMatrix4 cameraFrame = room2tile * camera2Room;
-	VRVector3 cameraPos(cameraFrame(0,3), cameraFrame(1,3), cameraFrame(2,3));
-
+	VRPoint3 cameraPos = VRPoint3(0,0,0) + cameraFrame.getColumn(3);
+	
 	// Calculate projection parameters
 	double lcamera = (-halfWidth - cameraPos.x);
 	double rcamera = (halfWidth - cameraPos.x);
@@ -66,16 +66,16 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
 	double k = _nearClip / dist;
 
 	// Calculate view matrix based on the camera position and room tile
-	VRMatrix4 view = VRMatrix4::translation(-cameraPos) *room2tile;
+	VRMatrix4 view = VRMatrix4::translation(VRPoint3(0,0,0) - cameraPos) * room2tile;
 
-	static VRMatrix4 invertXYMat(-1,  0, 0, 0,
+	static VRMatrix4 invertXYMat(1,  0, 0, 0,
 						  0, -1, 0, 0,
 						  0,  0, 1, 0,
 						  0,  0, 0, 1);
 
 	// Calculate off axis projection matrix
 	VRMatrix4 projMat = invertXYMat * VRMatrix4::projection(lcamera*k, rcamera*k, b*k, t*k, _nearClip, _farClip);
-
+	
 	renderState->addData("ViewMatrix", view);
 	renderState->addData("ProjectionMatrix", projMat);
 
@@ -92,8 +92,8 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
 void
 VROffAxisProjectionNode::onVREvent(const std::string &eventName, VRDataIndex *eventData)
 {
-	if (eventName == _trackingEvent) {
-		_headMatrix = eventData->getValue("Transform", "/");
+	if (eventName == "/" + _trackingEvent) {
+		_headMatrix = eventData->getValue("Transform", eventName);
 	}
 }
 
@@ -109,10 +109,10 @@ VROffAxisProjectionNodeFactory::create(VRMainInterface *vrMain, VRDataIndex *con
 		return NULL;
 	}
 
-	VRVector3 topLeft = config->getValue("TopLeft", nodeNameSpace);
-	VRVector3 botLeft = config->getValue("BotLeft", nodeNameSpace);
-	VRVector3 topRight = config->getValue("TopRight", nodeNameSpace);
-	VRVector3 botRight = config->getValue("BotRight", nodeNameSpace);
+	VRPoint3 topLeft = config->getValue("TopLeft", nodeNameSpace);
+	VRPoint3 botLeft = config->getValue("BottomLeft", nodeNameSpace);
+	VRPoint3 topRight = config->getValue("TopRight", nodeNameSpace);
+	VRPoint3 botRight = config->getValue("BottomRight", nodeNameSpace);
 	float iod = (double)config->getValue("EyeSeparation", nodeNameSpace);
 	double nearClip = config->getValue("NearClip", nodeNameSpace);
 	double farClip = config->getValue("FarClip", nodeNameSpace);

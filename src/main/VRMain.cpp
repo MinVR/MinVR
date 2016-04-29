@@ -103,10 +103,10 @@ VRMain::~VRMain()
 void 
 VRMain::initialize(const std::string &configFile, const std::string &vrSetupsToStart)
 {
+
   _config = new VRDataIndex();
   if (!_config->processXMLFile(configFile,"/")) {
   }
-
 
   // IDENTIFY THE VRSETUP(S) TO CONFIGURE
 
@@ -114,7 +114,6 @@ VRMain::initialize(const std::string &configFile, const std::string &vrSetupsToS
     cerr << "VRMain Error:  No VRSetups tag found in the config file " << configFile << endl;
     exit(1);
   }
-
   
   VRStringArray vrSetupsToStartArray;
   if (vrSetupsToStart == "") {
@@ -138,7 +137,9 @@ VRMain::initialize(const std::string &configFile, const std::string &vrSetupsToS
   // Windows doesn't have forking, but we are so early in the execution at this
   // point, it should work fine to use the Windows CreateProcess() function to
   // startup the same exe with the cmd line arguments:  configFile vrSetupsToStartArray[i]
-  std::cerr << "Forking processes not yet implemented on windows." << std::endl;
+  for (int i = 1; i < vrSetupsToStartArray.size(); i++) {
+	  std::cerr << "Forking processes not yet implemented on windows." << std::endl;
+  }
 #else
   for (int i=1; i < vrSetupsToStartArray.size(); i++) {
     pid_t pid = fork();

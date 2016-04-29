@@ -18,7 +18,7 @@ public:
     virtual std::string getName() = 0;
   
 	virtual void clearScreen() {
-		std::cerr << "clearScreen() not enabled in this VRGraphicsToolkit." << std::cerr;
+		std::cerr << "clearScreen() not enabled in this VRGraphicsToolkit." << std::endl;
 	}
 
 	enum VRDRAWBUFFER {
@@ -30,31 +30,31 @@ public:
 		VRDRAWBUFFER_FRONTRIGHT = 5
 	};
 	virtual void setDrawBuffer(VRDRAWBUFFER buffer) {
-		std::cerr << "setDrawBuffer() not enabled in this VRGraphicsToolkit." << std::cerr;
+		std::cerr << "setDrawBuffer() not enabled in this VRGraphicsToolkit." << std::endl;
 	}
 
 	virtual void setViewport(VRRect rect) {
-		std::cerr << "setViewport() not enabled in this VRGraphicsToolkit." << std::cerr;
+		std::cerr << "setViewport() not enabled in this VRGraphicsToolkit." << std::endl;
 	}
 
 	virtual void disableDrawingOnOddColumns() {
-		std::cerr << "disableDrawingOnOddColumns() not enabled in this VRGraphicsToolkit." << std::cerr;
+		std::cerr << "disableDrawingOnOddColumns() not enabled in this VRGraphicsToolkit." << std::endl;
 	}
 
 	virtual void disableDrawingOnEvenColumns() {
-		std::cerr << "disableDrawingOnEvenColumns() not enabled in this VRGraphicsToolkit." << std::cerr;
+		std::cerr << "disableDrawingOnEvenColumns() not enabled in this VRGraphicsToolkit." << std::endl;
 	}
 
 	virtual void enableDrawingOnAllColumns() {
-		std::cerr << "enableDrawingOnAllColumns() not enabled in this VRGraphicsToolkit." << std::cerr;
+		std::cerr << "enableDrawingOnAllColumns() not enabled in this VRGraphicsToolkit." << std::endl;
 	}
 
 	virtual void flushGraphics() {
-		std::cerr << "flushGraphics() not enabled in this VRGraphicsToolkit." << std::cerr;		
+		std::cerr << "flushGraphics() not enabled in this VRGraphicsToolkit." << std::endl;
 	}
 
 	virtual void finishGraphics() {
-		std::cerr << "finishGraphics() not enabled in this VRGraphicsToolkit." << std::cerr;				
+		std::cerr << "finishGraphics() not enabled in this VRGraphicsToolkit." << std::endl;
 	}
 
 };

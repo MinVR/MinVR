@@ -16,7 +16,7 @@
 	<Server>
 		<Type>VRServer</Type>
 		<NumClients>3</NumClients>
-		<VRPlugins>VRPNPlugin</VRPlugins>
+		<VRPlugins type="stringarray">VRPNPlugin</VRPlugins>
 		<VRInputDevices>Optitrack1,Optitrack2,Optitrack3,RedWandBtns,BlueWandBtns</VRInputDevices>
 		<VRDisplayGraph>ConsoleOnly</VRDisplayGraph>
 	</Server>

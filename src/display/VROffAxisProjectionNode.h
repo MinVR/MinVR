@@ -24,7 +24,7 @@ namespace MinVR {
 class VROffAxisProjectionNode : public VRDisplayNode, public VREventHandler {
 public:
 
-	VROffAxisProjectionNode(const std::string &name, VRVector3 topLeft, VRVector3 botLeft, VRVector3 topRight, VRVector3 botRight, 
+	VROffAxisProjectionNode(const std::string &name, VRPoint3 topLeft, VRPoint3 botLeft, VRPoint3 topRight, VRPoint3 botRight,
 		float interOcularDist, const std::string &headTrackingEventName, VRMatrix4 initialHeadMatrix, double nearClip, double farClip);
 	virtual ~VROffAxisProjectionNode();
 
@@ -36,10 +36,10 @@ public:
 
 protected:
 
-	VRVector3 _topLeft;
-	VRVector3 _botLeft;
-	VRVector3 _topRight;
-	VRVector3 _botRight;
+	VRPoint3 _topLeft;
+	VRPoint3 _botLeft;
+	VRPoint3 _topRight;
+	VRPoint3 _botRight;
 	float     _iod;
 	VRMatrix4 _headMatrix;
 	std::string _trackingEvent;

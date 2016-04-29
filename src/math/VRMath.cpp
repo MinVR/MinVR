@@ -192,16 +192,18 @@ VRMatrix4::VRMatrix4(const double* a) {
 }
 
 VRMatrix4::VRMatrix4(VRDoubleArray da) {
-  for (int i=0;i<16;i++) {
-    m[i] = da[i];
-  }
+	m[0] = da[0]; m[4] = da[1];  m[8] = da[2]; m[12] = da[3];
+	m[1] = da[4]; m[5] = da[5];  m[9] = da[6]; m[13] = da[7];
+	m[2] = da[8]; m[6] = da[9];  m[10] = da[10]; m[14] = da[11];
+	m[3] = da[12]; m[7] = da[13];  m[11] = da[14]; m[15] = da[15];
 }
 
 VRMatrix4::VRMatrix4(VRAnyCoreType t) {
   VRDoubleArray da = t;
-  for (int i=0;i<16;i++) {
-    m[i] = da[i];
-  }
+  m[0] = da[0]; m[4] = da[1];  m[8] = da[2]; m[12] = da[3];
+  m[1] = da[4]; m[5] = da[5];  m[9] = da[6]; m[13] = da[7];
+  m[2] = da[8]; m[6] = da[9];  m[10] = da[10]; m[14] = da[11];
+  m[3] = da[12]; m[7] = da[13];  m[11] = da[14]; m[15] = da[15];
 }
 
   
@@ -417,9 +419,25 @@ VRVector3 VRMatrix4::getColumn(int c) const {
 
 VRDoubleArray VRMatrix4::toVRDoubleArray() {
   VRDoubleArray a;
-  for (int i=0;i<16;i++) {
-    a.push_back(m[i]);
-  }
+  a.push_back(m[0]);
+  a.push_back(m[4]);
+  a.push_back(m[8]);
+  a.push_back(m[12]);
+
+  a.push_back(m[1]);
+  a.push_back(m[5]);
+  a.push_back(m[9]);
+  a.push_back(m[13]);
+
+  a.push_back(m[2]);
+  a.push_back(m[6]);
+  a.push_back(m[10]);
+  a.push_back(m[14]);
+
+  a.push_back(m[3]);
+  a.push_back(m[7]);
+  a.push_back(m[11]);
+  a.push_back(m[15]);
   return a;
 }
 
