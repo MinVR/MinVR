@@ -6,6 +6,7 @@ int testIndexSerializeIntArraySep();
 int testIndexPrintDoubleArray();
 int testIndexLotsaEntries();
 int testPushPopIndex();
+int testEscapedChars();
 
 // Make this a large number to get decent timing data.
 #define LOOP for (int loopctr = 0; loopctr < 10; loopctr++)
@@ -48,6 +49,10 @@ int indextest(int argc, char* argv[]) {
 
   case 6:
     output = testPushPopIndex();
+    break;
+
+  case 7:
+    output = testEscapedChars();
     break;
     
   default:
@@ -338,3 +343,34 @@ int testIndexLotsaEntries() {
   return out;
 }
   
+int testEscapedChars() {
+
+  int out = 0;
+
+  VRDataIndex *n = setupIndex();
+
+  // Escaping the comma separator between Gamma and Delta.
+  std::string inString = "Alpha,Beta,Gamma\\,Delta,Epsilon";
+  
+  int lctr;
+  int N = 1000;
+
+  LOOP {
+  
+    VRStringArray s = n->deserializeStringArray(inString.c_str(), ',');
+
+    out += (s.size() == 4) ? 0 : 1;
+
+    out += s[0].compare("Alpha");
+    out += s[1].compare("Beta");
+    out += s[2].compare("Gamma,Delta");
+    out += s[3].compare("Epsilon");
+
+    //    std::cout << inString << std::endl;
+    //    std::cout << s[0] << "/"  << s[1] << "/"  << s[2] << "/"  << s[3] << "/" << std::endl;
+    
+  }
+
+  return out;
+}
+    

@@ -118,11 +118,29 @@ VRStringArray VRDataIndex::deserializeStringArray(const char* valueString,
   VRStringArray vVal;
 
   // Separate the name space into its constituent elements.
-  VRString elem;
+  VRString elem, out = "";
   std::stringstream ss(valueString);
   while (std::getline(ss, elem, separator)) {
 
-    vVal.push_back(elem);
+    // If the end of the given string is an escape character, that
+    // means this delimiter was escaped. Go get another piece of the
+    // line and append it to this string before pushing it onto the
+    // array.
+    if (elem.back() == '\\') {
+
+      elem.back() = separator;
+      out += elem;
+      
+    } else {
+
+      out += elem;
+      if (out.size() == 0) {
+        vVal.push_back(elem);
+      } else { 
+        vVal.push_back(out);
+        out = "";
+      }
+    }
   }
 
   return vVal;

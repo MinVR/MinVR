@@ -116,7 +116,14 @@ Author(s) of Significant Updates/Modifications to the File:
 ///     <cora type="intarray">3,4,5,6</cora>
 ///     <nora type="stringarray" separator="@">A string@B sting@C sing@D sin@E in@F i</nora>
 ///
-///     If no separator is specified, the code uses ','.
+///     If no separator is specified, the code uses ','.  You can use
+///     backslash (\) to include a separator character in one of the
+///     strings.  So:
+///
+///     <cora>Alpha,Beta,Gamma\,Delta,Epsilon</cora>
+///
+///     Comes out with four entries in the array, "Alpha", "Beta",
+///     "Gamma,Delta", and "Epsilon".  See indextest.cpp for an example.
 ///
 ///  3. Feed a file containing XML into processXMLFile().  There is no
 ///     validation of the XML done, and there are some ways in which
