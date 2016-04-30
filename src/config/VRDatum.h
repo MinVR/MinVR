@@ -319,6 +319,8 @@ public:
     VRDatumSpecialized<VRInt, VRCORETYPE_INT>(inVal) {};
   std::string getValueAsString() const;
   VRInt getValueInt() const { return value.front(); };
+  VRIntArray getValueIntArray() const {
+    VRIntArray out;  out.push_back(value.front());  return out; };
 };
 
 // The specialization for a double.
@@ -328,6 +330,8 @@ public:
     VRDatumSpecialized<VRDouble, VRCORETYPE_DOUBLE>(inVal) {};
   std::string getValueAsString() const;
   VRDouble getValueDouble() const { return value.front(); };
+  VRDoubleArray getValueDoubleArray() const {
+    VRDoubleArray out;  out.push_back(value.front());  return out; };
 };
 
 // Specialization for a string
@@ -337,6 +341,8 @@ public:
     VRDatumSpecialized<VRString, VRCORETYPE_STRING>(inVal) {};
   std::string getValueAsString() const;
   VRString getValueString() const { return value.front(); };
+  VRStringArray getValueStringArray() const {
+    VRStringArray out;  out.push_back(value.front());  return out; };
 };
 
 // Specialization for a vector of ints
@@ -543,6 +549,7 @@ public:
   {
     if (pData->getType() == VRCORETYPE_STRINGARRAY) {
       return static_cast<VRDatumStringArray*>(pData);
+      
     } else {
       throw std::runtime_error("This datum is not an array of strings.");
     }
@@ -571,3 +578,4 @@ VRDatumPtr CreateVRDatumContainer(void *pData);
 
 
 #endif
+

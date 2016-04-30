@@ -14,6 +14,7 @@ int testDatumDoubleArray();
 int testDatumStringArray();
 int testDatumPushPop();
 int testDatumContainer();
+int testDatumArrayConversions();
 
 // Mucks around with the attribute lists.
 int testDatumAttributes();
@@ -78,6 +79,10 @@ int datumtest(int argc, char* argv[]) {
 
   case 9:
     output = testDatumPushPop();
+    break;
+
+  case 10:
+    output = testDatumArrayConversions();
     break;
     
     // Add case statements to handle values of 2-->10
@@ -329,6 +334,44 @@ int testDatumStringArray() {
   
   return out;
 }
+
+int testDatumArrayConversions() {
+
+  int out = 0;
+
+  LOOP {
+  
+    VRDatumString a = VRDatumString(std::string("this is a string"));
+
+    out = a.getDescription().compare("string");
+
+    std::string b = a.getValue();
+
+    std::vector<std::string> c = a.getValue();
+  
+    out += c[0].compare(b);
+
+    out += (a.getType() == VRCORETYPE_STRING) ? 0 : 1;
+
+    out += a.getValueAsString().compare("this is a string");
+
+    VRDatumInt d = VRDatumInt(37);
+
+    VRIntArray e = d.getValue();
+
+    out += (e[0] == (VRInt)d.getValue()) ? 0 : 1;
+
+    VRDatumDouble f = VRDatumDouble(3.1415926);
+
+    VRDoubleArray g = f.getValue();
+
+    out += (g[0] = (VRDouble)f.getValue()) ? 0 : 1;
+
+  }
+
+  return out;
+}
+
 
 int testDatumContainer() {
 
