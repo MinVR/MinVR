@@ -154,10 +154,12 @@ public:
             const double r3c1, const double r3c2, const double r3c3, const double r3c4, 
             const double r4c1, const double r4c2, const double r4c3, const double r4c4);
 
-  /// Constructs a matrix given a 16 element array
+  /// Constructs a matrix given from an array of 16 doubles in OpenGL matrix format
+  /// (i.e., column major).
   VRMatrix4(const double* a);
   
-  /// Constructs a matrix from a VRDoubleArray with 16 elements
+  /// Constructs a matrix from a VRDoubleArray, where the convention is to format
+  /// for on-screen readability, so stored in row-major order.
   VRMatrix4(VRDoubleArray da);
   
   /// Constructs a matrix from the VRAnyCoreType wrapper class. The argument

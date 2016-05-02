@@ -49,6 +49,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "VRVRPNTrackerDevice.h"
 
 #include <vrpn_Tracker.h>
+//#include <quat.h>
 
 #include <math/VRMath.h>
 
@@ -67,10 +68,15 @@ namespace MinVR {
 // Callback function for VRPN, void* pointer points to a VRPNTrackerDevice
 void VRPN_CALLBACK trackerHandler(void *thisPtr, const vrpn_TRACKERCB info)
 {
-	VRMatrix4 vrpnEvent = VRMatrix4::translation(VRVector3(info.pos[0], info.pos[1], info.pos[2]));
-  //vrpnEvent = glm::mat4_cast(glm::quat(info.quat[3],info.quat[0], info.quat[1],info.quat[2]));
-  //vrpnEvent = glm::column(vrpnEvent, 3, glm::dvec4(info.pos[0],info.pos[1],info.pos[2], 1.0));
-
+    //double rotraw[16];
+    //q_to_ogl_matrix(rotraw, info.quat);
+    //VRMatrix4 vrpnEvent(rotraw);
+  
+    VRMatrix4 vrpnEvent;
+    vrpnEvent[3][0] = info.pos[0];
+    vrpnEvent[3][1] = info.pos[1];
+    vrpnEvent[3][2] = info.pos[2];
+  
 	VRVRPNTrackerDevice* device = ((VRVRPNTrackerDevice*)thisPtr);
 	device->processEvent(vrpnEvent, info.sensor);
 }

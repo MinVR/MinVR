@@ -151,7 +151,7 @@ SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 add_library ( ${PROJECT_NAME} SHARED ${HEADERFILES} ${SOURCEFILES} )
 target_link_libraries(${PROJECT_NAME} ${VRPN_LIBRARY} MinVR ${LIBS_ALL})
-add_dependencies( ${PROJECT_NAME} vrpn)
+add_dependencies( ${PROJECT_NAME} vrpn )
 
 #------------------------------------------
 # Install Target
