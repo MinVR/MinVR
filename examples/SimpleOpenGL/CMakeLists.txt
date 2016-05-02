@@ -1,5 +1,5 @@
 
-project(SimpleOpenGLGLFW)
+project(SimpleOpenGL)
 
 find_package(OpenGL REQUIRED)
 
@@ -10,9 +10,12 @@ set(vr_example_source_files
 )
 
 set(vr_example_config_files
+  3DTV.xml
   desktop.xml
   ivlabcave.xml
+  ivlabcavefront.xml
   simple.xml
+  testalldisplaynodes.xml
   YURT.xml
 )
 
@@ -27,9 +30,9 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 endif()
 
 
-add_executable(SimpleOpenGLGLFW ${vr_example_source_files} ${vr_example_config_files})
+add_executable(SimpleOpenGL ${vr_example_source_files} ${vr_example_config_files})
 
-target_link_libraries(SimpleOpenGLGLFW MinVR ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} ${ALL_LIBS})
+target_link_libraries(SimpleOpenGL MinVR ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} ${ALL_LIBS})
 
-set_property(TARGET SimpleOpenGLGLFW PROPERTY FOLDER "examples")
+set_property(TARGET SimpleOpenGL PROPERTY FOLDER "examples")
 

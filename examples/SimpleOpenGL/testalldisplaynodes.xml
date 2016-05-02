@@ -5,7 +5,7 @@
 
 	<Desktop>
 		<Type>VRStandAlone</Type>
-		<VRPlugins type="stringarray">GLFWPlugin@OpenGLPlugin</VRPlugins>
+		<VRPlugins type="stringarray">GLFWPlugin,OpenGLPlugin</VRPlugins>
 		<VRDisplayGraph>RootNode</VRDisplayGraph>
 	    <VRWindowToolkits type="stringarray">GLFWToolkit</VRWindowToolkits>
 	    <VRGraphicsToolkits type="stringarray">OpenGLToolkit</VRGraphicsToolkits>
@@ -42,7 +42,7 @@
 
 	<GroupNode>
 		<Type>VRGroupNode</Type>
-		<Children type="stringarray">Viewport1Node@Viewport2Node</Children>
+		<Children type="stringarray">Viewport1Node,Viewport2Node</Children>
 	</GroupNode>
 
 	<Viewport1Node>

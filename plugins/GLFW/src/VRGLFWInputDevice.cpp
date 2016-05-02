@@ -21,11 +21,22 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode,
     ((VRGLFWInputDevice*)(glfwGetWindowUserPointer(window)))->keyCallback(window, key, scancode, action, mods);
 }
 
+  
 static void glfw_size_callback(GLFWwindow* window, int width, int height) {
     ((VRGLFWInputDevice*)(glfwGetWindowUserPointer(window)))->sizeCallback(window, width, height);
 }
 
+  
+static void glfw_cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
+    ((VRGLFWInputDevice*)(glfwGetWindowUserPointer(window)))->cursorPositionCallback(window, xpos, ypos);
+}
 
+  
+static void glfw_mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+  ((VRGLFWInputDevice*)(glfwGetWindowUserPointer(window)))->mouseButtonCallback(window, button, action, mods);
+}
+
+  
 VRGLFWInputDevice::VRGLFWInputDevice() {
 }
 
@@ -46,13 +57,13 @@ void VRGLFWInputDevice::addWindow(GLFWwindow* window) {
 	glfwSetWindowUserPointer(window, this);
 	glfwSetKeyCallback(window, glfw_key_callback);
 	glfwSetWindowSizeCallback(window, glfw_size_callback);
+    glfwSetMouseButtonCallback(window, glfw_mouse_button_callback);
+    glfwSetCursorPosCallback(window, glfw_cursor_position_callback);
     _windows.push_back(window);
 }
 
-void VRGLFWInputDevice::keyCallback(GLFWwindow* window, int key, int scancode,
-        int action, int mods) {
-
-    std::string event = "Kbd_" + getGlfwKeyName(key) + "_" + getGlfwActionName(action);
+void VRGLFWInputDevice::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    std::string event = "Kbd" + getGlfwKeyName(key) + "_" + getGlfwActionName(action);
     _dataIndex.addData(event + "/KeyString", getGlfwKeyName(key));
     _dataIndex.addData(event + "/EventString", getGlfwActionName(action));
     _events.push_back(_dataIndex.serialize(event));
@@ -62,6 +73,48 @@ void VRGLFWInputDevice::sizeCallback(GLFWwindow* window, int width, int height) 
     // TODO: create an event reporting to MinVR that the size has changed
 }
 
+
+void VRGLFWInputDevice::cursorPositionCallback(GLFWwindow* window, double xpos, double ypos) {
+  std::string event = "Mouse_Move";
+  _dataIndex.addData(event + "/XPos", xpos);
+  _dataIndex.addData(event + "/YPos", ypos);
+  _events.push_back(_dataIndex.serialize(event));
+}
+
+  
+  
+void VRGLFWInputDevice::mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+  std::string buttonStr;
+  if (button == GLFW_MOUSE_BUTTON_LEFT) {
+    buttonStr = "MouseBtnLeft";
+  }
+  else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+    buttonStr = "MouseBtnRight";
+  }
+  else if (button == GLFW_MOUSE_BUTTON_MIDDLE) {
+    buttonStr = "MouseBtnMiddle";
+  }
+  else {
+    buttonStr = "MouseBtn" + std::to_string(button);
+  }
+  
+  std::string actionStr;
+  if (action == GLFW_PRESS) {
+    actionStr = "_Down";
+  }
+  else if (action == GLFW_RELEASE) {
+    actionStr = "_Up";
+  }
+
+  std::string event = buttonStr + actionStr;
+  _dataIndex.addData(event + "/ButtonID", button);
+  _events.push_back(_dataIndex.serialize(event));
+}
+
+  
+  
+  
+  
 std::string getGlfwKeyName(int key) {
     switch (key)
     {
@@ -102,23 +155,23 @@ std::string getGlfwKeyName(int key) {
         case GLFW_KEY_8:            return "8";
         case GLFW_KEY_9:            return "9";
         case GLFW_KEY_0:            return "0";
-        case GLFW_KEY_SPACE:        return "SPACE";
-        case GLFW_KEY_MINUS:        return "MINUS";
-        case GLFW_KEY_EQUAL:        return "EQUAL";
-        case GLFW_KEY_LEFT_BRACKET: return "LEFT_BRACKET";
-        case GLFW_KEY_RIGHT_BRACKET: return "RIGHT_BRACKET";
-        case GLFW_KEY_BACKSLASH:    return "BACKSLASH";
-        case GLFW_KEY_SEMICOLON:    return "SEMICOLON";
-        case GLFW_KEY_APOSTROPHE:   return "APOSTROPHE";
-        case GLFW_KEY_GRAVE_ACCENT: return "GRAVE_ACCENT";
-        case GLFW_KEY_COMMA:        return "COMMA";
-        case GLFW_KEY_PERIOD:       return "PERIOD";
-        case GLFW_KEY_SLASH:        return "SLASH";
-        case GLFW_KEY_WORLD_1:      return "WORLD1";
-        case GLFW_KEY_WORLD_2:      return "WORLD2";
+        case GLFW_KEY_SPACE:        return "Space";
+        case GLFW_KEY_MINUS:        return "Minus";
+        case GLFW_KEY_EQUAL:        return "Equal";
+        case GLFW_KEY_LEFT_BRACKET: return "LeftBracket";
+        case GLFW_KEY_RIGHT_BRACKET: return "RightBracket";
+        case GLFW_KEY_BACKSLASH:    return "Backslash";
+        case GLFW_KEY_SEMICOLON:    return "Semicolon";
+        case GLFW_KEY_APOSTROPHE:   return "Apostrophe";
+        case GLFW_KEY_GRAVE_ACCENT: return "GraveAccent";
+        case GLFW_KEY_COMMA:        return "Comma";
+        case GLFW_KEY_PERIOD:       return "Period";
+        case GLFW_KEY_SLASH:        return "Slash";
+        case GLFW_KEY_WORLD_1:      return "World1";
+        case GLFW_KEY_WORLD_2:      return "World2";
 
         // Function keys
-        case GLFW_KEY_ESCAPE:       return "ESC";
+        case GLFW_KEY_ESCAPE:       return "Esc";
         case GLFW_KEY_F1:           return "F1";
         case GLFW_KEY_F2:           return "F2";
         case GLFW_KEY_F3:           return "F3";
@@ -144,51 +197,51 @@ std::string getGlfwKeyName(int key) {
         case GLFW_KEY_F23:          return "F23";
         case GLFW_KEY_F24:          return "F24";
         case GLFW_KEY_F25:          return "F25";
-        case GLFW_KEY_UP:           return "UP";
-        case GLFW_KEY_DOWN:         return "DOWN";
-        case GLFW_KEY_LEFT:         return "LEFT";
-        case GLFW_KEY_RIGHT:        return "RIGHT";
-        case GLFW_KEY_LEFT_SHIFT:   return "LEFT_SHIFT";
-        case GLFW_KEY_RIGHT_SHIFT:  return "RIGHT_SHIFT";
-        case GLFW_KEY_LEFT_CONTROL: return "LEFT_CONTROL";
-        case GLFW_KEY_RIGHT_CONTROL: return "RIGHT_CONTROL";
-        case GLFW_KEY_LEFT_ALT:     return "LEFT_ALT";
-        case GLFW_KEY_RIGHT_ALT:    return "RIGHT_ALT";
-        case GLFW_KEY_TAB:          return "TAB";
-        case GLFW_KEY_ENTER:        return "ENTER";
-        case GLFW_KEY_BACKSPACE:    return "BACKSPACE";
-        case GLFW_KEY_INSERT:       return "INSERT";
-        case GLFW_KEY_DELETE:       return "DELETE";
-        case GLFW_KEY_PAGE_UP:      return "PAGEUP";
-        case GLFW_KEY_PAGE_DOWN:    return "PAGEDOWN";
-        case GLFW_KEY_HOME:         return "HOME";
-        case GLFW_KEY_END:          return "END";
-        case GLFW_KEY_KP_0:         return "KEYPAD0";
-        case GLFW_KEY_KP_1:         return "KEYPAD1";
-        case GLFW_KEY_KP_2:         return "KEYPAD2";
-        case GLFW_KEY_KP_3:         return "KEYPAD3";
-        case GLFW_KEY_KP_4:         return "KEYPAD4";
-        case GLFW_KEY_KP_5:         return "KEYPAD5";
-        case GLFW_KEY_KP_6:         return "KEYPAD6";
-        case GLFW_KEY_KP_7:         return "KEYPAD7";
-        case GLFW_KEY_KP_8:         return "KEYPAD8";
-        case GLFW_KEY_KP_9:         return "KEYPAD9";
-        case GLFW_KEY_KP_DIVIDE:    return "KEYPAD_DIVIDE";
-        case GLFW_KEY_KP_MULTIPLY:  return "KEYPAD_MULTIPLY";
-        case GLFW_KEY_KP_SUBTRACT:  return "KEYPAD_SUBTRACT";
-        case GLFW_KEY_KP_ADD:       return "KEYPAD_ADD";
-        case GLFW_KEY_KP_DECIMAL:   return "KEYPAD_DECIMAL";
-        case GLFW_KEY_KP_EQUAL:     return "KEYPAD_EQUAL";
-        case GLFW_KEY_KP_ENTER:     return "KEYPAD_ENTER";
-        case GLFW_KEY_PRINT_SCREEN: return "PRINT_SCREEN";
-        case GLFW_KEY_NUM_LOCK:     return "NUM_LOCK";
-        case GLFW_KEY_CAPS_LOCK:    return "CAPS_LOCK";
-        case GLFW_KEY_SCROLL_LOCK:  return "SCROLL_LOCK";
-        case GLFW_KEY_PAUSE:        return "PAUSE";
-        case GLFW_KEY_LEFT_SUPER:   return "LEFT_SUPER";
-        case GLFW_KEY_RIGHT_SUPER:  return "RIGHT_SUPER";
-        case GLFW_KEY_MENU:         return "MENU";
-        case GLFW_KEY_UNKNOWN:      return "UNKNOWN";
+        case GLFW_KEY_UP:           return "Up";
+        case GLFW_KEY_DOWN:         return "Down";
+        case GLFW_KEY_LEFT:         return "Left";
+        case GLFW_KEY_RIGHT:        return "Right";
+        case GLFW_KEY_LEFT_SHIFT:   return "LeftShift";
+        case GLFW_KEY_RIGHT_SHIFT:  return "RightShift";
+        case GLFW_KEY_LEFT_CONTROL: return "LeftControl";
+        case GLFW_KEY_RIGHT_CONTROL: return "RightControl";
+        case GLFW_KEY_LEFT_ALT:     return "LeftAlt";
+        case GLFW_KEY_RIGHT_ALT:    return "RightAlt";
+        case GLFW_KEY_TAB:          return "Tab";
+        case GLFW_KEY_ENTER:        return "Enter";
+        case GLFW_KEY_BACKSPACE:    return "Backspace";
+        case GLFW_KEY_INSERT:       return "Insert";
+        case GLFW_KEY_DELETE:       return "Delete";
+        case GLFW_KEY_PAGE_UP:      return "PageUp";
+        case GLFW_KEY_PAGE_DOWN:    return "PageDown";
+        case GLFW_KEY_HOME:         return "Home";
+        case GLFW_KEY_END:          return "End";
+        case GLFW_KEY_KP_0:         return "Keypad0";
+        case GLFW_KEY_KP_1:         return "Keypad1";
+        case GLFW_KEY_KP_2:         return "Keypad2";
+        case GLFW_KEY_KP_3:         return "Keypad3";
+        case GLFW_KEY_KP_4:         return "Keypad4";
+        case GLFW_KEY_KP_5:         return "Keypad5";
+        case GLFW_KEY_KP_6:         return "Keypad6";
+        case GLFW_KEY_KP_7:         return "Keypad7";
+        case GLFW_KEY_KP_8:         return "Keypad8";
+        case GLFW_KEY_KP_9:         return "Keypad9";
+        case GLFW_KEY_KP_DIVIDE:    return "KeypadDivide";
+        case GLFW_KEY_KP_MULTIPLY:  return "KeypadMultiply";
+        case GLFW_KEY_KP_SUBTRACT:  return "KeypadSubtract";
+        case GLFW_KEY_KP_ADD:       return "KeypadAdd";
+        case GLFW_KEY_KP_DECIMAL:   return "KeypadDecimal";
+        case GLFW_KEY_KP_EQUAL:     return "KeypadEqual";
+        case GLFW_KEY_KP_ENTER:     return "KeypadEnter";
+        case GLFW_KEY_PRINT_SCREEN: return "PrintScreen";
+        case GLFW_KEY_NUM_LOCK:     return "NumLock";
+        case GLFW_KEY_CAPS_LOCK:    return "CapsLock";
+        case GLFW_KEY_SCROLL_LOCK:  return "ScrollLock";
+        case GLFW_KEY_PAUSE:        return "Pause";
+        case GLFW_KEY_LEFT_SUPER:   return "LeftSuper";
+        case GLFW_KEY_RIGHT_SUPER:  return "RightSuper";
+        case GLFW_KEY_MENU:         return "Menu";
+        case GLFW_KEY_UNKNOWN:      return "Unknown";
 
         default:                    return "";
     }
