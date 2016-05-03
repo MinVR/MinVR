@@ -12,6 +12,8 @@
       std::cout << "add <newname> <type> <value> - add a primitive value" << std::endl; \
       std::cout << "add <name> container  - create a container" << std::endl; \
       std::cout << "cd [<namespace>] - set or show the default namespace" << std::endl; \
+      std::cout << "push - push the current state onto a stack" << std::endl; \
+      std::cout << "pop - pop the current state off the stack" << std::endl; \
       std::cout << "q quit" << std::endl; \
       std::cout << "? print this message." << std::endl;
 
@@ -70,6 +72,16 @@ int main() {
     } else if (elems[0].compare("file") == 0) {
 
       index->processXMLFile(elems[1], nameSpace);
+
+    ////// command: push
+    } else if (elems[0].compare("push") == 0) {
+
+      index->pushState();
+
+    ////// command: pop
+    } else if (elems[0].compare("pop") == 0) {
+
+      index->popState();
 
     ////// command: cd (set namespace)
     } else if (elems[0].compare("cd") == 0) {
