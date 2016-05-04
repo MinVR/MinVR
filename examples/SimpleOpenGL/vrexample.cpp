@@ -28,9 +28,9 @@ using namespace MinVR;
 
 class MyVRApp : public VREventHandler, public VRRenderHandler {
 public:
-	MyVRApp(const std::string &configFile, const std::string vrSetups) : _vrMain(NULL), _quit(false) {
+  MyVRApp(int argc, char** argv) : _vrMain(NULL), _quit(false) {
 		_vrMain = new VRMain();
-        _vrMain->initialize(configFile, vrSetups);
+        _vrMain->initialize(argc, argv);
       	_vrMain->addEventHandler(this);
 		_vrMain->addRenderHandler(this);
         _horizAngle = 0.0;
@@ -317,24 +317,8 @@ protected:
 
 int main(int argc, char **argv) {
 
-	if ((argc < 2) || (argc > 3) || ((argc==2) && (std::string(argv[1]) == "-h"))) {
-		std::cout << "Usage:" << std::endl;
-		std::cout << "vrexample <config-file-name.xml> [vrsetup-name]" << std::endl;
-		std::cout << "     <config-file-name.xml> is required and is the name of a MinVR config file." << std::endl;
-		std::cout << "     [vrsetup-name] is optional and is a comma-separated list of VRSetups" << std::endl;
-		std::cout << "     to load in this process.  If more than one VRSetup is listed, new" << std::endl;
-		std::cout << "     processes will be forked." << std::endl;
-        exit(0);
-	}
-
-    std::string config = argv[1];
-    std::string setup = "";
-    if (argc >= 3) {
-      setup = argv[2];
-    }
-  
-    MyVRApp app(config, setup);
-	app.run();
+    MyVRApp app(argc, argv);
+  	app.run();
 
 	exit(0);
 }

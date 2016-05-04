@@ -1,7 +1,9 @@
 #include <main/VRMain.h>
 
 #include <stdio.h>
-#ifndef WIN32
+#ifdef WIN32
+#include <windows.h>
+#else
 #include <unistd.h>
 #endif
 
@@ -101,9 +103,24 @@ VRMain::~VRMain()
 
 
 void 
-VRMain::initialize(const std::string &configFile, const std::string &vrSetupsToStart)
+VRMain::initialize(int argc, char** argv)
 {
-
+  if ((argc < 2) || ((argc >= 2) && (std::string(argv[1]) == "-h"))) {
+    std::cout << "MinVR Program Usage:" << std::endl;
+    std::cout << std::string(argv[0]) + " <config-file-name.xml> [vrsetup-name]" << std::endl;
+    std::cout << "     <config-file-name.xml> is required and is the name of a MinVR config file." << std::endl;
+    std::cout << "     [vrsetup-name] is optional and is a comma-separated list of VRSetups" << std::endl;
+    std::cout << "     to start.  If more than one VRSetup is listed, new processes will be forked." << std::endl;
+    exit(0);
+  }
+  
+  std::string configFile = argv[1];
+  std::string vrSetupsToStart;
+  if (argc >= 3) {
+    vrSetupsToStart = argv[2];
+  }
+  
+  
   _config = new VRDataIndex();
   if (!_config->processXMLFile(configFile,"/")) {
   }
@@ -132,15 +149,42 @@ VRMain::initialize(const std::string &configFile, const std::string &vrSetupsToS
   // This process will be the first one listed
   _name = vrSetupsToStartArray[0];
 
-  // Fork a new process for each remaining process
+  // Fork a new process for each remaining vrsetup
 #ifdef WIN32
-  // Windows doesn't have forking, but we are so early in the execution at this
-  // point, it should work fine to use the Windows CreateProcess() function to
-  // startup the same exe with the cmd line arguments:  configFile vrSetupsToStartArray[i]
+  // Windows doesn't support forking, but it does allow us to create processes,
+  // so we just create a new process with the config file to load as the first
+  // command line argument and the vrsetup to start as the second command line
+  // argument -- this means we need to enforce this convention for command line
+  // arguments for all MinVR programs that want to support multiple processes.
   for (int i = 1; i < vrSetupsToStartArray.size(); i++) {
-	  std::cerr << "Forking processes not yet implemented on windows." << std::endl;
+    // https://msdn.microsoft.com/en-us/library/windows/desktop/ms682512(v=vs.85).aspx
+    STARTUPINFO si;
+    PROCESS_INFORMATION pi;
+    
+    ZeroMemory(&si, sizeof(si));
+    si.cb = sizeof(si);
+    ZeroMemory(&pi, sizeof(pi));
+    
+    std::string cmdLine = argv[0] + " " + argv[1] + " " + vrSetupsToStartArray[i];
+    
+    // Start the child process.
+    if (!CreateProcess(NULL,   // No module name (use command line)
+                       cmdLine,        // Command line
+                       NULL,           // Process handle not inheritable
+                       NULL,           // Thread handle not inheritable
+                       FALSE,          // Set handle inheritance to FALSE
+                       0,              // No creation flags
+                       NULL,           // Use parent's environment block
+                       NULL,           // Use parent's starting directory
+                       &si,            // Pointer to STARTUPINFO structure
+                       &pi )           // Pointer to PROCESS_INFORMATION structure
+       ) {
+      std::cerr << "CreateProcess failed: " << GetLastError() << std::endl;
+      exit(1);
+    }
   }
 #else
+  // On linux and OSX we can simply fork a new process for each vrsetup to start
   for (int i=1; i < vrSetupsToStartArray.size(); i++) {
     pid_t pid = fork();
     if (pid == 0) {
