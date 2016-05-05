@@ -46,7 +46,7 @@ public:
 
 	// Callback for event handling, inherited from VREventHandler
 	virtual void onVREvent(const std::string &eventName, VRDataIndex *eventData) {
-		std::cout << "Event: " << eventName << std::endl;
+		//std::cout << "Event: " << eventName << std::endl;
 		if (eventName == "/KbdEsc_Down") {
 			_quit = true;
 		}
@@ -117,7 +117,7 @@ public:
                               VRMatrix4::rotationY(_horizAngle);
               
 			    VRMatrix4 V = renderState->getValue("ViewMatrix", "/");
-			    glLoadMatrixd((M*V).m);
+			    glLoadMatrixd((V*M).m);
             }
             else {
                 // If the DisplayGraph does not contain a node that sets the

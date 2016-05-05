@@ -19,7 +19,7 @@ VRStereoNode::~VRStereoNode() {
 
 
 void VRStereoNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler) {
-  //renderState->pushState();
+  renderState->pushState();
 
 	if (_format == VRSTEREOFORMAT_MONO) {
 		renderState->addData("StereoFormat", "Mono");
@@ -74,7 +74,7 @@ void VRStereoNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandl
 	}
 
 
-  //renderState->pushState();
+  renderState->pushState();
 }
 
 

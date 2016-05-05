@@ -20,7 +20,7 @@ VRGraphicsWindowNode::~VRGraphicsWindowNode() {
 }
 
 void VRGraphicsWindowNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler) {
-  //renderState->pushState();
+  renderState->pushState();
 
 	// Is this the kind of state information we expect to pass from one node to the next?
 	renderState->addData("WindowX", _settings.xpos);
@@ -56,7 +56,7 @@ void VRGraphicsWindowNode::render(VRDataIndex *renderState, VRRenderHandler *ren
 
 	_gfxToolkit->flushGraphics();
 
-  //renderState->popState();
+  renderState->popState();
 }
 
 void VRGraphicsWindowNode::waitForRenderToComplete(VRDataIndex *renderState) {

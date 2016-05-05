@@ -165,11 +165,14 @@ VRMain::initialize(int argc, char** argv)
     si.cb = sizeof(si);
     ZeroMemory(&pi, sizeof(pi));
     
-    std::string cmdLine = argv[0] + " " + argv[1] + " " + vrSetupsToStartArray[i];
+    std::string cmdLine = std::string(argv[0]) + " " + argv[1] + " " + vrSetupsToStartArray[i];
     
+	LPSTR cmd = new char[cmdLine.size()];
+	strcpy(cmd, cmdLine.c_str());
+
     // Start the child process.
     if (!CreateProcess(NULL,   // No module name (use command line)
-                       cmdLine,        // Command line
+						cmd,        // Command line
                        NULL,           // Process handle not inheritable
                        NULL,           // Thread handle not inheritable
                        FALSE,          // Set handle inheritance to FALSE
