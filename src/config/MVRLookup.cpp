@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
         HELPMESSAGE;
         return EXIT_SUCCESS;
       }
-      throw std::runtime_error(std::string("Need a data name."));
+      throw std::runtime_error("Need a data name.");
       break;
 
     case 3:
@@ -60,7 +60,7 @@ int main(int argc, char **argv) {
       break;
     
     default:
-      throw std::runtime_error(std::string("Too many arguments"));
+      throw std::runtime_error("Too many arguments");
       break;
     }
 
@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
     case VRCORETYPE_INTARRAY: {
       VRIntArray ia = index->getValue(argv[2]);
       if (nth >= ia.size())
-        throw std::runtime_error(std::string("N too large for array"));
+        throw std::runtime_error("N too large for array");
       std::cout << ia[nth];
       break;
     }
@@ -96,7 +96,7 @@ int main(int argc, char **argv) {
     case VRCORETYPE_DOUBLEARRAY: {
       VRDoubleArray ia = index->getValue(argv[2]);
       if (nth >= ia.size())
-        throw std::runtime_error(std::string("N too large for array"));
+        throw std::runtime_error("N too large for array");
       std::cout << ia[nth];
       break;
     }
@@ -104,7 +104,7 @@ int main(int argc, char **argv) {
     case VRCORETYPE_STRINGARRAY: {
       VRStringArray ia = index->getValue(argv[2]);
       if (nth >= ia.size())
-        throw std::runtime_error(std::string("N too large for array"));
+        throw std::runtime_error("N too large for array");
       std::cout << ia[nth];
       break;
     }
@@ -114,7 +114,7 @@ int main(int argc, char **argv) {
       break;
     
     default:
-      throw std::runtime_error(std::string("Not supported for that type."));
+      throw std::runtime_error("Not supported for that type.");
       break;
     }
   } catch (const std::exception& e) {
