@@ -171,3 +171,6 @@ source_group("plugin\\Source Files" FILES ${vr_plugin_cpp})
 
 
 add_library(MinVR ${vr_sources})
+
+add_executable(MVRLookup ${vr_src_dir}/config/MVRLookup.cpp)
+target_link_libraries(MVRLookup MinVR)
