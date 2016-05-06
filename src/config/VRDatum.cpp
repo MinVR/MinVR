@@ -40,7 +40,7 @@ std::string VRDatum::getAttributeListAsString() {
 
 /// Step 4 in the adding a type instructions.
 //////////////////////////////////////////// VRInt
-std::string VRDatumInt::getValueAsString() const {
+std::string VRDatumInt::getValueString() const {
   char buffer[20];
   sprintf(buffer, "%d", value.front());
   return std::string(buffer);
@@ -52,7 +52,7 @@ VRDatumPtr CreateVRDatumInt(void *pData) {
 }
 
 //////////////////////////////////////////// VRDouble
-std::string VRDatumDouble::getValueAsString() const {
+std::string VRDatumDouble::getValueString() const {
   char buffer[20];
   sprintf(buffer, "%f", value.front());
   return std::string(buffer);
@@ -64,17 +64,13 @@ VRDatumPtr CreateVRDatumDouble(void *pData) {
 }
 
 //////////////////////////////////////////// VRString
-VRString VRDatumString::getValueAsString() const {
-  return value.front();
-}
-
 VRDatumPtr CreateVRDatumString(void *pData) {
   VRDatumString *obj = new VRDatumString(*static_cast<VRString *>(pData));
   return VRDatumPtr(obj);
 }
 
 //////////////////////////////////////////// VRIntArray
-std::string VRDatumIntArray::getValueAsString() const {
+std::string VRDatumIntArray::getValueString() const {
 
   std::string out;
   char buffer[20];
@@ -105,7 +101,7 @@ VRDatumPtr CreateVRDatumIntArray(void *pData) {
 }
 
 //////////////////////////////////////////// VRDoubleArray
-std::string VRDatumDoubleArray::getValueAsString() const {
+std::string VRDatumDoubleArray::getValueString() const {
 
   std::string out;
   char buffer[20];
@@ -135,7 +131,7 @@ VRDatumPtr CreateVRDatumDoubleArray(void *pData) {
 }
 
 //////////////////////////////////////////// VRStringArray
-std::string VRDatumStringArray::getValueAsString() const {
+std::string VRDatumStringArray::getValueString() const {
   std::string out;
   char separator;
 
@@ -163,11 +159,11 @@ VRDatumPtr CreateVRDatumStringArray(void *pData) {
 
 //////////////////////////////////////////// VRContainer
 
-// This getValueAsString function for a container probably does not
+// This getValueString function for a container probably does not
 // do what you think it does.  Use the serialize() function of the
 // VRDataIndex for that.  This function just returns a formatted list
 // of the strings that make up a container.
-std::string VRDatumContainer::getValueAsString() const {
+std::string VRDatumContainer::getValueString() const {
   std::string out;
   char separator;
 
@@ -225,12 +221,12 @@ VRDatumPtr CreateVRDatumContainer(void *pData) {
 }
 
 
-//  We should probably implement this for completeness sake.
+//  Implemented for completeness sake.
 std::ostream & operator<<(std::ostream &os, const VRDatum& p) {
-  return os << p.getValueAsString();
+  return os << p.getValueString();
 }
 
 std::ostream & operator<<(std::ostream &os, VRDatumPtr& p) {
-  return os << p->getValueAsString();
+  return os << p->getValueString();
 }
 

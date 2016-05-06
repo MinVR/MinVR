@@ -196,7 +196,7 @@ public:
   // with the description and a name, this will be ready for
   // transmission across some connection to another process or another
   // machine.
-  virtual std::string getValueAsString() const = 0;
+  virtual VRString getValueString() const = 0;
 
   // The description of the datum is a part of the network-ready
   // serialized data.  It's in the 'type=""' part of the XML.
@@ -223,9 +223,9 @@ public:
   virtual VRDouble getValueDouble() const {
     throw std::runtime_error("This datum is not a VRDouble.");
   }
-  virtual VRString getValueString() const {
-    throw std::runtime_error("This datum is not a VRString.");
-  }
+  // There is a getValueString() implemented for each data type to
+  // allow easy string conversions.  It is defined as a pure virtual
+  // member function above.
   virtual VRIntArray getValueIntArray() const {
     throw std::runtime_error("This datum is not a VRIntArray.");
   }
@@ -266,9 +266,6 @@ public:
     VRDatum(TID), needPush(false), pushed(false), stackFrame(1) {
     value.push_front(inVal);
   };
-
-  // Couldn't figure out how to template-ize this one.
-  virtual std::string getValueAsString() const = 0;
 
   bool setValue(const T inVal) {
     // This is a little optimization.  You only need to push things
@@ -317,10 +314,11 @@ class VRDatumInt : public VRDatumSpecialized<VRInt, VRCORETYPE_INT> {
 public:
   VRDatumInt(const VRInt inVal) :
     VRDatumSpecialized<VRInt, VRCORETYPE_INT>(inVal) {};
-  std::string getValueAsString() const;
+  std::string getValueString() const;
   VRInt getValueInt() const { return value.front(); };
   VRIntArray getValueIntArray() const {
     VRIntArray out;  out.push_back(value.front());  return out; };
+  VRDouble getValueDouble() const { return (int)value.front(); };
 };
 
 // The specialization for a double.
@@ -328,10 +326,11 @@ class VRDatumDouble : public VRDatumSpecialized<VRDouble, VRCORETYPE_DOUBLE> {
 public:
   VRDatumDouble(const VRDouble inVal) :
     VRDatumSpecialized<VRDouble, VRCORETYPE_DOUBLE>(inVal) {};
-  std::string getValueAsString() const;
+  std::string getValueString() const;
   VRDouble getValueDouble() const { return value.front(); };
   VRDoubleArray getValueDoubleArray() const {
     VRDoubleArray out;  out.push_back(value.front());  return out; };
+  VRInt getValueInt() const { return (double)value.front(); };
 };
 
 // Specialization for a string
@@ -339,7 +338,6 @@ class VRDatumString : public VRDatumSpecialized<VRString, VRCORETYPE_STRING> {
 public:
   VRDatumString(const VRString inVal) :
     VRDatumSpecialized<VRString, VRCORETYPE_STRING>(inVal) {};
-  std::string getValueAsString() const;
   VRString getValueString() const { return value.front(); };
   VRStringArray getValueStringArray() const {
     VRStringArray out;  out.push_back(value.front());  return out; };
@@ -350,7 +348,7 @@ class VRDatumIntArray : public VRDatumSpecialized<VRIntArray, VRCORETYPE_INTARRA
 public:
   VRDatumIntArray(const VRIntArray inVal) :
     VRDatumSpecialized<VRIntArray, VRCORETYPE_INTARRAY>(inVal) {};
-  std::string getValueAsString() const;
+  std::string getValueString() const;
   VRIntArray getValueIntArray() const { return value.front(); };
 };
 
@@ -359,7 +357,7 @@ class VRDatumDoubleArray : public VRDatumSpecialized<VRDoubleArray, VRCORETYPE_D
 public:
   VRDatumDoubleArray(const VRDoubleArray inVal) :
     VRDatumSpecialized<VRDoubleArray, VRCORETYPE_DOUBLEARRAY>(inVal) {};
-  std::string getValueAsString() const;
+  std::string getValueString() const;
   VRDoubleArray getValueDoubleArray() const { return value.front(); };
 };
 
@@ -368,7 +366,7 @@ class VRDatumStringArray : public VRDatumSpecialized<VRStringArray, VRCORETYPE_S
 public:
   VRDatumStringArray(const VRStringArray inVal) :
     VRDatumSpecialized<VRStringArray, VRCORETYPE_STRINGARRAY>(inVal) {};
-  std::string getValueAsString() const;
+  std::string getValueString() const;
   VRStringArray getValueStringArray() const { return value.front(); };
 };
 
@@ -377,7 +375,7 @@ class VRDatumContainer : public VRDatumSpecialized<VRContainer, VRCORETYPE_CONTA
 public:
   VRDatumContainer(const VRContainer inVal) :
     VRDatumSpecialized<VRContainer, VRCORETYPE_CONTAINER>(inVal) {};
-  std::string getValueAsString() const;
+  std::string getValueString() const;
   VRContainer getValueContainer() const { return value.front(); };
 
   bool addToValue(const VRContainer inVal);
@@ -425,7 +423,7 @@ public:
 //                           so long as there is some kind of cast
 //                           or assignment to determine a type.
 //
-// However, p->getDescription() works fine, as will p->getValueAsString(),
+// However, p->getDescription() works fine, as will p->getValueString(),
 // and other things that are actually part of the VRDatum core
 // class.
 //
