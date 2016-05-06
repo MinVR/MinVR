@@ -1,7 +1,7 @@
 
 <MinVR>
 
-<VRSetups type="stringarray">FrontWall,Floor,SideWalls</VRSetups>
+<VRSetups type="stringarray">FrontWall</VRSetups>
   
   <ServerIP>localhost</ServerIP>
   <Port type="string">3456</Port>
@@ -18,17 +18,6 @@
     <VRWindowToolkits type="stringarray">GLFWToolkit</VRWindowToolkits>
     <VRGraphicsToolkits type="stringarray">OpenGLToolkit</VRGraphicsToolkits>
   </FrontWall>
-
-
-  <Floor>
-    <Type>VRClient</Type>
-    <VRDisplayGraph>FloorNode</VRDisplayGraph>
-  </Floor>
-
-  <SideWalls>
-    <Type>VRClient</Type>
-    <VRDisplayGraph>LeftAndRightNode</VRDisplayGraph>
-  </SideWalls>
   
 <VRPNPlugin>
     <Path>../../build/plugins/MinVR_VRPN</Path>
@@ -79,105 +68,6 @@
   <FarClip>100.0</FarClip>
   <HeadTrackingEvent>Head_Move</HeadTrackingEvent>
 </FrontProjectionNode>
-
-  <FloorNode>
-    <Type>VRGraphicsWindowNode</Type>
-    <Children type="stringarray">FloorStereoNode</Children>
-    <XPos>5520</XPos>
-    <YPos>0</YPos>
-    <Width>1280</Width>
-    <Height>1300</Height>
-  </FloorNode>
-
-  <FloorStereoNode>
-    <Type>VRStereoNode</Type>
-    <Children type="stringarray">FloorProjectionNode</Children>
-  </FloorStereoNode>
-
-  <FloorProjectionNode>
-    <Type>VROffAxisProjectionNode</Type>
-    <TopLeft type="doublearray">-4,-4,-4</TopLeft>
-    <TopRight type="doublearray">4,-4,-4</TopRight>
-    <BottomLeft type="doublearray">-4,-4,4</BottomLeft>
-    <BottomRight type="doublearray">4,-4,4</BottomRight>
-    <InitialHeadMatrix type="doublearray">1,0,0,2, 0,1,0,2, 0,0,1,4, 0,0,0,1</InitialHeadMatrix>
-    <EyeSeparation>0.203</EyeSeparation>
-    <NearClip>0.01</NearClip>
-    <FarClip>100.0</FarClip>
-    <HeadTrackingEvent>Head_Move</HeadTrackingEvent>
-  </FloorProjectionNode>
-
-  <LeftAndRightNode>
-    <Type>VRGraphicsWindowNode</Type>
-    <Children type="stringarray">LeftNode,RightNode</Children>
-    <XPos>1681</XPos>
-    <YPos>0</YPos>
-    <Width>2550</Width>
-    <Height>1300</Height>
-  </LeftAndRightNode>
-
-  <!--LeftAndRightNode>
-    <Type>VRGraphicsWindowNode</Type>
-    <Children type="stringarray">LeftStereoNode</Children>
-    <XPos>1681</XPos>
-    <YPos>0</YPos>
-    <Width>1280</Width>
-    <Height>1300</Height>
-  </LeftAndRightNode-->
-
-  <LeftNode>
-    <Type>VRViewportNode</Type>
-    <XPos>0</XPos>
-    <YPos>0</YPos>
-    <Width>1280</Width>
-    <Height>1300</Height>
-    <Children type="stringarray">LeftStereoNode</Children>
-  </LeftNode>
-
-  <LeftStereoNode>
-    <Type>VRStereoNode</Type>
-    <Children type="stringarray">LeftProjectionNode</Children>
-  </LeftStereoNode>
-
-  <LeftProjectionNode>
-    <Type>VROffAxisProjectionNode</Type>
-    <TopLeft type="doublearray">-4,4,4</TopLeft>
-    <TopRight type="doublearray">-4,4,-4</TopRight>
-    <BottomLeft type="doublearray">-4,-4,4</BottomLeft>
-    <BottomRight type="doublearray">-4,-4,-4</BottomRight>
-    <InitialHeadMatrix type="doublearray">1,0,0,2, 0,1,0,2, 0,0,1,4, 0,0,0,1</InitialHeadMatrix>
-    <EyeSeparation>0.203</EyeSeparation>
-    <NearClip>0.01</NearClip>
-    <FarClip>100.0</FarClip>
-    <HeadTrackingEvent>Head_Move</HeadTrackingEvent>
-  </LeftProjectionNode>
-
-  <RightNode>
-    <Type>VRViewportNode</Type>
-    <XPos>1280</XPos>
-    <YPos>0</YPos>
-    <Width>1280</Width>
-    <Height>1300</Height>
-    <Children type="stringarray">RightStereoNode</Children>
-  </RightNode>
-
-  <RightStereoNode>
-    <Type>VRStereoNode</Type>
-    <Children type="stringarray">RightProjectionNode</Children>
-  </RightStereoNode>
-
-  <RightProjectionNode>
-    <Type>VROffAxisProjectionNode</Type>
-    <TopLeft type="doublearray">4,4,-4</TopLeft>
-    <TopRight type="doublearray">4,4,4</TopRight>
-    <BottomLeft type="doublearray">4,-4,-4</BottomLeft>
-    <BottomRight type="doublearray">4,-4,4</BottomRight>
-    <InitialHeadMatrix type="doublearray">1,0,0,2, 0,1,0,2, 0,0,1,4, 0,0,0,1</InitialHeadMatrix>
-    <EyeSeparation>0.203</EyeSeparation>
-    <NearClip>0.01</NearClip>
-    <FarClip>100.0</FarClip>
-    <HeadTrackingEvent>Head_Move</HeadTrackingEvent>
-  </RightProjectionNode>
 
 <GLFWToolkit>
 	<Type>VRGLFWWindowToolkit</Type>
