@@ -30,7 +30,7 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
     	eye = 1;
 	}
 
-	/*
+	
 	// Calculate headFrame offset based on inter ocular distance
 	VRMatrix4 headFrame = _headMatrix * VRMatrix4::translation(VRVector3(-_iod / 2.0 + _iod*(eye), 0, 0));
 
@@ -80,9 +80,9 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
 	VRMatrix4 viewMat = Mrot * Mtrans;
 
 	renderState->addData("ViewMatrix", viewMat);
-	*/
 	
-
+	
+	/*
     // Calculate headFrame offset based on inter ocular distance
 	VRMatrix4 headFrame = _headMatrix * VRMatrix4::translation(VRVector3(-_iod/2.0 + _iod*(eye), 0, 0));
 
@@ -130,7 +130,7 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
 	VRMatrix4 projMat = invertXYMat * VRMatrix4::projection(lcamera*k, rcamera*k, b*k, t*k, _nearClip, _farClip);
 	
 	renderState->addData("ViewMatrix", view);
-	renderState->addData("ProjectionMatrix", projMat);
+	renderState->addData("ProjectionMatrix", projMat);*/
 
 	if (_children.size() == 0) {
 		renderHandler->onVRRenderScene(renderState, this);
