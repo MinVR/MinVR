@@ -120,5 +120,6 @@ int main(int argc, char **argv) {
   } catch (const std::exception& e) {
 
     std::cerr << "Oopsy-daisy: " << e.what() << std::endl;
+    return EXIT_FAILURE;
   }
 }
