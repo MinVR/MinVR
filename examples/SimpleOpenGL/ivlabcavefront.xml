@@ -10,8 +10,7 @@
   <VRPlugins type="stringarray">GLFWPlugin,OpenGLPlugin</VRPlugins>
 
   <FrontWall>
-    <Type>VRServer</Type>
-    <NumClients>2</NumClients>
+    <Type>VRStandAlone</Type>
     <VRPlugins type="stringarray">GLFWPlugin,OpenGLPlugin,VRPNPlugin</VRPlugins>
     <VRInputDevices type="stringarray">Optitrack1,Optitrack2,Optitrack3,RedStylusBtns,BlueStylusBtns</VRInputDevices>
     <VRDisplayGraph>FrontNode</VRDisplayGraph>

@@ -103,10 +103,13 @@ VRVRPNTrackerDevice::VRVRPNTrackerDevice(
 	_printSensor0                 = false;
 
 	_vrpnDevice = new vrpn_Tracker_Remote(vrpnTrackerDeviceName.c_str());
-	std::stringstream ss;
-	ss << "Can't create VRPN Remote Tracker with name " + vrpnTrackerDeviceName;
-	std::cout << ss.str() << std::endl;
-	//MinVR::Logger::getInstance().assertMessage(_vrpnDevice, ss.str().c_str());
+	if (!_vrpnDevice)
+	{
+		std::stringstream ss;
+		ss << "Can't create VRPN Remote Tracker with name " + vrpnTrackerDeviceName;
+		std::cout << ss.str() << std::endl;
+		//MinVR::Logger::getInstance().assertMessage(_vrpnDevice, ss.str().c_str());
+	}
 	_vrpnDevice->register_change_handler(this, trackerHandler);
 }
 

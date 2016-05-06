@@ -1,12 +1,31 @@
 <MinVR>
 
+  <!-- ********************** VRSetups ********************** -->
+  
+  <!-- This file defines 4 VRSetups, each runs in its own process. -->
   <VRSetups type="stringarray">CaveServer,FrontWall,Floor,SideWalls</VRSetups>
+    
+  <!-- Plugins -->
 
-  <ServerIP>localhost</ServerIP>
+  <VRPNPlugin>
+    <Path>../../build/plugins/MinVR_VRPN</Path>
+    <File>MinVR_VRPN</File>
+  </VRPNPlugin>
+
+  <GLFWPlugin>
+    <Path>../../build/plugins/MinVR_GLFW</Path>
+    <File>MinVR_GLFW</File>
+  </GLFWPlugin>
+
+  <OpenGLPlugin>
+    <Path>../../build/plugins/MinVR_OpenGL</Path>
+    <File>MinVR_OpenGL</File>
+  </OpenGLPlugin>
+  
+  <!-- ********************** Servers and Clients ********************** -->
+  
+  <!-- Common to both server and clients -->
   <Port type="string">3456</Port>
-  <VRWindowToolkits type="stringarray">GLFWToolkit</VRWindowToolkits>
-  <VRGraphicsToolkits type="stringarray">OpenGLToolkit</VRGraphicsToolkits>
-  <VRPlugins type="stringarray">GLFWPlugin,OpenGLPlugin</VRPlugins>
 
   <CaveServer>
     <Type>VRServer</Type>
@@ -14,6 +33,13 @@
     <VRPlugins type="stringarray">VRPNPlugin</VRPlugins>
     <VRInputDevices type="stringarray">Optitrack1,Optitrack2,Optitrack3,RedStylusBtns,BlueStylusBtns</VRInputDevices>
   </CaveServer>
+  
+  <!-- Common to all clients -->
+  
+  <ServerIP>localhost</ServerIP>
+  <VRWindowToolkits type="stringarray">GLFWToolkit</VRWindowToolkits>
+  <VRGraphicsToolkits type="stringarray">OpenGLToolkit</VRGraphicsToolkits>
+  <VRPlugins type="stringarray">GLFWPlugin,OpenGLPlugin</VRPlugins>
 
   <FrontWall>
     <Type>VRClient</Type>
@@ -30,21 +56,9 @@
     <VRDisplayGraph>LeftAndRightNode</VRDisplayGraph>
   </SideWalls>
 
-  <VRPNPlugin>
-    <Path>../../build/plugins/MinVR_VRPN</Path>
-    <File>MinVR_VRPN</File>
-  </VRPNPlugin>
+  <!-- ********************** Display Graph ********************** -->
 
-  <GLFWPlugin>
-    <Path>../../build/plugins/MinVR_GLFW</Path>
-    <File>MinVR_GLFW</File>
-  </GLFWPlugin>
-
-  <OpenGLPlugin>
-    <Path>../../build/plugins/MinVR_OpenGL</Path>
-    <File>MinVR_OpenGL</File>
-  </OpenGLPlugin>
-
+  <!-- Common display graph configuration -->
   <WindowToolkit>VRGLFWWindowToolkit</WindowToolkit>
   <GraphicsToolkit>VROpenGLGraphicsToolkit</GraphicsToolkit>
   <Border>0</Border>
@@ -52,7 +66,14 @@
   <QuadBuffered>1</QuadBuffered>
   <GPUAffinity>None</GPUAffinity>
   <StereoFormat>QuadBuffered</StereoFormat>
+  <EyeSeparation>0.203</EyeSeparation>
+  <NearClip>0.01</NearClip>
+  <FarClip>100.0</FarClip>
+  <HeadTrackingEvent>Head_Move</HeadTrackingEvent>
+  <InitialHeadMatrix type="doublearray">1,0,0,0, 0,1,0,2, 0,0,1,4, 0,0,0,1</InitialHeadMatrix>
 
+  <!-- Front Wall Display Graph -->
+  
   <FrontNode>
     <Type>VRGraphicsWindowNode</Type>
     <Children type="stringarray">FrontStereoNode</Children>
@@ -73,13 +94,10 @@
     <TopRight type="doublearray">4,4,-4</TopRight>
     <BottomLeft type="doublearray">-4,-4,-4</BottomLeft>
     <BottomRight type="doublearray">4,-4,-4</BottomRight>
-    <InitialHeadMatrix type="doublearray">1,0,0,2, 0,1,0,2, 0,0,1,4, 0,0,0,1</InitialHeadMatrix>
-    <EyeSeparation>0.203</EyeSeparation>
-    <NearClip>0.01</NearClip>
-    <FarClip>100.0</FarClip>
-    <HeadTrackingEvent>Head_Move</HeadTrackingEvent>
   </FrontProjectionNode>
 
+  <!-- Floor Display Graph -->
+    
   <FloorNode>
     <Type>VRGraphicsWindowNode</Type>
     <Children type="stringarray">FloorStereoNode</Children>
@@ -100,13 +118,10 @@
     <TopRight type="doublearray">4,-4,-4</TopRight>
     <BottomLeft type="doublearray">-4,-4,4</BottomLeft>
     <BottomRight type="doublearray">4,-4,4</BottomRight>
-    <InitialHeadMatrix type="doublearray">1,0,0,2, 0,1,0,2, 0,0,1,4, 0,0,0,1</InitialHeadMatrix>
-    <EyeSeparation>0.203</EyeSeparation>
-    <NearClip>0.01</NearClip>
-    <FarClip>100.0</FarClip>
-    <HeadTrackingEvent>Head_Move</HeadTrackingEvent>
   </FloorProjectionNode>
 
+  <!-- SideWalls Display Graph -->
+    
   <LeftAndRightNode>
     <Type>VRGraphicsWindowNode</Type>
     <Children type="stringarray">LeftNode,RightNode</Children>
@@ -136,11 +151,6 @@
     <TopRight type="doublearray">-4,4,-4</TopRight>
     <BottomLeft type="doublearray">-4,-4,4</BottomLeft>
     <BottomRight type="doublearray">-4,-4,-4</BottomRight>
-    <InitialHeadMatrix type="doublearray">1,0,0,2, 0,1,0,2, 0,0,1,4, 0,0,0,1</InitialHeadMatrix>
-    <EyeSeparation>0.203</EyeSeparation>
-    <NearClip>0.01</NearClip>
-    <FarClip>100.0</FarClip>
-    <HeadTrackingEvent>Head_Move</HeadTrackingEvent>
   </LeftProjectionNode>
 
   <RightNode>
@@ -163,11 +173,6 @@
     <TopRight type="doublearray">4,4,4</TopRight>
     <BottomLeft type="doublearray">4,-4,-4</BottomLeft>
     <BottomRight type="doublearray">4,-4,4</BottomRight>
-    <InitialHeadMatrix type="doublearray">1,0,0,2, 0,1,0,2, 0,0,1,4, 0,0,0,1</InitialHeadMatrix>
-    <EyeSeparation>0.203</EyeSeparation>
-    <NearClip>0.01</NearClip>
-    <FarClip>100.0</FarClip>
-    <HeadTrackingEvent>Head_Move</HeadTrackingEvent>
   </RightProjectionNode>
 
   <GLFWToolkit>
@@ -179,15 +184,17 @@
   </OpenGLToolkit>
 
 
-  ### VRINPUTDEVICES ###
+  <!-- ********************** Input devices ********************** -->
 
-  # Common to all three Optitrack virtual devices
+  <!-- Common to all three Optitrack virtual devices -->
   <ConvertLHtoRH>0</ConvertLHtoRH>
   <IgnoreZeroes>1</IgnoreZeroes>
   <WaitForNewReportInPoll>0</WaitForNewReportInPoll>
   <TrackerUnitsToRoomUnitsScale>3.28084</TrackerUnitsToRoomUnitsScale>
   <DeviceToRoom type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</DeviceToRoom>
 
+  <!-- Input Devices -->
+    
   <Optitrack1>
     <Type>VRVRPNTrackerDevice</Type>
     <VRPNDeviceName type="string">head@tcp:134.84.121.68:3884</VRPNDeviceName>
