@@ -35,7 +35,7 @@ public:
 		_vrMain->addRenderHandler(this);
         _horizAngle = 0.0;
         _vertAngle = 0.0;
-        _radius = 15.0;
+		_radius = 0.0; // 15.0;
         _incAngle = -0.1f;
 	}
 

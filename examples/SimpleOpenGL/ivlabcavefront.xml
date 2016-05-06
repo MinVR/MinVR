@@ -107,23 +107,23 @@
     <HeadTrackingEvent>Head_Move</HeadTrackingEvent>
   </FloorProjectionNode>
 
-  <!----LeftAndRightNode>
+  <LeftAndRightNode>
     <Type>VRGraphicsWindowNode</Type>
     <Children type="stringarray">LeftNode,RightNode</Children>
     <XPos>1681</XPos>
     <YPos>0</YPos>
     <Width>2550</Width>
     <Height>1300</Height>
-  </LeftAndRightNode-->
+  </LeftAndRightNode>
 
-  <LeftAndRightNode>
+  <!--LeftAndRightNode>
     <Type>VRGraphicsWindowNode</Type>
     <Children type="stringarray">LeftStereoNode</Children>
     <XPos>1681</XPos>
     <YPos>0</YPos>
     <Width>1280</Width>
     <Height>1300</Height>
-  </LeftAndRightNode>
+  </LeftAndRightNode-->
 
   <LeftNode>
     <Type>VRViewportNode</Type>
@@ -191,11 +191,11 @@
   ### VRINPUTDEVICES ###
 
   # Common to all three Optitrack virtual devices
-  <ConvertLHtoRH>1</ConvertLHtoRH>
+  <ConvertLHtoRH>0</ConvertLHtoRH>
   <IgnoreZeroes>1</IgnoreZeroes>
   <WaitForNewReportInPoll>0</WaitForNewReportInPoll>
   <TrackerUnitsToRoomUnitsScale>3.28084</TrackerUnitsToRoomUnitsScale>
-  <DeviceToRoom type="doublearray">-1,0,0,0, 0,1,0,0, 0,0,-1,0, 0,0,0,1</DeviceToRoom>
+  <DeviceToRoom type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</DeviceToRoom>
 
   <Optitrack1>
     <Type>VRVRPNTrackerDevice</Type>
