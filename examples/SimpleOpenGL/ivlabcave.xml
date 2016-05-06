@@ -67,8 +67,8 @@
   <GPUAffinity>None</GPUAffinity>
   <StereoFormat>QuadBuffered</StereoFormat>
   <EyeSeparation>0.203</EyeSeparation>
-  <NearClip>0.01</NearClip>
-  <FarClip>100.0</FarClip>
+  <NearClip>0.001</NearClip>
+  <FarClip>500.0</FarClip>
   <HeadTrackingEvent>Head_Move</HeadTrackingEvent>
   <InitialHeadMatrix type="doublearray">1,0,0,0, 0,1,0,2, 0,0,1,4, 0,0,0,1</InitialHeadMatrix>
 
