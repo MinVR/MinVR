@@ -84,7 +84,7 @@ int datumtest(int argc, char* argv[]) {
   case 10:
     output = testDatumArrayConversions();
     break;
-    
+
     // Add case statements to handle values of 2-->10
   default:
     std::cout << "Test #" << choice << " does not exist!\n";
@@ -146,15 +146,18 @@ int testDatumInt() {
   
     out += (37 == b) ? 0 : 1;
 
+    double x = a.getValue();
+    out += (x == 37.00) ? 0 : 1;
+    
     // Is the type correct?
     out += (a.getType() == VRCORETYPE_INT) ? 0 : 1;
 
     // Is the serialization correct?
-    out += a.getValueAsString().compare("37");
+    out += a.getValueString().compare("37");
 
     std::ostringstream buf;
     buf << a;
-    out += a.getValueAsString().compare(buf.str());
+    out += a.getValueString().compare(buf.str());
 
     // This is for testing the VRDatumPtr.
     VRInt c = 1234;
@@ -164,11 +167,11 @@ int testDatumInt() {
     out += (1234 == d) ? 0 : 1;
     
     out += (p->getType() == VRCORETYPE_INT) ? 0: 1;
-    out += p->getValueAsString().compare("1234");
+    out += p->getValueString().compare("1234");
 
     std::ostringstream buf2;
     buf2 << p;
-    out += p->getValueAsString().compare(buf2.str());    
+    out += p->getValueString().compare(buf2.str());    
   }
     
   return out;
@@ -190,12 +193,15 @@ int testDatumDouble() {
   
     out += (a.getType() == VRCORETYPE_DOUBLE) ? 0 : 1;
 
-    out += a.getValueAsString().compare("37.123000");
-    // std::cout << a.getValueAsString() << std::endl;
+    out += a.getValueString().compare("37.123000");
+    // std::cout << a.getValueString() << std::endl;
 
+    int j = a.getValue();
+    out += (j == 37) ? 0 : 1;
+    
     std::ostringstream buf;
     buf << a;
-    out += a.getValueAsString().compare(buf.str());
+    out += a.getValueString().compare(buf.str());
   }
     
   return out;
@@ -220,11 +226,11 @@ int testDatumString() {
 
     out += (a.getType() == VRCORETYPE_STRING) ? 0 : 1;
 
-    out += a.getValueAsString().compare("this is a string");
+    out += a.getValueString().compare("this is a string");
 
     std::ostringstream buf;
     buf << a;
-    out += a.getValueAsString().compare(buf.str());
+    out += a.getValueString().compare(buf.str());
   }
   
   return out;
@@ -252,11 +258,11 @@ int testDatumIntArray() {
 
     out += (a.getType() == VRCORETYPE_INTARRAY) ? 0 : 1;
 
-    out += a.getValueAsString().compare("16,2,77,29");
+    out += a.getValueString().compare("16,2,77,29");
 
     std::ostringstream buf;
     buf << a;
-    out += a.getValueAsString().compare(buf.str());
+    out += a.getValueString().compare(buf.str());
   }
   
   return out;
@@ -283,12 +289,12 @@ int testDatumDoubleArray() {
 
     a.setAttributeValue("separator", ";");
   
-    //std::cout << a.getValueAsString() << std::endl;
-    out += a.getValueAsString().compare("16.200000;2.718280;77.300000;29.165000");
+    //std::cout << a.getValueString() << std::endl;
+    out += a.getValueString().compare("16.200000;2.718280;77.300000;29.165000");
     
     std::ostringstream buf;
     buf << a;
-    out += a.getValueAsString().compare(buf.str());
+    out += a.getValueString().compare(buf.str());
   }
   
   return out;
@@ -325,11 +331,11 @@ int testDatumStringArray() {
 
     a.setAttributeValue("separator", "/");
   
-    out += a.getValueAsString().compare("one/two/three/four/five");
+    out += a.getValueString().compare("one/two/three/four/five");
 
     std::ostringstream buf;
     buf << a;
-    out += a.getValueAsString().compare(buf.str());
+    out += a.getValueString().compare(buf.str());
   }
   
   return out;
@@ -353,7 +359,7 @@ int testDatumArrayConversions() {
 
     out += (a.getType() == VRCORETYPE_STRING) ? 0 : 1;
 
-    out += a.getValueAsString().compare("this is a string");
+    out += a.getValueString().compare("this is a string");
 
     VRDatumInt d = VRDatumInt(37);
 
@@ -410,7 +416,7 @@ int testDatumContainer() {
 
     std::ostringstream buf;
     buf << a;
-    out += a.getValueAsString().compare(buf.str());
+    out += a.getValueString().compare(buf.str());
   }
   
   return out;

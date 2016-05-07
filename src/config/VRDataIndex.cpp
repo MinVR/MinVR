@@ -32,7 +32,7 @@ std::string VRDataIndex::serialize(const std::string trimName,
     return ("<" + trimName +
             " type=\"" + pdata->getDescription() + "\"" +
             pdata->getAttributeListAsString() + ">" +
-            pdata->getValueAsString() +
+            pdata->getValueString() +
             "</" + trimName + ">");
 
   } else {
@@ -850,7 +850,7 @@ std::string VRDataIndex::printStructure(const std::string itemName, const int li
     } else {
 
       // This is not a container.  Get the value.
-      std::string out = it->second->getValueAsString();
+      std::string out = it->second->getValueString();
 
       // If there is a line limit, try to respect it in some vague fashion.
       if (out.size() > lim) {
