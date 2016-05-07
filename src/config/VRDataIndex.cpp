@@ -126,9 +126,10 @@ VRStringArray VRDataIndex::deserializeStringArray(const char* valueString,
     // means this delimiter was escaped. Go get another piece of the
     // line and append it to this string before pushing it onto the
     // array.
-    if (elem.back() == '\\') {
+    int lastchar = elem.size() - 1;
+    if (elem[lastchar] == '\\') {
 
-      elem.back() = separator;
+      elem[lastchar] = separator;
       out += elem;
       
     } else {
