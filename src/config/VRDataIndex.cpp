@@ -689,6 +689,10 @@ std::string VRDataIndex::dereferenceEnvVars(const std::string fileName) {
   return pathName;
 }
 
+// The default just loads the file values into the root namespace.
+bool VRDataIndex::processXMLFile(std::string fileName) {
+  return processXMLFile(fileName, std::string("/"));
+}
   
 bool VRDataIndex::processXMLFile(const std::string fileName,
                                  const std::string nameSpace) {
