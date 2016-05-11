@@ -95,7 +95,9 @@ void VRGLFWInputDevice::mouseButtonCallback(GLFWwindow* window, int button, int 
     buttonStr = "MouseBtnMiddle";
   }
   else {
-    buttonStr = "MouseBtn" + std::to_string(button);
+    std::ostringstream os;
+    os << button;
+    buttonStr = "MouseBtn" + os.str();
   }
   
   std::string actionStr;
