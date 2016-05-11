@@ -1,3 +1,4 @@
+#include <iostream>
 #include <stdlib.h>
 #include "utils.h"
 #include "Cxml.h"
@@ -56,22 +57,26 @@ bool Cxml::get_node(char* xml_string)
     m_root_node->set_name("XML_DOC");
     m_root_node->set_value(""); // just in case we want to access it later...
     element* Current = m_root_node->add_child_element();
+
+    // We are going to march through the file, one character at a time
+    // (k counts the file position, and sort the characters into XML
+    // elements as they appear.    
     while(k<m_length)
     {
         c = xml_string[k];
-        if(c == CNEW || c == CTAB || c == CRET)
+        if(c == CNEW || c == CTAB || c == CRET) 
         {
-            k++;
+            k++;  // This is white space.  Eat it.
             continue;
         }
-        if(c == COPEN)
+        if(c == COPEN) // Found an "open" character (<)
         {
             if(xml_string[k+1] == CEXCLAMATION && xml_string[k+2] == CMINUS && xml_string[k+3] == CMINUS) // this is a comment
             { //the comment section
                 clean_str(szAttrValBuff);
                 k+=4;
                 c = xml_string[k];
-                while(!(xml_string[k] == CMINUS && xml_string[k+1] == CMINUS && xml_string[k+2] == CCLOSE))
+                while(!(xml_string[k] == CMINUS && xml_string[k+1] == CMINUS && xml_string[k+2] == CCLOSE)) // Find the end of the comment.
                 {
                     szAttrNameBuff = concat(szAttrNameBuff, c);
                     c = xml_string[++k];
@@ -93,7 +98,7 @@ bool Cxml::get_node(char* xml_string)
                 j++;
                 if(j==8)
                 {
-                    // definetly a CDATA section
+                    // This is definitely a CDATA section
                     k = k + j;
                     int start = k;
                     while((k + 3) < m_length && xml_string[k+1] != CSQRPC && xml_string[k+2] != CSQRPC && xml_string[k+3] != CCLOSE)
@@ -118,7 +123,7 @@ bool Cxml::get_node(char* xml_string)
             }
             clean_str(szNodeNameBuff);
             if(xml_string[k+1] == CSLASH)
-            { // closing tag for the last opened node
+            {// This is a close tag, hopefully for the last opened node.
                 Current = Current->get_parent();
                 k++;
                 while(xml_string[k] != CCLOSE)
@@ -133,20 +138,22 @@ bool Cxml::get_node(char* xml_string)
                 c = xml_string[++k];
                 bIsPI = true;
             }
-            // open tag. It means we have a node so we create it
+            // If we are here, this is an open tag. So create a new node.
             c = xml_string[++k];
             while(c != CSLASH && c != CSPACE && c != CCLOSE)
-            {//loops until the node name has been entirely read
+            {//Loop until the node name has been entirely read.
                 if(c != CNEW && c != CTAB && c != CRET)
                     szNodeNameBuff = concat(szNodeNameBuff,c);
                 c = xml_string[++k];
             }
-            if(Current != NULL)                 // this node is set, navigate to a child of it
-                if(Current->get_name() != NULL) // this node is set, navigate to a child of it
+            if(Current != NULL)   // this node is set, navigate to a child of it
+                if(Current->get_name() != NULL) 
                     Current = Current->add_child_element();
 
             Current->set_name(szNodeNameBuff);
-            // If there's a space here, there must be an attribute coming.
+            // We are inside the element tag, though at the end of the
+            // element name.  Therefore, if there's a space here,
+            // there must be an attribute coming.
             while(c == CSPACE)
             {
                 c = xml_string[++k];
@@ -200,7 +207,7 @@ bool Cxml::get_node(char* xml_string)
                 Current->add_attribute(pA);
             } // Repeat if the next character is a space.
 
-            if(c == CSLASH)
+            if(c == CSLASH) // A slash here indicates a singleton element.
             {
                 Current = Current->get_parent();
                 c=xml_string[++k];
@@ -225,7 +232,12 @@ bool Cxml::get_node(char* xml_string)
                 ;
             }
         }
-        if(c != COPEN && c != CCLOSE && c != CSLASH/* && c != CSPACE*/)
+        // If there isn't an open character (<) here, this is the
+        // contents of an element.  Record the characters.  Originally
+        // (pre-TS), this would not allow leading spaces or leading
+        // slashes (/) in an element. Don't know why, but these have
+        // been tentatively commented out by TS 6/11/16
+        if(c != COPEN && c != CCLOSE /*&& c != CSLASH*//* && c != CSPACE*/)
         {
             clean_str(szNodeValBuff);
             while(c != COPEN)
