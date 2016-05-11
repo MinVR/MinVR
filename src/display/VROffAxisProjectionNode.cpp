@@ -30,108 +30,56 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
     	eye = 1;
 	}
 
-    // Calculate headFrame offset based on inter ocular distance
-	VRMatrix4 headFrame = _headMatrix * VRMatrix4::translation(VRVector3(-_iod/2.0 + _iod*(eye), 0, 0));
-  
-  
-  // This projection code follows the math described in this paper:
-  // http://csc.lsu.edu/~kooima/pdfs/gen-perspective.pdf
-
-  VRPoint3 pa = _botLeft;
-  VRPoint3 pb = _botRight;
-  VRPoint3 pc = _topLeft;
-  VRPoint3 pe = VRPoint3(headFrame[3][0], headFrame[3][1], headFrame[3][2]);
-  
-  
-  // Compute an orthonormal basis for the screen
-  VRVector3 vr = (pb - pa).normalize();
-  VRVector3 vu = (pc - pa).normalize();
-  VRVector3 vn = vr.cross(vu).normalize();
-  
-  // Compute the screen corner vectors
-  VRVector3 va = pa - pe;
-  VRVector3 vb = pb - pe;
-  VRVector3 vc = pc - pe;
-  
-  // Find the distance from the eye to screen plane
-  double d = - va.dot(vn);
-  
-  // Find the extent of the perpendicular projection
-  double l = vr.dot(va) * _nearClip / d;
-  double r = vr.dot(vb) * _nearClip / d;
-  double b = vu.dot(va) * _nearClip / d;
-  double t = vu.dot(vc) * _nearClip / d;
-  
-  //std::cout << l << " " << r << " " << b << " " << t << " " << _nearClip << " " << _farClip << std::endl;
-  
-  VRMatrix4 projMat = VRMatrix4::projection(l, r, b, t, _nearClip, _farClip);
-
-  renderState->addData("ProjectionMatrix", projMat);
-  
-  // Rotate the projection to be non-perpendicular
-  VRMatrix4 Mrot(vr[0], vr[1], vr[2], 0.0,
-                 vu[0], vu[1], vu[2], 0.0,
-                 vn[0], vn[1], vn[2], 0.0,
-                 0.0,   0.0,   0.0,   1.0);
-  
-  // Move the apex of the frustum to the origin
-  VRMatrix4 Mtrans = VRMatrix4::translation(VRPoint3(0,0,0) - pe);
-  
-  VRMatrix4 viewMat = Mrot * Mtrans;
-  
-  renderState->addData("ViewMatrix", viewMat);
-  
-  
-  /**
-  
-	// Use the tile to calculate half values
-	double halfWidth = (_topRight - _topLeft).length() / 2.0;
-	double halfHeight = (_topRight - _botRight).length() / 2.0;
-
-	// Calculate the center of the tile
-	VRPoint3 center = _topLeft + 0.5*(_topRight - _topLeft) + 0.5*(_botLeft - _topLeft);
 	
-	// Calculate tile to room matrix
-	VRVector3 x = (_topRight - _topLeft).normalize();
-	VRVector3 y = (_topLeft - _botLeft).normalize();
-	VRVector3 z = x.cross(y).normalize();
-	VRMatrix4 tile2room(x.x, y.x, z.x, center.x,
-						x.y, y.y, z.y, center.y,
-						x.z, y.z, z.z, center.z,
-						0, 0, 0, 1);
+	// Calculate headFrame offset based on inter ocular distance
+	VRMatrix4 headFrame = _headMatrix * VRMatrix4::translation(VRVector3(-_iod / 2.0 + _iod*(eye), 0, 0));
 
-	// Calculate room to tile matrix
-	VRMatrix4 room2tile = tile2room.inverse();
 
-	// Calculate the camera frame and position
-	VRMatrix4 camera2Room = headFrame;
-	VRMatrix4 cameraFrame = room2tile * camera2Room;
-	VRPoint3 cameraPos = VRPoint3(0,0,0) + cameraFrame.getColumn(3);
-	
-	// Calculate projection parameters
-	double lcamera = (-halfWidth - cameraPos.x);
-	double rcamera = (halfWidth - cameraPos.x);
-	double b = (-halfHeight - cameraPos.y);
-	double t = (halfHeight - cameraPos.y);
-	double dist = cameraPos.z;
-	double k = _nearClip / dist;
+	// This projection code follows the math described in this paper:
+	// http://csc.lsu.edu/~kooima/pdfs/gen-perspective.pdf
 
-	// Calculate view matrix based on the camera position and room tile
-	VRMatrix4 view = VRMatrix4::translation(VRPoint3(0,0,0) - cameraPos) * room2tile;
+	VRPoint3 pa = _botLeft;
+	VRPoint3 pb = _botRight;
+	VRPoint3 pc = _topLeft;
+	VRPoint3 pe = VRPoint3(headFrame[3][0], headFrame[3][1], headFrame[3][2]);
 
-	static VRMatrix4 invertXYMat(1,  0, 0, 0,
-						  0, -1, 0, 0,
-						  0,  0, 1, 0,
-						  0,  0, 0, 1);
 
-	// Calculate off axis projection matrix
-	VRMatrix4 projMat = invertXYMat * VRMatrix4::projection(lcamera*k, rcamera*k, b*k, t*k, _nearClip, _farClip);
-	
-	renderState->addData("ViewMatrix", view);
+	// Compute an orthonormal basis for the screen
+	VRVector3 vr = (pb - pa).normalize();
+	VRVector3 vu = (pc - pa).normalize();
+	VRVector3 vn = vr.cross(vu).normalize();
+
+	// Compute the screen corner vectors
+	VRVector3 va = pa - pe;
+	VRVector3 vb = pb - pe;
+	VRVector3 vc = pc - pe;
+
+	// Find the distance from the eye to screen plane
+	double d = -va.dot(vn);
+
+	// Find the extent of the perpendicular projection
+	double l = vr.dot(va) * _nearClip / d;
+	double r = vr.dot(vb) * _nearClip / d;
+	double b = vu.dot(va) * _nearClip / d;
+	double t = vu.dot(vc) * _nearClip / d;
+
+	VRMatrix4 projMat = VRMatrix4::projection(l, r, b, t, _nearClip, _farClip);
+
 	renderState->addData("ProjectionMatrix", projMat);
 
-  **/
-  
+	// Rotate the projection to be non-perpendicular
+	VRMatrix4 Mrot(vr[0], vr[1], vr[2], 0.0,
+		vu[0], vu[1], vu[2], 0.0,
+		vn[0], vn[1], vn[2], 0.0,
+		0.0, 0.0, 0.0, 1.0);
+
+	// Move the apex of the frustum to the origin
+	VRMatrix4 Mtrans = VRMatrix4::translation(VRPoint3(0, 0, 0) - pe);
+
+	VRMatrix4 viewMat = Mrot * Mtrans;
+
+	renderState->addData("ViewMatrix", viewMat);
+
 	if (_children.size() == 0) {
 		renderHandler->onVRRenderScene(renderState, this);
 	}

@@ -19,7 +19,7 @@ VRViewportNode::~VRViewportNode() {
 }
 
 void VRViewportNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler) {
-  //renderState->pushState();
+  renderState->pushState();
 
 	// Is this the kind of state information we expect to pass from one node to the next?
 	renderState->addData("ViewportX", (int)_rect.getX());
@@ -38,7 +38,7 @@ void VRViewportNode::render(VRDataIndex *renderState, VRRenderHandler *renderHan
 		VRDisplayNode::render(renderState, renderHandler);
 	}
 
-  //renderState->popState();
+  renderState->popState();
 }
 
 

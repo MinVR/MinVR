@@ -35,7 +35,7 @@ public:
 		_vrMain->addRenderHandler(this);
         _horizAngle = 0.0;
         _vertAngle = 0.0;
-        _radius = 15.0;
+		_radius = 0.0; // 15.0;
         _incAngle = -0.1f;
 	}
 
@@ -46,7 +46,7 @@ public:
 
 	// Callback for event handling, inherited from VREventHandler
 	virtual void onVREvent(const std::string &eventName, VRDataIndex *eventData) {
-		std::cout << "Event: " << eventName << std::endl;
+		//std::cout << "Event: " << eventName << std::endl;
 		if (eventName == "/KbdEsc_Down") {
 			_quit = true;
 		}
@@ -79,7 +79,6 @@ public:
   
     virtual void onVRRenderContext(VRDataIndex *renderState, VRDisplayNode *callingNode) {
         if (!renderState->exists("IsConsole", "/")) {
-          glClearColor(0.5, 0.5, 0.5, 1.f);
         }
     }
 
@@ -91,7 +90,11 @@ public:
 			console->println("Console output...");
 		}
 		else {
-          
+			glEnable(GL_DEPTH_TEST);
+			glDepthFunc(GL_LEQUAL);
+			glClearDepth(1.0f);
+			glClearColor(0.5, 0.5, 0.5, 1.f);
+
             if (renderState->exists("ProjectionMatrix", "/")) {
                 // This is the typical case where the MinVR DisplayGraph contains
                 // an OffAxisProjectionNode or similar node, which sets the
@@ -117,7 +120,7 @@ public:
                               VRMatrix4::rotationY(_horizAngle);
               
 			    VRMatrix4 V = renderState->getValue("ViewMatrix", "/");
-			    glLoadMatrixd((M*V).m);
+			    glLoadMatrixd((V*M).m);
             }
             else {
                 // If the DisplayGraph does not contain a node that sets the
@@ -145,9 +148,6 @@ public:
                            targetPos[0], targetPos[1], targetPos[2],
                            cameraAim[0], cameraAim[1], cameraAim[2]);
             }
-
-            glEnable(GL_DEPTH_TEST);
-            glDepthFunc(GL_LEQUAL);
           
             glBegin(GL_LINES);
             glColor3f(1.0, 1.0, 0.0);

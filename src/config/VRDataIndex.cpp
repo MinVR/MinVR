@@ -126,9 +126,10 @@ VRStringArray VRDataIndex::deserializeStringArray(const char* valueString,
     // means this delimiter was escaped. Go get another piece of the
     // line and append it to this string before pushing it onto the
     // array.
-    if (elem.back() == '\\') {
+    int lastchar = elem.size() - 1;
+    if (elem[lastchar] == '\\') {
 
-      elem.back() = separator;
+      elem[lastchar] = separator;
       out += elem;
       
     } else {
@@ -688,6 +689,10 @@ std::string VRDataIndex::dereferenceEnvVars(const std::string fileName) {
   return pathName;
 }
 
+// The default just loads the file values into the root namespace.
+bool VRDataIndex::processXMLFile(std::string fileName) {
+  return processXMLFile(fileName, std::string("/"));
+}
   
 bool VRDataIndex::processXMLFile(const std::string fileName,
                                  const std::string nameSpace) {

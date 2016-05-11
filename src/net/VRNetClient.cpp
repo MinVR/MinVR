@@ -14,7 +14,7 @@ void *get_in_addr2(struct sockaddr *sa) {
 
 VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverPort)
 {
-
+	printf("client: connecting...\n");
 #ifdef WIN32  // WinSock implementation
 
   WSADATA wsaData;
@@ -64,7 +64,7 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
   
   //inet_ntop(p->ai_family, get_in_addr2((struct sockaddr *)p->ai_addr), s, sizeof s);
   //printf("client: connecting to %s\n", s);
-  printf("client: connecting...\n");
+  printf("client: connected\n");
 
   freeaddrinfo(servinfo); // all done with this structure
 
@@ -116,7 +116,7 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
   }
   
   inet_ntop(p->ai_family, get_in_addr2((struct sockaddr *)p->ai_addr), s, sizeof s);
-  printf("client: connecting to %s\n", s);
+  printf("client: connected to %s\n", s);
 
   freeaddrinfo(servinfo); // all done with this structure
 
@@ -127,6 +127,7 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
   _socketFD = sockfd;
 
 #endif
+
 }
 
 VRNetClient::~VRNetClient()

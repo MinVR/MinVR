@@ -164,16 +164,22 @@ VRMain::initialize(int argc, char** argv)
     ZeroMemory(&si, sizeof(si));
     si.cb = sizeof(si);
     ZeroMemory(&pi, sizeof(pi));
+	LPSTR title = new char[vrSetupsToStartArray[i].size() + 1];
+	strcpy(title, vrSetupsToStartArray[i].c_str());
+	si.lpTitle = title;
     
-    std::string cmdLine = argv[0] + " " + argv[1] + " " + vrSetupsToStartArray[i];
+    std::string cmdLine = std::string(argv[0]) + " " + argv[1] + " " + vrSetupsToStartArray[i];
     
+	LPSTR cmd = new char[cmdLine.size() + 1];
+	strcpy(cmd, cmdLine.c_str());
+
     // Start the child process.
     if (!CreateProcess(NULL,   // No module name (use command line)
-                       cmdLine,        // Command line
+					   cmd,        // Command line
                        NULL,           // Process handle not inheritable
                        NULL,           // Thread handle not inheritable
                        FALSE,          // Set handle inheritance to FALSE
-                       0,              // No creation flags
+					   CREATE_NEW_CONSOLE,              // No creation flags
                        NULL,           // Use parent's environment block
                        NULL,           // Use parent's starting directory
                        &si,            // Pointer to STARTUPINFO structure
@@ -182,6 +188,9 @@ VRMain::initialize(int argc, char** argv)
       std::cerr << "CreateProcess failed: " << GetLastError() << std::endl;
       exit(1);
     }
+
+	delete[] title;
+	delete[] cmd;
   }
 #else
   // On linux and OSX we can simply fork a new process for each vrsetup to start
