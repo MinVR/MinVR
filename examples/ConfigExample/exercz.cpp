@@ -257,21 +257,17 @@ int main() {
             int iVal;
             sscanf(elems[3].c_str(), "%d", &iVal);
             // Add the value to the index.
-            index->addData(nameSpace + elems[1], iVal);
-            // Add it to the parent container.
-            if (nameSpace.size() > 1) index->addData(nameSpace.substr(0,nameSpace.size() - 1), c);
+            index->addData(elems[1], nameSpace, iVal);
 
           } else if (elems[2].compare("double") == 0) {
 
             double dVal;
             sscanf(elems[3].c_str(), "%lf", &dVal);
-            index->addData(nameSpace + elems[1], dVal);
-            if (nameSpace.size() > 1) index->addData(nameSpace.substr(0,nameSpace.size() - 1), c);
+            index->addData(elems[1], nameSpace, dVal);
 
           } else if (elems[2].compare("string") == 0) {
 
-            index->addData(nameSpace + elems[1], elems[3]);
-            if (nameSpace.size() > 1) index->addData(nameSpace.substr(0,nameSpace.size() - 1), c);
+            index->addData(elems[1], nameSpace, elems[3]);
 
           } else {
 

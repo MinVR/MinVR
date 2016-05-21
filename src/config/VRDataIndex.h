@@ -436,6 +436,21 @@ public:
   // given name.
   std::string addData(const std::string valName, VRContainer value);
 
+  // Same thing, but with a separate namespace arg, for convenience.
+  template<typename T>
+  std::string addData(const std::string valName,
+                      const std::string nameSpace, T value) {
+
+    // If the name provided is an absolute name, ignore the nameSpace.
+    if (valName[0] == '/') {
+      
+      return addData(valName, value);
+    } else {
+      
+      return addData(validateNameSpace(nameSpace) + valName, value);
+    }
+  }
+
   // Adds a namespace.  Or, more simply, adds an empty container.
   std::string addNameSpace(const std::string valName);
 

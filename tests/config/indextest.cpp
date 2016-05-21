@@ -148,22 +148,22 @@ int testPushPopIndex() {
     n->addData("/MVR/george/a2", a + 2);
     n->addData("/MVR/george/a3", a + 3);
     n->addData("/MVR/george/a4", a + 4);
-    n->addData("/MVR/george/a5", a + 5);
-    n->addData("/MVR/george/a6", a + 6);
-    n->addData("/MVR/george/a7", a + 7);
-    n->addData("/MVR/george/a8", a + 8);
-    n->addData("/MVR/george/a9", a + 9);
+    n->addData("a5", "/MVR/george/", a + 5);
+    n->addData("a6", "/MVR/george/", a + 6);
+    n->addData("a7", "/MVR/george/", a + 7);
+    n->addData("a8", "/MVR/george/", a + 8);
+    n->addData("a9", "/MVR/george/", a + 9);
 
     n->addData("/MVR/martha/b0", b);
     n->addData("/MVR/martha/b1", b * 1);
     n->addData("/MVR/martha/b2", b * 2);
     n->addData("/MVR/martha/b3", b * 3);
     n->addData("/MVR/martha/b4", b * 4);
-    n->addData("/MVR/martha/b5", b * 5);
-    n->addData("/MVR/martha/b6", b * 6);
-    n->addData("/MVR/martha/b7", b * 7);
-    n->addData("/MVR/martha/b8", b * 8);
-    n->addData("/MVR/martha/b9", b * 9);
+    n->addData("b5", "/MVR/martha/", b * 5);
+    n->addData("b6", "/MVR/martha/", b * 6);
+    n->addData("b7", "/MVR/martha/", b * 7);
+    n->addData("b8", "/MVR/martha", b * 8); // misspelled to check on validation
+    n->addData("b9", "/MVR/martha", b * 9);
 
     VRString c = "abigail";
     n->addData("/MVR/john/c0", c + "0");

@@ -121,8 +121,10 @@ int doTheRealWork(int argc, char **argv) {
     
   default:
     throw std::runtime_error("Not supported for that type.");
-    break;
+    return EXIT_FAILURE;
   }
+
+  return EXIT_SUCCESS;
 }
     
 
@@ -130,7 +132,7 @@ int main(int argc, char **argv) {
 
   try {
 
-    doTheRealWork(argc, argv);
+    return doTheRealWork(argc, argv);
 
   } catch (const std::exception& e) {
 
