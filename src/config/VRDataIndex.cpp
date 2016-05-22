@@ -689,39 +689,31 @@ std::string VRDataIndex::dereferenceEnvVars(const std::string fileName) {
   return pathName;
 }
 
-bool VRDataIndex::processXML(int argc, char** argv) {
+bool VRDataIndex::processXML(const std::string arg) {
 
-  if (argc == 2) {
-
-    if (strcmp(argv[1], "-") == 0) {
-      // If there's no filename, we expect piped input.
+  if (arg.compare("-") == 0) {
+    // If there's no filename, we expect piped input.
       
-      std::string lineInput;
-      std::stringstream buffer;
+    std::string lineInput;
+    std::stringstream buffer;
 
-      while (std::cin >> lineInput) {
-        buffer << lineInput + " ";
-      }
-
-      addSerializedValue(buffer.rdbuf()->str(), rootNameSpace);
-                       
-      return true;
-      
-    } else {
-      // Read XML from the file.
-      return processXMLFile( argv[1] );
+    while (std::cin >> lineInput) {
+      buffer << lineInput + " ";
     }
 
+    addSerializedValue(buffer.rdbuf()->str(), rootNameSpace);
+                       
+    return true;
+      
   } else {
-
-    throw std::runtime_error(std::string("bad arguments"));
-
+    // Read XML from the file.
+    return processXMLFile( arg );
   }
 }
   
 
 // The default just loads the file values into the root namespace.
-bool VRDataIndex::processXMLFile(std::string fileName) {
+bool VRDataIndex::processXMLFile(const std::string fileName) {
   return processXMLFile(fileName, rootNameSpace);
 }
   

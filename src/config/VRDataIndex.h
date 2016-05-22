@@ -342,12 +342,12 @@ public:
 
   // Don't need a deserializeContainer. That happens in walkXML().
   // Process the contents of a given XML file into the index.
-  bool processXMLFile(std::string fileName, std::string nameSpace);
-  bool processXMLFile(std::string fileName);
+  bool processXMLFile(const std::string fileName, const std::string nameSpace);
+  bool processXMLFile(const std::string fileName);
 
   // Use this one at the start of a program.  It reads a file if
   // there's a file, and reads from a pipe if there's a pipe.
-  bool processXML(int argc, char** argv);
+  bool processXML(const std::string arg);
   
   // Returns a list of all the names in the map.  Note this really is
   // a list of strings, not a VRContainer.  (No difference, really,

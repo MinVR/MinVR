@@ -50,26 +50,27 @@ int main(int argc, char** argv) {
 
     index->addSerializedValue("<chester type=\"doublearray\">32.7@44.56@22.3@78.2@99.134@</chester>");
 
-  } else {
+  } else if (argc == 2) {
 
     try {
 
-      index->processXML(argc, argv);
+      index->processXML( std::string(argv[1]) );
 
     } catch (const std::exception& e) {
 
       std::cerr << "oops: " << e.what() << std::endl;
 
-      if (strcmp(e.what(), "bad arguments") == 0) {
-        std::cout << "Usage: exercz [config.xml] " << std::endl << "   or: cat config.xml | exercz -" << std::endl;
-      }
-      
       return EXIT_FAILURE;
     }
+
+  } else {
+
+    std::cout << "Usage: exercz [config.xml] " << std::endl << "   or: cat config.xml | exercz -" << std::endl;
+    return EXIT_FAILURE;
   }
 
   if ((argc > 1) && (strcmp(argv[1], "-") == 0)) {
-    // The program is being called with a stream input, i.e. non-interactively.
+    // The program was called with a stream input, i.e. non-interactively.
     // Print the resulting index and exit.
     std::cout << index->printStructure();
     return EXIT_SUCCESS;
