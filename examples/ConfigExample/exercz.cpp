@@ -25,37 +25,63 @@
 // namespaces and use the code below as a way to learn how to use the
 // data index. It's just hacked together, so don't read too much into
 // it.
-int main() {
+int main(int argc, char** argv) {
   VRDataIndex *index = new VRDataIndex;
 
-  // Set up some sample data names and values.
-  int a = 4;
-  int b = 6;
-  double f = 3.1415926;
-  double g = 2.71828;
-  std::string s1 = "wowie!";
-  std::string s2 = "shazam!";
+  if (argc == 1) {
+    // No argument.  Set up some sample data names and values.
+    int a = 4;
+    int b = 6;
+    double f = 3.1415926;
+    double g = 2.71828;
+    std::string s1 = "wowie!";
+    std::string s2 = "shazam!";
 
-  index->addData("/henry", a);
-  index->addData("/ralph", b);
+    index->addData("/henry", a);
+    index->addData("/ralph", b);
 
-  index->addData("/george", f);
-  index->addData("/mary", g);
+    index->addData("/george", f);
+    index->addData("/mary", g);
+    
+    index->addData("/billy", s1);
+    index->addData("/johnny", s2);
 
-  index->addData("/billy", s1);
-  index->addData("/johnny", s2);
+    index->addSerializedValue("<bob type=\"container\"><flora type=\"int\">3274</flora><morton type=\"double\">34.5</morton><cora type=\"container\"><flora type=\"int\">1234</flora><nora type=\"double\">23.45</nora></cora></bob>");
 
-  index->addSerializedValue("<bob type=\"container\"><flora type=\"int\">3274</flora><morton type=\"double\">34.5</morton><cora type=\"container\"><flora type=\"int\">1234</flora><nora type=\"double\">23.45</nora></cora></bob>");
+    index->addSerializedValue("<chester type=\"doublearray\">32.7@44.56@22.3@78.2@99.134@</chester>");
 
-  index->addSerializedValue("<chester type=\"doublearray\">32.7@44.56@22.3@78.2@99.134@</chester>");
+  } else {
 
+    try {
+
+      index->processXML(argc, argv);
+
+    } catch (const std::exception& e) {
+
+      std::cerr << "oops: " << e.what() << std::endl;
+
+      if (strcmp(e.what(), "bad arguments") == 0) {
+        std::cout << "Usage: exercz [config.xml] " << std::endl << "   or: cat config.xml | exercz -" << std::endl;
+      }
+      
+      return EXIT_FAILURE;
+    }
+  }
+
+  if ((argc > 1) && (strcmp(argv[1], "-") == 0)) {
+    // The program is being called with a stream input, i.e. non-interactively.
+    // Print the resulting index and exit.
+    std::cout << index->printStructure();
+    return EXIT_SUCCESS;
+  }
+  
   std::vector<std::string> elems;
   std::string elem;
   std::string line;
   std::string nameSpace("/");
-
-  HELPMESSAGE
-
+    
+  HELPMESSAGE ;
+  
   while ((std::cout << "> ") && std::getline(std::cin, line)) {
 
     elems.clear();
