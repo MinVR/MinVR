@@ -49,11 +49,11 @@
 
   <Projectors>
     <Type>VRClient</Type>
-    <VRDisplayGraph>DefaultNode</VRDisplayGraph>
 
     <P44>
       <Node>cave012</Node>
       <Screen>:0.0</Screen>
+      <copynode source="DefaultNode"/>
       <WarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_44</WarpFile>
       <TopLeft>0.0000889,4.00002,-2.99980</TopLeft>
       <TopRight>2.96936,-1.46520,-2.60672</TopRight>
@@ -64,6 +64,7 @@
     <P45>
       <Node>cave012</Node>
       <Screen>:0.1</Screen>
+      <copynode source="DefaultNode"/>
       <WarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_45</WarpFile>
       <TopLeft>0.0000136,-4.65431,-2.99988</TopLeft>
       <TopRight>3.142970,0.801803,-2.558690</TopRight>
@@ -74,6 +75,7 @@
     <P46>
       <Node>cave013</Node>
       <Screen>:0.0</Screen>
+      <copynode source="DefaultNode"/>
       <WarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_46</WarpFile>
       <TopLeft>2.67029,-4.79165,-2.68304</TopLeft>
       <TopRight>5.830190,0.886407,-1.410160</TopRight>
@@ -84,6 +86,7 @@
     <P47>
       <Node>cave013</Node>
       <Screen>:0.1</Screen>
+      <copynode source="DefaultNode"/>
       <WarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_47</WarpFile>
       <TopLeft>5.46998,4.00002,-1.61422</TopLeft>
       <TopRight>2.54640,-1.50849,-2.71083</TopRight>
@@ -94,6 +97,7 @@
     <P48>
       <Node>cave013</Node>
       <Screen>:0.3</Screen>
+      <copynode source="DefaultNode"/>
       <WarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_48</WarpFile>
       <TopLeft>7.72289,-4.79165,-0.02080</TopLeft>
       <TopRight>4.90491,0.86799,-1.90097</TopRight>
@@ -104,6 +108,7 @@
     <P49>
       <Node>cave013</Node>
       <Screen>:0.2</Screen>
+      <copynode source="DefaultNode"/>
       <WarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_49</WarpFile>
       <TopLeft>7.72299,4.00002,-0.02070</TopLeft>
       <TopRight>4.94336,-1.49479,-1.88234</TopRight>
@@ -177,6 +182,8 @@
     </Head>
   </Optitrack1>
 
+  <!-- Another comment -->
+  
   <Optitrack2>
     <Type>VRVRPNTrackerDevice</Type>
     <VRPNDeviceName type="string">stylus0@tcp:134.84.121.68:3884</VRPNDeviceName>
@@ -209,7 +216,6 @@
     <EventsToGenerate type="stringarray">BlueStylusFrontBtn,BlueStylusBackBtn</EventsToGenerate>
   </BlueStylusBtns>
 
-
+<!-- Last comment -->
 
 </MinVR>
-
