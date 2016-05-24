@@ -144,6 +144,8 @@ private:
 
 class VRVRPNTrackerDeviceFactory : public VRInputDeviceFactory {
 public:
+	VRVRPNTrackerDeviceFactory():VRInputDeviceFactory("VRVRPNTrackerDevice"){}
+
 	VRInputDevice* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
 };
 

@@ -31,7 +31,9 @@ public:
  */
 class VRGroupNodeFactory : public VRDisplayNodeFactory {
 public:
-	virtual ~VRGroupNodeFactory() {}
+	VRGroupNodeFactory():VRDisplayNodeFactory("VRGroupNode"){}
+
+	virtual ~VRGroupNodeFactory(){}
 
 	VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
 };

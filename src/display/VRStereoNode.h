@@ -46,7 +46,9 @@ protected:
 
 class VRStereoNodeFactory : public VRDisplayNodeFactory {
 public:
-	virtual ~VRStereoNodeFactory() {}
+	VRStereoNodeFactory():VRDisplayNodeFactory("VRStereoNode"){}
+
+	virtual ~VRStereoNodeFactory(){}
 
 	VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
 };

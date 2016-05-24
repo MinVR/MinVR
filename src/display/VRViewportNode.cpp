@@ -47,14 +47,8 @@ void VRViewportNode::render(VRDataIndex *renderState, VRRenderHandler *renderHan
 VRDisplayNode* VRViewportNodeFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace)
 {
 	std::string nodeNameSpace = config->validateNameSpace(nameSpace + valName);
-
-	std::string type = config->getValue("Type", nodeNameSpace);
-	if (type != "VRViewportNode") {
-		// This factory cannot create the type specified
-		return NULL;
-	}
-
-	VRGraphicsToolkit *gfxToolkit = vrMain->getGraphicsToolkit(config->getValue("GraphicsToolkit", nodeNameSpace));
+    
+    VRGraphicsToolkit *gfxToolkit = vrMain->getGraphicsToolkit(config->getValue("GraphicsToolkit", nodeNameSpace));
 
 	int xpos = config->getValue("XPos", nodeNameSpace);
 	int ypos = config->getValue("YPos", nodeNameSpace);

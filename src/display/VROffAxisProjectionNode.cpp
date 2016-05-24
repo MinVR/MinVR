@@ -104,12 +104,6 @@ VRDisplayNode*
 VROffAxisProjectionNodeFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) {
 	std::string nodeNameSpace = config->validateNameSpace(nameSpace + valName);
 
-	std::string type = config->getValue("Type", nodeNameSpace);
-	if (type != "VROffAxisProjectionNode") {
-		// This factory cannot create the type specified
-		return NULL;
-	}
-
 	VRPoint3 topLeft = config->getValue("TopLeft", nodeNameSpace);
 	VRPoint3 botLeft = config->getValue("BottomLeft", nodeNameSpace);
 	VRPoint3 topRight = config->getValue("TopRight", nodeNameSpace);

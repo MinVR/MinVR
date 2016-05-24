@@ -12,6 +12,50 @@ namespace MinVR {
   
 class VRMain;
 
+class TypeFactory{
+	public:
+		TypeFactory(std::string _type) {type = _type;}
+		
+		virtual ~TypeFactory() {}
+
+		bool isNodeType(int factory_id, VRDataIndex *config, const std::string &valName, const std::string &nameSpace){
+				std::string attribute;
+				switch(factory_id){
+						case 1:
+							attribute = "displaynode";
+						break;
+						case 2:
+							attribute = "inputdevice";
+						break;
+						case 3:
+							attribute = "graphicstoolkit";
+						break;
+						case 4:
+							attribute = "windowtoolkit";
+						break;
+						default:
+						break;
+					}
+				
+				if(!config->exists(valName,nameSpace)){
+					return false;
+				}
+				
+				if(!config->getDatum(valName,nameSpace)->hasAttribute(attribute)){
+					return false;
+				}
+				
+				std::string _type = config->getDatum(valName,nameSpace)->getAttributeValue(attribute);
+				if (_type != type) {
+					// This factory cannot create the type specified
+					return false;
+				}
+				return true;
+		}
+
+	private:
+		std::string type;
+};
 
 /** Abstract base class for display node factories, which get added as "sub-factories" to the main 
     VRFactory class.  This sub-factory strategy is used as part of the plugin strategy: 1. plugins
@@ -20,8 +64,10 @@ class VRMain;
     VRFactory as "sub-factories".  3. VRMain (or other parts of MinVR) use VRFactory to create objects
     defined in config files by calling VRFactory methods. 
  */
-class VRDisplayNodeFactory {
+class VRDisplayNodeFactory : public TypeFactory {
 public:
+  VRDisplayNodeFactory(std::string _type):TypeFactory(_type)  {}
+
   virtual ~VRDisplayNodeFactory() {}
 
   virtual VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) = 0;
@@ -30,8 +76,10 @@ public:
 
 /** See description for VRDisplayDeviceFactory... same idea here but for input devices.
 */
-class VRInputDeviceFactory {
+class VRInputDeviceFactory : public TypeFactory {
 public:
+  VRInputDeviceFactory(std::string _type):TypeFactory(_type)  {}
+
   virtual ~VRInputDeviceFactory() {}
 
   virtual VRInputDevice* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) = 0;
@@ -39,8 +87,10 @@ public:
 
 /**
  */
-class VRGraphicsToolkitFactory {
+class VRGraphicsToolkitFactory : public TypeFactory {
 public:
+  VRGraphicsToolkitFactory(std::string _type):TypeFactory(_type)  {}
+
   virtual ~VRGraphicsToolkitFactory() {}
 
   virtual VRGraphicsToolkit* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) = 0;
@@ -49,8 +99,10 @@ public:
 
 /**
  */
-class VRWindowToolkitFactory {
+class VRWindowToolkitFactory : public TypeFactory{
 public:
+  VRWindowToolkitFactory(std::string _type):TypeFactory(_type)  {}
+
   virtual ~VRWindowToolkitFactory() {}
 
   virtual VRWindowToolkit* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) = 0;
@@ -103,7 +155,6 @@ protected:
   std::vector<VRInputDeviceFactory*> _inputDevFactories;
   std::vector<VRGraphicsToolkitFactory*> _gfxToolkitFactories;
   std::vector<VRWindowToolkitFactory*> _winToolkitFactories;
-
 };
 
 

@@ -33,6 +33,8 @@ private:
 
 class VRViewportNodeFactory : public VRDisplayNodeFactory {
 public:
+	VRViewportNodeFactory():VRDisplayNodeFactory("VRViewportNode"){}
+
 	virtual ~VRViewportNodeFactory() {}
 
 	VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);

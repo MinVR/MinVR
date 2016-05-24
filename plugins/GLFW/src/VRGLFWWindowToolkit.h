@@ -54,6 +54,8 @@ private:
 
 class VRGLFWWindowToolkitFactory : public VRWindowToolkitFactory {
 public:
+	VRGLFWWindowToolkitFactory():VRWindowToolkitFactory("VRGLFWWindowToolkit"){}
+
 	VRWindowToolkit* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
 };
 

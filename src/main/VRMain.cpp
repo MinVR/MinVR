@@ -241,21 +241,22 @@ VRMain::initialize(int argc, char** argv)
   // CONFIGURE NETWORKING:
 
   // check the type of this VRSetup, it should be either "VRServer", "VRClient", or "VRStandAlone"
-  std::string type = _config->getValue("Type", _name);
-  if (type == "VRServer") {
-  	std::string port = _config->getValue("Port", _name);
-  	int numClients = _config->getValue("NumClients", _name);  	
-  	_net = new VRNetServer(port, numClients);
+  if(_config->getDatum(_name.substr(0, _name.size()-1))->hasAttribute("host")){		
+	std::string type = _config->getDatum(_name.substr(0, _name.size()-1))->getAttributeValue("host");
+	if (type == "VRServer") {
+  	  std::string port = _config->getValue("Port", _name);
+  	  int numClients = _config->getValue("NumClients", _name);  	
+  	  _net = new VRNetServer(port, numClients);
+    }
+    else if (type == "VRClient") {
+      std::string port = _config->getValue("Port", _name);
+  	  std::string ipAddress = _config->getValue("ServerIP", _name); 
+  	  _net = new VRNetClient(ipAddress, port);
+    }
+    else { // type == "VRStandAlone"
+  	  // no networking, leave _net=NULL
+    }
   }
-  else if (type == "VRClient") {
-    std::string port = _config->getValue("Port", _name);
-  	std::string ipAddress = _config->getValue("ServerIP", _name); 
-  	_net = new VRNetClient(ipAddress, port);
-  }
-  else { // type == "VRStandAlone"
-  	// no networking, leave _net=NULL
-  }
-
 
   // CONFIGURE INPUT DEVICES:
   if (_config->exists("VRInputDevices", _name)) {

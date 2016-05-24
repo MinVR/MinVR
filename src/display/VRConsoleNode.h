@@ -41,6 +41,8 @@ private:
  */
 class VRConsoleNodeFactory : public VRDisplayNodeFactory {
 public:
+	VRConsoleNodeFactory():VRDisplayNodeFactory("VRConsoleNode"){}
+	
 	virtual ~VRConsoleNodeFactory() {}
 
 	VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);

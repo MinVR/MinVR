@@ -89,6 +89,8 @@ private:
 
 class VRVRPNAnalogDeviceFactory : public VRInputDeviceFactory {
 public:
+	VRVRPNAnalogDeviceFactory():VRInputDeviceFactory("VRVRPNAnalogDevice"){}
+
 	VRInputDevice* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
 };
 

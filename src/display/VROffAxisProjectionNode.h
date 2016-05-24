@@ -53,7 +53,9 @@ protected:
  */
 class VROffAxisProjectionNodeFactory : public VRDisplayNodeFactory {
 public:
-	virtual ~VROffAxisProjectionNodeFactory() {}
+	VROffAxisProjectionNodeFactory():VRDisplayNodeFactory("VROffAxisProjectionNode"){}
+	
+	virtual ~VROffAxisProjectionNodeFactory(){}
 
 	VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
 };

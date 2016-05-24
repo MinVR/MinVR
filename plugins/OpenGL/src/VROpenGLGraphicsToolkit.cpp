@@ -52,14 +52,6 @@ void VROpenGLGraphicsToolkit::finishGraphics() {
 
 VRGraphicsToolkit*
 VROpenGLGraphicsToolkitFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) {
-	std::string tkNameSpace = config->validateNameSpace(nameSpace + valName);
-
-	std::string type = config->getValue("Type", tkNameSpace);
-	if (type != "VROpenGLGraphicsToolkit") {
-		// This factory cannot create the type specified
-		return NULL;
-	}
-
 	VRGraphicsToolkit *gfxToolkit = new VROpenGLGraphicsToolkit();
 	return gfxToolkit;
 }

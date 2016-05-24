@@ -27,6 +27,8 @@ public:
 
 class VROpenGLGraphicsToolkitFactory : public VRGraphicsToolkitFactory {
 public:
+	VROpenGLGraphicsToolkitFactory():VRGraphicsToolkitFactory("VROpenGLGraphicsToolkit"){}
+
 	VRGraphicsToolkit* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
 };
 

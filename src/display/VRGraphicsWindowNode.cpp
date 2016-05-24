@@ -77,12 +77,6 @@ VRDisplayNode* VRGraphicsWindowNodeFactory::create(VRMainInterface *vrMain, VRDa
 {
 	std::string nodeNameSpace = config->validateNameSpace(nameSpace + valName);
 
-	std::string type = config->getValue("Type", nodeNameSpace);
-	if (type != "VRGraphicsWindowNode") {
-		// This factory cannot create the type specified
-		return NULL;
-	}
-
     std::string gtk = config->getValue("GraphicsToolkit", nodeNameSpace);
 	VRGraphicsToolkit *gfxToolkit = vrMain->getGraphicsToolkit(gtk);
     if (gfxToolkit == NULL) {
