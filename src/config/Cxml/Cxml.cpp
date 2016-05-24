@@ -62,8 +62,8 @@ bool Cxml::get_node(char* xml_string)
     // (k counts the file position, and sort the characters into XML
     // elements as they appear.    
     while(k<m_length)
-    {
-        c = xml_string[k];
+    { 
+        c = xml_string[k]; 
         if(c == CNEW || c == CTAB || c == CRET) 
         {
             k++;  // This is white space.  Eat it.
@@ -73,7 +73,7 @@ bool Cxml::get_node(char* xml_string)
         {
             if(xml_string[k+1] == CEXCLAMATION && xml_string[k+2] == CMINUS && xml_string[k+3] == CMINUS) // this is a comment
             { //the comment section
-                clean_str(szAttrValBuff);
+                clean_str(szAttrNameBuff);
                 k+=4;
                 c = xml_string[k];
                 while(!(xml_string[k] == CMINUS && xml_string[k+1] == CMINUS && xml_string[k+2] == CCLOSE)) // Find the end of the comment.
@@ -240,7 +240,7 @@ bool Cxml::get_node(char* xml_string)
         if(c != COPEN && c != CCLOSE /*&& c != CSLASH*//* && c != CSPACE*/)
         {
             clean_str(szNodeValBuff);
-            while(c != COPEN)
+            while((c != COPEN ) && (k < m_length))
             {
                 if(c != CNEW && c != CTAB && c != CRET/* && c != CSPACE*/)
                     szNodeValBuff =concat(szNodeValBuff,c);
