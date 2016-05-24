@@ -114,16 +114,6 @@ VRDisplayNode* VRStereoNodeFactory::create(VRMainInterface *vrMain, VRDataIndex 
 
 	VRDisplayNode *node = new VRStereoNode(valName, gfxToolkit, format);
 
-    if (config->exists("Children", nodeNameSpace)) {
-	  std::vector<std::string> childrenNames = config->getValue("Children", nodeNameSpace);
-	  for (std::vector<std::string>::iterator it = childrenNames.begin(); it < childrenNames.end(); ++it) {
-		VRDisplayNode *child = vrMain->getFactory()->createDisplayNode(vrMain, config, *it, "/MinVR/");
-		if (child != NULL) {
-			node->addChild(child);
-		}
-	  }
-    }
-
 	return node;
 }
 

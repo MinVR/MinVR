@@ -8,6 +8,7 @@ VRFactory::createDisplayNode(VRMainInterface *vrMain, VRDataIndex *config, const
   for (std::vector<VRDisplayNodeFactory*>::iterator it = _dispNodeFactories.begin(); it < _dispNodeFactories.end(); ++it) {
     VRDisplayNode *node = (*it)->create(vrMain, config, valName, nameSpace);
     if (node != NULL) {
+      node->createChildren(vrMain, config, valName, nameSpace);
       return node;
     }
   }

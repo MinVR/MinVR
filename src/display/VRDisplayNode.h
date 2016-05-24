@@ -19,6 +19,9 @@ namespace MinVR {
 
 /** VRDisplayNode is an abstract base class that can be inherited to create a different types of displays.
  */
+ 
+class VRMainInterface;
+ 
 class VRDisplayNode {
 public:
 	VRDisplayNode(const std::string &name);
@@ -58,6 +61,9 @@ public:
 
 	/// Clears the children in a node
 	void clearChildren(bool destroyChildren = false);
+
+	/// Creates the children of the node
+	void createChildren(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
 
 protected:
 	std::vector<VRDisplayNode*> _children;
