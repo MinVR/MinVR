@@ -76,15 +76,18 @@ bool VRPluginManager::loadPlugin(const std::string& filePath, const std::string&
 #else
 	std::string path = filePath + "/lib/lib" + name + ".so";
 #endif
+	return loadPlugin(path);
+}
 
-	VRSharedLibrary* lib = new VRSharedLibrary(path);
+bool VRPluginManager::loadPlugin(const std::string& pluginFilePath) {
+	VRSharedLibrary* lib = new VRSharedLibrary(pluginFilePath);
 	if (lib->isLoaded())
 	{
 		typedef int version_t();
 		version_t* getVersion = lib->loadSymbol<version_t>("getPluginFrameworkVersion");
 		if (getVersion() != getPluginFrameworkVersion())
 		{
-			std::cout << "Cannot load plugin: " << path << " - Incorrect framework version." << std::endl;
+			std::cout << "Cannot load plugin: " << pluginFilePath << " - Incorrect framework version." << std::endl;
 			return false;
 		}
 
@@ -92,7 +95,7 @@ bool VRPluginManager::loadPlugin(const std::string& filePath, const std::string&
 		create_t* createVRPlugin = lib->loadSymbol<create_t>("createPlugin");
 		if (createVRPlugin == NULL)
 		{
-			std::cout << "Cannot load plugin: " << path << " - createVRPlugin funciton not found." << std::endl;
+			std::cout << "Cannot load plugin: " << pluginFilePath << " - createVRPlugin funciton not found." << std::endl;
 			return false;
 		}
 
@@ -108,5 +111,6 @@ bool VRPluginManager::loadPlugin(const std::string& filePath, const std::string&
 
 	return false;
 }
+
 
 } /* namespace extend */

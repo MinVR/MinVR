@@ -60,6 +60,7 @@ public:
 
 	/// Argument provides the path to the shared lib that contains the plugin
 	bool loadPlugin(const std::string& filePath, const std::string& baseFileName);
+	bool loadPlugin(const std::string& pluginFilePath);
 
 private:
 	VRMainInterface *_vrMain;

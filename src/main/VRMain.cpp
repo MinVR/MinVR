@@ -135,7 +135,12 @@ VRMain::initialize(int argc, char** argv)
   VRStringArray vrSetupsToStartArray;
   if (vrSetupsToStart == "") {
     // no vrSetupsToStart are specified, start all of VRSetups listed in the config file
-    vrSetupsToStartArray = _config->getValue("VRSetups", "/MinVR/");
+    std::list<std::string> names = _config->getValue("VRSetups","/MinVR/");
+	for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
+		if(_config->getDatum(*it)->hasAttribute("host")){	
+			vrSetupsToStartArray.push_back(*it);
+		}
+	}
   }
   else {
     // a comma-separated list of vrSetupsToStart was provided
@@ -202,16 +207,12 @@ VRMain::initialize(int argc, char** argv)
     _name = vrSetupsToStartArray[i];
   }
 #endif
-
+  
   // sanity check to make sure the vrSetup we are continuing with is actually defined in the config file
-  std::vector<std::string> vrSetupsInConfig = _config->getValue("VRSetups", "/MinVR/");
-  if (std::find(vrSetupsInConfig.begin(), vrSetupsInConfig.end(), _name) == vrSetupsInConfig.end()) {
+  if (!_config->exists(_name)) {
     cerr << "VRMain Error: The VRSetup " << _name << " was not found in the config file " << configFile << endl;
     exit(1);
   }
-
-  _name = "/MinVR/" + _name + "/";
-  
   
   // for everything from this point on, the VRSetup name for this process is stored in _name, and this
   // becomes the base namespace for all of the VRDataIndex lookups that we do.
@@ -221,28 +222,35 @@ VRMain::initialize(int argc, char** argv)
 
   // Load plugins from the plugin directory.  This will add their factories to the master VRFactory.
   if (_config->exists("VRPlugins", _name)) {
-    std::vector<std::string> pList = _config->getValue("VRPlugins", _name);
-    for (std::vector<std::string>::iterator it = pList.begin(); it < pList.end(); ++it) {
-      
-      std::string path = _config->getValue("Path", "/MinVR/" + *it);
-      std::string file = _config->getValue("File", "/MinVR/" + *it);
-      
-      string buildType = "";
+    
+    std::list<std::string> names = _config->getValue("VRPlugins",_name);
+    for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
+		if(_config->getDatum(*it)->hasAttribute("pluginname") && _config->exists("Path",*it)){
+			std::string path = _config->getValue("Path", *it);
+			std::string file = _config->getDatum(*it)->getAttributeValue("pluginname");	
+			
+			string buildType = "";
 #ifdef MinVR_DEBUG
-      buildType = "d";
+			buildType = "d";
 #endif
-      
-      if (!_pluginMgr->loadPlugin(path, file + buildType)) {
-        cerr << "VRMain Error: Problem loading plugin " << path << file << buildType << endl;
-      }
+				
+			if (!_pluginMgr->loadPlugin(path, file + buildType)) {
+				cerr << "VRMain Error: Problem loading plugin " << path << file << buildType << endl;
+			}
+		}else if(_config->getDatum(*it)->hasAttribute("pluginlibfile")){
+			std::string file = _config->getDatum(*it)->getAttributeValue("pluginlibfile");	
+			if (!_pluginMgr->loadPlugin(file)) {
+				cerr << "VRMain Error: Problem loading plugin " << file << endl;
+			}
+		}
     }
   }
 
   // CONFIGURE NETWORKING:
 
   // check the type of this VRSetup, it should be either "VRServer", "VRClient", or "VRStandAlone"
-  if(_config->getDatum(_name.substr(0, _name.size()-1))->hasAttribute("host")){		
-	std::string type = _config->getDatum(_name.substr(0, _name.size()-1))->getAttributeValue("host");
+  if(_config->getDatum(_name)->hasAttribute("host")){		
+	std::string type = _config->getDatum(_name)->getAttributeValue("host");
 	if (type == "VRServer") {
   	  std::string port = _config->getValue("Port", _name);
   	  int numClients = _config->getValue("NumClients", _name);  	
@@ -260,54 +268,70 @@ VRMain::initialize(int argc, char** argv)
 
   // CONFIGURE INPUT DEVICES:
   if (_config->exists("VRInputDevices", _name)) {
-    std::vector<std::string> idList = _config->getValue("VRInputDevices", _name);
-	  for (std::vector<std::string>::iterator it = idList.begin(); it < idList.end(); ++it) {
-	    // create a new input device for each one in the list
-	    VRInputDevice *dev = _factory->createInputDevice(this, _config, *it, "/MinVR/");
-	    if (dev) {
-	  	  _inputDevices.push_back(dev);
-	    }
-	  }
+    std::string inputDevicesNameSpace = _config->getEntry("VRInputDevices", _name)->first;
+    std::list<std::string> names = _config->getValue(inputDevicesNameSpace);
+    inputDevicesNameSpace = inputDevicesNameSpace + '/';  
+	for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
+	  // create a new input device for each one in the list
+	  std::string name_node = it->substr(inputDevicesNameSpace.size());      
+	  VRInputDevice *dev = _factory->createInputDevice(this, _config, name_node, inputDevicesNameSpace);
+	  if (dev) {
+	   _inputDevices.push_back(dev);
+	  }else if(_config->getDatum(name_node,inputDevicesNameSpace)->hasAttribute("inputdevice")){
+        std::cerr << "Problem creating inputdevice: " << inputDevicesNameSpace << name_node << " with inputdevice="<< _config->getDatum(name_node,inputDevicesNameSpace)->getAttributeValue("inputdevice") << std::endl;
+      }
+	}
   }
 
 
   // CONFIGURE GRAPHICS TOOLKITS
   if (_config->exists("VRGraphicsToolkits", _name)) {
-    std::vector<std::string> idList = _config->getValue("VRGraphicsToolkits", _name);
-    for (std::vector<std::string>::iterator it = idList.begin(); it < idList.end(); ++it) {
+    std::string graphicsToolkitsNameSpace = _config->getEntry("VRGraphicsToolkits", _name)->first;
+    std::list<std::string> names = _config->getValue(graphicsToolkitsNameSpace);
+    graphicsToolkitsNameSpace = graphicsToolkitsNameSpace + '/';
+    for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
       // create a new graphics toolkit for each one in the list
-      VRGraphicsToolkit *tk = _factory->createGraphicsToolkit(this, _config, *it, "/MinVR/");
+      std::string name_node = it->substr(graphicsToolkitsNameSpace.size());
+      VRGraphicsToolkit *tk = _factory->createGraphicsToolkit(this, _config, name_node, graphicsToolkitsNameSpace);
       if (tk) {
         _gfxToolkits.push_back(tk);
       }
-      else {
-        std::cerr << "Problem creating graphics toolkit: " << *it << std::endl;
+      else if(_config->getDatum(name_node,graphicsToolkitsNameSpace)->hasAttribute("graphicstoolkit")){
+        std::cerr << "Problem creating graphics toolkit: " << graphicsToolkitsNameSpace << name_node << " with graphicstoolkit="<< _config->getDatum(name_node,graphicsToolkitsNameSpace)->getAttributeValue("graphicstoolkit") << std::endl;
       }
     }
   }
 
   // CONFIGURE WINDOW TOOLKITS
   if (_config->exists("VRWindowToolkits", _name)) {
-    std::vector<std::string> idList = _config->getValue("VRWindowToolkits", _name);
-    for (std::vector<std::string>::iterator it = idList.begin(); it < idList.end(); ++it) {
+    std::string windowwToolkitsNameSpace = _config->getEntry("VRWindowToolkits", _name)->first;
+    std::list<std::string> names = _config->getValue(windowwToolkitsNameSpace);
+    windowwToolkitsNameSpace = windowwToolkitsNameSpace + '/';
+    for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
       // create a new graphics toolkit for each one in the list
-      VRWindowToolkit *tk = _factory->createWindowToolkit(this, _config, *it, "/MinVR/");
+      std::string name_node = it->substr(windowwToolkitsNameSpace.size());
+      VRWindowToolkit *tk = _factory->createWindowToolkit(this, _config, name_node, windowwToolkitsNameSpace);
       if (tk) {
         _winToolkits.push_back(tk);
       }
-      else {
-        std::cerr << "Problem creating window toolkit: " << *it << std::endl;
+      else if(_config->getDatum(name_node,windowwToolkitsNameSpace)->hasAttribute("windowtoolkit")){
+        std::cerr << "Problem creating window toolkit: " << windowwToolkitsNameSpace << name_node << " with windowtoolkit="<< _config->getDatum(name_node,windowwToolkitsNameSpace)->getAttributeValue("windowtoolkit") << std::endl;
       }
     }
   }
 
   // CONFIGURE THE DISPLAY GRAPH:
   if (_config->exists("VRDisplayGraph", _name)) {
-    std::string dgstr = _config->getValue("VRDisplayGraph", _name);
-    _displayGraph = _factory->createDisplayNode(this, _config, dgstr, "/MinVR/");
-    if (_displayGraph == NULL) {
-      std::cerr << "Problem creating display graph: " << dgstr << std::endl;
-    }
+	std::string displayGraphNameSpace = _config->getEntry("VRDisplayGraph",_name)->first;
+    std::list<std::string> names = _config->getValue(displayGraphNameSpace);
+    displayGraphNameSpace = displayGraphNameSpace + '/';
+	for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
+		std::string name_node = it->substr(displayGraphNameSpace.size());
+		_displayGraph = _factory->createDisplayNode(this, _config, name_node, displayGraphNameSpace);
+	}
+	if (_displayGraph == NULL) {
+			std::cerr << "Problem creating display graph: " << displayGraphNameSpace << std::endl;	
+	}
   }
 
   _initialized = true;

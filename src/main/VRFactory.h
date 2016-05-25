@@ -12,25 +12,27 @@ namespace MinVR {
   
 class VRMain;
 
-class TypeFactory{
-	public:
-		TypeFactory(std::string _type) {type = _type;}
-		
-		virtual ~TypeFactory() {}
+enum NodeType { displaynode, inputdevice, graphicstoolkit, windowtoolkit };
 
-		bool isNodeType(int factory_id, VRDataIndex *config, const std::string &valName, const std::string &nameSpace){
+class VRBaseFactory{
+	public:
+		VRBaseFactory(std::string _type) {type = _type;}
+		
+		virtual ~VRBaseFactory() {}
+
+		bool isType(NodeType factory_id, VRDataIndex *config, const std::string &valName, const std::string &nameSpace){
 				std::string attribute;
 				switch(factory_id){
-						case 1:
+						case displaynode:
 							attribute = "displaynode";
 						break;
-						case 2:
+						case inputdevice:
 							attribute = "inputdevice";
 						break;
-						case 3:
+						case graphicstoolkit:
 							attribute = "graphicstoolkit";
 						break;
-						case 4:
+						case windowtoolkit:
 							attribute = "windowtoolkit";
 						break;
 						default:
@@ -64,9 +66,9 @@ class TypeFactory{
     VRFactory as "sub-factories".  3. VRMain (or other parts of MinVR) use VRFactory to create objects
     defined in config files by calling VRFactory methods. 
  */
-class VRDisplayNodeFactory : public TypeFactory {
+class VRDisplayNodeFactory : public VRBaseFactory {
 public:
-  VRDisplayNodeFactory(std::string _type):TypeFactory(_type)  {}
+  VRDisplayNodeFactory(std::string _type):VRBaseFactory(_type)  {}
 
   virtual ~VRDisplayNodeFactory() {}
 
@@ -76,9 +78,9 @@ public:
 
 /** See description for VRDisplayDeviceFactory... same idea here but for input devices.
 */
-class VRInputDeviceFactory : public TypeFactory {
+class VRInputDeviceFactory : public VRBaseFactory {
 public:
-  VRInputDeviceFactory(std::string _type):TypeFactory(_type)  {}
+  VRInputDeviceFactory(std::string _type):VRBaseFactory(_type)  {}
 
   virtual ~VRInputDeviceFactory() {}
 
@@ -87,9 +89,9 @@ public:
 
 /**
  */
-class VRGraphicsToolkitFactory : public TypeFactory {
+class VRGraphicsToolkitFactory : public VRBaseFactory {
 public:
-  VRGraphicsToolkitFactory(std::string _type):TypeFactory(_type)  {}
+  VRGraphicsToolkitFactory(std::string _type):VRBaseFactory(_type)  {}
 
   virtual ~VRGraphicsToolkitFactory() {}
 
@@ -99,9 +101,9 @@ public:
 
 /**
  */
-class VRWindowToolkitFactory : public TypeFactory{
+class VRWindowToolkitFactory : public VRBaseFactory{
 public:
-  VRWindowToolkitFactory(std::string _type):TypeFactory(_type)  {}
+  VRWindowToolkitFactory(std::string _type):VRBaseFactory(_type)  {}
 
   virtual ~VRWindowToolkitFactory() {}
 
