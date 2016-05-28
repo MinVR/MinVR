@@ -42,18 +42,28 @@ std::string VRDataIndex::serialize(const std::string trimName,
     //                      ... open the XML tag, with the type ...
     serialized = "<" + trimName +
       " type=\"" + pdata->getDescription() + "\"" +
-      pdata->getAttributeListAsString() + ">";
+      pdata->getAttributeListAsString();
 
-    // ... loop through the children (recursively) ...
     VRContainer nameList = pdata->getValue();
-    for (VRContainer::iterator lt = nameList.begin();
-         lt != nameList.end(); lt++) {
+    if (nameList.empty()) {
 
-      // ... recurse, and get the serialization of the member data value.
-      serialized += serialize(*lt);
-    };
+      serialized += "/>";
 
-    serialized += "</" + trimName + ">";
+    } else {
+
+      serialized += ">";
+
+      // ... loop through the children (recursively) ...
+      for (VRContainer::iterator lt = nameList.begin();
+           lt != nameList.end(); lt++) {
+
+        // ... recurse, and get the serialization of the member data value.
+        serialized += serialize(*lt);
+      };
+
+      serialized += "</" + trimName + ">";
+
+    }
     return serialized;
   }
 }
@@ -180,106 +190,109 @@ std::string VRDataIndex::processValue(const std::string name,
     out = addData(name, (VRStringArray)deserializeStringArray(valueString, separator));
     break;
 
-  case VRCORETYPE_CONTAINER:
-    {
-      // Check to see if this is just white space. If so, ignore. If
-      // not, throw an exception because we don't know what to do.
-      std::string stVal = std::string(valueString);
-      std::string::iterator end_pos = std::remove(stVal.begin(), stVal.end(), ' ');
-      stVal.erase(end_pos, stVal.end());
+  case VRCORETYPE_CONTAINER: {
+    VRContainer emptyList;
+    out = addData(name, emptyList);
+    break;
+  }
 
-      if (stVal.size() > 0) {
-        throw std::runtime_error(std::string("empty containers not allowed"));
-      }
-      out = "";
-      break;
-    }
   case VRCORETYPE_NONE:
-    {
-      out = "";
-      break;
-    }	     
+    out = "";
+    break;
+
   }
   return out;
 }
 
-// This seems to read containers twice.  Do both instances wind up in memory?
 std::string VRDataIndex::walkXML(element* node, std::string nameSpace) {
   // This method will return the name of the last top-level element in
-  // the input XML.  This aspect of its operation could probably use
-  // more testing.
+  // the input XML.
 
   std::string qualifiedName;
-  VRContainer childNames;
   std::string out;
 
   qualifiedName = nameSpace + std::string(node->get_name());
 
-  // This loops through the node children, if there are any.
-  while (true) {
+  // What type is this node?
+  VRCORETYPE_ID typeId;
+  if (node->get_value() == NULL) {
+    // If the node has no value, we hope it's a container.
+    typeId = VRCORETYPE_CONTAINER;
+      
+  } else if (node->get_attribute("type") == NULL) {
 
-    // If there is a value, submit this node to processValue.
-    // Container nodes should not be processed this way because they
-    // have children, not a value.  Or at least they should not, and
-    // the processValue method will throw an exception.
-    if (node->get_value() != NULL) {
+    if (node->has_child()) {
 
-      // Check that the node value isn't just white space or empty.
-      std::string valueString = std::string(node->get_value());
-      //std::size_t firstChar = valueString.find_first_not_of(" \t\r\n");
-      int firstChar = valueString.find_first_not_of(" \t\r\n");
-
-      if (firstChar >= 0) {
-
-        VRCORETYPE_ID typeId;
-
-        if (node->get_attribute("type") == NULL) {
-
-          typeId = inferType(std::string(node->get_value()));
-        } else { // what does map return if no match?
-          typeId = mVRTypeMap[std::string(node->get_attribute("type")->get_value())];
-        }
-
-        // Need a check for typeId == 0
-
-        char separator;
-        if (node->get_attribute("separator") == NULL) {
-          separator = MINVRSEPARATOR;
-        } else {
-          separator = *(node->get_attribute("separator")->get_value());
-        }
-        
-        out = processValue(qualifiedName,
-                           typeId,
-                           node->get_value(),
-                           separator);
-
-        // Any attributes to add to the list?
-        VRDatum::VRAttributeList al = node->get_attribute_map();
-        if (al.find("type") != al.end()) al.erase(al.find("type"));
-        if (al.size() > 0) {
-          getDatum(out)->setAttributeList(al);
-        }
-      }
+      typeId = VRCORETYPE_CONTAINER;
+    } else {
+    
+      typeId = inferType(std::string(node->get_value()));
     }
+
+  } else { // what does map return if no match?
+
+    typeId = mVRTypeMap[std::string(node->get_attribute("type")->get_value())];
+
+  }
+
+  // Get a value for the node.
+  std::string valueString;
+  if (node->get_value() == NULL) {
+
+    valueString = "";
+
+  } else {
+
+    // Convert to a string for some minor editing.
+    valueString = std::string(node->get_value());
+
+    // Trim leading and trailing spaces, tabs, whatever.
+    int firstChar = valueString.find_first_not_of(" \t\r\n");
+    int lastChar = valueString.find_last_not_of(" \t\r\n");
+
+    if (firstChar >= 0) {
+      if (lastChar >= 0) {
+        valueString = valueString.substr(firstChar, (1 + lastChar - firstChar));
+      } else {
+        valueString = valueString.substr(firstChar);
+      }
+    } else {
+      valueString = valueString.substr(0, valueString.size() - lastChar);
+    }
+  }
+
+  char separator;
+  if (node->get_attribute("separator") == NULL) {
+
+    separator = MINVRSEPARATOR;
+
+  } else {
+
+    separator = *(node->get_attribute("separator")->get_value());
+  }
+
+  out = processValue(qualifiedName,
+                     typeId,
+                     valueString.c_str(),
+                     separator);
+
+  // There should be a datum object entered for this by here.  So now
+  // we can see if there are any attributes to add to the list.
+  VRDatum::VRAttributeList al = node->get_attribute_map();
+  if (al.find("type") != al.end()) al.erase(al.find("type"));
+  if (al.size() > 0) {
+      
+    getDatum(out)->setAttributeList(al);
+  }
+
+  // This loops through the node children, if there are any.
+  VRContainer childNames;
+  while (true) {
 
     // Pick the next child.
     element* child = node->get_next_child();
     if (child == NULL) {
 
-      // If this is a non-empty container that is not named XML_DOC,
-      // add it to the index.
-      if (childNames.size() > 0 && strcmp(node->get_name(), "XML_DOC")) {
-
-        out = addData(qualifiedName, childNames);
-
-        // Pick up any attributes.
-        VRDatum::VRAttributeList al = node->get_attribute_map();
-        if (al.find("type") != al.end()) al.erase(al.find("type"));
-        if (al.size() > 0) {
-          getDatum(out)->setAttributeList(al);
-        }
-      }
       return out;
     }
 
@@ -784,6 +797,7 @@ std::string VRDataIndex::addData(const std::string valName,
   VRDataMap::iterator it = mindex.find(valName);
   if (it == mindex.end()) {
 
+    // No.  Create a new object.
     VRDatumPtr obj = factory.CreateVRDatum(VRCORETYPE_CONTAINER, &value);
     //std::cout << "added " << obj.containerVal()->getDatum() << std::endl;
     mindex.insert(VRDataMap::value_type(valName, obj));
@@ -872,12 +886,7 @@ std::string VRDataIndex::printStructure(const std::string itemName, const int li
     // element of the exploded name.
     outBuffer += elems.back();
 
-    // If this is a container, we're done.  Go get the next name.
-    if (it->second->getType() == VRCORETYPE_CONTAINER) {
-
-      outBuffer += "\n";
-
-    } else {
+    if (it->second->getType() != VRCORETYPE_CONTAINER) {
 
       // This is not a container.  Get the value.
       std::string out = it->second->getValueString();
@@ -888,20 +897,21 @@ std::string VRDataIndex::printStructure(const std::string itemName, const int li
       }
 
       // Append the type description.
-      out += " (" +  it->second->getDescription() + ")";
-
-      // Are there attributes?  If so, append them.
-      VRDatum::VRAttributeList vrl = it->second->getAttributeList();
-      
-      if (vrl.size() > 0) {
-        out += "\n";
-        // Matches the indent above.
-        for (i = 0; i < ((int)elems.size() - 1); i++) out += " | ";      
-        out += "  [" + it->second->getAttributeListAsString() + " ]";
-      }
-
-      outBuffer += " = " + out + "\n";
+      outBuffer += " = " + out + " (" +  it->second->getDescription() + ")";
     }
+      
+    // Are there attributes?  If so, append them.
+    VRDatum::VRAttributeList vrl = it->second->getAttributeList();
+      
+    if (vrl.size() > 0) {
+      outBuffer += "\n";
+      // Matches the indent above.
+      for (i = 0; i < ((int)elems.size() - 1); i++) outBuffer += " | ";      
+      outBuffer += "   [" + it->second->getAttributeListAsString() + " ]";
+    }
+
+    outBuffer += "\n";
+
   }
 
   return outBuffer;
