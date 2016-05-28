@@ -242,6 +242,10 @@ element* element::get_first_child()
   return (element*)*m_element_iterator;
 }
 
+bool element::has_child() {
+  return !m_element_list.empty();
+}
+
 void element::reset_iterators()
 {
   m_element_iterator = m_element_list.begin();

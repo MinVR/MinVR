@@ -50,6 +50,7 @@ class element
     element* add_child_element();
     element* get_next_child();
     element* get_first_child();
+    bool has_child();
     void reset_iterators();
     element* get_parent();
     element* add_child_element(element* child_element);
