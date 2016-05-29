@@ -435,22 +435,62 @@ VRContainer VRDataIndex::selectByName(const std::string inName) {
   std::vector<std::string> inNameParts = explodeName(inName);
   VRContainer outList;
 
+  // Sort through the whole index.
   for (VRDataMap::iterator it = mindex.begin(); it != mindex.end(); it++) {
 
+    // This is our indicator.  If a name gets through all the
+    // comparisons with test still equal to zero, it's a match.
     int test = 0;
     std::vector<std::string> nameParts = explodeName(it->first);
 
-    std::vector<std::string>::iterator jt = nameParts.begin();
-    for (std::vector<std::string>::iterator it = inNameParts.begin();
-         (it != inNameParts.end()) && (jt != nameParts.end()); it++, jt++) {
+    if (inName[0] == '/') {
 
-      std::cout << *it << "-compare->" << *jt << std::endl;
-      
-      if (!(((*it) == "*") || ((*it).compare(*jt) == 0))) test++;
+      // This is a full path name, so just start matching the two
+      // names from their beginnings.
+      int i;
+      for (i = 0; i < inNameParts.size(); i++) {
+
+        if (i >= nameParts.size()) break;
+        if (!((inNameParts[i] == "*") ||
+              (inNameParts[i].compare(nameParts[i]) == 0))) {
+          test++;
+          break;
+        }
+      }
+      if (i < inNameParts.size()) test++;
+        
+    } else {
+
+      // This part of the operation has two steps: find where to start the
+      // the match testing, and then do the testing.
+      //   Step 1: find the first match between the two exploded names.
+      int i = 0;
+      int j = 0;
+      test = 1;
+
+      for (i = 0; i < nameParts.size(); i++) {
+        if ((inNameParts[j] == "*") ||
+            (inNameParts[j].compare(nameParts[i]) == 0)) {
+          test = 0; // There is a match. Signal it and get out.
+          break;
+        }
+      } 
+      //   Step 2: Does it match the rest of the string?
+      if (test == 0) {
+        while (++j < inNameParts.size()) {
+          if (++i >= nameParts.size()) break;
+          if (!((inNameParts[j] == "*") ||
+                (inNameParts[j].compare(nameParts[i]) == 0))) {
+            test = 1;
+            break;
+          }
+        }
+        // If we haven't exactly matched the inNameParts, flunk.
+        if (j < inNameParts.size()) test++;
+      }
     }
 
     if (test == 0) {
-      std::cout << "found one" << it->first << std::endl;
       outList.push_back(it->first);
     }
   }

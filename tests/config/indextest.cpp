@@ -128,8 +128,8 @@ VRDataIndex * setupIndex() {
 
 int testSelections() {
 
-  
-  std::string xmlteststring =  "<MVR><!-- some of the illegitimate children of John I --><John name=\"Lackland\"><Isabella name=\"Angouleme\"><Henry seq=\"III\" title=\"King\">1</Henry> <Richard title=\"Earl of Cornwall\">2</Richard> <Joan title=\"Queen Consort\">3</Joan> <Isabella title=\"Queen Consort\">4</Isabella> <Eleanor>5</Eleanor> </Isabella><Joan title=\"Lady of Wales\"><Richard name=\"FitzRoy\">6</Richard><Oliver name=\"FitzRoy\">7</Oliver></Joan> <Unknown><Geoffrey name=\"FitzRoy\">8</Geoffrey><John name=\"FitzRoy\">9</John> <Henry name=\"FitzRoy\">10</Henry> <Osbert name=\"Gifford\">11</Osbert> <Eudes name=\"FitzRoy\">12</Eudes> <Bartholomew name=\"FitzRoy\">13</Bartholomew> <Maud name=\"FitzRoy\" title=\"Abbess of Barking\">14</Maud><Isabel name=\"FitzRoy\">15</Isabel><Philip name=\"FitzRoy\">16</Philip></Unknown> </John></MVR>";
+  // Set up the test string and several expected outputs.
+  std::string xmlteststring =  "<MVR><!-- some of the illegitimate children of John I --><John name=\"Lackland\"><Isabella name=\"Angouleme\"><Henry seq=\"III\" title=\"King\">1</Henry> <Richard title=\"Earl of Cornwall\">2</Richard> <Joan title=\"Queen Consort\">3</Joan> <Isabella title=\"Queen Consort\">4</Isabella> <Eleanor type=\"string\">5</Eleanor> </Isabella><Joan title=\"Lady of Wales\"><Richard name=\"FitzRoy\">6</Richard><Oliver name=\"FitzRoy\">7</Oliver></Joan> <Unknown><Geoffrey name=\"FitzRoy\" type=\"string\">8</Geoffrey><John name=\"FitzRoy\">9</John> <Henry name=\"FitzRoy\">10</Henry> <Osbert name=\"Gifford\">11</Osbert> <Eudes name=\"FitzRoy\">12</Eudes> <Bartholomew name=\"FitzRoy\">13</Bartholomew> <Maud name=\"FitzRoy\" title=\"Abbess of Barking\">14</Maud><Isabella name=\"FitzRoy\">15</Isabella><Philip name=\"FitzRoy\" type=\"string\">16</Philip></Unknown> </John></MVR>";
   
   VRContainer firstTestList;
 
@@ -141,14 +141,12 @@ int testSelections() {
   firstTestList.push_back("/MVR/John/Unknown/Eudes");
   firstTestList.push_back("/MVR/John/Unknown/Geoffrey");
   firstTestList.push_back("/MVR/John/Unknown/Henry");
-  firstTestList.push_back("/MVR/John/Unknown/Isabel");
+  firstTestList.push_back("/MVR/John/Unknown/Isabella");
   firstTestList.push_back("/MVR/John/Unknown/John");
   firstTestList.push_back("/MVR/John/Unknown/Maud");
   firstTestList.push_back("/MVR/John/Unknown/Osbert");
   firstTestList.push_back("/MVR/John/Unknown/Philip");
-
-
-
+  
   VRContainer secondTestList;
 
   secondTestList.push_back("/MVR/John/Joan/Oliver");
@@ -157,7 +155,7 @@ int testSelections() {
   secondTestList.push_back("/MVR/John/Unknown/Eudes");
   secondTestList.push_back("/MVR/John/Unknown/Geoffrey");
   secondTestList.push_back("/MVR/John/Unknown/Henry");
-  secondTestList.push_back("/MVR/John/Unknown/Isabel");
+  secondTestList.push_back("/MVR/John/Unknown/Isabella");
   secondTestList.push_back("/MVR/John/Unknown/John");
   secondTestList.push_back("/MVR/John/Unknown/Maud");
   secondTestList.push_back("/MVR/John/Unknown/Philip");
@@ -167,65 +165,113 @@ int testSelections() {
   thirdTestList.push_back("/MVR/John/Isabella/Eleanor");
   thirdTestList.push_back("/MVR/John/Unknown/Geoffrey");
   thirdTestList.push_back("/MVR/John/Unknown/Philip");
+    
+  VRContainer fourthTestList;
+
+  fourthTestList.push_back("/MVR/John/Isabella/Eleanor");
+    
+  VRContainer fifthTestList;
+
+  fifthTestList.push_back("/MVR/John/Isabella");
+  fifthTestList.push_back("/MVR/John/Isabella/Eleanor");
+  fifthTestList.push_back("/MVR/John/Isabella/Henry");
+  fifthTestList.push_back("/MVR/John/Isabella/Isabella");
+  fifthTestList.push_back("/MVR/John/Isabella/Joan");
+  fifthTestList.push_back("/MVR/John/Isabella/Richard");
+  
+  VRContainer sixthTestList;
+
+  sixthTestList.push_back("/MVR/John/Isabella/Isabella");
+  sixthTestList.push_back("/MVR/John/Unknown/Isabella");
+    
   
   int out = 0;
-
-  LOOP {
-
-    VRDataIndex *index = new VRDataIndex();
-
-    int i = 0;
-    index->addSerializedValue(xmlteststring, VRDataIndex::rootNameSpace);
+  VRDataIndex *index = new VRDataIndex();
+  index->addSerializedValue(xmlteststring, VRDataIndex::rootNameSpace);
     
-    VRContainer firstList = index->selectByAttribute("name", "*");
+  // Test selection by attribute, not dependent on value.
+  VRContainer firstList = index->selectByAttribute("name", "*");
 
-    VRContainer::iterator jt = firstTestList.begin(); 
-    for (VRContainer::iterator it = firstList.begin();
-         it != firstList.end(); it++) {
+  VRContainer::iterator jt = firstTestList.begin(); 
+  for (VRContainer::iterator it = firstList.begin();
+       it != firstList.end(); it++) {
 
-      if (jt == firstTestList.end()) {
+    if (jt == firstTestList.end()) {
 
-        std::cout << "mismatch:" << *it << std::endl;
-        return 1;
-      }
+      std::cout << "mismatch:" << *it << std::endl;
+      return 1;
+    }
 
-      std::cout << (*it) << (*jt);
+    // Here's the test.
+    if ((*it).compare(*jt++) != 0) out++;
+  }
 
-      if ((*it).compare(*jt++) != 0) out++;
-      
-      std::cout << out << std::endl;
+  // Test selection by attribute, specific value
+  VRContainer secondList = index->selectByAttribute("name", "FitzRoy");
 
+  jt = secondTestList.begin(); 
+  for (VRContainer::iterator it = secondList.begin();
+       it != secondList.end(); it++) {
+
+    if (jt == secondTestList.end()) {
+
+      std::cout << "mismatch:" << *it << std::endl;
+      return 1;
+    }
+
+    if ((*it).compare(*jt++) != 0) out++;
+  }
+
+  // Test selection by type.
+  VRContainer thirdList = index->selectByType(VRCORETYPE_STRING);
+        
+  jt = thirdTestList.begin();
+  for (VRContainer::iterator it = thirdList.begin();
+       it != thirdList.end(); it++) {
+
+    if (jt == thirdTestList.end()) {
+
+      std::cout << "mismatch:" << *it << std::endl;
+      return 1;
     }
     
-    VRContainer secondList = index->selectByAttribute("name", "FitzRoy");
+    if ((*it).compare(*jt++) != 0) out++;
+  }
 
-    VRContainer::iterator kt = secondTestList.begin(); 
-    for (VRContainer::iterator it = secondList.begin();
-         it != secondList.end(); it++) {
-
-      std::cout << (*it) << (*kt);
+  
+  // Test selection by fully qualified name.
+  VRContainer fourthList = index->selectByName("/MVR/John/Isabella/Eleanor");
         
-      if ((*it).compare(*kt++) != 0) out++;
+  jt = fourthTestList.begin();
+  for (VRContainer::iterator it = fourthList.begin();
+       it != fourthList.end(); it++) {
+
+    if ((*it).compare(*jt++) != 0) out++;
+  }
+
+  // Test selection by partial name.
+  VRContainer fifthList = index->selectByName("John/Isabella");
+        
+  jt = fifthTestList.begin();
+  for (VRContainer::iterator it = fifthList.begin();
+       it != fifthList.end(); it++) {
+
+    if ((*it).compare(*jt++) != 0) out++;
       
-      std::cout << out << std::endl;
-    }
+  }
 
-    // Test selection by type.
-    VRContainer thirdList = index->selectByType(VRCORETYPE_STRING);
-        
-    jt = thirdTestList.begin();
-    for (VRContainer::iterator it = thirdList.begin();
-         it != thirdList.end(); it++) {
 
-      std::cout << (*it) << (*jt);
+  // Test selection by partial name with wildcard.
+  VRContainer sixthList = index->selectByName("John/*/Isabella");
         
-      if ((*it).compare(*jt++) != 0) out++;
+  jt = sixthTestList.begin();
+  for (VRContainer::iterator it = sixthList.begin();
+       it != sixthList.end(); it++) {
+
+    if ((*it).compare(*jt++) != 0) out++;
       
-      std::cout << out << std::endl;
-    }
   }
   return out;
-  
 }
 
 int testPushPopIndex() {
