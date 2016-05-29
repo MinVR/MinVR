@@ -7,6 +7,7 @@ int testIndexPrintDoubleArray();
 int testIndexLotsaEntries();
 int testPushPopIndex();
 int testEscapedChars();
+int testSelections();
 
 // Make this a large number to get decent timing data.
 #define LOOP for (int loopctr = 0; loopctr < 10; loopctr++)
@@ -53,6 +54,10 @@ int indextest(int argc, char* argv[]) {
 
   case 7:
     output = testEscapedChars();
+    break;
+
+  case 8:
+    output = testSelections();
     break;
     
   default:
@@ -119,6 +124,108 @@ VRDataIndex * setupIndex() {
   n->processXMLFile("test.xml", "/");
   
   return n;
+}
+
+int testSelections() {
+
+  
+  std::string xmlteststring =  "<MVR><!-- some of the illegitimate children of John I --><John name=\"Lackland\"><Isabella name=\"Angouleme\"><Henry seq=\"III\" title=\"King\">1</Henry> <Richard title=\"Earl of Cornwall\">2</Richard> <Joan title=\"Queen Consort\">3</Joan> <Isabella title=\"Queen Consort\">4</Isabella> <Eleanor>5</Eleanor> </Isabella><Joan title=\"Lady of Wales\"><Richard name=\"FitzRoy\">6</Richard><Oliver name=\"FitzRoy\">7</Oliver></Joan> <Unknown><Geoffrey name=\"FitzRoy\">8</Geoffrey><John name=\"FitzRoy\">9</John> <Henry name=\"FitzRoy\">10</Henry> <Osbert name=\"Gifford\">11</Osbert> <Eudes name=\"FitzRoy\">12</Eudes> <Bartholomew name=\"FitzRoy\">13</Bartholomew> <Maud name=\"FitzRoy\" title=\"Abbess of Barking\">14</Maud><Isabel name=\"FitzRoy\">15</Isabel><Philip name=\"FitzRoy\">16</Philip></Unknown> </John></MVR>";
+  
+  VRContainer firstTestList;
+
+  firstTestList.push_back("/MVR/John");
+  firstTestList.push_back("/MVR/John/Isabella");
+  firstTestList.push_back("/MVR/John/Joan/Oliver");
+  firstTestList.push_back("/MVR/John/Joan/Richard");
+  firstTestList.push_back("/MVR/John/Unknown/Bartholomew");
+  firstTestList.push_back("/MVR/John/Unknown/Eudes");
+  firstTestList.push_back("/MVR/John/Unknown/Geoffrey");
+  firstTestList.push_back("/MVR/John/Unknown/Henry");
+  firstTestList.push_back("/MVR/John/Unknown/Isabel");
+  firstTestList.push_back("/MVR/John/Unknown/John");
+  firstTestList.push_back("/MVR/John/Unknown/Maud");
+  firstTestList.push_back("/MVR/John/Unknown/Osbert");
+  firstTestList.push_back("/MVR/John/Unknown/Philip");
+
+
+
+  VRContainer secondTestList;
+
+  secondTestList.push_back("/MVR/John/Joan/Oliver");
+  secondTestList.push_back("/MVR/John/Joan/Richard");
+  secondTestList.push_back("/MVR/John/Unknown/Bartholomew");
+  secondTestList.push_back("/MVR/John/Unknown/Eudes");
+  secondTestList.push_back("/MVR/John/Unknown/Geoffrey");
+  secondTestList.push_back("/MVR/John/Unknown/Henry");
+  secondTestList.push_back("/MVR/John/Unknown/Isabel");
+  secondTestList.push_back("/MVR/John/Unknown/John");
+  secondTestList.push_back("/MVR/John/Unknown/Maud");
+  secondTestList.push_back("/MVR/John/Unknown/Philip");
+
+  VRContainer thirdTestList;
+
+  thirdTestList.push_back("/MVR/John/Isabella/Eleanor");
+  thirdTestList.push_back("/MVR/John/Unknown/Geoffrey");
+  thirdTestList.push_back("/MVR/John/Unknown/Philip");
+  
+  int out = 0;
+
+  LOOP {
+
+    VRDataIndex *index = new VRDataIndex();
+
+    int i = 0;
+    index->addSerializedValue(xmlteststring, VRDataIndex::rootNameSpace);
+    
+    VRContainer firstList = index->selectByAttribute("name", "*");
+
+    VRContainer::iterator jt = firstTestList.begin(); 
+    for (VRContainer::iterator it = firstList.begin();
+         it != firstList.end(); it++) {
+
+      if (jt == firstTestList.end()) {
+
+        std::cout << "mismatch:" << *it << std::endl;
+        return 1;
+      }
+
+      std::cout << (*it) << (*jt);
+
+      if ((*it).compare(*jt++) != 0) out++;
+      
+      std::cout << out << std::endl;
+
+    }
+    
+    VRContainer secondList = index->selectByAttribute("name", "FitzRoy");
+
+    VRContainer::iterator kt = secondTestList.begin(); 
+    for (VRContainer::iterator it = secondList.begin();
+         it != secondList.end(); it++) {
+
+      std::cout << (*it) << (*kt);
+        
+      if ((*it).compare(*kt++) != 0) out++;
+      
+      std::cout << out << std::endl;
+    }
+
+    // Test selection by type.
+    VRContainer thirdList = index->selectByType(VRCORETYPE_STRING);
+        
+    jt = thirdTestList.begin();
+    for (VRContainer::iterator it = thirdList.begin();
+         it != thirdList.end(); it++) {
+
+      std::cout << (*it) << (*jt);
+        
+      if ((*it).compare(*jt++) != 0) out++;
+      
+      std::cout << out << std::endl;
+    }
+  }
+  return out;
+  
 }
 
 int testPushPopIndex() {

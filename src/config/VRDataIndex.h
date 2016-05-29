@@ -359,6 +359,12 @@ public:
                                   bool includeChildren,
                                   bool fullPath);
 
+  // Returns a list of names of objects with the given attribute.
+  VRContainer selectByAttribute(const std::string attrName,
+                                const std::string attrVal);
+  VRContainer selectByType(const VRCORETYPE_ID typeId);
+  VRContainer selectByName(const std::string inName);
+  
   // The data index has a state that can be pushed and popped.  All
   // the changes to the index made after a pushState() can be rolled
   // back by calling popState().  This works by pushing and popping

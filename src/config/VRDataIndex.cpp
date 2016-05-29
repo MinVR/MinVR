@@ -381,9 +381,78 @@ bool VRDataIndex::printXML(element* node, std::string prefix) {
 // a container (or within a namespace, pretty much the same thing),
 // just use getValue().
 std::list<std::string> VRDataIndex::getNames() {
-  std::list<std::string> outList;
+  VRContainer outList;
   for (VRDataMap::iterator it = mindex.begin(); it != mindex.end(); it++) {
     outList.push_back(it->first);
+  }
+  return outList;
+}
+
+VRContainer VRDataIndex::selectByAttribute(const std::string attrName,
+                                           const std::string attrVal) {
+  std::list<std::string> outList;
+  for (VRDataMap::iterator it = mindex.begin(); it != mindex.end(); it++) {
+    VRDatum::VRAttributeList al = it->second->getAttributeList();
+
+    // Check if attribute list has anything in it.
+    if (!al.empty()) {
+
+      // Yes? Loop through the attributes.
+      for (VRDatum::VRAttributeList::iterator jt = al.begin();
+           jt != al.end(); jt++) {
+
+        // Do we have the correct attribute?
+        if (attrName.compare(jt->first) == 0) {
+
+          // Does it match the desired value, or a wildcard?
+          if ((attrVal == "*") || (attrVal.compare(jt->second) == 0)) {
+
+            // Put the name of the datum on the list.
+            outList.push_back(it->first);
+          }
+        }
+      }
+    }
+  }
+  return outList;
+}
+
+VRContainer VRDataIndex::selectByType(const VRCORETYPE_ID typeId) {
+  
+  VRContainer outList;
+  for (VRDataMap::iterator it = mindex.begin(); it != mindex.end(); it++) {
+
+    if (typeId == it->second->getType()) {
+
+      outList.push_back(it->first);
+    }
+  }
+  return outList;
+}
+
+VRContainer VRDataIndex::selectByName(const std::string inName) {
+
+  std::vector<std::string> inNameParts = explodeName(inName);
+  VRContainer outList;
+
+  for (VRDataMap::iterator it = mindex.begin(); it != mindex.end(); it++) {
+
+    int test = 0;
+    std::vector<std::string> nameParts = explodeName(it->first);
+
+    std::vector<std::string>::iterator jt = nameParts.begin();
+    for (std::vector<std::string>::iterator it = inNameParts.begin();
+         (it != inNameParts.end()) && (jt != nameParts.end()); it++, jt++) {
+
+      std::cout << *it << "-compare->" << *jt << std::endl;
+      
+      if (!(((*it) == "*") || ((*it).compare(*jt) == 0))) test++;
+    }
+
+    if (test == 0) {
+      std::cout << "found one" << it->first << std::endl;
+      outList.push_back(it->first);
+    }
   }
   return outList;
 }
