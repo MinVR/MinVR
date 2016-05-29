@@ -409,7 +409,7 @@ public:
 
       // Add this value to the parent container, if any.
       VRContainer cValue;
-      cValue.push_back(valName);
+      cValue.push_back(explodeName(valName).back());
       std::string ns = getNameSpace(valName);
       // The parent container is the namespace minus the trailing /.
       if (ns.compare("/") != 0) addData(ns.substr(0, ns.size() - 1), cValue);

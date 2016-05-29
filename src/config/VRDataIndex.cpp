@@ -23,8 +23,11 @@ VRDataIndex::VRDataIndex()  : overwrite(1) {
   delete m;
 }
 
-std::string VRDataIndex::serialize(const std::string trimName,
+std::string VRDataIndex::serialize(const std::string name,
                                    VRDatumPtr pdata ) {
+
+  std::string trimName = getTrimName(name);
+
   // If this is not a container, just spell out the XML with the serialized
   // data inside.
   if (pdata->getType() != VRCORETYPE_CONTAINER) {
@@ -58,7 +61,7 @@ std::string VRDataIndex::serialize(const std::string trimName,
            lt != nameList.end(); lt++) {
 
         // ... recurse, and get the serialization of the member data value.
-        serialized += serialize(*lt);
+        serialized += serialize(name + "/" + *lt);
       };
 
       serialized += "</" + trimName + ">";
@@ -700,13 +703,18 @@ std::string VRDataIndex::getTrimName(const std::string valName,
 
 std::string VRDataIndex::getTrimName(const std::string valName) {
 
-
-  // This separates the valName on the slashes and puts the last
-  // part of it into trimName.
-  std::stringstream ss(valName);
   std::string trimName;
-  while (std::getline(ss, trimName, '/')) {};
+  if (valName.find('/') == std::string::npos) {
+    trimName = valName;
 
+  } else {
+ 
+    // This separates the valName on the slashes and puts the last
+    // part of it into trimName.
+    std::stringstream ss(valName);
+    while (std::getline(ss, trimName, '/')) {};
+  }
+    
   return trimName;
 }
 
@@ -716,11 +724,13 @@ std::string VRDataIndex::getTrimName(const std::string valName) {
 // like: what would be inside the first XML tag?
 std::string VRDataIndex::serialize(const std::string valName) {
 
+  if (valName == "/") throw std::runtime_error("can't serialize the whole index -- pick an object in it.");
+  
   VRDataMap::iterator it = getEntry(valName, "");
 
   if (it != mindex.end()) {
 
-    return serialize(getTrimName(it->first), it->second);
+    return serialize(it->first, it->second);
 
   } else {
 
@@ -736,7 +746,7 @@ std::string VRDataIndex::serialize(const std::string valName,
 
   if (it != mindex.end()) {
 
-    return serialize(getTrimName(it->first), it->second);
+    return serialize(it->first, it->second);
 
   } else {
 
@@ -913,10 +923,10 @@ std::string VRDataIndex::addData(const std::string valName,
 
     // Add this value to the parent container, if any.
     VRContainer cValue;
-    cValue.push_back(valName);
+    cValue.push_back(getTrimName(valName));
     std::string ns = getNameSpace(valName);
     // The parent container is the namespace minus the trailing /.
-    if (ns.compare("/") != 0) addData(ns.substr(0,ns.size()-1), cValue);
+    if (ns.compare("/") != 0) addData(ns.substr(0,ns.size() - 1), cValue);
     
   } else {
     // Add value to existing container.
@@ -938,7 +948,7 @@ std::string VRDataIndex::addNameSpace(const std::string valName) {
 
     // Add this value to the parent container, if any.
     VRContainer cValue;
-    cValue.push_back(valName);
+    cValue.push_back(getTrimName(valName));
     std::string ns = getNameSpace(valName);
     // The parent container is the namespace minus the trailing /.
     if (ns.compare("/") != 0) addData(ns.substr(0,ns.size()-1), cValue);
