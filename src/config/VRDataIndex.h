@@ -65,11 +65,11 @@ Author(s) of Significant Updates/Modifications to the File:
 /// list of the (absolute) names of the objects it contains.  Here are
 /// some possible names of containers:
 ///
-///       /peter   which might contain  /peter/harold
-///                                     /peter/norma
-///                                and  /peter/flora
+///       /peter   which might contain  harold
+///                                     norma
+///                                and  flora
 ///
-/// Note that the container lists the absolute name.  When the
+/// Note that the container lists the relative name.  When the
 /// container is serialized, the serialized version contains only the
 /// relative names.
 ///
@@ -322,7 +322,7 @@ public:
   std::string serialize(const std::string valName);
   std::string serialize(const std::string valName,
                         const std::string nameSpace);
-  std::string serialize(const std::string trimName, VRDatumPtr pdata);
+  std::string serialize(const std::string name, VRDatumPtr pdata);
 
   // Takes a serialized bit of data and incorporates it into the data
   // index.
