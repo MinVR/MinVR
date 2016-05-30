@@ -372,7 +372,10 @@ public:
   VRContainer selectByName(const std::string inName);
 
   // Implements a 'copynode' element in the config file, that copies a node
-  // and all its contents
+  // and all its contents.  Use it like this:
+  //    <targetname copynode="sourcename"/>
+  // This will create an entry in the resulting data index with the
+  // targetname linked to the *same* VRDatumPtr object as sourcename.
   bool copyNodes();
   bool duplicateNode(const std::string fullSourceName,
                      const std::string fullTargetName) {
