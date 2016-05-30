@@ -328,7 +328,13 @@ public:
   // index.
   std::string addSerializedValue(const std::string serializedData);
   std::string addSerializedValue(const std::string serializedData,
-                                const std::string nameSpace);
+                                 const std::string nameSpace);
+  // This one is just for testing and should usually be ignored.  The
+  // boolean variable controls whether copynode attributes are
+  // expanded by invoking copyNodes().
+  std::string addSerializedValue(const std::string serializedData,
+                                 const std::string nameSpace,
+                                 const bool expand);
 
   // Related.
   VRInt deserializeInt(const char* valueString);
@@ -364,6 +370,16 @@ public:
                                 const std::string attrVal);
   VRContainer selectByType(const VRCORETYPE_ID typeId);
   VRContainer selectByName(const std::string inName);
+
+  // Implements a 'copynode' element in the config file, that copies a node
+  // and all its contents
+  bool copyNodes();
+  bool duplicateNode(const std::string fullSourceName,
+                     const std::string fullTargetName) {
+    return duplicateNode(fullSourceName, fullTargetName, 0);
+  }
+  bool duplicateNode(const std::string fullSourceName,
+                     const std::string fullTargetName, int depthLimit);
   
   // The data index has a state that can be pushed and popped.  All
   // the changes to the index made after a pushState() can be rolled

@@ -762,7 +762,13 @@ std::string VRDataIndex::addSerializedValue(const std::string serializedData) {
 }
 
 std::string VRDataIndex::addSerializedValue(const std::string serializedData,
-                                           const std::string nameSpace) {
+                                            const std::string nameSpace) {
+  return addSerializedValue(serializedData, nameSpace, true);
+}
+
+std::string VRDataIndex::addSerializedValue(const std::string serializedData,
+                                            const std::string nameSpace,
+                                            const bool expand) {
 
   Cxml *xml = new Cxml();
   xml->parse_string((char*)serializedData.c_str());
@@ -781,6 +787,11 @@ std::string VRDataIndex::addSerializedValue(const std::string serializedData,
   }
 
   delete xml;
+
+  // If there are nodes in the tree with a 'copynode' attribute,
+  // resolve them.
+  if (expand) copyNodes();
+  
   return out;
 }
 
@@ -1036,4 +1047,90 @@ std::string VRDataIndex::printStructure(const std::string itemName, const int li
   return outBuffer;
 }
 
+// A recursive function that will copy a node as well as its children.
+bool VRDataIndex::duplicateNode(const std::string fullSourceName,
+                                const std::string fullTargetName,
+                                int depthLimit) {
 
+  // This is an easy way to make a disaster, so we have a recursion
+  // limit.  It's possible this should be adjustable, but not sure of
+  // a use case where the plausible depthLimit would exceed 10.
+  if (depthLimit > 10)
+    throw std::runtime_error("Too deep a recursion -- did you set up a circular reference?");
+
+  // Find source node, fail if it does not exist.
+  VRDataMap::iterator sourceEntry = getEntry(fullSourceName);
+  if (sourceEntry == mindex.end())
+    throw std::runtime_error("Can't find the source node: " + fullSourceName);
+  
+  VRDatumPtr sourceNode = sourceEntry->second;
+  VRDataMap::iterator targetEntry = getEntry(fullTargetName);
+
+  // Does this name already exist?
+  if (targetEntry != mindex.end()) {
+
+    // Yes.  Make the copy.
+    targetEntry->second = sourceNode;
+  } else {
+
+    // No. Make an entry in the index, linked to the sourceNode.
+    mindex.insert(VRDataMap::value_type(fullTargetName, sourceNode));
+    
+  }
+
+  // If this is a container, recurse into the children, and copy them, too.
+  if (sourceNode->getType() == VRCORETYPE_CONTAINER) {
+
+    VRContainer childrenToCopy = sourceNode->getValue();
+
+    // If there are no children, go home.
+    if (childrenToCopy.empty()) return true;
+
+    // Otherwise copy them, too.
+    for (VRContainer::iterator jt = childrenToCopy.begin();
+         jt != childrenToCopy.end(); jt++) 
+      duplicateNode(fullSourceName + "/" + *jt,
+                    fullTargetName + "/" + *jt,
+                    depthLimit + 1);
+  }
+  return true;
+}
+    
+
+// Implements a copy node.  Looks for nodes with a 'copynode'
+// attribute, and replaces them with a node of the given name.
+bool VRDataIndex::copyNodes() {
+
+  // Find all the nodes that need copying.
+  VRContainer copynodes = selectByAttribute("copynode", "*");
+
+  // Sift through them.
+  for (VRContainer::iterator it = copynodes.begin();
+       it != copynodes.end(); it++) {
+
+    // Get the source name.
+    std::string nameToCopy =
+      getEntry(*it)->second->getAttributeValue("copynode");
+
+    // Check to see if we have a fully specified node name to copy.
+    if (nameToCopy[0] == '/') {
+
+      // Yes: just go ahead and copy it.
+      duplicateNode(nameToCopy, *it);
+      
+    } else {
+      // No: We have only a partial name, so need to find the
+      // namespace within which to interpret it.  We will get that
+      // namespace from the full name of the copynode element.
+      std::string nameSpace = getNameSpace(*it);
+
+      // Use getEntry with the name and namespace to select the node
+      // to be copied.
+      duplicateNode(getEntry(nameToCopy, nameSpace)->first, *it);
+    }
+
+    // Then just modify the entry in mindex so that mindex[*]->second
+    // points to the found node's datum object.
+  }
+  return true;
+}
