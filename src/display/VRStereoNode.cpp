@@ -25,17 +25,17 @@ void VRStereoNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandl
 		renderState->addData("StereoFormat", "Mono");
 		renderState->addData("Eye", "Cyclops");
 		_gfxToolkit->setDrawBuffer(VRGraphicsToolkit::VRDRAWBUFFER_BACK);
-		renderRestOfGraph(renderState, renderHandler);
+		VRDisplayNode::render(renderState, renderHandler);
 	}
 	else if (_format == VRSTEREOFORMAT_QUADBUFFERED) {
 		renderState->addData("StereoFormat", "QuadBuffered");
 		renderState->addData("Eye", "Left");
 		_gfxToolkit->setDrawBuffer(VRGraphicsToolkit::VRDRAWBUFFER_BACKLEFT);
-		renderRestOfGraph(renderState, renderHandler);
+		VRDisplayNode::render(renderState, renderHandler);
 
 		renderState->addData("Eye", "Right");
 		_gfxToolkit->setDrawBuffer(VRGraphicsToolkit::VRDRAWBUFFER_BACKRIGHT);
-		renderRestOfGraph(renderState, renderHandler);
+		VRDisplayNode::render(renderState, renderHandler);
 	}
 	else if (_format == VRSTEREOFORMAT_SIDEBYSIDE) {
 		renderState->addData("StereoFormat", "SideBySide");
@@ -54,21 +54,21 @@ void VRStereoNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandl
 		}
 		renderState->addData("Eye", "Left");
 		_gfxToolkit->setViewport(VRRect(x,y,w/2,h));
-		renderRestOfGraph(renderState, renderHandler);
+		VRDisplayNode::render(renderState, renderHandler);
 
 		renderState->addData("Eye", "Right");
 		_gfxToolkit->setViewport(VRRect(x+w/2+1,y,w/2,h));
-		renderRestOfGraph(renderState, renderHandler);
+		VRDisplayNode::render(renderState, renderHandler);
 	}
 	else if (_format == VRSTEREOFORMAT_COLUMNINTERLACED) {
 		renderState->addData("StereoFormat", "ColumnInterlaced");
 		renderState->addData("Eye", "Left");
 		_gfxToolkit->disableDrawingOnEvenColumns();
-		renderRestOfGraph(renderState, renderHandler);
+		VRDisplayNode::render(renderState, renderHandler);
 
 		renderState->addData("Eye", "Right");
 		_gfxToolkit->disableDrawingOnOddColumns();
-		renderRestOfGraph(renderState, renderHandler);
+		VRDisplayNode::render(renderState, renderHandler);
 
 		_gfxToolkit->enableDrawingOnAllColumns();
 	}
@@ -76,17 +76,6 @@ void VRStereoNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandl
 
   renderState->pushState();
 }
-
-
-void VRStereoNode::renderRestOfGraph(VRDataIndex *renderState, VRRenderHandler *renderHandler) {
-	if (_children.size() == 0) {
-		renderHandler->onVRRenderScene(renderState, this);
-	}
-	else {
-		VRDisplayNode::render(renderState, renderHandler);
-	}	
-}
-
 
 VRDisplayNode* VRStereoNodeFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace)
 {

@@ -36,8 +36,6 @@ public:
 
 protected:
 
-	void renderRestOfGraph(VRDataIndex *renderState, VRRenderHandler *renderHandler);
-
 	VRGraphicsToolkit *_gfxToolkit;
 	VRStereoFormat _format;
 };

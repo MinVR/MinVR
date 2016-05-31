@@ -45,14 +45,7 @@ void VRGraphicsWindowNode::render(VRDataIndex *renderState, VRRenderHandler *ren
 	// windows should call the application programmer's context-level callback
 	renderHandler->onVRRenderContext(renderState, this);
 
-	if (_children.size() == 0) {
-		// if the window node is a leaf node, then call the onRenderScene callback		
-		renderHandler->onVRRenderScene(renderState, this);
-	}
-	else {
-		// otherwise, call render on all children, and they will call onRenderScene if they are leaves
-		VRDisplayNode::render(renderState, renderHandler);
-	}
+	VRDisplayNode::render(renderState, renderHandler);
 
 	_gfxToolkit->flushGraphics();
 

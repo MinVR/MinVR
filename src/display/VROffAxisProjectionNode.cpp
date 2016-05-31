@@ -80,12 +80,8 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
 
 	renderState->addData("ViewMatrix", viewMat);
 
-	if (_children.size() == 0) {
-		renderHandler->onVRRenderScene(renderState, this);
-	}
-	else {
-		VRDisplayNode::render(renderState, renderHandler);
-	}	
+
+	VRDisplayNode::render(renderState, renderHandler);
 
 	renderState->popState();
 }

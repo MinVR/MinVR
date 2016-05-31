@@ -24,6 +24,9 @@ void VRDisplayNode::render(VRDataIndex *renderState, VRRenderHandler *renderHand
 		for (vector<VRDisplayNode*>::iterator it = _children.begin(); it != _children.end(); it++) {
 			(*it)->render(renderState, renderHandler);
 		}
+	} else
+	{
+		renderHandler->onVRRenderScene(renderState, this);
 	}
 }
 

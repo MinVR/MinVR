@@ -29,16 +29,9 @@ void VRViewportNode::render(VRDataIndex *renderState, VRRenderHandler *renderHan
   
 	_gfxToolkit->setViewport(_rect);
 
-	if (_children.size() == 0) {
-		// if the viewport node is a leaf node, then call the onRenderScene callback		
-		renderHandler->onVRRenderScene(renderState, this);
-	}
-	else {
-		// otherwise, call render on all children, and they will call onRenderScene if they are leaves
-		VRDisplayNode::render(renderState, renderHandler);
-	}
+	VRDisplayNode::render(renderState, renderHandler);
 
-  renderState->popState();
+    renderState->popState();
 }
 
 
