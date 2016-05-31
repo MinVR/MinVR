@@ -137,7 +137,7 @@ VRGLFWWindowToolkit::swapBuffers(int windowID) {
 
 
 VRWindowToolkit*
-VRGLFWWindowToolkitFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) {
+VRGLFWWindowToolkitFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
 	VRWindowToolkit *winToolkit = new VRGLFWWindowToolkit(vrMain);
 	return winToolkit;
 }

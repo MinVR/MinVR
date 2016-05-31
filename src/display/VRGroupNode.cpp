@@ -14,10 +14,9 @@ VRGroupNode::~VRGroupNode()
 
 
 VRDisplayNode*
-VRGroupNodeFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) {
-	std::string nodeNameSpace = config->validateNameSpace(nameSpace + valName);
+VRGroupNodeFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
 
-	VRDisplayNode *node = new VRGroupNode(valName);
+	VRDisplayNode *node = new VRGroupNode(nameSpace);
 
 	return node;
 }

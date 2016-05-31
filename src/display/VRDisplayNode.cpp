@@ -57,13 +57,12 @@ void VRDisplayNode::clearChildren(bool destroyChildren) {
 	_children.clear();
 }
 
-void VRDisplayNode::createChildren(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) {
-  std::string nodeNameSpace = config->validateNameSpace(nameSpace + valName);
-  std::list<std::string> names = config->getValue(valName,nameSpace);
+void VRDisplayNode::createChildren(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
+  std::list<std::string> names = config->getValue(nameSpace);
+  std::string validatedNameSpace = config->validateNameSpace(nameSpace);
   for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
-	std::string name = it->substr(nodeNameSpace.size());
-	if (config->exists(*it, nodeNameSpace)){
-	  VRDisplayNode *child = vrMain->getFactory()->createDisplayNode(vrMain, config, name, nodeNameSpace);
+	  if (config->exists(*it, validatedNameSpace)){
+		  VRDisplayNode *child = vrMain->getFactory()->createDisplayNode(vrMain, config, config->validateNameSpace(validatedNameSpace) + *it);
 	  if (child != NULL) {
 		addChild(child);
 	  }

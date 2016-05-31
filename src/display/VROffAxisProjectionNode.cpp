@@ -101,20 +101,19 @@ VROffAxisProjectionNode::onVREvent(const std::string &eventName, VRDataIndex *ev
 
 
 VRDisplayNode*
-VROffAxisProjectionNodeFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) {
-	std::string nodeNameSpace = config->validateNameSpace(nameSpace + valName);
+VROffAxisProjectionNodeFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
 
-	VRPoint3 topLeft = config->getValue("TopLeft", nodeNameSpace);
-	VRPoint3 botLeft = config->getValue("BottomLeft", nodeNameSpace);
-	VRPoint3 topRight = config->getValue("TopRight", nodeNameSpace);
-	VRPoint3 botRight = config->getValue("BottomRight", nodeNameSpace);
-	float iod = (double)config->getValue("EyeSeparation", nodeNameSpace);
-	double nearClip = config->getValue("NearClip", nodeNameSpace);
-	double farClip = config->getValue("FarClip", nodeNameSpace);
-	std::string trackingEvent = config->getValue("HeadTrackingEvent", nodeNameSpace);
-	VRMatrix4 headMatrix = config->getValue("InitialHeadMatrix", nodeNameSpace);
+	VRPoint3 topLeft = config->getValue("TopLeft", nameSpace);
+	VRPoint3 botLeft = config->getValue("BottomLeft", nameSpace);
+	VRPoint3 topRight = config->getValue("TopRight", nameSpace);
+	VRPoint3 botRight = config->getValue("BottomRight", nameSpace);
+	float iod = (double)config->getValue("EyeSeparation", nameSpace);
+	double nearClip = config->getValue("NearClip", nameSpace);
+	double farClip = config->getValue("FarClip", nameSpace);
+	std::string trackingEvent = config->getValue("HeadTrackingEvent", nameSpace);
+	VRMatrix4 headMatrix = config->getValue("InitialHeadMatrix", nameSpace);
 
-	VROffAxisProjectionNode *node = new VROffAxisProjectionNode(valName, topLeft, botLeft, topRight, botRight, iod, trackingEvent, headMatrix, nearClip, farClip);
+	VROffAxisProjectionNode *node = new VROffAxisProjectionNode(nameSpace, topLeft, botLeft, topRight, botRight, iod, trackingEvent, headMatrix, nearClip, farClip);
 
 	vrMain->addEventHandler(node);
 

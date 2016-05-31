@@ -88,13 +88,12 @@ void VRStereoNode::renderRestOfGraph(VRDataIndex *renderState, VRRenderHandler *
 }
 
 
-VRDisplayNode* VRStereoNodeFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace)
+VRDisplayNode* VRStereoNodeFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace)
 {
-	std::string nodeNameSpace = config->validateNameSpace(nameSpace + valName);
-    
-    VRGraphicsToolkit *gfxToolkit = vrMain->getGraphicsToolkit(config->getValue("GraphicsToolkit", nodeNameSpace));
+ 
+	VRGraphicsToolkit *gfxToolkit = vrMain->getGraphicsToolkit(config->getValue("GraphicsToolkit", nameSpace));
 
-	std::string formatStr = config->getValue("StereoFormat", nodeNameSpace);
+	std::string formatStr = config->getValue("StereoFormat", nameSpace);
 	VRStereoNode::VRStereoFormat format = VRStereoNode::VRSTEREOFORMAT_MONO;
 	if (formatStr == "QuadBuffered") {
 		format = VRStereoNode::VRSTEREOFORMAT_QUADBUFFERED;
@@ -106,7 +105,7 @@ VRDisplayNode* VRStereoNodeFactory::create(VRMainInterface *vrMain, VRDataIndex 
 		format = VRStereoNode::VRSTEREOFORMAT_COLUMNINTERLACED;
 	}
 
-	VRDisplayNode *node = new VRStereoNode(valName, gfxToolkit, format);
+	VRDisplayNode *node = new VRStereoNode(nameSpace, gfxToolkit, format);
 
 	return node;
 }

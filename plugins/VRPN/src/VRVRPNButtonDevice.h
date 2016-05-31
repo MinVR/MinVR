@@ -98,7 +98,7 @@ class VRVRPNButtonDeviceFactory : public VRInputDeviceFactory {
 public:
 	VRVRPNButtonDeviceFactory():VRInputDeviceFactory("VRVRPNButtonDevice"){}
 
-	VRInputDevice* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
+	VRInputDevice* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 };
 
 

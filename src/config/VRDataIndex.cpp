@@ -420,6 +420,39 @@ VRContainer VRDataIndex::selectByAttribute(const std::string attrName,
   return outList;
 }
 
+VRContainer VRDataIndex::selectByAttribute(const std::string attrName,
+	const std::string attrVal,
+	const std::string nameSpace)
+{
+	std::string validatedNameSpace = validateNameSpace(nameSpace);
+	std::list<std::string> outList;
+	for (VRDataMap::iterator it = mindex.begin(); it != mindex.end(); it++) {
+		VRDatum::VRAttributeList al = it->second->getAttributeList();
+		if (validatedNameSpace.compare(0, getNameSpace(it->first).size(), getNameSpace(it->first)) == 0) {
+			// Check if attribute list has anything in it.
+			if (!al.empty()) {
+
+				// Yes? Loop through the attributes.
+				for (VRDatum::VRAttributeList::iterator jt = al.begin();
+					jt != al.end(); jt++) {
+
+					// Do we have the correct attribute?
+					if (attrName.compare(jt->first) == 0) {
+
+						// Does it match the desired value, or a wildcard?
+						if ((attrVal == "*") || (attrVal.compare(jt->second) == 0)) {
+
+							// Put the name of the datum on the list.
+							outList.push_back(it->first);
+						}
+					}
+				}
+			}
+		}
+	}
+	return outList;
+}
+
 VRContainer VRDataIndex::selectByType(const VRCORETYPE_ID typeId) {
   
   VRContainer outList;

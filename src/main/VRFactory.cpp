@@ -3,13 +3,13 @@
 namespace MinVR {
 
 VRDisplayNode* 
-VRFactory::createDisplayNode(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) 
+VRFactory::createDisplayNode(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) 
 {
   for (std::vector<VRDisplayNodeFactory*>::iterator it = _dispNodeFactories.begin(); it < _dispNodeFactories.end(); ++it) {
-    if((*it)->isType(displaynode, config, valName, nameSpace)){
-      VRDisplayNode *node = (*it)->create(vrMain, config, valName, nameSpace);
+    if((*it)->isType(displaynode, config, nameSpace)){
+      VRDisplayNode *node = (*it)->create(vrMain, config, nameSpace);
       if (node != NULL) {
-        node->createChildren(vrMain, config, valName, nameSpace);
+        node->createChildren(vrMain, config, nameSpace);
         return node;
       }
     }
@@ -18,11 +18,11 @@ VRFactory::createDisplayNode(VRMainInterface *vrMain, VRDataIndex *config, const
 }
 
 VRInputDevice* 
-VRFactory::createInputDevice(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace)
+VRFactory::createInputDevice(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace)
 {
   for (std::vector<VRInputDeviceFactory*>::iterator it = _inputDevFactories.begin(); it < _inputDevFactories.end(); ++it) {
-    if((*it)->isType(inputdevice, config, valName, nameSpace)){
-      VRInputDevice* dev = (*it)->create(vrMain, config, valName, nameSpace);
+    if((*it)->isType(inputdevice, config, nameSpace)){
+      VRInputDevice* dev = (*it)->create(vrMain, config, nameSpace);
       if (dev != NULL) {
         return dev;
       }
@@ -32,11 +32,11 @@ VRFactory::createInputDevice(VRMainInterface *vrMain, VRDataIndex *config, const
 }
 
 VRGraphicsToolkit* 
-VRFactory::createGraphicsToolkit(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace)
+VRFactory::createGraphicsToolkit(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace)
 {
   for (std::vector<VRGraphicsToolkitFactory*>::iterator it = _gfxToolkitFactories.begin(); it < _gfxToolkitFactories.end(); ++it) {
-    if((*it)->isType(graphicstoolkit, config, valName, nameSpace)){
-      VRGraphicsToolkit* tk = (*it)->create(vrMain, config, valName, nameSpace);
+    if((*it)->isType(graphicstoolkit, config, nameSpace)){
+      VRGraphicsToolkit* tk = (*it)->create(vrMain, config, nameSpace);
       if (tk != NULL) {
         return tk;
       }
@@ -47,11 +47,11 @@ VRFactory::createGraphicsToolkit(VRMainInterface *vrMain, VRDataIndex *config, c
 
 
 VRWindowToolkit* 
-VRFactory::createWindowToolkit(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace)
+VRFactory::createWindowToolkit(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace)
 {
   for (std::vector<VRWindowToolkitFactory*>::iterator it = _winToolkitFactories.begin(); it < _winToolkitFactories.end(); ++it) {
-    if((*it)->isType(windowtoolkit, config, valName, nameSpace)){
-      VRWindowToolkit* tk = (*it)->create(vrMain, config, valName, nameSpace);
+    if((*it)->isType(windowtoolkit, config, nameSpace)){
+      VRWindowToolkit* tk = (*it)->create(vrMain, config, nameSpace);
       if (tk != NULL) {
         return tk;
       }

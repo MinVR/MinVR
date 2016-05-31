@@ -44,18 +44,16 @@ void VRViewportNode::render(VRDataIndex *renderState, VRRenderHandler *renderHan
 
 
 
-VRDisplayNode* VRViewportNodeFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace)
+VRDisplayNode* VRViewportNodeFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace)
 {
-	std::string nodeNameSpace = config->validateNameSpace(nameSpace + valName);
-    
-    VRGraphicsToolkit *gfxToolkit = vrMain->getGraphicsToolkit(config->getValue("GraphicsToolkit", nodeNameSpace));
+	VRGraphicsToolkit *gfxToolkit = vrMain->getGraphicsToolkit(config->getValue("GraphicsToolkit", nameSpace));
 
-	int xpos = config->getValue("XPos", nodeNameSpace);
-	int ypos = config->getValue("YPos", nodeNameSpace);
-	int width = config->getValue("Width", nodeNameSpace);
-	int height = config->getValue("Height", nodeNameSpace);
+	int xpos = config->getValue("XPos", nameSpace);
+	int ypos = config->getValue("YPos", nameSpace);
+	int width = config->getValue("Width", nameSpace);
+	int height = config->getValue("Height", nameSpace);
 
-	VRDisplayNode *node = new VRViewportNode(valName, gfxToolkit, VRRect(xpos, ypos, width, height));
+	VRDisplayNode *node = new VRViewportNode(nameSpace, gfxToolkit, VRRect(xpos, ypos, width, height));
 
 	return node;
 }

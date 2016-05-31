@@ -20,7 +20,7 @@ class VRBaseFactory{
 		
 		virtual ~VRBaseFactory() {}
 
-		bool isType(NodeType factory_id, VRDataIndex *config, const std::string &valName, const std::string &nameSpace){
+		bool isType(NodeType factory_id, VRDataIndex *config, const std::string &nameSpace){
 				std::string attribute;
 				switch(factory_id){
 						case displaynode:
@@ -39,15 +39,15 @@ class VRBaseFactory{
 						break;
 					}
 				
-				if(!config->exists(valName,nameSpace)){
+				if(!config->exists(nameSpace)){
 					return false;
 				}
 				
-				if(!config->getDatum(valName,nameSpace)->hasAttribute(attribute)){
+				if(!config->getDatum(nameSpace)->hasAttribute(attribute)){
 					return false;
 				}
 				
-				std::string _type = config->getDatum(valName,nameSpace)->getAttributeValue(attribute);
+				std::string _type = config->getDatum(nameSpace)->getAttributeValue(attribute);
 				if (_type != type) {
 					// This factory cannot create the type specified
 					return false;
@@ -72,7 +72,7 @@ public:
 
   virtual ~VRDisplayNodeFactory() {}
 
-  virtual VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) = 0;
+  virtual VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) = 0;
 };
 
 
@@ -84,7 +84,7 @@ public:
 
   virtual ~VRInputDeviceFactory() {}
 
-  virtual VRInputDevice* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) = 0;
+  virtual VRInputDevice* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) = 0;
 };
 
 /**
@@ -95,7 +95,7 @@ public:
 
   virtual ~VRGraphicsToolkitFactory() {}
 
-  virtual VRGraphicsToolkit* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) = 0;
+  virtual VRGraphicsToolkit* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) = 0;
 };
 
 
@@ -107,7 +107,7 @@ public:
 
   virtual ~VRWindowToolkitFactory() {}
 
-  virtual VRWindowToolkit* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) = 0;
+  virtual VRWindowToolkit* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) = 0;
 };
 
 
@@ -123,16 +123,16 @@ public:
   virtual ~VRFactory() {}
 
   /// Creates a new display node and children from config data using the VRDisplayNode sub-factories as needed.
-  VRDisplayNode* createDisplayNode(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
+  VRDisplayNode* createDisplayNode(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 
   /// Creates a new input device from config data using the VRInputDevice sub-factories as needed.
-  VRInputDevice* createInputDevice(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
+  VRInputDevice* createInputDevice(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 
   /// Creates a new graphics toolkit from sub-factories.
-  VRGraphicsToolkit* createGraphicsToolkit(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
+  VRGraphicsToolkit* createGraphicsToolkit(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 
   /// Creates a new window toolkit from sub-factories.
-  VRWindowToolkit* createWindowToolkit(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
+  VRWindowToolkit* createWindowToolkit(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 
 
   /// Plugins call this mehod to add a new "sub-factory" to this master factory

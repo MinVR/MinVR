@@ -431,6 +431,9 @@ public:
   // Returns a list of names of objects with the given attribute.
   VRContainer selectByAttribute(const std::string attrName,
                                 const std::string attrVal);
+  VRContainer selectByAttribute(const std::string attrName,
+								const std::string attrVal,
+								const std::string nameSpace);
   VRContainer selectByType(const VRCORETYPE_ID typeId);
   VRContainer selectByName(const std::string inName);
 

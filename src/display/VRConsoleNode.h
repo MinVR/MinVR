@@ -45,7 +45,7 @@ public:
 	
 	virtual ~VRConsoleNodeFactory() {}
 
-	VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
+	VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 };
 
 } /* namespace MinVR */

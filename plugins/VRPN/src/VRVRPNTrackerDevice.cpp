@@ -218,23 +218,22 @@ void VRVRPNTrackerDevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEv
   
 
 VRInputDevice*
-VRVRPNTrackerDeviceFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) {
-  std::string devNameSpace = config->validateNameSpace(nameSpace + valName);
-    
-  std::string vrpnName = config->getValue("VRPNDeviceName", devNameSpace);
-  std::vector<std::string> eventsToGenerate = config->getValue("EventsToGenerate", devNameSpace);
-  double scale = config->getValue("TrackerUnitsToRoomUnitsScale", devNameSpace);
-  VRMatrix4 d2r = config->getValue("DeviceToRoom", devNameSpace);
+VRVRPNTrackerDeviceFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
+ 
+  std::string vrpnName = config->getValue("VRPNDeviceName", nameSpace);
+  std::vector<std::string> eventsToGenerate = config->getValue("EventsToGenerate", nameSpace);
+  double scale = config->getValue("TrackerUnitsToRoomUnitsScale", nameSpace);
+  VRMatrix4 d2r = config->getValue("DeviceToRoom", nameSpace);
   d2r = d2r.orthonormal();
-  bool wait    = ((int)config->getValue("WaitForNewReportInPoll", devNameSpace)) == 1;
-  bool convert = ((int)config->getValue("ConvertLHtoRH", devNameSpace)) == 1;
-  bool ignore  = ((int)config->getValue("IgnoreZeroes", devNameSpace)) == 1;
+  bool wait = ((int)config->getValue("WaitForNewReportInPoll", nameSpace)) == 1;
+  bool convert = ((int)config->getValue("ConvertLHtoRH", nameSpace)) == 1;
+  bool ignore = ((int)config->getValue("IgnoreZeroes", nameSpace)) == 1;
   
   
   std::vector<VRMatrix4> p2t;
   std::vector<VRMatrix4> fo;
   for (int  i = 0; i < eventsToGenerate.size(); i++) {
-    std::string trackerNameSpace = devNameSpace + eventsToGenerate[i] + "/";
+	  std::string trackerNameSpace = nameSpace + eventsToGenerate[i] + "/";
     
     VRMatrix4 m = config->getValue("PropToTracker", trackerNameSpace);
     m = m.orthonormal();
