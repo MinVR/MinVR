@@ -136,18 +136,11 @@ VRMain::initialize(int argc, char** argv)
   _config = new VRDataIndex();
   if (!_config->processXMLFile(configFile,"/")) {
   }
-
-  // IDENTIFY THE VRSETUP(S) TO CONFIGURE
-
-  if (!_config->exists("VRSetups","/MinVR/")) {
-    cerr << "VRMain Error:  No VRSetups tag found in the config file " << configFile << endl;
-    exit(1);
-  }
-  
+ 
   VRStringArray vrSetupsToStartArray;
   if (vrSetupsToStart == "") {
     // no vrSetupsToStart are specified, start all of VRSetups listed in the config file
-	std::list<std::string> names = _config->selectByAttribute("host","*");
+	std::list<std::string> names = _config->selectByAttribute("hostType","*");
 	for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
 		vrSetupsToStartArray.push_back(*it);
 	}
@@ -161,6 +154,12 @@ VRMain::initialize(int argc, char** argv)
     }
   }
   
+
+  if (vrSetupsToStartArray.empty()) {
+	  cerr << "VRMain Error:  No VRSetups to start are defined" << endl;
+	  exit(1);
+  }
+
   // This process will be the first one listed
   _name = vrSetupsToStartArray[0];
 
@@ -231,11 +230,11 @@ VRMain::initialize(int argc, char** argv)
 
   // Load plugins from the plugin directory.  This will add their factories to the master VRFactory.
  {
-	 std::list<std::string> names = _config->selectByAttribute("pluginname", "*", _name);
+	 std::list<std::string> names = _config->selectByAttribute("pluginType", "*", _name);
 	 for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
 		 if (_config->exists("PluginPath", *it)){
 			 std::string path = _config->getValue("PluginPath", *it);
-			 std::string file = _config->getDatum(*it)->getAttributeValue("pluginname");
+			 std::string file = _config->getDatum(*it)->getAttributeValue("pluginType");
 
 			 string buildType = "";
 #ifdef MinVR_DEBUG
@@ -259,8 +258,8 @@ VRMain::initialize(int argc, char** argv)
   // CONFIGURE NETWORKING:
 
   // check the type of this VRSetup, it should be either "VRServer", "VRClient", or "VRStandAlone"
-  if(_config->getDatum(_name)->hasAttribute("host")){		
-	std::string type = _config->getDatum(_name)->getAttributeValue("host");
+  if(_config->getDatum(_name)->hasAttribute("hostType")){		
+	std::string type = _config->getDatum(_name)->getAttributeValue("hostType");
 	if (type == "VRServer") {
   	  std::string port = _config->getValue("Port", _name);
   	  int numClients = _config->getValue("NumClients", _name);  	
@@ -278,7 +277,7 @@ VRMain::initialize(int argc, char** argv)
 
   // CONFIGURE INPUT DEVICES:
   {
-    std::list<std::string> names = _config->selectByAttribute("inputdevice", "*", _name);
+    std::list<std::string> names = _config->selectByAttribute("inputdeviceType", "*", _name);
 	for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
 	  // create a new input device for each one in the list
 	  VRInputDevice *dev = _factory->createInputDevice(this, _config, *it);
@@ -286,20 +285,20 @@ VRMain::initialize(int argc, char** argv)
 	   _inputDevices.push_back(dev);
 	  }
 	  else{
-		  std::cerr << "Problem creating inputdevice: " << *it << " with inputdevice=" << _config->getDatum(*it)->getAttributeValue("inputdevice") << std::endl;
+		  std::cerr << "Problem creating inputdevice: " << *it << " with inputdeviceType=" << _config->getDatum(*it)->getAttributeValue("inputdeviceType") << std::endl;
       }
 	}
   }
 
-  // CONFIGURE WINDOW TOOLKITS
+  // CONFIGURE WINDOWS
   {
-	  std::list<std::string> names = _config->selectByAttribute("window", "*", _name);
+	  std::list<std::string> names = _config->selectByAttribute("windowType", "*", _name);
 	  for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
-		  // CONFIGURE GRAPHICS TOOLKITS
+		  // CONFIGURE WINDOW TOOLKIT
 		  {   
 			  int counttk = 0;
 			  std::string usedToolkit;
-			  std::list<std::string> namestk = _config->selectByAttribute("graphicstoolkit", "*", *it);
+			  std::list<std::string> namestk = _config->selectByAttribute("graphicstoolkitType", "*", *it);
 			  for (std::list<std::string>::reverse_iterator ittk = namestk.rbegin(); ittk != namestk.rend(); ++ittk) {
 				  // create a new graphics toolkit for each one in the list
 				  VRGraphicsToolkit *tk = _factory->createGraphicsToolkit(this, _config, *ittk);
@@ -311,7 +310,7 @@ VRMain::initialize(int argc, char** argv)
 					  }
 					  else
 					  {
-						  std::cerr << "Warning : Only 1 graphics toolkit can be defined for : " << *it << " using graphicstoolkit " << _config->getDatum(_config->validateNameSpace(*it) + "GraphicsToolkit")->getValueString() << " defined at " << usedToolkit << std::endl;
+						  std::cerr << "Warning : Only 1 graphics toolkit can be defined for : " << *it << " using graphicstoolkitType=" << _config->getDatum(_config->validateNameSpace(*it) + "GraphicsToolkit")->getValueString() << " defined at " << usedToolkit << std::endl;
 						  delete tk;
 						  break;
 					  }
@@ -330,57 +329,57 @@ VRMain::initialize(int argc, char** argv)
 
 				  }
 				  else{
-					  std::cerr << "Problem creating graphics toolkit: " << *ittk << " with graphicstoolkit=" << _config->getDatum(*ittk)->getAttributeValue("graphicstoolkit") << std::endl;
+					  std::cerr << "Problem creating graphics toolkit: " << *ittk << " with graphicstoolkit=" << _config->getDatum(*ittk)->getAttributeValue("graphicstoolkitType") << std::endl;
 				  }
 			  }
 		  }
 
-		  // CONFIGURE WINDOW TOOLKITS
-		{
-			int counttk = 0; 
-			std::string usedToolkit;
-			std::list<std::string> namestk = _config->selectByAttribute("windowtoolkit", "*", *it);	
-			for (std::list<std::string>::reverse_iterator ittk = namestk.rbegin(); ittk != namestk.rend(); ++ittk) {
-				// create a new graphics toolkit for each one in the list
-				VRWindowToolkit *tk = _factory->createWindowToolkit(this, _config, *ittk);
-				if (tk) {
-					if (counttk == 0){
-						_config->addData(_config->validateNameSpace(*it) + "WindowToolkit", tk->getName());
-						usedToolkit = *ittk;
-						counttk++;
-					} 
-					else
-					{
-						std::cerr << "Warning : Only 1 window toolkit can be defined for: " << *it << " using windowtoolkit " << _config->getDatum(_config->validateNameSpace(*it) + "WindowToolkit")->getValueString() << " defined at " << usedToolkit << std::endl;
-						delete tk;
-						break;
-					}
-
-					bool exists = false;
-					for (std::vector<VRWindowToolkit*>::iterator it_winToolkits = _winToolkits.begin(); it_winToolkits != _winToolkits.end(); ++it_winToolkits)
-					{
-						if ((*it_winToolkits)->getName() == tk->getName())
+			  // CONFIGURE GRAPHICS TOOLKIT
+			{
+				int counttk = 0; 
+				std::string usedToolkit;
+				std::list<std::string> namestk = _config->selectByAttribute("windowtoolkitType", "*", *it);	
+				for (std::list<std::string>::reverse_iterator ittk = namestk.rbegin(); ittk != namestk.rend(); ++ittk) {
+					// create a new graphics toolkit for each one in the list
+					VRWindowToolkit *tk = _factory->createWindowToolkit(this, _config, *ittk);
+					if (tk) {
+						if (counttk == 0){
+							_config->addData(_config->validateNameSpace(*it) + "WindowToolkit", tk->getName());
+							usedToolkit = *ittk;
+							counttk++;
+						} 
+						else
 						{
-							exists = true;
+							std::cerr << "Warning : Only 1 window toolkit can be defined for: " << *it << " using windowtoolkitType=" << _config->getDatum(_config->validateNameSpace(*it) + "WindowToolkit")->getValueString() << " defined at " << usedToolkit << std::endl;
 							delete tk;
 							break;
 						}
+
+						bool exists = false;
+						for (std::vector<VRWindowToolkit*>::iterator it_winToolkits = _winToolkits.begin(); it_winToolkits != _winToolkits.end(); ++it_winToolkits)
+						{
+							if ((*it_winToolkits)->getName() == tk->getName())
+							{
+								exists = true;
+								delete tk;
+								break;
+							}
+						}
+						if (!exists) _winToolkits.push_back(tk);
 					}
-					if (!exists) _winToolkits.push_back(tk);
-				}
-				else{
-					std::cerr << "Problem creating window toolkit: " << *ittk << " with windowtoolkit=" << _config->getDatum(*it)->getAttributeValue("windowtoolkit") << std::endl;
+					else{
+						std::cerr << "Problem creating window toolkit: " << *ittk << " with windowtoolkitType=" << _config->getDatum(*it)->getAttributeValue("windowtoolkitType") << std::endl;
+					}
 				}
 			}
-		}
 
-		  // create a new graphics toolkit for each one in the list
+		  // add window to the displayGraph list
 		  VRDisplayNode *dg = _factory->createDisplayNode(this, _config, *it);
 		  if (dg) {
 			  _displayGraphs.push_back(dg);
 		  }
 		  else{
-			  std::cerr << "Problem creating window: " << *it << " with window=" << _config->getDatum(*it)->getAttributeValue("window") << std::endl;
+			  std::cerr << "Problem creating window: " << *it << " with windowType=" << _config->getDatum(*it)->getAttributeValue("windowType") << std::endl;
 		  }
 	  }
   }

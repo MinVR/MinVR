@@ -24,19 +24,19 @@ class VRBaseFactory{
 				std::string attribute;
 				switch(factory_id){
 						case window:
-							attribute = "window";
+							attribute = "windowType";
 						break;
 						case displaynode:
-							attribute = "displaynode";
+							attribute = "displaynodeType";
 						break;
 						case inputdevice:
-							attribute = "inputdevice";
+							attribute = "inputdeviceType";
 						break;
 						case graphicstoolkit:
-							attribute = "graphicstoolkit";
+							attribute = "graphicstoolkitType";
 						break;
 						case windowtoolkit:
-							attribute = "windowtoolkit";
+							attribute = "windowtoolkitType";
 						break;
 						default:
 						break;

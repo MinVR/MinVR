@@ -1,19 +1,18 @@
 
 <MinVR>
 
-	<GLFWPlugin pluginname="MinVR_GLFW">
+	<GLFWPlugin pluginType="MinVR_GLFW">
     <PluginPath>../../build/plugins/MinVR_GLFW</PluginPath>
 	</GLFWPlugin>
-	<OpenGLPlugin pluginname="MinVR_OpenGL">
+	<OpenGLPlugin pluginType="MinVR_OpenGL">
     <PluginPath>../../build/plugins/MinVR_OpenGL</PluginPath>
 	</OpenGLPlugin>
 
-
 	<VRSetups>
-		<Desktop host="VRStandAlone">
-      <RootNode window="VRGraphicsWindowNode">
-        <GLFWToolkit windowtoolkit="VRGLFWWindowToolkit"/>
-        <OpenGLToolkit graphicstoolkit="VROpenGLGraphicsToolkit"/>
+		<Desktop hostType="VRStandAlone">
+      <RootNode windowType="VRGraphicsWindowNode">
+        <GLFWToolkit windowtoolkitType="VRGLFWWindowToolkit"/>
+        <OpenGLToolkit graphicstoolkitType="VROpenGLGraphicsToolkit"/>
 
         <Border>0</Border>
 				<Caption>Desktop</Caption>
@@ -27,6 +26,7 @@
 				<YPos>100</YPos>
 				<Width>640</Width>
 				<Height>400</Height>
+        
 			</RootNode>
 		</Desktop>
 	</VRSetups>

@@ -1,49 +1,36 @@
 <MinVR>
-	<VRSetups>
-		<Desktop host="VRStandAlone">	
-			<VRPlugins>
-				<GLFWPlugin pluginname="MinVR_GLFW">
-					<Path>../../build/plugins/MinVR_GLFW</Path>
-				</GLFWPlugin>
-				<OpenGLPlugin pluginlibfile="../../build/plugins/MinVR_OpenGL/lib/libMinVR_OpenGLd.so">a</OpenGLPlugin>
-			</VRPlugins>
-			<VRWindowToolkits>
-				<GLFWToolkit windowtoolkit="VRGLFWWindowToolkit">a</GLFWToolkit>
-			</VRWindowToolkits>
-		</Desktop>
-	</VRSetups>
+	<Desktop hostType="VRStandAlone"/>
 
-	<VRGraphicsToolkits>
-		<OpenGLToolkit graphicstoolkit="VROpenGLGraphicsToolkit">a</OpenGLToolkit>
-	</VRGraphicsToolkits>
+  <GLFWPlugin pluginType="MinVR_GLFW">
+    <PluginPath>../../build/plugins/MinVR_GLFW</PluginPath>
+  </GLFWPlugin>
+  <OpenGLPlugin pluginType="MinVR_OpenGL">
+    <PluginPath>../../build/plugins/MinVR_OpenGL</PluginPath>
+  </OpenGLPlugin>
 
 	<Border>0</Border>
 	<Caption>Desktop</Caption>
 	<QuadBuffered>0</QuadBuffered>
 	<GPUAffinity>None</GPUAffinity>
-	<WindowToolkit>VRGLFWWindowToolkit</WindowToolkit>
-	<GraphicsToolkit>VROpenGLGraphicsToolkit</GraphicsToolkit>
 	<StereoFormat>SideBySide</StereoFormat>
 
-	<VRDisplayGraph>
-		<RootNode displaynode="VRGraphicsWindowNode">
-		  <MyStereoNode displaynode="VRStereoNode">
-			  <MyProjectionNode displaynode="VROffAxisProjectionNode">
-				<TopLeft type="doublearray">-4,4,-4</TopLeft>
-				<TopRight type="doublearray">4,4,-4</TopRight>
-				<BottomLeft type="doublearray">-4,-4,-4</BottomLeft>
-				<BottomRight type="doublearray">4,-4,-4</BottomRight>
-			  <InitialHeadMatrix type="doublearray">1,0,0,2, 0,1,0,2, 0,0,1,4, 0,0,0,1</InitialHeadMatrix>
-			  <EyeSeparation>0.203</EyeSeparation>
-			  <NearClip>0.01</NearClip>
-			  <FarClip>100.0</FarClip>
-			  <HeadTrackingEvent>Head_Move</HeadTrackingEvent>
-			</MyProjectionNode>
-		  </MyStereoNode>
-		  <XPos>0</XPos>
-		  <YPos>0</YPos>
-		  <Width>1280</Width>
-		  <Height>640</Height>
-		</RootNode>
-	</VRDisplayGraph>
+	<RootNode windowType="VRGraphicsWindowNode" windowtoolkitType="VRGLFWWindowToolkit" graphicstoolkitType="VROpenGLGraphicsToolkit">
+		<MyStereoNode displaynodeType="VRStereoNode">
+			<MyProjectionNode displaynodeType="VROffAxisProjectionNode">
+			<TopLeft type="doublearray">-4,4,-4</TopLeft>
+			<TopRight type="doublearray">4,4,-4</TopRight>
+			<BottomLeft type="doublearray">-4,-4,-4</BottomLeft>
+			<BottomRight type="doublearray">4,-4,-4</BottomRight>
+			<InitialHeadMatrix type="doublearray">1,0,0,2, 0,1,0,2, 0,0,1,4, 0,0,0,1</InitialHeadMatrix>
+			<EyeSeparation>0.203</EyeSeparation>
+			<NearClip>0.01</NearClip>
+			<FarClip>100.0</FarClip>
+			<HeadTrackingEvent>Head_Move</HeadTrackingEvent>
+		</MyProjectionNode>
+		</MyStereoNode>
+		<XPos>100</XPos>
+		<YPos>100</YPos>
+		<Width>1280</Width>
+		<Height>640</Height>
+	</RootNode>
 </MinVR>
