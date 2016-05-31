@@ -11,13 +11,11 @@
 
 	<VRSetups>
 		<Desktop host="VRStandAlone">
-		  <GLFWToolkit windowtoolkit="VRGLFWWindowToolkit">a</GLFWToolkit>
-			<OpenGLToolkit graphicstoolkit="VROpenGLGraphicsToolkit">a</OpenGLToolkit>
-			
-			<RootNode window="VRGraphicsWindowNode">
-				<WindowToolkit>VRGLFWWindowToolkit</WindowToolkit>
-				<GraphicsToolkit>VROpenGLGraphicsToolkit</GraphicsToolkit>
-				<Border>0</Border>
+      <RootNode window="VRGraphicsWindowNode">
+        <GLFWToolkit windowtoolkit="VRGLFWWindowToolkit"/>
+        <OpenGLToolkit graphicstoolkit="VROpenGLGraphicsToolkit"/>
+
+        <Border>0</Border>
 				<Caption>Desktop</Caption>
 				<QuadBuffered>0</QuadBuffered>
 				<GPUAffinity>None</GPUAffinity>
