@@ -12,7 +12,7 @@ namespace MinVR {
   
 class VRMain;
 
-enum NodeType { displaynode, inputdevice, graphicstoolkit, windowtoolkit };
+enum NodeType { window, displaynode, inputdevice, graphicstoolkit, windowtoolkit };
 
 class VRBaseFactory{
 	public:
@@ -23,6 +23,9 @@ class VRBaseFactory{
 		bool isType(NodeType factory_id, VRDataIndex *config, const std::string &nameSpace){
 				std::string attribute;
 				switch(factory_id){
+						case window:
+							attribute = "window";
+						break;
 						case displaynode:
 							attribute = "displaynode";
 						break;

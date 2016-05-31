@@ -58,7 +58,7 @@ protected:
 
 
   
-VRMain::VRMain() : _initialized(false), _config(NULL), _net(NULL), _factory(NULL), _pluginMgr(NULL), _displayGraph(NULL)
+VRMain::VRMain() : _initialized(false), _config(NULL), _net(NULL), _factory(NULL), _pluginMgr(NULL)
 {
   _factory = new VRFactory();
   
@@ -80,8 +80,20 @@ VRMain::~VRMain()
   	delete _config;
   }
 
-  if (_displayGraph) {
-  	delete _displayGraph;
+  if (!_inputDevices.empty()) {
+	  for (std::vector<VRInputDevice*>::iterator it = _inputDevices.begin(); it != _inputDevices.end(); ++it) delete *it;
+  }
+
+  if (!_gfxToolkits.empty()) {
+	  for (std::vector<VRGraphicsToolkit*>::iterator it = _gfxToolkits.begin(); it != _gfxToolkits.end(); ++it) delete *it;
+  }
+
+  if (!_winToolkits.empty()) {
+	  for (std::vector<VRWindowToolkit*>::iterator it = _winToolkits.begin(); it != _winToolkits.end(); ++it) delete *it;
+  }
+
+  if (!_displayGraphs.empty()) {
+	  for (std::vector<VRDisplayNode*>::iterator it = _displayGraphs.begin(); it != _displayGraphs.end(); ++it) delete *it;
   }
 
   if (_factory) {
@@ -310,17 +322,19 @@ VRMain::initialize(int argc, char** argv)
     }
   }
 
-  // CONFIGURE THE DISPLAY GRAPH:
-  if (_config->exists("VRDisplayGraph", _name)) {
-	std::string displayGraphNameSpace = _config->getName("VRDisplayGraph", _name);
-    std::list<std::string> names = _config->getValue(displayGraphNameSpace);
-    displayGraphNameSpace = displayGraphNameSpace + '/';
-	for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
-		_displayGraph = _factory->createDisplayNode(this, _config, displayGraphNameSpace + *it);
-	}
-	if (_displayGraph == NULL) {
-			std::cerr << "Problem creating display graph: " << displayGraphNameSpace << std::endl;	
-	}
+  // CONFIGURE WINDOW TOOLKITS
+  {
+	  std::list<std::string> names = _config->selectByAttribute("window", "*", _name);
+	  for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
+		  // create a new graphics toolkit for each one in the list
+		  VRDisplayNode *dg = _factory->createDisplayNode(this, _config, *it);
+		  if (dg) {
+			  _displayGraphs.push_back(dg);
+		  }
+		  else{
+			  std::cerr << "Problem creating window: " << *it << " with window=" << _config->getDatum(*it)->getAttributeValue("window") << std::endl;
+		  }
+	  }
   }
 
   _initialized = true;
@@ -380,16 +394,16 @@ VRMain::renderOnAllDisplays()
 
   VRDataIndex renderState;
 
-  if (_displayGraph != NULL) {
+  if (!_displayGraphs.empty()) {
     VRCompositeRenderHandler compositeHandler(_renderHandlers);
-    _displayGraph->render(&renderState, &compositeHandler);
+	for (std::vector<VRDisplayNode*>::iterator it = _displayGraphs.begin(); it != _displayGraphs.end(); ++it) (*it)->render(&renderState, &compositeHandler);
  
     // TODO: Advanced: if you are really trying to optimize performance, this 
     // is where you might want to add an idle callback.  Here, it's
     // possible that the CPU is idle, but the GPU is still processing
     // graphics comamnds.
 
-    _displayGraph->waitForRenderToComplete(&renderState);
+	for (std::vector<VRDisplayNode*>::iterator it = _displayGraphs.begin(); it != _displayGraphs.end(); ++it) (*it)->waitForRenderToComplete(&renderState);
   }
 
   // SYNCHRONIZATION POINT #2: When this function returns we know that
@@ -400,8 +414,8 @@ VRMain::renderOnAllDisplays()
     _net->syncSwapBuffersAcrossAllNodes();
   }
 
-  if (_displayGraph != NULL) {
-    _displayGraph->displayFinishedRendering(&renderState);
+  if (!_displayGraphs.empty()) {
+	  for (std::vector<VRDisplayNode*>::iterator it = _displayGraphs.begin(); it != _displayGraphs.end(); ++it) (*it)->displayFinishedRendering(&renderState);
   }
 }
 
