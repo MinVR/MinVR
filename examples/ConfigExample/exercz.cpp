@@ -276,7 +276,10 @@ int main(int argc, char** argv) {
         std::cout << "nameSpace: " << nameSpace << " c: " << c.front() << std::endl;
 
         if (elems[2].compare("container") == 0) {
-          index->addNameSpace(nameSpace + elems[1]);
+
+          VRContainer Empty;
+          index->addData(nameSpace + elems[1], Empty);
+          
         } else {
 
           if (elems[2].compare("int") == 0) {

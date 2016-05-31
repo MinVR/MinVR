@@ -508,14 +508,15 @@ int testEscapedChars() {
   VRDataIndex *n = setupIndex();
 
   // Escaping the comma separator between Gamma and Delta.
-  std::string inString = "Alpha,Beta,Gamma\\,Delta,Epsilon";
+  std::string inString = "<mimi type=\"stringarray\" separator=\",\">Alpha,Beta,Gamma\\,Delta,Epsilon</mimi>";
+  n->addSerializedValue(inString, VRDataIndex::rootNameSpace);
   
   int lctr;
   int N = 1000;
 
   LOOP {
   
-    VRStringArray s = n->deserializeStringArray(inString.c_str(), ',');
+    VRStringArray s = n->getValue("/mimi");
 
     out += (s.size() == 4) ? 0 : 1;
 
@@ -531,7 +532,11 @@ int testEscapedChars() {
 
   return out;
 }
-    
+
+// Test the linking of one node to another with the linknode
+// attribute.  There are three linknodes in the xmlstring, one with an
+// absolute link name, and the other two using the same name, but
+// differing in the context in which the name is interpreted.
 int testLinkNode() {
   std::string xmlstring =  "<MVR><!-- some of the illegitimate children of John I --><John name=\"Lackland\"><Isabella name=\"Angouleme\"><Henry seq=\"III\" title=\"King\">1</Henry> <Izzie linknode=\"Isabella\"/><Richard title=\"Earl of Cornwall\">2</Richard> <Joan title=\"Queen Consort\">3</Joan> <Isabella title=\"Queen Consort\">4</Isabella> <Eleanor type=\"string\">5</Eleanor> </Isabella><Joan title=\"Lady of Wales\"><Richard name=\"FitzRoy\">6</Richard><Izzie linknode=\"Isabella\"/><Oliver name=\"FitzRoy\">7</Oliver></Joan> <Unknown><Geoffrey name=\"FitzRoy\" type=\"string\">8</Geoffrey><John name=\"FitzRoy\">9</John> <Henry name=\"FitzRoy\">10</Henry> <Osbert name=\"Gifford\">11</Osbert><Thomas linknode=\"/MVR/John/Joan\"/> <Eudes name=\"FitzRoy\">12</Eudes> <Bartholomew name=\"FitzRoy\">13</Bartholomew> <Maud name=\"FitzRoy\" title=\"Abbess of Barking\">14</Maud><Isabella name=\"FitzRoy\">15</Isabella><Philip name=\"FitzRoy\" type=\"string\">16</Philip></Unknown> </John></MVR>";
   
@@ -545,10 +550,10 @@ int testLinkNode() {
   // Look for all the nodes with 'linknode' attributes, and evaluate.
   index->linkNodes();
 
-  // To prove that the copied nodes are actually the same node.  We
+  // To prove that the linked nodes are actually the same node.  We
   // adjust one node's attributes to make sure it appears at the copy,
   // as well.
-  index->getEntry("/MVR/John/Unknown/Thomas")->second->setAttributeValue("letter", "alpha");
+  index->getDatum("/MVR/John/Unknown/Thomas")->setAttributeValue("letter", "alpha");
 
   // std::cout << index->printStructure() << std::endl;
   

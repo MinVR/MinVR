@@ -41,6 +41,7 @@ Author(s) of Significant Updates/Modifications to the File:
 /// The XML parser used here is based on the "Simple C++ XML Parser"
 /// from the CodeProject article by "BratilaRazvan", 2010.
 /// see: http:///www.codeproject.com/Articles/111243/Simple-Cplusplus-XML-Parser
+/// (It does not support entities, or CDATA declarations.)
 ///
 ///
 /// To use the system, it is useful to understand the concept of a
@@ -56,13 +57,13 @@ Author(s) of Significant Updates/Modifications to the File:
 ///
 ///       /perry/
 ///       /freida/mary/
-///       /     <- the root namespace that all VRDataIndex objects have.
+///       /     <- the root namespace to which all VRDataIndex objects belong.
 ///       /homer/henry/martha/
 ///
 /// A container object is simply an object that "contains" other
 /// values.  Those objects can be primitive VRDatum objects, or they
 /// can also be containers themselves.  The container object contains a
-/// list of the (absolute) names of the objects it contains.  Here are
+/// list of the (relative) names of the objects it contains.  Here are
 /// some possible names of containers:
 ///
 ///       /peter   which might contain  harold
@@ -217,17 +218,8 @@ private:
   // Another utility, meant to pull a name apart on the slashes.
   std::vector<std::string> explodeName(const std::string fullName);
 
-public:
   // Returns the namespace, derived from a long, fully-qualified, name.
   std::string getNameSpace(const std::string fullName);
-
-public:
-  VRDataIndex();
-
-  // Some constants that may be useful to users of this API.
-  static std::string rootNameSpace;
-  
-  void setOverwrite(const int inVal) { overwrite = inVal; }
 
   // Tries to guess a data type from the ASCII representation.
   VRCORETYPE_ID inferType(const std::string valueString);
@@ -240,7 +232,7 @@ public:
                            VRCORETYPE_ID type,
                            const char* valueString,
                            const char separator);
-  
+
   // Finds an entry in the data index, given a name and
   // namespace. Note that the name might be in a senior namespace to
   // the one specified.  That is, if you have a value called flora,
@@ -260,83 +252,9 @@ public:
                                      const std::string nameSpace);
   VRDataMap::iterator getEntry(const std::string valName);
 
-  // Returns the fully qualified name of the value.
-  std::string getName(const std::string valName,
-                      const std::string nameSpace);
-
-  // Returns a pointer to the value with a given name (and namespace)
-  VRDatumPtr getDatum(const std::string valName);
-  VRDatumPtr getDatum(const std::string valName,
-                      const std::string nameSpace);
-
-  // The return type VRAnyCoreType is a wrapper that can hold any of the
-  // VRCoreTypes.  VRAnyCoreType can be cast to any of the VRCoreTypes. So,
-  // common usage examples for this function are:
-  //
-  //   VRInt i = dataIndex->getValue("MyInteger");
-  //   VRDouble d = dataIndex->getValue("MyDouble");
-  //
-  // The same syntax can be used with custom classes that are not VRCoreTypes if
-  // they implement a constructor that takes a VRAnyCoreType as an argument.
-  // All of the classes in VRMath do this.  So, we can write:
-  //
-  //   VRVector3 v = dataIndex->getValue("MyHeading");
-  //
-  // You can also do something like this to return the specialized
-  // VRDatum object which you might want for some other nefarious
-  // reason.  I can't think of a use case for this, but you might.
-  //
-  //   VRDatumInt pobj = index->getValue(name, nameSpace).intVal()
-  //   int p = index->getValue(name, nameSpace).intVal()->getValueInt()
-  //
-  VRAnyCoreType getValue(const std::string valName) {
-    return getDatum(valName)->getValue();
-  }
-  VRAnyCoreType getValue(const std::string valName,
-                         const std::string nameSpace) {
-    return getDatum(valName, nameSpace)->getValue();
-  }
-
-  bool exists(const std::string valName, const std::string nameSpace)
-  {
-	  return getEntry(valName, nameSpace) != mindex.end();
-  }
-
-  VRCORETYPE_ID getType(const std::string valName) {
-    return getDatum(valName)->getType();
-  }
-  VRCORETYPE_ID getType(const std::string valName,
-                        const std::string nameSpace) {
-    return getDatum(valName, nameSpace)->getType();
-  }
-
-  std::string getTypeString(const std::string valName) {
-    return getDatum(valName)->getDescription();
-  }
-  std::string getTypeString(const std::string valName,
-                            const std::string nameSpace) {
-    return getDatum(valName, nameSpace)->getDescription();
-  }
-
-  // This is the name, type, value, expressed as an XML fragment.
-  std::string serialize(const std::string valName);
-  std::string serialize(const std::string valName,
-                        const std::string nameSpace);
-  std::string serialize(const std::string name, VRDatumPtr pdata);
-
-  // Takes a serialized bit of data and incorporates it into the data
-  // index.
-  std::string addSerializedValue(const std::string serializedData);
-  std::string addSerializedValue(const std::string serializedData,
-                                 const std::string nameSpace);
-  // This one is just for testing and should usually be ignored.  The
-  // boolean variable controls whether linknode attributes are
-  // expanded by invoking linkNodes().
-  std::string addSerializedValue(const std::string serializedData,
-                                 const std::string nameSpace,
-                                 const bool expand);
-
-  // Related.
+  // These functions read an XML-encoded string and produce the value
+  // implied.  There is no deserializeContainer, since that's what
+  // walkXML does.
   VRInt deserializeInt(const char* valueString);
   VRDouble deserializeDouble(const char* valueString);
   VRString deserializeString(const char* valueString);
@@ -346,51 +264,14 @@ public:
   VRStringArray deserializeStringArray(const char* valueString,
                                        const char separator);
 
-  // Don't need a deserializeContainer. That happens in walkXML().
-  // Process the contents of a given XML file into the index.
-  bool processXMLFile(const std::string fileName, const std::string nameSpace);
-  bool processXMLFile(const std::string fileName);
-
-  // Use this one at the start of a program.  It reads a file if
-  // there's a file, and reads from a pipe if there's a pipe.
-  bool processXML(const std::string arg);
-  
-  // Returns a list of all the names in the map.  Note this really is
-  // a list of strings, not a VRContainer.  (No difference, really,
-  // but we want to keep them semantically separate.)
-  std::list<std::string> getNames();
-  // Returns a list of all the names in the map within the specified namespace.
-  std::list<std::string> getNames(const std::string containerName);
-  std::list<std::string> getNames(const std::string &containerName,
-                                  bool includeChildren,
-                                  bool fullPath);
-
-  // Returns a list of names of objects with the given attribute.
-  VRContainer selectByAttribute(const std::string attrName,
-                                const std::string attrVal);
-  VRContainer selectByType(const VRCORETYPE_ID typeId);
-  VRContainer selectByName(const std::string inName);
-
-  // Implements a 'linknode' element in the config file, that copies a node
-  // and all its contents.  Use it like this:
-  //    <targetname linknode="sourcename"/>
-  // This will create an entry in the resulting data index with the
-  // targetname linked to the *same* VRDatumPtr object as sourcename.
-  bool linkNodes();
-  bool linkNode(const std::string fullSourceName,
-                const std::string fullTargetName) {
-    return linkNode(fullSourceName, fullTargetName, 0);
-  }
+  // This method creates a link from one node to another.  It has a
+  // depth limit to guard against recursive definitions.
   bool linkNode(const std::string fullSourceName,
                 const std::string fullTargetName, int depthLimit);
-  
-  // The data index has a state that can be pushed and popped.  All
-  // the changes to the index made after a pushState() can be rolled
-  // back by calling popState().  This works by pushing and popping
-  // values for each of the VRDatum objects represented in the index.
-  void pushState();
-  void popState();
 
+  // These are specialized set methods.  They seem a little unhip, but
+  // it's because I find this easier than remembering how to spell the
+  // pointers and casts.
   void setValueSpecialized(VRDatumPtr p, VRInt value) {
     p.intVal()->setValue(value);
   }
@@ -444,13 +325,135 @@ public:
     }
     return valName;
   }
-  
-  // These are specialized set methods.  They seem a little unhip, but
-  // it's because I find this easier than remembering how to spell the
-  // pointers and casts.
 
-  /// Step 6 of the data type addition instructions in VRDatum.h is
-  /// to add a specialized method here.
+
+public:
+  VRDataIndex();
+
+  // Some constants that may be useful to users of this API.
+  static std::string rootNameSpace;
+  
+  void setOverwrite(const int inVal) { overwrite = inVal; }
+
+  // Returns the fully qualified name of the value.
+  std::string getName(const std::string valName,
+                      const std::string nameSpace);
+
+  // Returns a pointer to the value with a given name (and namespace)
+  VRDatumPtr getDatum(const std::string valName);
+  VRDatumPtr getDatum(const std::string valName,
+                      const std::string nameSpace);
+
+  // The return type VRAnyCoreType is a wrapper that can hold any of the
+  // VRCoreTypes.  VRAnyCoreType can be cast to any of the VRCoreTypes. So,
+  // common usage examples for this function are:
+  //
+  //   VRInt i = dataIndex->getValue("MyInteger");
+  //   VRDouble d = dataIndex->getValue("MyDouble");
+  //
+  // The same syntax can be used with custom classes that are not VRCoreTypes if
+  // they implement a constructor that takes a VRAnyCoreType as an argument.
+  // All of the classes in VRMath do this.  So, we can write:
+  //
+  //   VRVector3 v = dataIndex->getValue("MyHeading");
+  //
+  // You can also do something like this to return the specialized
+  // VRDatum object which you might want for some other nefarious
+  // reason.  I can't think of a use case for this, but you might.
+  //
+  //   VRDatumInt pobj = index->getValue(name, nameSpace).intVal()
+  //   int p = index->getValue(name, nameSpace).intVal()->getValueInt()
+  //
+  VRAnyCoreType getValue(const std::string valName) {
+    return getDatum(valName)->getValue();
+  }
+  VRAnyCoreType getValue(const std::string valName,
+                         const std::string nameSpace) {
+    return getDatum(valName, nameSpace)->getValue();
+  }
+
+  bool exists(const std::string valName, const std::string nameSpace) {
+	  return getEntry(valName, nameSpace) != mindex.end();
+  }
+
+  VRCORETYPE_ID getType(const std::string valName) {
+    return getDatum(valName)->getType();
+  }
+  VRCORETYPE_ID getType(const std::string valName,
+                        const std::string nameSpace) {
+    return getDatum(valName, nameSpace)->getType();
+  }
+
+  std::string getTypeString(const std::string valName) {
+    return getDatum(valName)->getDescription();
+  }
+  std::string getTypeString(const std::string valName,
+                            const std::string nameSpace) {
+    return getDatum(valName, nameSpace)->getDescription();
+  }
+
+  // This is the name, type, value, expressed as an XML fragment.
+  std::string serialize(const std::string valName);
+  std::string serialize(const std::string valName,
+                        const std::string nameSpace);
+  std::string serialize(const std::string name, VRDatumPtr pdata);
+
+  // Takes a serialized bit of data and incorporates it into the data
+  // index.
+  std::string addSerializedValue(const std::string serializedData);
+  std::string addSerializedValue(const std::string serializedData,
+                                 const std::string nameSpace);
+  // This one is just for testing and should usually be ignored.  The
+  // boolean variable controls whether linknode attributes are
+  // expanded by invoking linkNodes().
+  std::string addSerializedValue(const std::string serializedData,
+                                 const std::string nameSpace,
+                                 const bool expand);
+
+  // Process the contents of a given XML file into the index.
+  bool processXMLFile(const std::string fileName, const std::string nameSpace);
+  bool processXMLFile(const std::string fileName);
+
+  // Use this one at the start of a program.  It reads a file if
+  // there's a file, and reads from a pipe if there's a pipe.
+  bool processXML(const std::string arg);
+  
+  // Returns a list of all the names in the map.  Note this really is
+  // a list of strings, not a VRContainer.  (No difference, really,
+  // but we want to keep them semantically separate.)
+  std::list<std::string> getNames();
+
+  // Returns a list of names of objects with the given attribute.
+  VRContainer selectByAttribute(const std::string attrName,
+                                const std::string attrVal);
+  VRContainer selectByType(const VRCORETYPE_ID typeId);
+  VRContainer selectByName(const std::string inName);
+
+  // Implements a 'linknode' element in the config file, that copies a node
+  // and all its contents.  Use it like this:
+  //    <targetname linknode="sourcename"/>
+  // This will create an entry in the resulting data index with the
+  // targetname linked to the *same* VRDatumPtr object as sourcename.
+  bool linkNode(const std::string fullSourceName,
+                const std::string fullTargetName) {
+    return linkNode(fullSourceName, fullTargetName, 0);
+  }
+
+  // This does a global resolution of all linknodes definitions.  It
+  // is typically done as part of the process of incorporating some
+  // XML, left public here for experimentation.
+  bool linkNodes();
+  
+  // The data index has a state that can be pushed and popped.  All
+  // the changes to the index made after a pushState() can be rolled
+  // back by calling popState().  This works by pushing and popping
+  // values for each of the VRDatum objects represented in the index.
+  void pushState();
+  void popState();
+
+  /// Step 6 of the data type addition instructions in VRDatum.h is to
+  /// add a specialized method here, and to the setValue methods in
+  /// the private section.
   std::string addData(const std::string valName, VRInt value);
   std::string addData(const std::string valName, VRDouble value);
   std::string addData(const std::string valName, VRString value);
@@ -465,7 +468,7 @@ public:
   // given name.
   std::string addData(const std::string valName, VRContainer value);
 
-  // Same thing, but with a separate namespace arg, for convenience.
+  // A template for adding data.
   template<typename T>
   std::string addData(const std::string valName,
                       const std::string nameSpace, T value) {
@@ -479,10 +482,7 @@ public:
       return addData(validateNameSpace(nameSpace) + valName, value);
     }
   }
-
-  // Adds a namespace.  Or, more simply, adds an empty container.
-  std::string addNameSpace(const std::string valName);
-
+  
   // These versions of addData can be used by subclasses of the basic
   // VRDatum types.  If those types include a constructor from the basic
   // type, then this is all they need to be stored into an index and

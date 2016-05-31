@@ -612,17 +612,21 @@ VRDataIndex::VRDataMap::iterator
 VRDataIndex::getEntry(const std::string valName,
                       const std::string nameSpace) {
 
-  // If the input valName begins with a "/", it is a fully qualified
-  // name already.  That is, it already includes the name space.
-
   VRDataMap::iterator outIt;
 
+  // If the input valName begins with a "/", it is a fully qualified
+  // name already.  That is, it already includes the name space.
   if (valName[0] == '/') {
 
     return mindex.find(valName);
 
   } else {
-
+    // If you're asking whether a fully-qualified name works, you want
+    // a yes or no.  If you're asking about a relative name, you will
+    // accept a name defined in a namespace senior to the one
+    // specified.  So answering the query for an entry to match the
+    // given name requires looking through the senior namespaces.
+    
     std::string validatedNameSpace = validateNameSpace(nameSpace);
     
     // Separate the name space into its constituent elements.
@@ -667,7 +671,7 @@ std::string VRDataIndex::getName(const std::string valName,
   VRDataMap::iterator p = getEntry(valName, nameSpace);
 
   if (p == mindex.end()) {
-    return std::string("");
+    throw std::runtime_error("Never heard of " + valName + " in namespace " + nameSpace);
   } else {
     return p->first;
   }
@@ -675,11 +679,12 @@ std::string VRDataIndex::getName(const std::string valName,
 
 // Returns the data object for this name.
 VRDatumPtr VRDataIndex::getDatum(const std::string valName) {
-  VRDataMap::const_iterator it = mindex.find(valName);
-  if (it == mindex.end()) {
-    throw std::runtime_error(std::string("never heard of ") + valName);
+  VRDataMap::const_iterator p = mindex.find(valName);
+
+  if (p == mindex.end()) {
+    throw std::runtime_error("Never heard of " + valName);
   } else {
-    return it->second;
+    return p->second;
   }
 }
 
@@ -689,7 +694,7 @@ VRDatumPtr VRDataIndex::getDatum(const std::string valName,
   VRDataMap::iterator p = getEntry(valName, nameSpace);
 
   if (p == mindex.end()) {
-    throw std::runtime_error(std::string("never heard of ") + valName + std::string(" in any of the namespaces: ") + nameSpace);
+    throw std::runtime_error("Never heard of " + valName + " in namespace " + nameSpace);
   } else {
     return p->second;
   }
@@ -718,13 +723,15 @@ std::string VRDataIndex::getTrimName(const std::string valName) {
   return trimName;
 }
 
+// Returns the string representation of a name/value pair in the data index.
 // Notice that you can't serialize the whole index.  That is, you need
 // to specify an object or container to serialize, and "/" is not such
 // a thing. To see why not, imagine what the serialization would look
 // like: what would be inside the first XML tag?
 std::string VRDataIndex::serialize(const std::string valName) {
 
-  if (valName == "/") throw std::runtime_error("can't serialize the whole index -- pick an object in it.");
+  if (valName == "/")
+    throw std::runtime_error("Can't serialize the whole index -- pick an object in it.");
   
   VRDataMap::iterator it = getEntry(valName, "");
 
@@ -734,7 +741,7 @@ std::string VRDataIndex::serialize(const std::string valName) {
 
   } else {
 
-    throw std::runtime_error(std::string("never heard of ") + valName);
+    throw std::runtime_error(std::string("Never heard of ") + valName);
 
   }
 }
@@ -750,7 +757,7 @@ std::string VRDataIndex::serialize(const std::string valName,
 
   } else {
 
-    throw std::runtime_error(std::string("never heard of ") + valName + std::string(" in the namespace: ") + nameSpace);
+    throw std::runtime_error("Never heard of " + valName + " in the namespace: " + nameSpace);
 
   }
 }
@@ -942,28 +949,6 @@ std::string VRDataIndex::addData(const std::string valName,
   } else {
     // Add value to existing container.
     it->second.containerVal()->addToValue(value);
-  }
-  return valName;
-}
-
-std::string VRDataIndex::addNameSpace(const std::string valName) {
-
-  // Check if the name is already in use.
-  VRDataMap::iterator it = mindex.find(valName);
-  if (it == mindex.end()) {
-
-    VRContainer v ;
-    VRDatumPtr obj = factory.CreateVRDatum(VRCORETYPE_CONTAINER, &v);
-    //std::cout << "added " << obj.containerVal()->getDatum() << std::endl;
-    mindex.insert(VRDataMap::value_type(valName, obj));
-
-    // Add this value to the parent container, if any.
-    VRContainer cValue;
-    cValue.push_back(getTrimName(valName));
-    std::string ns = getNameSpace(valName);
-    // The parent container is the namespace minus the trailing /.
-    if (ns.compare("/") != 0) addData(ns.substr(0,ns.size()-1), cValue);
-
   }
   return valName;
 }

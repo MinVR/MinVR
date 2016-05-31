@@ -1,5 +1,9 @@
 # Create some test programs from the source files in this directory.
 
+## Run these tests with 'make test' or 'ctest -VV' if you want to see
+## the output.  You can also do 'ctest --memcheck' that runs the tests
+## with some memory checking enabled.
+
 set (dataindextests datum index queue)
 # The numbers here correspond to 'case' statements in the respective
 # test program.  See, e.g., datumtest.cpp

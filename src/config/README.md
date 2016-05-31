@@ -2,7 +2,9 @@ This directory contains the VRDataIndex code, a dynamically-typed
 system for naming and storing data within the strongly-typed world of
 C++.  In terms of its treatment of types, it's sort of like an
 interpreter -- think Javascript, or Lisp, depending on your age --
-without the procedural commands of a language.
+without the procedural commands of a language.  It is meant to be
+data-centric; the whole point is managing a large and possibly
+repetitive collection of name/value pairs.
 
 The data index supports namespaces, allowing it to be used for
 configuring complicated systems, with lots of individual entities.
@@ -67,20 +69,20 @@ same as asking for its value:
 
   std::cout << "Cora is a " << in->getTypeString("/cora")
   if (in->getType("/cora") == VRCORETYPE_CONTAINER) ...
-  std::list<std::string> nameList = in->getValue("/cora")
+  VRContainer nameList = in->getValue("/cora")
 
 This last returns a list like this:
 
-  /cora/nora
-  /cora/flora
-  /cora/dora
-  /cora/leonora
+  nora
+  flora
+  dora
+  leonora
 
-That is, the names within a container are absolute names, defined
-relative to "/", the root namespace.  The cora object defines a
-"namespace" called "/cora/".  You can think of a namespace as a
-container name with a slash appended.  All the accessor functions
-have a namespace version to use:
+That is, the names within a container are relative names, that must be
+interpreted using the namespace of the container that holds them.  The
+cora object defines a "namespace" called "/cora/".  You can think of a
+namespace as a container name with a slash appended.  All the accessor
+functions have a namespace version to use:
 
   int m = in->getValue("nora", "/cora/");
   std::string s = in->getTypeString("cora", "/")
@@ -90,7 +92,8 @@ namespace "/cora/".  This becomes interesting in cases where there is
 no such variable.  If you ask for a value called "lora" that does not
 exist in "/cora/", the system will not return an error before checking
 to see if there is a "lora" in any of the namespaces senior to
-"/cora/".  In this case, there was a "/lora" defined, and so that
+"/cora/".  In this case, we'll assume there was a "/lora" defined -- a
+value defined in the "/" root namespace, and senior to "/cora/".  That
 value is returned.
 
   in->addData("/lora", 37);
@@ -98,8 +101,7 @@ value is returned.
 
 You can override those values:
 
-  in->addData("/lora", 37);
-  in->addData("/cora/lora", 14);
+  in->addData("/cora/lora", 14);   <-- adding a value in the /cora/ namespace
   int n = in->getValue("lora", "/cora/");  ==>  n = 14
 
 
