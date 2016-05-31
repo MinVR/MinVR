@@ -788,9 +788,9 @@ std::string VRDataIndex::addSerializedValue(const std::string serializedData,
 
   delete xml;
 
-  // If there are nodes in the tree with a 'copynode' attribute,
+  // If there are nodes in the tree with a 'linknode' attribute,
   // resolve them.
-  if (expand) copyNodes();
+  if (expand) linkNodes();
   
   return out;
 }
@@ -1048,9 +1048,9 @@ std::string VRDataIndex::printStructure(const std::string itemName, const int li
 }
 
 // A recursive function that will copy a node as well as its children.
-bool VRDataIndex::duplicateNode(const std::string fullSourceName,
-                                const std::string fullTargetName,
-                                int depthLimit) {
+bool VRDataIndex::linkNode(const std::string fullSourceName,
+                           const std::string fullTargetName,
+                           int depthLimit) {
 
   // This is an easy way to make a disaster, so we have a recursion
   // limit.  It's possible this should be adjustable, but not sure of
@@ -1089,44 +1089,45 @@ bool VRDataIndex::duplicateNode(const std::string fullSourceName,
     // Otherwise copy them, too.
     for (VRContainer::iterator jt = childrenToCopy.begin();
          jt != childrenToCopy.end(); jt++) 
-      duplicateNode(fullSourceName + "/" + *jt,
-                    fullTargetName + "/" + *jt,
-                    depthLimit + 1);
+      linkNode(fullSourceName + "/" + *jt,
+               fullTargetName + "/" + *jt,
+               depthLimit + 1);
   }
   return true;
 }
     
 
-// Implements a copy node.  Looks for nodes with a 'copynode'
-// attribute, and replaces them with a node of the given name.
-bool VRDataIndex::copyNodes() {
+// Implements a global link node operation.  That is, it looks for
+// nodes with a 'linknode' attribute, and replaces them with a link to
+// the node of the given name.
+bool VRDataIndex::linkNodes() {
 
   // Find all the nodes that need copying.
-  VRContainer copynodes = selectByAttribute("copynode", "*");
+  VRContainer linknodes = selectByAttribute("linknode", "*");
 
   // Sift through them.
-  for (VRContainer::iterator it = copynodes.begin();
-       it != copynodes.end(); it++) {
+  for (VRContainer::iterator it = linknodes.begin();
+       it != linknodes.end(); it++) {
 
     // Get the source name.
     std::string nameToCopy =
-      getEntry(*it)->second->getAttributeValue("copynode");
+      getEntry(*it)->second->getAttributeValue("linknode");
 
     // Check to see if we have a fully specified node name to copy.
     if (nameToCopy[0] == '/') {
 
       // Yes: just go ahead and copy it.
-      duplicateNode(nameToCopy, *it);
+      linkNode(nameToCopy, *it);
       
     } else {
       // No: We have only a partial name, so need to find the
       // namespace within which to interpret it.  We will get that
-      // namespace from the full name of the copynode element.
+      // namespace from the full name of the linknode element.
       std::string nameSpace = getNameSpace(*it);
 
       // Use getEntry with the name and namespace to select the node
       // to be copied.
-      duplicateNode(getEntry(nameToCopy, nameSpace)->first, *it);
+      linkNode(getEntry(nameToCopy, nameSpace)->first, *it);
     }
 
     // Then just modify the entry in mindex so that mindex[*]->second
