@@ -33,8 +33,10 @@ public:
 	virtual std::string getType() { return "VRStereoNode"; }
 
 	virtual void render(VRDataIndex *renderState, VRRenderHandler *renderHandler);
+	virtual void createChildren(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 
 protected:
+	void renderOneEye(VRDataIndex *renderState, VRRenderHandler *renderHandler);
 
 	VRGraphicsToolkit *_gfxToolkit;
 	VRStereoFormat _format;

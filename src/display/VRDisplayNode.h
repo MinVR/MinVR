@@ -63,7 +63,7 @@ public:
 	void clearChildren(bool destroyChildren = false);
 
 	/// Creates the children of the node
-	void createChildren(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
+	virtual void createChildren(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 
 protected:
 	std::vector<VRDisplayNode*> _children;
