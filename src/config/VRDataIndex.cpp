@@ -253,14 +253,14 @@ std::string VRDataIndex::walkXML(element* node, std::string nameSpace) {
     int firstChar = valueString.find_first_not_of(" \t\r\n");
     int lastChar = valueString.find_last_not_of(" \t\r\n");
 
-    if (firstChar >= 0) {
-      if (lastChar >= 0) {
-        valueString = valueString.substr(firstChar, (1 + lastChar - firstChar));
-      } else {
-        valueString = valueString.substr(firstChar);
-      }
+    if ((firstChar >= 0) && (lastChar >= 0)) {
+
+      valueString = valueString.substr(firstChar, (1 + lastChar - firstChar));
+
     } else {
-      valueString = valueString.substr(0, valueString.size() - lastChar);
+
+      valueString = "";
+      typeId = VRCORETYPE_CONTAINER;
     }
   }
 
