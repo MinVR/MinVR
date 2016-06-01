@@ -1,6 +1,8 @@
 <MinVR>
-  <Desktop hostType="VRStandAlone"/>
-
+  <Desktop hostType="VRStandAlone">
+    <DisplayGraph linknode="/MinVR/MyDisplayGraph/RootNode"/>
+  </Desktop>
+  
   <PluginPath>../../build/plugins</PluginPath>
   <GLFWPlugin pluginType="MinVR_GLFW"/>
   <OpenGLPlugin pluginType="MinVR_OpenGL"/>
@@ -11,23 +13,25 @@
   <GPUAffinity>None</GPUAffinity>
   <StereoFormat>SideBySide</StereoFormat>
 
-  <RootNode windowType="VRGraphicsWindowNode" windowtoolkitType="VRGLFWWindowToolkit" graphicstoolkitType="VROpenGLGraphicsToolkit">
-    <MyStereoNode displaynodeType="VRStereoNode">
-      <MyProjectionNode displaynodeType="VROffAxisProjectionNode">
-        <TopLeft type="doublearray">-4,4,-4</TopLeft>
-        <TopRight type="doublearray">4,4,-4</TopRight>
-        <BottomLeft type="doublearray">-4,-4,-4</BottomLeft>
-        <BottomRight type="doublearray">4,-4,-4</BottomRight>
-        <InitialHeadMatrix type="doublearray">1,0,0,2, 0,1,0,2, 0,0,1,4, 0,0,0,1</InitialHeadMatrix>
-        <EyeSeparation>0.203</EyeSeparation>
-        <NearClip>0.01</NearClip>
-        <FarClip>100.0</FarClip>
-        <HeadTrackingEvent>Head_Move</HeadTrackingEvent>
-      </MyProjectionNode>
-    </MyStereoNode>
-    <XPos>100</XPos>
-    <YPos>100</YPos>
-    <Width>1280</Width>
-    <Height>640</Height>
-  </RootNode>
+  <MyDisplayGraph>
+    <RootNode windowType="VRGraphicsWindowNode" windowtoolkitType="VRGLFWWindowToolkit" graphicstoolkitType="VROpenGLGraphicsToolkit">
+      <MyStereoNode displaynodeType="VRStereoNode">
+        <MyProjectionNode displaynodeType="VROffAxisProjectionNode">
+          <TopLeft type="doublearray">-4,4,-4</TopLeft>
+          <TopRight type="doublearray">4,4,-4</TopRight>
+          <BottomLeft type="doublearray">-4,-4,-4</BottomLeft>
+          <BottomRight type="doublearray">4,-4,-4</BottomRight>
+          <InitialHeadMatrix type="doublearray">1,0,0,2, 0,1,0,2, 0,0,1,4, 0,0,0,1</InitialHeadMatrix>
+          <EyeSeparation>0.203</EyeSeparation>
+          <NearClip>0.01</NearClip>
+          <FarClip>100.0</FarClip>
+          <HeadTrackingEvent>Head_Move</HeadTrackingEvent>
+        </MyProjectionNode>
+      </MyStereoNode>
+      <XPos>100</XPos>
+      <YPos>100</YPos>
+      <Width>1280</Width>
+      <Height>640</Height>
+    </RootNode>
+  </MyDisplayGraph>
 </MinVR>
