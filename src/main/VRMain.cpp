@@ -235,6 +235,7 @@ VRMain::initialize(int argc, char** argv)
 		 if (_config->exists("PluginPath", *it)){
 			 std::string path = _config->getValue("PluginPath", *it);
 			 std::string file = _config->getDatum(*it)->getAttributeValue("pluginType");
+			 path = path + "/" + file;
 
 			 string buildType = "";
 #ifdef MinVR_DEBUG

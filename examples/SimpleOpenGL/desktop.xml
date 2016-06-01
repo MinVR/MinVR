@@ -1,12 +1,8 @@
 
 <MinVR>
-
-	<GLFWPlugin pluginType="MinVR_GLFW">
-    <PluginPath>../../build/plugins/MinVR_GLFW</PluginPath>
-	</GLFWPlugin>
-	<OpenGLPlugin pluginType="MinVR_OpenGL">
-    <PluginPath>../../build/plugins/MinVR_OpenGL</PluginPath>
-	</OpenGLPlugin>
+  <PluginPath>../../build/plugins</PluginPath>
+	<GLFWPlugin pluginType="MinVR_GLFW"/>
+	<OpenGLPlugin pluginType="MinVR_OpenGL"/>
 
 	<VRSetups>
 		<Desktop hostType="VRStandAlone">
