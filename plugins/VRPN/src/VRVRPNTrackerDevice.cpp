@@ -233,12 +233,11 @@ VRVRPNTrackerDeviceFactory::create(VRMainInterface *vrMain, VRDataIndex *config,
   std::vector<VRMatrix4> p2t;
   std::vector<VRMatrix4> fo;
   for (int  i = 0; i < eventsToGenerate.size(); i++) {
-	  std::string trackerNameSpace = nameSpace + eventsToGenerate[i] + "/";
+	  std::string trackerNameSpace = config->validateNameSpace(nameSpace) + eventsToGenerate[i] + "/";
     
     VRMatrix4 m = config->getValue("PropToTracker", trackerNameSpace);
     m = m.orthonormal();
     p2t.push_back(m);
-    
     m = config->getValue("FinalOffset", trackerNameSpace);
     m = m.orthonormal();
     fo.push_back(m);
