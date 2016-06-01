@@ -9,7 +9,7 @@
   <ServerIP>localhost</ServerIP>
 
   <CaveServer hostType="VRServer">
-    <NumClients>4</NumClients>
+    <NumClients>1</NumClients>
     <VRPNPlugin pluginType="MinVR_VRPN"/>
     <!-- Common to all three Optitrack virtual devices -->
     <ConvertLHtoRH>0</ConvertLHtoRH>
@@ -56,7 +56,7 @@
     </BlueStylusBtns>
   </CaveServer>
   
-  <MyClients>
+  <MyClient hostType="VRClient">
     <!-- Common to all clients -->
     <GLFWToolkit windowtoolkitType="VRGLFWWindowToolkit"/>
     <OpenGLToolkit graphicstoolkitType="VROpenGLGraphicsToolkit"/>
@@ -77,48 +77,46 @@
     <Width>1280</Width>
     <Height>1300</Height>
 
-    <FrontWall hostType="VRClient">
+    <WindowNodeFront windowType="VRGraphicsWindowNode">
       <XPos>4240</XPos>
       <TopLeft type="doublearray">-4,4,-4</TopLeft>
       <TopRight type="doublearray">4,4,-4</TopRight>
       <BottomLeft type="doublearray">-4,-4,-4</BottomLeft>
       <BottomRight type="doublearray">4,-4,-4</BottomRight>
-      <DisplayGraph linknode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
-    </FrontWall>
-    <Floor hostType="VRClient">
+      <DisplayGraph linknode="/MinVR/MyClient/MyStereoNode/StereoNode"/>
+    </WindowNodeFront>
+    <WindowNodeFloor windowType="VRGraphicsWindowNode">
       <XPos>5520</XPos>
       <TopLeft type="doublearray">-4,-4,-4</TopLeft>
       <TopRight type="doublearray">4,-4,-4</TopRight>
       <BottomLeft type="doublearray">-4,-4,4</BottomLeft>
       <BottomRight type="doublearray">4,-4,4</BottomRight>
-      <DisplayGraph linknode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
-    </Floor>
-    <LeftWall hostType="VRClient">
+      <DisplayGraph linknode="/MinVR/MyClient/MyStereoNode/StereoNode"/>
+    </WindowNodeFloor>
+    <WindowNodeLeftWall windowType="VRGraphicsWindowNode">
       <XPos>1681</XPos>
       <TopLeft type="doublearray">-4,4,4</TopLeft>
       <TopRight type="doublearray">-4,4,-4</TopRight>
       <BottomLeft type="doublearray">-4,-4,4</BottomLeft>
       <BottomRight type="doublearray">-4,-4,-4</BottomRight>
-      <DisplayGraph linknode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
-    </LeftWall>
-    <RightWall hostType="VRClient">
+      <DisplayGraph linknode="/MinVR/MyClient/MyStereoNode/StereoNode"/>
+    </WindowNodeLeftWall>
+    <WindowNodeRightWall windowType="VRGraphicsWindowNode">
       <XPos>2961</XPos>
       <TopLeft type="doublearray">4,4,-4</TopLeft>
       <TopRight type="doublearray">4,4,4</TopRight>
       <BottomLeft type="doublearray">4,-4,-4</BottomLeft>
       <BottomRight type="doublearray">4,-4,4</BottomRight>
-      <DisplayGraph linknode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
-    </RightWall>
+      <DisplayGraph linknode="/MinVR/MyClient/MyStereoNode/StereoNode"/>
+    </WindowNodeRightWall>
 
     <!-- ********************** Display Graph ********************** -->
-    <MyDisplayGraph>
-      <WindowNode windowType="VRGraphicsWindowNode">
+    <MyStereoNode>
         <StereoNode displaynodeType="VRStereoNode">
           <ProjectionNode displaynodeType="VROffAxisProjectionNode">
             <DUMMY/>
           </ProjectionNode>
         </StereoNode>
-      </WindowNode>
-    </MyDisplayGraph>
-  </MyClients> 
+    </MyStereoNode>
+  </MyClient> 
 </MinVR>
