@@ -81,7 +81,7 @@ void VRStereoNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandl
 void VRStereoNode::renderOneEye(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 {
 	if (_children.size() > 0) {
-		if (renderState->getTypeString("Eye") == "Left" || renderState->getTypeString("Eye") == "Cyclops"){
+		if (renderState->getDatum("Eye")->getValueString() == "Left" || renderState->getDatum("Eye")->getValueString() == "Cyclops"){
 			_children[0]->render(renderState, renderHandler);
 		} 
 		else
