@@ -533,8 +533,7 @@ std::string VRDataIndex::validateNameSpace(const std::string nameSpace) {
     // Otherwise look for it in the index and throw an error if
     // it isn't there.
     if (mindex.find(out.substr(0, out.size() - 1)) == mindex.end()) {
-      std::runtime_error(std::string("Can't find a namespace called ") + nameSpace);
-
+      throw std::runtime_error("Can't find a namespace called " + nameSpace);
     }
   }
 
@@ -662,6 +661,9 @@ VRDataIndex::getEntry(const std::string valName,
 VRDataIndex::VRDataMap::iterator
 VRDataIndex::getEntry(const std::string valName) {
 
+  if (valName[0] != '/')
+    throw std::runtime_error("Without a namespace, I can't find " + valName + ".");
+  
   return getEntry(valName, "");
 }
 
@@ -797,7 +799,7 @@ std::string VRDataIndex::addSerializedValue(const std::string serializedData,
 
   // If there are nodes in the tree with a 'linknode' attribute,
   // resolve them.
-  if (expand) linkNodes();
+  if (expand) { linkNodes(); linkContent(); }
   
   return out;
 }
@@ -1088,7 +1090,7 @@ bool VRDataIndex::linkNode(const std::string fullSourceName,
 bool VRDataIndex::linkNodes() {
 
   // Find all the nodes that need copying.
-  VRContainer linknodes = selectByAttribute("linknode", "*");
+  VRContainer linknodes = selectByAttribute("linkNode", "*");
 
   // Sift through them.
   for (VRContainer::iterator it = linknodes.begin();
@@ -1096,7 +1098,7 @@ bool VRDataIndex::linkNodes() {
 
     // Get the source name.
     std::string nameToCopy =
-      getEntry(*it)->second->getAttributeValue("linknode");
+      getEntry(*it)->second->getAttributeValue("linkNode");
 
     // Check to see if we have a fully specified node name to copy.
     if (nameToCopy[0] == '/') {
@@ -1117,6 +1119,56 @@ bool VRDataIndex::linkNodes() {
 
     // Then just modify the entry in mindex so that mindex[*]->second
     // points to the found node's datum object.
+  }
+  return true;
+}
+
+// Implements a global link-to-contents operation.  Looks for
+// container nodes with a 'linktocontents' attribute, and creates
+// links within that namespace to the objects in the given namespace.
+bool VRDataIndex::linkContent() {
+  
+  // Find all the containers to be replaced.
+  VRContainer targets = selectByAttribute("linkContent", "*");
+
+  // Sift through them.
+  for (VRContainer::iterator it = targets.begin(); it != targets.end(); it++) {
+
+    VRDataMap::iterator target = getEntry(*it);
+    std::string targetNameSpace = getNameSpace(target->first);
+    
+    // Is this a container node?  Hope so.
+    if (target->second->getType() != VRCORETYPE_CONTAINER)
+      throw std::runtime_error("Can only link contents of containers, and " + *it + " is not a container.");
+    VRContainer targetList = target->second->getValue();
+    if (!targetList.empty())
+      throw std::runtime_error("Can only replace empty containers. " + *it + " is not empty.");
+
+    // Identify the source name (for the namespace) and the node.
+    std::string sourceName =
+      getEntry(target->second->getAttributeValue("linkContent"),
+               targetNameSpace)->first;
+    VRDatumPtr sourceNode = getEntry(sourceName)->second;
+    if (sourceNode->getType() != VRCORETYPE_CONTAINER)
+      throw std::runtime_error("Can only link from contents of containers, and " + sourceName + " is not a container.");
+    
+    // Read the contents of the sourceNode and create a new link for
+    // each one, *inside* the target node. (Remember, it was a
+    // container.)
+    VRContainer relativeNameList = sourceNode->getValue();
+    for (VRContainer::iterator jt = relativeNameList.begin();
+         jt != relativeNameList.end(); jt++) {
+
+      linkNode(validateNameSpace(sourceName) + *jt,
+               targetNameSpace + *jt);
+    }
+    // The target node was only for holding the linkToContent
+    // attribute.  We don't have upstream links, so there is no way to
+    // know how many parents a node has.  We leave the target node in
+    // place, but remove the 'linkToContent' attribute.
+    VRDatum::VRAttributeList al = target->second->getAttributeList();
+    al.erase("linkContent");
+    target->second->setAttributeList(al);
   }
   return true;
 }

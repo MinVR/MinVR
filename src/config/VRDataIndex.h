@@ -404,7 +404,7 @@ public:
   std::string addSerializedValue(const std::string serializedData,
                                  const std::string nameSpace);
   // This one is just for testing and should usually be ignored.  The
-  // boolean variable controls whether linknode attributes are
+  // boolean variable controls whether linkNode attributes are
   // expanded by invoking linkNodes().
   std::string addSerializedValue(const std::string serializedData,
                                  const std::string nameSpace,
@@ -429,9 +429,9 @@ public:
   VRContainer selectByType(const VRCORETYPE_ID typeId);
   VRContainer selectByName(const std::string inName);
 
-  // Implements a 'linknode' element in the config file, that copies a node
+  // Implements a 'linkNode' element in the config file, that copies a node
   // and all its contents.  Use it like this:
-  //    <targetname linknode="sourcename"/>
+  //    <targetname linkNode="sourcename"/>
   // This will create an entry in the resulting data index with the
   // targetname linked to the *same* VRDatumPtr object as sourcename.
   bool linkNode(const std::string fullSourceName,
@@ -439,10 +439,16 @@ public:
     return linkNode(fullSourceName, fullTargetName, 0);
   }
 
-  // This does a global resolution of all linknodes definitions.  It
+  // This does a global resolution of all linkNodes definitions.  It
   // is typically done as part of the process of incorporating some
   // XML, left public here for experimentation.
   bool linkNodes();
+
+  // This is a roughly similar concept except that it copies the
+  // contents of one namespace into another.  Looks for container
+  // nodes with a 'linkContent' attribute and inserts into it links
+  // from the specified container.
+  bool linkContent();
   
   // The data index has a state that can be pushed and popped.  All
   // the changes to the index made after a pushState() can be rolled
