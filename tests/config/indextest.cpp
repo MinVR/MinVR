@@ -9,6 +9,7 @@ int testPushPopIndex();
 int testEscapedChars();
 int testSelections();
 int testLinkNode();
+int testLinkContent();
 
 // Make this a large number to get decent timing data.
 #define LOOP for (int loopctr = 0; loopctr < 10; loopctr++)
@@ -63,6 +64,10 @@ int indextest(int argc, char* argv[]) {
 
   case 9:
     output = testLinkNode();
+    break;
+
+  case 10:
+    output = testLinkContent();
     break;
     
   default:
@@ -560,5 +565,30 @@ int testLinkNode() {
   std::string outputstring = index->serialize("/MVR");
 
   return teststring.compare(outputstring);
+
+}
+
+int testLinkContent() {
+
+  std::string xmlstring =  "<MVR><!-- some of the illegitimate children of John I --><John name=\"Lackland\"><Isabella name=\"Angouleme\"><Henry seq=\"III\" title=\"King\">1</Henry> <Richard title=\"Earl of Cornwall\">2</Richard> <Joan title=\"Queen Consort\">3</Joan> <Isabella title=\"Queen Consort\">4</Isabella> <Eleanor type=\"string\">5</Eleanor> </Isabella><Joan title=\"Lady of Wales\"><Richard name=\"FitzRoy\">6</Richard><Oliver name=\"FitzRoy\">7</Oliver></Joan> <Unknown><Geoffrey name=\"FitzRoy\" type=\"string\">8</Geoffrey><John name=\"FitzRoy\">9</John> <Henry name=\"FitzRoy\">10</Henry> <Osbert name=\"Gifford\">11</Osbert><Thomas linkContent=\"/MVR/John/Joan\"/> <Eudes name=\"FitzRoy\">12</Eudes> <Bartholomew name=\"FitzRoy\">13</Bartholomew> <Maud name=\"FitzRoy\" title=\"Abbess of Barking\">14</Maud><Isabella name=\"FitzRoy\">15</Isabella><Philip name=\"FitzRoy\" type=\"string\">16</Philip></Unknown> </John></MVR>";
+
+ std:;string teststring = "<MVR type=\"container\"><John type=\"container\" name=\"Lackland\"><Isabella type=\"container\" name=\"Angouleme\"><Henry type=\"int\" seq=\"III\" title=\"King\">1</Henry><Richard type=\"int\" title=\"Earl of Cornwall\">2</Richard><Joan type=\"int\" title=\"Queen Consort\">3</Joan><Isabella type=\"int\" title=\"Queen Consort\">4</Isabella><Eleanor type=\"string\">5</Eleanor></Isabella><Joan type=\"container\" title=\"Lady of Wales\"><Richard type=\"int\" name=\"FitzRoy\">6</Richard><Oliver type=\"int\" name=\"FitzRoy\">7</Oliver></Joan><Unknown type=\"container\"><Richard type=\"int\" name=\"FitzRoy\">6</Richard><Oliver type=\"int\" name=\"FitzRoy\">7</Oliver><Geoffrey type=\"string\" name=\"FitzRoy\">8</Geoffrey><John type=\"int\" name=\"FitzRoy\">9</John><Henry type=\"int\" name=\"FitzRoy\">10</Henry><Osbert type=\"int\" name=\"Gifford\">11</Osbert><Eudes type=\"int\" name=\"FitzRoy\">12</Eudes><Bartholomew type=\"int\" name=\"FitzRoy\">13</Bartholomew><Maud type=\"int\" name=\"FitzRoy\" title=\"Abbess of Barking\">14</Maud><Isabella type=\"int\" name=\"FitzRoy\">15</Isabella><Philip type=\"string\" name=\"FitzRoy\">16</Philip></Unknown></John></MVR>";
+
+  
+  //  int out = 0;
+  VRDataIndex *index = new VRDataIndex();
+  index->addSerializedValue(xmlstring, VRDataIndex::rootNameSpace, false);
+
+  //  std::cout << index->printStructure() << std::endl;
+
+  // Look for all the nodes with 'linknode' attributes, and evaluate.
+  index->linkNodes(); index->linkContent();
+
+  // To prove that the copied nodes are actually the same node.  We
+  // adjust one node's attributes to make sure it appears at the copy,
+  // as well.
+  //  index->getDatum("/MVR/John/Unknown/Thomas")->setAttributeValue("letter", "alpha");
+
+  return teststring.compare(index->serialize("/MVR"));
 
 }

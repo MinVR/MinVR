@@ -799,7 +799,10 @@ std::string VRDataIndex::addSerializedValue(const std::string serializedData,
 
   // If there are nodes in the tree with a 'linknode' attribute,
   // resolve them.
-  if (expand) { linkNodes(); linkContent(); }
+  if (expand) {
+    linkNodes();
+    linkContent();
+  }
   
   return out;
 }
@@ -1065,6 +1068,9 @@ bool VRDataIndex::linkNode(const std::string fullSourceName,
     
   }
 
+  if (sourceNode->hasAttribute("linkContent"))
+    throw std::runtime_error("You really don't want to mix linkContent and linkNode, as in linking " + fullSourceName + " and " + fullTargetName + ".");
+  
   // If this is a container, recurse into the children, and copy them, too.
   if (sourceNode->getType() == VRCORETYPE_CONTAINER) {
 
@@ -1136,13 +1142,6 @@ bool VRDataIndex::linkContent() {
 
     VRDataMap::iterator target = getEntry(*it);
     std::string targetNameSpace = getNameSpace(target->first);
-    
-    // Is this a container node?  Hope so.
-    if (target->second->getType() != VRCORETYPE_CONTAINER)
-      throw std::runtime_error("Can only link contents of containers, and " + *it + " is not a container.");
-    VRContainer targetList = target->second->getValue();
-    if (!targetList.empty())
-      throw std::runtime_error("Can only replace empty containers. " + *it + " is not empty.");
 
     // Identify the source name (for the namespace) and the node.
     std::string sourceName =
@@ -1153,8 +1152,7 @@ bool VRDataIndex::linkContent() {
       throw std::runtime_error("Can only link from contents of containers, and " + sourceName + " is not a container.");
     
     // Read the contents of the sourceNode and create a new link for
-    // each one, *inside* the target node. (Remember, it was a
-    // container.)
+    // each one, in the target name space.
     VRContainer relativeNameList = sourceNode->getValue();
     for (VRContainer::iterator jt = relativeNameList.begin();
          jt != relativeNameList.end(); jt++) {
@@ -1163,12 +1161,37 @@ bool VRDataIndex::linkContent() {
                targetNameSpace + *jt);
     }
     // The target node was only for holding the linkToContent
-    // attribute.  We don't have upstream links, so there is no way to
-    // know how many parents a node has.  We leave the target node in
-    // place, but remove the 'linkToContent' attribute.
-    VRDatum::VRAttributeList al = target->second->getAttributeList();
-    al.erase("linkContent");
-    target->second->setAttributeList(al);
+    // attribute, so is not needed any more.
+
+    // Edit the parent container name list.
+    if (targetNameSpace.size() > 1) {
+
+      std::string targetParentName =
+        targetNameSpace.substr(0, targetNameSpace.size() - 1);
+
+      VRContainer oldNameList = getValue(targetParentName);
+      
+      // Construct a new list of names in the parent.
+      std::string targetName = explodeName(target->first).back();
+      // Start with the new names.
+      VRContainer newList = relativeNameList;
+
+      // Run through the old ones, and leave out the target name.
+      for (VRContainer::iterator kt = oldNameList.begin();
+           kt != oldNameList.end(); kt++) {
+        if (targetName.compare(*kt) != 0) newList.push_back(*kt);
+      }
+
+      // Replace the parent name list.
+      getDatum(targetParentName).containerVal()->setValue(newList);
+    }
+
+    // Delete the entry from the index.
+    mindex.erase(target->first);
+    // Note that you might have done something pathological with
+    // linkNode that would result in a corrupted structure after this
+    // removal.  That is, there might be another name in the index
+    // linked to this node.  Don't do that.
   }
   return true;
 }
