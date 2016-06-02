@@ -6,8 +6,8 @@
  *
  */
 
-#ifndef VROFFAXISPROJECTIONNODE_H
-#define VROFFAXISPROJECTIONNODE_H
+#ifndef VRLOOKATNODE_H
+#define VRLOOKATNODE_H
 
 #include <string>
 
@@ -20,36 +20,31 @@ namespace MinVR {
 
 /** 
  */
-class VROffAxisProjectionNode : public VRDisplayNode {
+class VRLookAtNode : public VRDisplayNode{
 public:
 
-	VROffAxisProjectionNode(const std::string &name, VRPoint3 topLeft, VRPoint3 botLeft, VRPoint3 topRight, VRPoint3 botRight,
-		 double nearClip, double farClip);
-	virtual ~VROffAxisProjectionNode();
+	VRLookAtNode(const std::string &name, VRMatrix4 initialHeadMatrix);
+	virtual ~VRLookAtNode();
 
-	virtual std::string getType() { return "VROffAxisProjectionNode"; }
+	virtual std::string getType() { return "VRLookAtNode"; }
 
 	virtual void render(VRDataIndex *renderState, VRRenderHandler *renderHandler);
 
+
 protected:
 
-	VRPoint3 _topLeft;
-	VRPoint3 _botLeft;
-	VRPoint3 _topRight;
-	VRPoint3 _botRight;
-	double _nearClip;
-	double _farClip;
+	VRMatrix4 _lookAtMatrix;
 };
 
 
 /** Small factory for creating this specific type of display node.  To be registered as a 
     "sub-factory" with the main VRFactory. 
  */
-class VROffAxisProjectionNodeFactory : public VRDisplayNodeFactory {
+class VRLookAtNodeFactory : public VRDisplayNodeFactory {
 public:
-	VROffAxisProjectionNodeFactory():VRDisplayNodeFactory("VROffAxisProjectionNode"){}
+	VRLookAtNodeFactory():VRDisplayNodeFactory("VRLookAtNode"){}
 	
-	virtual ~VROffAxisProjectionNodeFactory(){}
+	virtual ~VRLookAtNodeFactory(){}
 
 	VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 };

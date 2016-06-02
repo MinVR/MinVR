@@ -13,6 +13,8 @@
 #include <display/VROffAxisProjectionNode.h>
 #include <display/VRStereoNode.h>
 #include <display/VRViewportNode.h>
+#include <display/VRLookAtNode.h>
+#include <display/VRTrackedLookAtNode.h>
 #include <net/VRNetClient.h>
 #include <net/VRNetServer.h>
 #include <plugin/VRPluginManager.h>
@@ -69,7 +71,9 @@ VRMain::VRMain() : _initialized(false), _config(NULL), _net(NULL), _factory(NULL
   _factory->addSubFactory(new VROffAxisProjectionNodeFactory());
   _factory->addSubFactory(new VRStereoNodeFactory());
   _factory->addSubFactory(new VRViewportNodeFactory());
-  
+  _factory->addSubFactory(new VRLookAtNodeFactory());
+  _factory->addSubFactory(new VRTrackedLookAtNodeFactory());
+  _factory->addSubFactory(new VRStereoNodeFactory());
   _pluginMgr = new VRPluginManager(this);
 }
 

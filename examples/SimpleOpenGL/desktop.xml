@@ -14,10 +14,6 @@
 				<Caption>Desktop</Caption>
 				<QuadBuffered>0</QuadBuffered>
 				<GPUAffinity>None</GPUAffinity>
-				<StereoFormat>Mono</StereoFormat>
-				<NearClip>0.01</NearClip>
-				<FarClip>1000.0</FarClip>
-				<InitialHeadMatrix>1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,2,1</InitialHeadMatrix>
 				<XPos>100</XPos>
 				<YPos>100</YPos>
 				<Width>640</Width>

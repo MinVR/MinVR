@@ -71,7 +71,7 @@
     <NearClip>0.001</NearClip>
     <FarClip>500.0</FarClip>
     <HeadTrackingEvent>Head_Move</HeadTrackingEvent>
-    <InitialHeadMatrix type="doublearray">1,0,0,0, 0,1,0,2, 0,0,1,4, 0,0,0,1</InitialHeadMatrix>
+    <LookAtMatrix type="doublearray">1,0,0,0, 0,1,0,2, 0,0,1,4, 0,0,0,1</LookAtMatrix>
 
     <YPos>0</YPos>
     <Width>1280</Width>
@@ -112,11 +112,13 @@
 
     <!-- ********************** Display Graph ********************** -->
     <MyStereoNode>
+      <HeadTracker displayNode="VRHeadTrackedNode">
         <StereoNode displaynodeType="VRStereoNode">
           <ProjectionNode displaynodeType="VROffAxisProjectionNode">
             <DUMMY/>
           </ProjectionNode>
         </StereoNode>
+      </HeadTracker>
     </MyStereoNode>
   </MyClient> 
 </MinVR>

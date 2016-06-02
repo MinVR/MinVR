@@ -6,12 +6,13 @@
  *
  */
 
-#ifndef VROFFAXISPROJECTIONNODE_H
-#define VROFFAXISPROJECTIONNODE_H
+#ifndef VRTRACKEDLOOKATNODE_H
+#define VRTRACKEDLOOKATNODE_H
 
 #include <string>
 
 #include <display/VRDisplayNode.h>
+#include <main/VREventHandler.h>
 #include <main/VRFactory.h>
 #include <math/VRMath.h>
 
@@ -20,36 +21,33 @@ namespace MinVR {
 
 /** 
  */
-class VROffAxisProjectionNode : public VRDisplayNode {
+class VRTrackedLookAtNode : public VRDisplayNode, public VREventHandler {
 public:
 
-	VROffAxisProjectionNode(const std::string &name, VRPoint3 topLeft, VRPoint3 botLeft, VRPoint3 topRight, VRPoint3 botRight,
-		 double nearClip, double farClip);
-	virtual ~VROffAxisProjectionNode();
+	VRTrackedLookAtNode(const std::string &name, const std::string &headTrackingEventName, VRMatrix4 initialHeadMatrix);
+	virtual ~VRTrackedLookAtNode();
 
-	virtual std::string getType() { return "VROffAxisProjectionNode"; }
+	virtual std::string getType() { return "VRTrackedLookAtNode"; }
 
 	virtual void render(VRDataIndex *renderState, VRRenderHandler *renderHandler);
 
+	virtual void onVREvent(const std::string &eventName, VRDataIndex *eventData);
+
 protected:
 
-	VRPoint3 _topLeft;
-	VRPoint3 _botLeft;
-	VRPoint3 _topRight;
-	VRPoint3 _botRight;
-	double _nearClip;
-	double _farClip;
+	VRMatrix4 _lookAtMatrix;
+	std::string _trackingEvent;
 };
 
 
 /** Small factory for creating this specific type of display node.  To be registered as a 
     "sub-factory" with the main VRFactory. 
  */
-class VROffAxisProjectionNodeFactory : public VRDisplayNodeFactory {
+class VRTrackedLookAtNodeFactory : public VRDisplayNodeFactory {
 public:
-	VROffAxisProjectionNodeFactory():VRDisplayNodeFactory("VROffAxisProjectionNode"){}
+	VRTrackedLookAtNodeFactory():VRDisplayNodeFactory("VRTrackedLookAtNode"){}
 	
-	virtual ~VROffAxisProjectionNodeFactory(){}
+	virtual ~VRTrackedLookAtNodeFactory(){}
 
 	VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 };
