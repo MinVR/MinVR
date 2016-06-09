@@ -34,6 +34,8 @@ public:
 
 	virtual void onVREvent(const std::string &eventName, VRDataIndex *eventData);
 
+	static VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
+
 protected:
 
 	VRPoint3 _topLeft;
@@ -45,17 +47,6 @@ protected:
 	std::string _trackingEvent;
 	double _nearClip;
 	double _farClip;
-};
-
-
-/** Small factory for creating this specific type of display node.  To be registered as a 
-    "sub-factory" with the main VRFactory. 
- */
-class VROffAxisProjectionNodeFactory : public VRDisplayNodeFactory {
-public:
-	virtual ~VROffAxisProjectionNodeFactory() {}
-
-	VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
 };
 
 } // end namespace

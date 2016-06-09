@@ -34,19 +34,13 @@ public:
 	virtual void waitForRenderToComplete(VRDataIndex *renderState);
 	virtual void displayFinishedRendering(VRDataIndex *renderState);
 
+	static VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
+
 private:
 	int _windowID;
 	VRGraphicsToolkit *_gfxToolkit;
 	VRWindowToolkit   *_winToolkit;
 	VRWindowSettings   _settings;
-};
-
-
-class VRGraphicsWindowNodeFactory : public VRDisplayNodeFactory {
-public:
-	virtual ~VRGraphicsWindowNodeFactory() {}
-
-	VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
 };
 
 

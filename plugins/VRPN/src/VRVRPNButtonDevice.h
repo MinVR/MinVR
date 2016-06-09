@@ -86,6 +86,7 @@ public:
 	PLUGIN_API void        sendEvent(int buttonNumber, bool down);
 	PLUGIN_API std::string getEventName(int buttonNumber);
 	PLUGIN_API size_t      numButtons() { return _eventNames.size(); }
+	PLUGIN_API static VRInputDevice* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
 
 private:
 	vrpn_Button_Remote        *_vrpnDevice;
@@ -94,10 +95,6 @@ private:
 };
 
 
-class VRVRPNButtonDeviceFactory : public VRInputDeviceFactory {
-public:
-	VRInputDevice* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
-};
 
 
 } // end namespace

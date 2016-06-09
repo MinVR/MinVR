@@ -101,14 +101,8 @@ VROffAxisProjectionNode::onVREvent(const std::string &eventName, VRDataIndex *ev
 
 
 VRDisplayNode*
-VROffAxisProjectionNodeFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) {
-	std::string nodeNameSpace = config->validateNameSpace(nameSpace + valName);
-
-	std::string type = config->getValue("Type", nodeNameSpace);
-	if (type != "VROffAxisProjectionNode") {
-		// This factory cannot create the type specified
-		return NULL;
-	}
+VROffAxisProjectionNode::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) {
+	std::string nodeNameSpace = nameSpace;
 
 	VRPoint3 topLeft = config->getValue("TopLeft", nodeNameSpace);
 	VRPoint3 botLeft = config->getValue("BottomLeft", nodeNameSpace);
@@ -126,7 +120,7 @@ VROffAxisProjectionNodeFactory::create(VRMainInterface *vrMain, VRDataIndex *con
 
 	  std::vector<std::string> childrenNames = config->getValue("Children", nodeNameSpace);
 	  for (std::vector<std::string>::iterator it = childrenNames.begin(); it < childrenNames.end(); ++it) {
-		VRDisplayNode *child = vrMain->getFactory()->createDisplayNode(vrMain, config, *it, "/MinVR/");
+		VRDisplayNode *child = vrMain->getFactory()->create<VRDisplayNode>(vrMain, config, *it, "/MinVR/");
 		if (child != NULL) {
 			node->addChild(child);
 		}

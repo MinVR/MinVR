@@ -45,6 +45,8 @@ public:
 		return _windows[windowID];
 	}
 
+	PLUGIN_API static VRWindowToolkit* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
+
 private:
 	VRMainInterface *_vrMain;
 	std::vector<GLFWwindow*> _windows;
@@ -52,10 +54,6 @@ private:
 };
 
 
-class VRGLFWWindowToolkitFactory : public VRWindowToolkitFactory {
-public:
-	VRWindowToolkit* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
-};
 
 
 

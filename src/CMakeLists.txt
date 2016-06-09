@@ -105,6 +105,7 @@ set(vr_main_cpp
 set(vr_main_h
   ${vr_src_dir}/main/VREventHandler.h
   ${vr_src_dir}/main/VRFactory.h
+  ${vr_src_dir}/main/VRItemFactory.h
   ${vr_src_dir}/main/VRMain.h
   ${vr_src_dir}/main/VRMainInterface.h
   ${vr_src_dir}/main/VRRenderHandler.h

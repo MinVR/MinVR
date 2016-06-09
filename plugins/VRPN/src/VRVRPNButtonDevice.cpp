@@ -121,14 +121,8 @@ void VRVRPNButtonDevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEve
 
 
 VRInputDevice*
-VRVRPNButtonDeviceFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) {
-	std::string devNameSpace = config->validateNameSpace(nameSpace + valName);
-
-	std::string type = config->getValue("Type", devNameSpace);
-	if (type != "VRVRPNButtonDevice") {
-		// This factory cannot create the type specified
-		return NULL;
-	}
+VRVRPNButtonDevice::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) {
+	std::string devNameSpace = nameSpace;
 
 	std::string vrpnName = config->getValue("VRPNDeviceName", devNameSpace);
 	std::vector<std::string> eventsToGenerate = config->getValue("EventsToGenerate", devNameSpace);

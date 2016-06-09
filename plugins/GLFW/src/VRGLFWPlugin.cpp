@@ -36,7 +36,7 @@ public:
 	PLUGIN_API void registerWithMinVR(VRMainInterface *vrMain)
 	{
       //std::cout << "Registering VRGLFWPlugin." << std::endl;
-		vrMain->getFactory()->addSubFactory(new VRGLFWWindowToolkitFactory());
+		vrMain->getFactory()->registerItemType<VRWindowToolkit, VRGLFWWindowToolkit>("VRGLFWWindowToolkit");
 	}
 
 	PLUGIN_API void unregisterWithMinVR(VRMainInterface *vrMain)

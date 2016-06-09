@@ -42,14 +42,8 @@ void VRConsoleNode::println(const std::string &output) {
 
 
 VRDisplayNode*
-VRConsoleNodeFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) {
-	std::string nodeNameSpace = config->validateNameSpace(nameSpace + valName);
-
-	std::string type = config->getValue("Type", nodeNameSpace);
-	if (type != "VRConsoleNode") {
-		// This factory cannot create the type specified
-		return NULL;
-	}
+VRConsoleNode::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) {
+	std::string nodeNameSpace = nameSpace;
 
     std::ostream *stream;
     if (std::string(config->getValue("Stream", nodeNameSpace)) == "cerr") {

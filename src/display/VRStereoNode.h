@@ -34,6 +34,8 @@ public:
 
 	virtual void render(VRDataIndex *renderState, VRRenderHandler *renderHandler);
 
+	static VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
+
 protected:
 
 	void renderRestOfGraph(VRDataIndex *renderState, VRRenderHandler *renderHandler);
@@ -42,14 +44,6 @@ protected:
 	VRStereoFormat _format;
 };
 
-
-
-class VRStereoNodeFactory : public VRDisplayNodeFactory {
-public:
-	virtual ~VRStereoNodeFactory() {}
-
-	VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
-};
 
 } /* namespace MinVR */
 
