@@ -57,6 +57,8 @@ public:
 		std::cerr << "finishGraphics() not enabled in this VRGraphicsToolkit." << std::endl;
 	}
 
+	static std::string getAttributeName(){ return "graphicstoolkitType"; };
+
 };
 
 } // end namespace

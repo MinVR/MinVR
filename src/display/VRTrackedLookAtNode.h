@@ -33,23 +33,12 @@ public:
 
 	virtual void onVREvent(const std::string &eventName, VRDataIndex *eventData);
 
+	static VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
+
 protected:
 
 	VRMatrix4 _lookAtMatrix;
 	std::string _trackingEvent;
-};
-
-
-/** Small factory for creating this specific type of display node.  To be registered as a 
-    "sub-factory" with the main VRFactory. 
- */
-class VRTrackedLookAtNodeFactory : public VRDisplayNodeFactory {
-public:
-	VRTrackedLookAtNodeFactory():VRDisplayNodeFactory("VRTrackedLookAtNode"){}
-	
-	virtual ~VRTrackedLookAtNodeFactory(){}
-
-	VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 };
 
 } // end namespace

@@ -28,7 +28,7 @@ public:
 	PLUGIN_API void registerWithMinVR(VRMainInterface *vrMain)
 	{
       //std::cout << "Registering VROpenGLPlugin." << std::endl;
-		vrMain->getFactory()->addSubFactory(new VROpenGLGraphicsToolkitFactory());
+		vrMain->getFactory()->registerItemType<VRGraphicsToolkit, VROpenGLGraphicsToolkit>("VROpenGLGraphicsToolkit");
 	}
 
 	PLUGIN_API void unregisterWithMinVR(VRMainInterface *vrMain)

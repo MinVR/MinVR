@@ -65,7 +65,7 @@ void VRDisplayNode::createChildren(VRMainInterface *vrMain, VRDataIndex *config,
   std::string validatedNameSpace = config->validateNameSpace(nameSpace);
   for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
 	  if (config->exists(*it, validatedNameSpace)){
-		  VRDisplayNode *child = vrMain->getFactory()->createDisplayNode(vrMain, config, config->validateNameSpace(validatedNameSpace) + *it);
+		  VRDisplayNode *child = vrMain->getFactory()->create<VRDisplayNode>(vrMain, config, config->validateNameSpace(validatedNameSpace) + *it);
 	  if (child != NULL) {
 		addChild(child);
 	  }

@@ -218,12 +218,13 @@ void VRVRPNTrackerDevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEv
   
 
 VRInputDevice*
-VRVRPNTrackerDeviceFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
- 
-  std::string vrpnName = config->getValue("VRPNDeviceName", nameSpace);
-  std::vector<std::string> eventsToGenerate = config->getValue("EventsToGenerate", nameSpace);
-  double scale = config->getValue("TrackerUnitsToRoomUnitsScale", nameSpace);
-  VRMatrix4 d2r = config->getValue("DeviceToRoom", nameSpace);
+VRVRPNTrackerDevice::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
+  std::string devNameSpace = nameSpace;
+    
+  std::string vrpnName = config->getValue("VRPNDeviceName", devNameSpace);
+  std::vector<std::string> eventsToGenerate = config->getValue("EventsToGenerate", devNameSpace);
+  double scale = config->getValue("TrackerUnitsToRoomUnitsScale", devNameSpace);
+  VRMatrix4 d2r = config->getValue("DeviceToRoom", devNameSpace);
   d2r = d2r.orthonormal();
   bool wait = ((int)config->getValue("WaitForNewReportInPoll", nameSpace)) == 1;
   bool convert = ((int)config->getValue("ConvertLHtoRH", nameSpace)) == 1;

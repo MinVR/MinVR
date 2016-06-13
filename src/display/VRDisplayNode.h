@@ -65,6 +65,8 @@ public:
 	/// Creates the children of the node
 	virtual void createChildren(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 
+	static std::string getAttributeName(){ return "displaynodeType"; };
+
 protected:
 	std::vector<VRDisplayNode*> _children;
     std::string _name;

@@ -25,20 +25,13 @@ public:
 
 	virtual void render(VRDataIndex *renderState, VRRenderHandler *renderHandler);
 
+	static VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
+
 private:
 	VRRect _rect;
 	VRGraphicsToolkit *_gfxToolkit;
 };
 
-
-class VRViewportNodeFactory : public VRDisplayNodeFactory {
-public:
-	VRViewportNodeFactory():VRDisplayNodeFactory("VRViewportNode"){}
-
-	virtual ~VRViewportNodeFactory() {}
-
-	VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
-};
 
 
 } /* namespace MinVR */

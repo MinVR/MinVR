@@ -26,7 +26,7 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
 	VRPoint3 pb = _botRight;
 	VRPoint3 pc = _topLeft;
 	VRPoint3 pe(0,0,0);
-	if (renderState->exists("LookAtMatrix")){
+	if (renderState->exists("LookAtMatrix","/")){
 		VRMatrix4 lookAtMatrix = renderState->getValue("LookAtMatrix");
 		pe = VRPoint3(lookAtMatrix[3][0], lookAtMatrix[3][1], lookAtMatrix[3][2]);
 	}
@@ -75,7 +75,8 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
 
 
 VRDisplayNode*
-VROffAxisProjectionNodeFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
+VROffAxisProjectionNode::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
+	std::string nodeNameSpace = nameSpace;
 
 	VRPoint3 topLeft = config->getValue("TopLeft", nameSpace);
 	VRPoint3 botLeft = config->getValue("BottomLeft", nameSpace);

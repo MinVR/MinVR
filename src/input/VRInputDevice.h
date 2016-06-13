@@ -11,6 +11,8 @@ class VRInputDevice {
 public:
 	virtual ~VRInputDevice() {}
 	virtual void appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents) = 0;
+
+	static std::string getAttributeName(){ return "inputdeviceType"; };
 };
 
 #endif

@@ -37,7 +37,7 @@ void VRViewportNode::render(VRDataIndex *renderState, VRRenderHandler *renderHan
 
 
 
-VRDisplayNode* VRViewportNodeFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace)
+VRDisplayNode* VRViewportNode::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace)
 {
 	VRGraphicsToolkit *gfxToolkit = vrMain->getGraphicsToolkit(config->getValue("GraphicsToolkit", nameSpace));
 

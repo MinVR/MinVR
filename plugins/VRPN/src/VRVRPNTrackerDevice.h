@@ -125,6 +125,8 @@ public:
 	PLUGIN_API void appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents);
 	PLUGIN_API void setPrintSensor0(bool b) { _printSensor0 = b; }
 
+	PLUGIN_API static VRInputDevice* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
+
 private:
 	vrpn_Connection          *_vrpnConnection;
 	vrpn_Tracker_Remote      *_vrpnDevice;
@@ -141,13 +143,6 @@ private:
 	VRDataQueue               _pendingEvents;
 };
 
-
-class VRVRPNTrackerDeviceFactory : public VRInputDeviceFactory {
-public:
-	VRVRPNTrackerDeviceFactory():VRInputDeviceFactory("VRVRPNTrackerDevice"){}
-
-	VRInputDevice* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
-};
 
 } // end namespace
 

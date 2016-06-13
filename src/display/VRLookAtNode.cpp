@@ -26,8 +26,7 @@ VRLookAtNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 	renderState->popState();
 }
 
-VRDisplayNode*
-VRLookAtNodeFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
+VRDisplayNode* VRLookAtNode::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
 	
 	VRMatrix4 lookAtMatrix;
 

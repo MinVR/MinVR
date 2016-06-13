@@ -41,6 +41,8 @@ public:
 	virtual void render(VRDataIndex *renderState, VRRenderHandler *renderHandler);
 	virtual void createChildren(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 
+	static VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
+
 protected:
 	void renderOneEye(VRDataIndex *renderState, VRRenderHandler *renderHandler, VREyePosition eye);
 	void updateLookAtMatrix(VRDataIndex *renderState, VREyePosition eye);
@@ -50,16 +52,6 @@ protected:
 	float     _iod;
 };
 
-
-
-class VRStereoNodeFactory : public VRDisplayNodeFactory {
-public:
-	VRStereoNodeFactory():VRDisplayNodeFactory("VRStereoNode"){}
-
-	virtual ~VRStereoNodeFactory(){}
-
-	VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
-};
 
 } /* namespace MinVR */
 

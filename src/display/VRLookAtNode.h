@@ -30,23 +30,10 @@ public:
 
 	virtual void render(VRDataIndex *renderState, VRRenderHandler *renderHandler);
 
-
+	static VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 protected:
 
 	VRMatrix4 _lookAtMatrix;
-};
-
-
-/** Small factory for creating this specific type of display node.  To be registered as a 
-    "sub-factory" with the main VRFactory. 
- */
-class VRLookAtNodeFactory : public VRDisplayNodeFactory {
-public:
-	VRLookAtNodeFactory():VRDisplayNodeFactory("VRLookAtNode"){}
-	
-	virtual ~VRLookAtNodeFactory(){}
-
-	VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 };
 
 } // end namespace

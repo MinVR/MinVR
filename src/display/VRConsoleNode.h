@@ -31,21 +31,10 @@ public:
 
 	void println(const std::string &output);
 
+	static VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
+
 private:
 	std::ostream* m_stream;
-};
-
-
-/** Small factory for creating this specific type of display node.  To be registered as a 
-    "sub-factory" with the main VRFactory. 
- */
-class VRConsoleNodeFactory : public VRDisplayNodeFactory {
-public:
-	VRConsoleNodeFactory():VRDisplayNodeFactory("VRConsoleNode"){}
-	
-	virtual ~VRConsoleNodeFactory() {}
-
-	VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 };
 
 } /* namespace MinVR */

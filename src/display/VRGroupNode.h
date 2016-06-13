@@ -23,19 +23,7 @@ public:
 	virtual ~VRGroupNode();
 
 	virtual std::string getType() { return "VRGroupNode"; }
-};
-
-
-/** Small factory for creating this specific type of display node.  To be registered as a 
-    "sub-factory" with the main VRFactory. 
- */
-class VRGroupNodeFactory : public VRDisplayNodeFactory {
-public:
-	VRGroupNodeFactory():VRDisplayNodeFactory("VRGroupNode"){}
-
-	virtual ~VRGroupNodeFactory(){}
-
-	VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
+	static VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 };
 
 } // end namespace

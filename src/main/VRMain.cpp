@@ -65,15 +65,15 @@ VRMain::VRMain() : _initialized(false), _config(NULL), _net(NULL), _factory(NULL
   _factory = new VRFactory();
   
   // add sub-factories that are part of the MinVR core library right away
-  _factory->addSubFactory(new VRConsoleNodeFactory());
-  _factory->addSubFactory(new VRGraphicsWindowNodeFactory());
-  _factory->addSubFactory(new VRGroupNodeFactory());
-  _factory->addSubFactory(new VROffAxisProjectionNodeFactory());
-  _factory->addSubFactory(new VRStereoNodeFactory());
-  _factory->addSubFactory(new VRViewportNodeFactory());
-  _factory->addSubFactory(new VRLookAtNodeFactory());
-  _factory->addSubFactory(new VRTrackedLookAtNodeFactory());
-  _factory->addSubFactory(new VRStereoNodeFactory());
+  _factory->registerItemType<VRDisplayNode, VRConsoleNode>("VRConsoleNode");
+  _factory->registerItemType<VRDisplayNode, VRGraphicsWindowNode>("VRGraphicsWindowNode");
+  _factory->registerItemType<VRDisplayNode, VRGroupNode>("VRGroupNode");
+  _factory->registerItemType<VRDisplayNode, VROffAxisProjectionNode>("VROffAxisProjectionNode");
+  _factory->registerItemType<VRDisplayNode, VRStereoNode>("VRStereoNode");
+  _factory->registerItemType<VRDisplayNode, VRViewportNode>("VRViewportNode");
+  _factory->registerItemType<VRDisplayNode, VRLookAtNode>("VRLookAtNode");
+  _factory->registerItemType<VRDisplayNode, VRTrackedLookAtNode>("VRTrackedLookAtNode");
+  _factory->registerItemType<VRDisplayNode, VRViewportNode>("VRViewportNode");
   _pluginMgr = new VRPluginManager(this);
 }
 
@@ -285,7 +285,7 @@ VRMain::initialize(int argc, char** argv)
     std::list<std::string> names = _config->selectByAttribute("inputdeviceType", "*", _name);
 	for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
 	  // create a new input device for each one in the list
-	  VRInputDevice *dev = _factory->createInputDevice(this, _config, *it);
+	  VRInputDevice *dev = _factory->create<VRInputDevice>(this, _config, *it);
 	  if (dev) {
 	   _inputDevices.push_back(dev);
 	  }
@@ -297,7 +297,7 @@ VRMain::initialize(int argc, char** argv)
 
   // CONFIGURE WINDOWS
   {
-	  std::list<std::string> names = _config->selectByAttribute("windowType", "*", _name);
+	  std::list<std::string> names = _config->selectByAttribute("displaynodeType", "*", _name);
 	  for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
 		  // CONFIGURE WINDOW TOOLKIT
 		  {   
@@ -306,7 +306,7 @@ VRMain::initialize(int argc, char** argv)
 			  std::list<std::string> namestk = _config->selectByAttribute("graphicstoolkitType", "*", *it);
 			  for (std::list<std::string>::reverse_iterator ittk = namestk.rbegin(); ittk != namestk.rend(); ++ittk) {
 				  // create a new graphics toolkit for each one in the list
-				  VRGraphicsToolkit *tk = _factory->createGraphicsToolkit(this, _config, *ittk);
+				  VRGraphicsToolkit *tk = _factory->create<VRGraphicsToolkit>(this, _config, *ittk);
 				  if (tk) {
 					  if (counttk == 0){
 						  _config->addData(_config->validateNameSpace(*it) + "GraphicsToolkit", tk->getName());
@@ -346,7 +346,7 @@ VRMain::initialize(int argc, char** argv)
 				std::list<std::string> namestk = _config->selectByAttribute("windowtoolkitType", "*", *it);	
 				for (std::list<std::string>::reverse_iterator ittk = namestk.rbegin(); ittk != namestk.rend(); ++ittk) {
 					// create a new graphics toolkit for each one in the list
-					VRWindowToolkit *tk = _factory->createWindowToolkit(this, _config, *ittk);
+					VRWindowToolkit *tk = _factory->create<VRWindowToolkit>(this, _config, *ittk);
 					if (tk) {
 						if (counttk == 0){
 							_config->addData(_config->validateNameSpace(*it) + "WindowToolkit", tk->getName());
@@ -379,7 +379,7 @@ VRMain::initialize(int argc, char** argv)
 			}
 
 		  // add window to the displayGraph list
-		  VRDisplayNode *dg = _factory->createDisplayNode(this, _config, *it);
+		  VRDisplayNode *dg = _factory->create<VRDisplayNode>(this, _config, *it);
 		  if (dg) {
 			  _displayGraphs.push_back(dg);
 		  }

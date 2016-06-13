@@ -6,7 +6,7 @@
 
 	<VRSetups>
 		<Desktop hostType="VRStandAlone">
-      <RootNode windowType="VRGraphicsWindowNode">
+      <RootNode displaynodeType="VRGraphicsWindowNode">
         <GLFWToolkit windowtoolkitType="VRGLFWWindowToolkit"/>
         <OpenGLToolkit graphicstoolkitType="VROpenGLGraphicsToolkit"/>
 

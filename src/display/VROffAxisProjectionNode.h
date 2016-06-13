@@ -31,6 +31,8 @@ public:
 
 	virtual void render(VRDataIndex *renderState, VRRenderHandler *renderHandler);
 
+	static VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
+
 protected:
 
 	VRPoint3 _topLeft;
@@ -39,19 +41,6 @@ protected:
 	VRPoint3 _botRight;
 	double _nearClip;
 	double _farClip;
-};
-
-
-/** Small factory for creating this specific type of display node.  To be registered as a 
-    "sub-factory" with the main VRFactory. 
- */
-class VROffAxisProjectionNodeFactory : public VRDisplayNodeFactory {
-public:
-	VROffAxisProjectionNodeFactory():VRDisplayNodeFactory("VROffAxisProjectionNode"){}
-	
-	virtual ~VROffAxisProjectionNodeFactory(){}
-
-	VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 };
 
 } // end namespace

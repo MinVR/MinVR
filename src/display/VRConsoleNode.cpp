@@ -42,7 +42,8 @@ void VRConsoleNode::println(const std::string &output) {
 
 
 VRDisplayNode*
-VRConsoleNodeFactory::create(VRMainInterface *vrMain, VRDataIndex *config,  const std::string &nameSpace) {
+VRConsoleNode::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
+	std::string nodeNameSpace = nameSpace;
 
     std::ostream *stream;
 	if (std::string(config->getValue("Stream", nameSpace)) == "cerr") {

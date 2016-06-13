@@ -31,9 +31,9 @@ public:
 	PLUGIN_API void registerWithMinVR(VRMainInterface *vrMain)
 	{
         //std::cout << "Registering VRVRPNPlugin." << std::endl;
-		vrMain->getFactory()->addSubFactory(new VRVRPNAnalogDeviceFactory());
-		vrMain->getFactory()->addSubFactory(new VRVRPNButtonDeviceFactory());
-		vrMain->getFactory()->addSubFactory(new VRVRPNTrackerDeviceFactory());
+		vrMain->getFactory()->registerItemType<VRInputDevice, VRVRPNAnalogDevice>("VRVRPNAnalogDevice");
+		vrMain->getFactory()->registerItemType<VRInputDevice, VRVRPNButtonDevice>("VRVRPNButtonDevice");
+		vrMain->getFactory()->registerItemType<VRInputDevice, VRVRPNTrackerDevice>("VRVRPNTrackerDevice");
 	}
 
 	PLUGIN_API void unregisterWithMinVR(VRMainInterface *vrMain)

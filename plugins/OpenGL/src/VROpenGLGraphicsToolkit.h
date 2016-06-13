@@ -3,7 +3,7 @@
 
 #include <display/VRGraphicsToolkit.h>
 #include <main/VRFactory.h>
-
+#include <plugin/VRPlugin.h>
 
 namespace MinVR {
 
@@ -13,23 +13,18 @@ namespace MinVR {
  */
 class VROpenGLGraphicsToolkit : public VRGraphicsToolkit {
 public:
-	VROpenGLGraphicsToolkit();
-	virtual ~VROpenGLGraphicsToolkit();
+	PLUGIN_API VROpenGLGraphicsToolkit();
+	PLUGIN_API virtual ~VROpenGLGraphicsToolkit();
 
-    std::string getName() { return "VROpenGLGraphicsToolkit"; }
+	PLUGIN_API std::string getName() { return "VROpenGLGraphicsToolkit"; }
   
-	void clearScreen();
-	void setDrawBuffer(VRDRAWBUFFER buffer);
-	void setViewport(VRRect rect);
-	void flushGraphics();
-	void finishGraphics();
-};
+	PLUGIN_API void clearScreen();
+	PLUGIN_API void setDrawBuffer(VRDRAWBUFFER buffer);
+	PLUGIN_API void setViewport(VRRect rect);
+	PLUGIN_API void flushGraphics();
+	PLUGIN_API void finishGraphics();
 
-class VROpenGLGraphicsToolkitFactory : public VRGraphicsToolkitFactory {
-public:
-	VROpenGLGraphicsToolkitFactory():VRGraphicsToolkitFactory("VROpenGLGraphicsToolkit"){}
-
-	VRGraphicsToolkit* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
+	PLUGIN_API static VRGraphicsToolkit* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 };
 
 

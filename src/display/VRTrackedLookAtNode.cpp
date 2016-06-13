@@ -34,8 +34,7 @@ VRTrackedLookAtNode::onVREvent(const std::string &eventName, VRDataIndex *eventD
 	}
 }
 
-VRDisplayNode*
-VRTrackedLookAtNodeFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
+VRDisplayNode* VRTrackedLookAtNode::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
 
 	std::string trackingEvent = config->getValue("HeadTrackingEvent", nameSpace);
 	VRMatrix4 lookAtMatrix;

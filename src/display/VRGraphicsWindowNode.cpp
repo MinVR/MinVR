@@ -66,9 +66,11 @@ void VRGraphicsWindowNode::displayFinishedRendering(VRDataIndex *renderState) {
 
 
 
-VRDisplayNode* VRGraphicsWindowNodeFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace)
+VRDisplayNode* VRGraphicsWindowNode::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace)
 {
-	std::string gtk = config->getValue("GraphicsToolkit", nameSpace);
+	std::string nodeNameSpace = nameSpace;
+
+    std::string gtk = config->getValue("GraphicsToolkit", nodeNameSpace);
 	VRGraphicsToolkit *gfxToolkit = vrMain->getGraphicsToolkit(gtk);
     if (gfxToolkit == NULL) {
       std::cerr << "Cannot get the graphics toolkit named: " << gtk << std::endl;
