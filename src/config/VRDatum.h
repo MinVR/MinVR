@@ -181,10 +181,10 @@ public:
                          const std::string attributeValue) {
     attrList.front()[attributeName] = attributeValue;
   }
-  
-  //checks whether the attribute exists or not
-  bool hasAttribute(const std::string attributeName){
-		return attrList.front().count(attributeName) > 0;
+
+  // Checks whether an attribute exists.
+  bool hasAttribute(const std::string attributeName) {
+    return attrList.front().count(attributeName) > 0;
   }
   
   // Returns the attribute list formatted to include in an XML tag.

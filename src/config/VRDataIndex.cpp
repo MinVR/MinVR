@@ -253,14 +253,14 @@ std::string VRDataIndex::walkXML(element* node, std::string nameSpace) {
     int firstChar = valueString.find_first_not_of(" \t\r\n");
     int lastChar = valueString.find_last_not_of(" \t\r\n");
 
-    if (firstChar >= 0) {
-      if (lastChar >= 0) {
-        valueString = valueString.substr(firstChar, (1 + lastChar - firstChar));
-      } else {
-        valueString = valueString.substr(firstChar);
-      }
+    if ((firstChar >= 0) && (lastChar >= 0)) {
+
+      valueString = valueString.substr(firstChar, (1 + lastChar - firstChar));
+
     } else {
-      valueString = valueString.substr(0, valueString.size() - lastChar);
+
+      valueString = "";
+      typeId = VRCORETYPE_CONTAINER;
     }
   }
 
@@ -566,8 +566,7 @@ std::string VRDataIndex::validateNameSpace(const std::string nameSpace) {
     // Otherwise look for it in the index and throw an error if
     // it isn't there.
     if (mindex.find(out.substr(0, out.size() - 1)) == mindex.end()) {
-      std::runtime_error(std::string("Can't find a namespace called ") + nameSpace);
-
+      throw std::runtime_error("Can't find a namespace called " + nameSpace);
     }
   }
 
@@ -695,6 +694,9 @@ VRDataIndex::getEntry(const std::string valName,
 VRDataIndex::VRDataMap::iterator
 VRDataIndex::getEntry(const std::string valName) {
 
+  if (valName[0] != '/')
+    throw std::runtime_error("Without a namespace, I can't find " + valName + ".");
+  
   return getEntry(valName, "");
 }
 
@@ -830,7 +832,10 @@ std::string VRDataIndex::addSerializedValue(const std::string serializedData,
 
   // If there are nodes in the tree with a 'linknode' attribute,
   // resolve them.
-  if (expand) linkNodes();
+  if (expand) {
+    linkNodes();
+    linkContent();
+  }
   
   return out;
 }
@@ -1096,6 +1101,9 @@ bool VRDataIndex::linkNode(const std::string fullSourceName,
     
   }
 
+  if (sourceNode->hasAttribute("linkContent"))
+    throw std::runtime_error("You really don't want to mix linkContent and linkNode, as in linking " + fullSourceName + " and " + fullTargetName + ".");
+  
   // If this is a container, recurse into the children, and copy them, too.
   if (sourceNode->getType() == VRCORETYPE_CONTAINER) {
 
@@ -1121,7 +1129,7 @@ bool VRDataIndex::linkNode(const std::string fullSourceName,
 bool VRDataIndex::linkNodes() {
 
   // Find all the nodes that need copying.
-  VRContainer linknodes = selectByAttribute("linknode", "*");
+  VRContainer linknodes = selectByAttribute("linkNode", "*");
 
   // Sift through them.
   for (VRContainer::iterator it = linknodes.begin();
@@ -1129,7 +1137,7 @@ bool VRDataIndex::linkNodes() {
 
     // Get the source name.
     std::string nameToCopy =
-      getEntry(*it)->second->getAttributeValue("linknode");
+      getEntry(*it)->second->getAttributeValue("linkNode");
 
     // Check to see if we have a fully specified node name to copy.
     if (nameToCopy[0] == '/') {
@@ -1150,6 +1158,73 @@ bool VRDataIndex::linkNodes() {
 
     // Then just modify the entry in mindex so that mindex[*]->second
     // points to the found node's datum object.
+  }
+  return true;
+}
+
+// Implements a global link-to-contents operation.  Looks for
+// container nodes with a 'linktocontents' attribute, and creates
+// links within that namespace to the objects in the given namespace.
+bool VRDataIndex::linkContent() {
+  
+  // Find all the containers to be replaced.
+  VRContainer targets = selectByAttribute("linkContent", "*");
+
+  // Sift through them.
+  for (VRContainer::iterator it = targets.begin(); it != targets.end(); it++) {
+
+    VRDataMap::iterator target = getEntry(*it);
+    std::string targetNameSpace = getNameSpace(target->first);
+
+    // Identify the source name (for the namespace) and the node.
+    std::string sourceName =
+      getEntry(target->second->getAttributeValue("linkContent"),
+               targetNameSpace)->first;
+    VRDatumPtr sourceNode = getEntry(sourceName)->second;
+    if (sourceNode->getType() != VRCORETYPE_CONTAINER)
+      throw std::runtime_error("Can only link from contents of containers, and " + sourceName + " is not a container.");
+    
+    // Read the contents of the sourceNode and create a new link for
+    // each one, in the target name space.
+    VRContainer relativeNameList = sourceNode->getValue();
+    for (VRContainer::iterator jt = relativeNameList.begin();
+         jt != relativeNameList.end(); jt++) {
+
+      linkNode(validateNameSpace(sourceName) + *jt,
+               targetNameSpace + *jt);
+    }
+    // The target node was only for holding the linkToContent
+    // attribute, so is not needed any more.
+
+    // Edit the parent container name list.
+    if (targetNameSpace.size() > 1) {
+
+      std::string targetParentName =
+        targetNameSpace.substr(0, targetNameSpace.size() - 1);
+
+      VRContainer oldNameList = getValue(targetParentName);
+      
+      // Construct a new list of names in the parent.
+      std::string targetName = explodeName(target->first).back();
+      // Start with the new names.
+      VRContainer newList = relativeNameList;
+
+      // Run through the old ones, and leave out the target name.
+      for (VRContainer::iterator kt = oldNameList.begin();
+           kt != oldNameList.end(); kt++) {
+        if (targetName.compare(*kt) != 0) newList.push_back(*kt);
+      }
+
+      // Replace the parent name list.
+      getDatum(targetParentName).containerVal()->setValue(newList);
+    }
+
+    // Delete the entry from the index.
+    mindex.erase(target->first);
+    // Note that you might have done something pathological with
+    // linkNode that would result in a corrupted structure after this
+    // removal.  That is, there might be another name in the index
+    // linked to this node.  Don't do that.
   }
   return true;
 }
