@@ -97,7 +97,7 @@ public:
 		ParentType* item = T::create(vrMain, config, itemNameSpace);
 		if (typeid(ParentType) == typeid(VRDisplayNode))
 		{
-			VRDisplayNode* displayNode = static_cast<VRDisplayNode*>(item);
+			VRDisplayNode* displayNode = dynamic_cast<VRDisplayNode*>(item);
 			displayNode->createChildren(vrMain, config, itemNameSpace);
 		}
 		return item;
