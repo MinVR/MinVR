@@ -30,7 +30,8 @@ void
 VRTrackedLookAtNode::onVREvent(const std::string &eventName, VRDataIndex *eventData)
 {
 	if (eventName == "/" + _trackingEvent) {
-		_lookAtMatrix = eventData->getValue("Transform", eventName);
+		VRMatrix4 head_frame = eventData->getValue("Transform", eventName);
+		_lookAtMatrix = head_frame.inverse();
 	}
 }
 

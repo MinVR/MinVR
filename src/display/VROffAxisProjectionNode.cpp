@@ -28,7 +28,8 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
 	VRPoint3 pe(0,0,0);
 	if (renderState->exists("LookAtMatrix","/")){
 		VRMatrix4 lookAtMatrix = renderState->getValue("LookAtMatrix");
-		pe = VRPoint3(lookAtMatrix[3][0], lookAtMatrix[3][1], lookAtMatrix[3][2]);
+		VRMatrix4 head_frame = lookAtMatrix.inverse();
+		pe = VRPoint3(head_frame[3][0], head_frame[3][1], head_frame[3][2]);
 	}
 
 

@@ -20,7 +20,6 @@ VRLookAtNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 	renderState->pushState();
 
 	renderState->addData("LookAtMatrix", _lookAtMatrix);
-
 	VRDisplayNode::render(renderState, renderHandler);
 
 	renderState->popState();
@@ -40,12 +39,12 @@ VRDisplayNode* VRLookAtNode::create(VRMainInterface *vrMain, VRDataIndex *config
 		VRVector3 center = config->getValue("LookAtCenter", nameSpace);
 
 		VRVector3 z = center - eye;
-		z.normalize();
+		z = z.normalize();
 		VRVector3 x = up.cross(z);
-		x.normalize();
+		x = x.normalize();
 		VRVector3 y = z.cross(x);
 		
-		VRMatrix4 M1(	x[0], z[0], x[0], 0,
+		VRMatrix4 M1(	x[0], y[0], z[0], 0,
 						x[1], y[1], z[1], 0,
 						x[2], y[2], z[2], 0,
 						0, 0, 0, 1);
@@ -55,7 +54,7 @@ VRDisplayNode* VRLookAtNode::create(VRMainInterface *vrMain, VRDataIndex *config
 						0, 0, 1, -eye[2],
 						0, 0, 0, 1);
 
-		lookAtMatrix = M1 * M2;
+		lookAtMatrix =  M1 * M2;
 	}
 	else
 	{

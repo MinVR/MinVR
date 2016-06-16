@@ -87,11 +87,15 @@ void VRStereoNode::updateLookAtMatrix(VRDataIndex *renderState, VREyePosition ey
 
 	if (eye == Left)
 	{
-		lookAtMatrix = lookAtMatrix * VRMatrix4::translation(VRVector3(-_iod / 2.0, 0, 0));
+		VRMatrix4 head_frame = lookAtMatrix.inverse();
+		head_frame = head_frame * VRMatrix4::translation(VRVector3(-_iod / 2.0, 0, 0));
+		lookAtMatrix = head_frame.inverse();
 	}
 	else if (eye == Right)
 	{
-		lookAtMatrix = lookAtMatrix * VRMatrix4::translation(VRVector3(_iod / 2.0, 0, 0));
+		VRMatrix4 head_frame = lookAtMatrix.inverse();
+		head_frame = head_frame * VRMatrix4::translation(VRVector3(_iod / 2.0, 0, 0));
+		lookAtMatrix = head_frame.inverse();
 	}
 
 	renderState->addData("LookAtMatrix", lookAtMatrix);
