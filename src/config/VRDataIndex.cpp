@@ -557,6 +557,7 @@ std::string VRDataIndex::validateNameSpace(const std::string nameSpace) {
 
   std::string out = nameSpace;
 
+  if(out.size() == 0) out = "/";
   if (out[ 0 ] != '/') out = "/" + nameSpace;
   if (out[ out.size() - 1 ] != '/') out += '/';
 
