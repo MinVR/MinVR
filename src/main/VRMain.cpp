@@ -193,7 +193,10 @@ VRMain::initialize(int argc, char** argv)
 					std::string displayVar = _config->getValue("HostDisplay",*it);
 					command = command + "DISPLAY=" + displayVar + " ";
 				}
-				command = command + argv[0] + " " + argv[1] + " VRSetupsToStart=" + *it + " StartedSSH=1";
+				command = command + argv[0];
+				for (int i = 1; i < argc; i++)
+					command = command + " " + argv[i];
+				command = command + " VRSetupsToStart=" + *it + " StartedSSH=1";
 				std::string sshcmd = "ssh " + nodeIP + " '" + command + " > /dev/null 2>&1 &'";
 				
 				//we start and remove all clients which are started remotely via ssh
@@ -233,7 +236,10 @@ VRMain::initialize(int argc, char** argv)
 	strcpy(title, vrSetupsToStartArray[i].c_str());
 	si.lpTitle = title;
     
-    std::string cmdLine = std::string(argv[0]) + " " + argv[1] + " vrSetupsToStart=" + vrSetupsToStartArray[i];
+    std::string cmdLine = std::string(argv[0]) 
+    for (int i = 1; i < argc; i++)
+		cmdLine = cmdLine + " " + argv[i];
+    cmdLine = cmdLine + " vrSetupsToStart=" + vrSetupsToStartArray[i];
     
 	LPSTR cmd = new char[cmdLine.size() + 1];
 	strcpy(cmd, cmdLine.c_str());
