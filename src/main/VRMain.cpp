@@ -57,7 +57,20 @@ protected:
   std::vector<VRRenderHandler*> _handlers;
 };
 
-
+std::string getCurrentWorkingDir()
+{
+#ifdef WIN32
+	//not tested
+	char cwd[1024];
+	GetCurrentDirectory( 1024, cwd);
+	return std::string(cwd);
+#else
+	char cwd[1024];
+	char * tmp = getcwd(cwd, sizeof(cwd));
+	return std::string(tmp);
+#endif
+ 
+}
 
   
 VRMain::VRMain() : _initialized(false), _config(NULL), _net(NULL), _factory(NULL), _pluginMgr(NULL)
@@ -80,14 +93,19 @@ VRMain::VRMain() : _initialized(false), _config(NULL), _net(NULL), _factory(NULL
 
 VRMain::~VRMain()
 {
+  
   if (_config) {
   	delete _config;
   }
-
+  
   if (!_inputDevices.empty()) {
 	  for (std::vector<VRInputDevice*>::iterator it = _inputDevices.begin(); it != _inputDevices.end(); ++it) delete *it;
   }
-
+  
+  if (!_displayGraphs.empty()) {
+	  for (std::vector<VRDisplayNode*>::iterator it = _displayGraphs.begin(); it != _displayGraphs.end(); ++it) delete *it;
+  }
+  
   if (!_gfxToolkits.empty()) {
 	  for (std::vector<VRGraphicsToolkit*>::iterator it = _gfxToolkits.begin(); it != _gfxToolkits.end(); ++it) delete *it;
   }
@@ -96,16 +114,8 @@ VRMain::~VRMain()
 	  for (std::vector<VRWindowToolkit*>::iterator it = _winToolkits.begin(); it != _winToolkits.end(); ++it) delete *it;
   }
 
-  if (!_displayGraphs.empty()) {
-	  for (std::vector<VRDisplayNode*>::iterator it = _displayGraphs.begin(); it != _displayGraphs.end(); ++it) delete *it;
-  }
-
   if (_factory) {
   	delete _factory;
-  }
-
-  if (_config) {
-  	delete _config;
   }
 
   if (_net) {
@@ -125,24 +135,29 @@ VRMain::initialize(int argc, char** argv)
     std::cout << "MinVR Program Usage:" << std::endl;
     std::cout << std::string(argv[0]) + " <config-file-name.xml> [vrsetup-name]" << std::endl;
     std::cout << "     <config-file-name.xml> is required and is the name of a MinVR config file." << std::endl;
-    std::cout << "     [vrsetup-name] is optional and is a comma-separated list of VRSetups" << std::endl;
-    std::cout << "     to start.  If more than one VRSetup is listed, new processes will be forked." << std::endl;
+    std::cout << "     optional: list of arguments in the form of DataIndexEntry=Value" << std::endl;
     exit(0);
   }
   
   std::string configFile = argv[1];
-  std::string vrSetupsToStart;
-  if (argc >= 3) {
-    vrSetupsToStart = argv[2];
-  }
-  
+
   
   _config = new VRDataIndex();
   if (!_config->processXMLFile(configFile,"/")) {
   }
  
+  for(int i = 2; i < argc ; i ++){
+		std::string argument(argv[i]);
+		int pos = argument.find("=");
+		if(pos >=0){
+				std::string valueName = argument.substr(0,pos);
+				std::string value = argument.substr(pos+1);
+				_config->addData(valueName,value);
+		}
+  }
+ 
   VRStringArray vrSetupsToStartArray;
-  if (vrSetupsToStart == "") {
+  if (!_config->exists("vrSetupsToStart","/")) {
     // no vrSetupsToStart are specified, start all of VRSetups listed in the config file
 	std::list<std::string> names = _config->selectByAttribute("hostType","*");
 	for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
@@ -151,6 +166,7 @@ VRMain::initialize(int argc, char** argv)
   }
   else {
     // a comma-separated list of vrSetupsToStart was provided
+    std::string vrSetupsToStart = _config->getValue("VRSetupsToStart","/");
     VRString elem;
     std::stringstream ss(vrSetupsToStart);
     while (std::getline(ss, elem, ',')) {
@@ -161,6 +177,37 @@ VRMain::initialize(int argc, char** argv)
 
   if (vrSetupsToStartArray.empty()) {
 	  cerr << "VRMain Error:  No VRSetups to start are defined" << endl;
+	  exit(1);
+	  
+  }
+	{
+		vector<std::string>::iterator it = vrSetupsToStartArray.begin();
+		for ( ; it != vrSetupsToStartArray.end(); ) {
+			if(_config->exists("HostP",*it) && !_config->exists("StartedSSH","/")){
+				//Setup needs to be started via ssh.
+				// First get the path were it has to be started
+				std::string workingDirectory = getCurrentWorkingDir();
+				std::string nodeIP = _config->getValue("HostP",*it);
+				std::string command = "cd " + workingDirectory + ";";
+				if(_config->exists("HostDisplay",*it)){
+					std::string displayVar = _config->getValue("HostDisplay",*it);
+					command = command + "DISPLAY=" + displayVar + " ";
+				}
+				command = command + argv[0] + " " + argv[1] + " VRSetupsToStart=" + *it + " StartedSSH=1";
+				std::string sshcmd = "ssh " + nodeIP + " '" + command + " > /dev/null 2>&1 &'";
+				
+				//we start and remove all clients which are started remotely via ssh
+				it = vrSetupsToStartArray.erase(it);
+				system(sshcmd.c_str());
+			}else{
+				//setup does not need to be started remotely or was already started remotely
+				++it;
+			}
+		}
+	}
+	
+  if (vrSetupsToStartArray.empty()) {
+	  cerr << "All machines started via SSH - Exiting" << endl;
 	  exit(1);
   }
 
@@ -186,7 +233,7 @@ VRMain::initialize(int argc, char** argv)
 	strcpy(title, vrSetupsToStartArray[i].c_str());
 	si.lpTitle = title;
     
-    std::string cmdLine = std::string(argv[0]) + " " + argv[1] + " " + vrSetupsToStartArray[i];
+    std::string cmdLine = std::string(argv[0]) + " " + argv[1] + " vrSetupsToStart=" + vrSetupsToStartArray[i];
     
 	LPSTR cmd = new char[cmdLine.size() + 1];
 	strcpy(cmd, cmdLine.c_str());
@@ -259,30 +306,29 @@ VRMain::initialize(int argc, char** argv)
 	 }
   }
   
-
   // CONFIGURE NETWORKING:
 
   // check the type of this VRSetup, it should be either "VRServer", "VRClient", or "VRStandAlone"
   if(_config->getDatum(_name)->hasAttribute("hostType")){		
 	std::string type = _config->getDatum(_name)->getAttributeValue("hostType");
 	if (type == "VRServer") {
-  	  std::string port = _config->getValue("Port", _name);
-  	  int numClients = _config->getValue("NumClients", _name);  	
-  	  _net = new VRNetServer(port, numClients);
-    }
-    else if (type == "VRClient") {
-      std::string port = _config->getValue("Port", _name);
-  	  std::string ipAddress = _config->getValue("ServerIP", _name); 
-  	  _net = new VRNetClient(ipAddress, port);
-    }
-    else { // type == "VRStandAlone"
-  	  // no networking, leave _net=NULL
-    }
+	  std::string port = _config->getValue("Port", _name);
+	  int numClients = _config->getValue("NumClients", _name);  	
+	  _net = new VRNetServer(port, numClients);
+	}
+	else if (type == "VRClient") {
+	  std::string port = _config->getValue("Port", _name);
+	  std::string ipAddress = _config->getValue("ServerIP", _name); 
+	  _net = new VRNetClient(ipAddress, port);
+	}
+	else { // type == "VRStandAlone"
+	  // no networking, leave _net=NULL
+	}
   }
 
   // CONFIGURE INPUT DEVICES:
   {
-    std::list<std::string> names = _config->selectByAttribute("inputdeviceType", "*", _name);
+	std::list<std::string> names = _config->selectByAttribute("inputdeviceType", "*", _name);
 	for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
 	  // create a new input device for each one in the list
 	  VRInputDevice *dev = _factory->create<VRInputDevice>(this, _config, *it);
@@ -291,7 +337,7 @@ VRMain::initialize(int argc, char** argv)
 	  }
 	  else{
 		  std::cerr << "Problem creating inputdevice: " << *it << " with inputdeviceType=" << _config->getDatum(*it)->getAttributeValue("inputdeviceType") << std::endl;
-      }
+	  }
 	}
   }
 
@@ -390,6 +436,7 @@ VRMain::initialize(int argc, char** argv)
   }
 
   _initialized = true;
+  
 }
 
 void 
@@ -476,6 +523,8 @@ void
 VRMain::shutdown()
 {
 	// TODO
+	_renderHandlers.clear();
+	_eventHandlers.clear();
 }
 
 
