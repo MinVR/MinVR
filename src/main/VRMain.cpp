@@ -157,7 +157,7 @@ VRMain::initialize(int argc, char** argv)
   }
  
   VRStringArray vrSetupsToStartArray;
-  if (!_config->exists("vrSetupsToStart","/")) {
+  if (!_config->exists("VRSetupsToStart","/")) {
     // no vrSetupsToStart are specified, start all of VRSetups listed in the config file
 	std::list<std::string> names = _config->selectByAttribute("hostType","*");
 	for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
@@ -183,11 +183,11 @@ VRMain::initialize(int argc, char** argv)
 	{
 		vector<std::string>::iterator it = vrSetupsToStartArray.begin();
 		for ( ; it != vrSetupsToStartArray.end(); ) {
-			if(_config->exists("HostP",*it) && !_config->exists("StartedSSH","/")){
+			if(_config->exists("HostIP",*it) && !_config->exists("StartedSSH","/")){
 				//Setup needs to be started via ssh.
 				// First get the path were it has to be started
 				std::string workingDirectory = getCurrentWorkingDir();
-				std::string nodeIP = _config->getValue("HostP",*it);
+				std::string nodeIP = _config->getValue("HostIP",*it);
 				std::string command = "cd " + workingDirectory + ";";
 				if(_config->exists("HostDisplay",*it)){
 					std::string displayVar = _config->getValue("HostDisplay",*it);
@@ -198,7 +198,7 @@ VRMain::initialize(int argc, char** argv)
 					command = command + " " + argv[i];
 				command = command + " VRSetupsToStart=" + *it + " StartedSSH=1";
 				std::string sshcmd = "ssh " + nodeIP + " '" + command + " > /dev/null 2>&1 &'";
-				
+				std::cerr << "Start " << sshcmd << std::endl;
 				//we start and remove all clients which are started remotely via ssh
 				it = vrSetupsToStartArray.erase(it);
 				system(sshcmd.c_str());
