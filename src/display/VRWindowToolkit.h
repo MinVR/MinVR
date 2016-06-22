@@ -52,6 +52,8 @@ public:
 	virtual void swapBuffers(int windowID) {
 		std::cerr << "swapBuffers() not enabled in this VRWindowToolkit." << std::endl;
 	}
+
+	static std::string getAttributeName(){ return "windowtoolkitType"; };
 };
 
 

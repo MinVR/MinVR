@@ -25,7 +25,7 @@ public:
 
   /// Creates a new item from registered sub-factories.
   template <typename T>
-  T* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
+  T* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 
   /// Plugins call this method to register an item type which has a static create method with the same signature
   /// as an the VRItemFactory create method.
@@ -37,13 +37,12 @@ public:
 
 protected:
   std::vector<VRItemFactory*> _itemFactories;
-
 };
 
 template <typename T>
-T* VRFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) {
+T* VRFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
 	  for (std::vector<VRItemFactory*>::iterator it = _itemFactories.begin(); it < _itemFactories.end(); ++it) {
-		  T* item = (*it)->createItem<T>(vrMain, config, valName, nameSpace);
+		  T* item = (*it)->createItem<T>(vrMain, config, nameSpace);
 		  if (item != NULL) {
 			  return item;
 		  }

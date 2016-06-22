@@ -27,21 +27,29 @@ public:
 		// ..
 	};
 
-	VRStereoNode(const std::string &name, VRGraphicsToolkit *gfxToolkit, VRStereoFormat format);
+	enum VREyePosition
+	{
+		Cyclops = 0,
+		Left = 1,
+		Right = 2
+	};
+	VRStereoNode(const std::string &name, float interOcularDist, VRGraphicsToolkit *gfxToolkit, VRStereoFormat format);
 	virtual ~VRStereoNode();
 
 	virtual std::string getType() { return "VRStereoNode"; }
 
 	virtual void render(VRDataIndex *renderState, VRRenderHandler *renderHandler);
+	virtual void createChildren(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 
-	static VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
+	static VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 
 protected:
-
-	void renderRestOfGraph(VRDataIndex *renderState, VRRenderHandler *renderHandler);
+	void renderOneEye(VRDataIndex *renderState, VRRenderHandler *renderHandler, VREyePosition eye);
+	void updateLookAtMatrix(VRDataIndex *renderState, VREyePosition eye);
 
 	VRGraphicsToolkit *_gfxToolkit;
 	VRStereoFormat _format;
+	float     _iod;
 };
 
 

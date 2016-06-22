@@ -121,7 +121,7 @@ void VRVRPNButtonDevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEve
 
 
 VRInputDevice*
-VRVRPNButtonDevice::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) {
+VRVRPNButtonDevice::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
 	std::string devNameSpace = nameSpace;
 
 	std::string vrpnName = config->getValue("VRPNDeviceName", devNameSpace);

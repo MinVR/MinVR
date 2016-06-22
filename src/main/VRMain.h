@@ -119,7 +119,7 @@ private:
   std::vector<VRInputDevice*>     _inputDevices;
   std::vector<VRGraphicsToolkit*> _gfxToolkits;
   std::vector<VRWindowToolkit*>   _winToolkits;
-  VRDisplayNode*                  _displayGraph;
+  std::vector<VRDisplayNode*>     _displayGraphs;
 };
 
 

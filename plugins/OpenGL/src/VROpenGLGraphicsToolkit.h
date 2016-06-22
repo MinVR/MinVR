@@ -24,7 +24,7 @@ public:
 	PLUGIN_API void flushGraphics();
 	PLUGIN_API void finishGraphics();
 
-	PLUGIN_API static VRGraphicsToolkit* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
+	PLUGIN_API static VRGraphicsToolkit* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 };
 
 

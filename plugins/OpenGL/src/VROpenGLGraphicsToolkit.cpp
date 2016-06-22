@@ -51,7 +51,7 @@ void VROpenGLGraphicsToolkit::finishGraphics() {
 
 
 VRGraphicsToolkit*
-VROpenGLGraphicsToolkit::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) {
+VROpenGLGraphicsToolkit::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
 	VRGraphicsToolkit *gfxToolkit = new VROpenGLGraphicsToolkit();
 	return gfxToolkit;
 }

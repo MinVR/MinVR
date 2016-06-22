@@ -19,11 +19,11 @@ set (HEADERFILES
 
 source_group("Header Files" FILES ${HEADERFILES})
 
-
+option(BUILD_VRPN "If enabled, VRPN will be downloaded and installed" ON)
 #------------------------------------------
 # Download dependencies
 #------------------------------------------
-
+if (BUILD_VRPN)
 		set(vrpn_checkout_Dir ${CMAKE_BINARY_DIR}/vrpn)
 		make_directory(${vrpn_checkout_Dir})
         message("   Library will be built from source in ${vrpn_checkout_Dir}.")
@@ -48,18 +48,23 @@ source_group("Header Files" FILES ${HEADERFILES})
 				UPDATE_COMMAND ""
 		 )		 
 		set_property(TARGET vrpn PROPERTY FOLDER "Dependencies")
-		set(VRPN_INCLUDE_DIR ${vrpn_INSTALL_DIR}/include CACHE INTERNAL "Directory of VRPN header files")
+		set(VRPN_INCLUDE_DIRS ${vrpn_INSTALL_DIR}/include CACHE INTERNAL "Directory of VRPN header files")
 		if(MSVC)
-			set(VRPN_LIBRARY optimized ${vrpn_INSTALL_DIR}/lib/vrpn.lib optimized ${vrpn_INSTALL_DIR}/lib/quat.lib debug ${vrpn_INSTALL_DIR}/lib/vrpnd.lib ${vrpn_INSTALL_DIR}/lib/quatd.lib CACHE INTERNAL "VRPN lib file")
+			set(VRPN_LIBRARIES optimized ${vrpn_INSTALL_DIR}/lib/vrpn.lib optimized ${vrpn_INSTALL_DIR}/lib/quat.lib debug ${vrpn_INSTALL_DIR}/lib/vrpnd.lib ${vrpn_INSTALL_DIR}/lib/quatd.lib CACHE INTERNAL "VRPN lib file")
 			set(All_LIB ${MinVR_LIBRARIES})
 		else()
 #			set(VRPN_LIBRARY optimized ${vrpn_INSTALL_DIR}/lib/libvrpn.a debug ${vrpn_INSTALL_DIR}/lib/libvrpnd.a CACHE INTERNAL "VRPN lib file")
-			set(VRPN_LIBRARY ${vrpn_INSTALL_DIR}/lib/libvrpn.a ${vrpn_INSTALL_DIR}/lib/libquat.a CACHE INTERNAL "VRPN lib file")
+			set(VRPN_LIBRARIES ${vrpn_INSTALL_DIR}/lib/libvrpn.a ${vrpn_INSTALL_DIR}/lib/libquat.a CACHE INTERNAL "VRPN lib file")
 		endif()	
 		add_definitions(-DUSE_VRPN)
 		#set(LIBS_ALL ${LIBS_ALL} ${VRPN_LIBRARY})
-		include_directories(${VRPN_INCLUDE_DIR})
-
+		include_directories(${VRPN_INCLUDE_DIRS})
+else()
+	SET(CMAKE_MODULE_PATH  ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH} )
+	find_package(VRPN REQUIRED)
+	add_definitions(-DUSE_VRPN)
+	include_directories(${VRPN_INCLUDE_DIRS})
+endif()
 
 #------------------------------------------
 # MinVR Dependencies
@@ -150,9 +155,10 @@ SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/lib")
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 add_library ( ${PROJECT_NAME} SHARED ${HEADERFILES} ${SOURCEFILES} )
-target_link_libraries(${PROJECT_NAME} ${VRPN_LIBRARY} MinVR ${LIBS_ALL})
-add_dependencies( ${PROJECT_NAME} vrpn )
-
+target_link_libraries(${PROJECT_NAME} ${VRPN_LIBRARIES} MinVR ${LIBS_ALL})
+if (BUILD_VRPN)
+	add_dependencies( ${PROJECT_NAME} vrpn )
+endif()
 #------------------------------------------
 # Install Target
 #------------------------------------------
@@ -163,4 +169,6 @@ install( TARGETS ${PROJECT_NAME}
          RUNTIME DESTINATION ${VRPlugins_install_dir}/${PROJECT_NAME}/bin)
 
 set_property(TARGET MinVR_VRPN PROPERTY FOLDER "plugins")
-set_property(TARGET vrpn PROPERTY FOLDER "plugins/dependencies/VRPN")
+if (BUILD_VRPN)
+	set_property(TARGET vrpn PROPERTY FOLDER "plugins/dependencies/VRPN")
+endif()

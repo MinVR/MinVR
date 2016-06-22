@@ -29,43 +29,24 @@ void VRViewportNode::render(VRDataIndex *renderState, VRRenderHandler *renderHan
   
 	_gfxToolkit->setViewport(_rect);
 
-	if (_children.size() == 0) {
-		// if the viewport node is a leaf node, then call the onRenderScene callback		
-		renderHandler->onVRRenderScene(renderState, this);
-	}
-	else {
-		// otherwise, call render on all children, and they will call onRenderScene if they are leaves
-		VRDisplayNode::render(renderState, renderHandler);
-	}
+	VRDisplayNode::render(renderState, renderHandler);
 
-  renderState->popState();
+    renderState->popState();
 }
 
 
 
 
-VRDisplayNode* VRViewportNode::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace)
+VRDisplayNode* VRViewportNode::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace)
 {
-	std::string nodeNameSpace = nameSpace;
+	VRGraphicsToolkit *gfxToolkit = vrMain->getGraphicsToolkit(config->getValue("GraphicsToolkit", nameSpace));
 
-	VRGraphicsToolkit *gfxToolkit = vrMain->getGraphicsToolkit(config->getValue("GraphicsToolkit", nodeNameSpace));
+	int xpos = config->getValue("XPos", nameSpace);
+	int ypos = config->getValue("YPos", nameSpace);
+	int width = config->getValue("Width", nameSpace);
+	int height = config->getValue("Height", nameSpace);
 
-	int xpos = config->getValue("XPos", nodeNameSpace);
-	int ypos = config->getValue("YPos", nodeNameSpace);
-	int width = config->getValue("Width", nodeNameSpace);
-	int height = config->getValue("Height", nodeNameSpace);
-
-	VRDisplayNode *node = new VRViewportNode(valName, gfxToolkit, VRRect(xpos, ypos, width, height));
-
-    if (config->exists("Children", nodeNameSpace)) {
-	  std::vector<std::string> childrenNames = config->getValue("Children", nodeNameSpace);
-	  for (std::vector<std::string>::iterator it = childrenNames.begin(); it < childrenNames.end(); ++it) {
-		VRDisplayNode *child = vrMain->getFactory()->create<VRDisplayNode>(vrMain, config, *it, "/MinVR/");
-		if (child != NULL) {
-			node->addChild(child);
-		}
-	  }
-    }
+	VRDisplayNode *node = new VRViewportNode(nameSpace, gfxToolkit, VRRect(xpos, ypos, width, height));
 
 	return node;
 }

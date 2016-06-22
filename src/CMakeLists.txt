@@ -76,6 +76,8 @@ set(vr_display_cpp
   ${vr_src_dir}/display/VROffAxisProjectionNode.cpp
   ${vr_src_dir}/display/VRStereoNode.cpp
   ${vr_src_dir}/display/VRViewportNode.cpp
+  ${vr_src_dir}/display/VRLookAtNode.cpp
+  ${vr_src_dir}/display/VRTrackedLookAtNode.cpp
 )
 
 set(vr_display_h
@@ -88,6 +90,8 @@ set(vr_display_h
   ${vr_src_dir}/display/VRStereoNode.h
   ${vr_src_dir}/display/VRViewportNode.h
   ${vr_src_dir}/display/VRWindowToolkit.h
+  ${vr_src_dir}/display/VRLookAtNode.h
+  ${vr_src_dir}/display/VRTrackedLookAtNode.h
 )
 
 set(vr_input_cpp

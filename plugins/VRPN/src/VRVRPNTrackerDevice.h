@@ -125,7 +125,7 @@ public:
 	PLUGIN_API void appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents);
 	PLUGIN_API void setPrintSensor0(bool b) { _printSensor0 = b; }
 
-	PLUGIN_API static VRInputDevice* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
+	PLUGIN_API static VRInputDevice* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 
 private:
 	vrpn_Connection          *_vrpnConnection;

@@ -11,6 +11,7 @@
 
 #include <string>
 #include <main/VRMainInterface.h>
+#include <display/VRDisplayNode.h>
 #include <typeinfo>
 
 namespace MinVR {
@@ -28,11 +29,11 @@ public:
 
 	/// Generic create item method which determines the type of the factory and uses it to create items if it is the correct type.
 	template <typename T>
-	T* createItem(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) {
+	T* createItem(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
 		if (getType() == typeid(T)) {
 			VRSpecificItemFactory<T>* factory = static_cast<VRSpecificItemFactory<T>*>(this);
 			if(factory) {
-				return factory->create(vrMain, config, valName, nameSpace);
+				return factory->create(vrMain, config, nameSpace);
 			}
 		}
 
@@ -56,21 +57,21 @@ public:
 	virtual ~VRSpecificItemFactory() {}
 
 	/// First checks that the typeName maches the VRDataIndex and then passes the type to the concrete implementation
-	virtual T* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) {
-		std::string itemNameSpace = config->validateNameSpace(nameSpace + valName);
+	virtual T* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
+		std::string attributeName = T::getAttributeName();
+		std::string type = config->getDatum(nameSpace)->getAttributeValue(attributeName);
 
-		std::string type = config->getValue("Type", itemNameSpace);
 		if (type != _typeName) {
 			// This factory cannot create the type specified
 			return NULL;
 		}
 
-		return createConcrete(vrMain, config, valName, itemNameSpace);
+		return createConcrete(vrMain, config, nameSpace);
 	}
 
 protected:
 	/// Concrete implementation to be defined in the subclasses
-	virtual T* createConcrete(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &itemNameSpace) = 0;
+	virtual T* createConcrete(VRMainInterface *vrMain, VRDataIndex *config, const std::string &itemNameSpace) = 0;
 
 	/// Returns the specific type id used in the main VRItemFactory
 	const std::type_info& getType() {
@@ -92,8 +93,14 @@ public:
 	virtual ~VRConcreteItemFactory() {}
 
 	/// Calls static create(...) method specified by the type.
-	ParentType* createConcrete(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &itemNameSpace) {
-		return T::create(vrMain, config, valName, itemNameSpace);
+	ParentType* createConcrete(VRMainInterface *vrMain, VRDataIndex *config, const std::string &itemNameSpace) {
+		ParentType* item = T::create(vrMain, config, itemNameSpace);
+		if (typeid(ParentType) == typeid(VRDisplayNode))
+		{
+			VRDisplayNode* displayNode = dynamic_cast<VRDisplayNode*>(item);
+			displayNode->createChildren(vrMain, config, itemNameSpace);
+		}
+		return item;
 	}
 };
 

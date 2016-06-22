@@ -34,7 +34,7 @@ public:
 	virtual void waitForRenderToComplete(VRDataIndex *renderState);
 	virtual void displayFinishedRendering(VRDataIndex *renderState);
 
-	static VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
+	static VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 
 private:
 	int _windowID;

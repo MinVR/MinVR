@@ -4,10 +4,8 @@
 namespace MinVR {
 
 
-	VROffAxisProjectionNode::VROffAxisProjectionNode(const std::string &name, VRPoint3 topLeft, VRPoint3 botLeft, VRPoint3 topRight, VRPoint3 botRight,
-		float interOcularDist, const std::string &headTrackingEventName, VRMatrix4 initialHeadMatrix, double nearClip, double farClip) :
-	VRDisplayNode(name), _topLeft(topLeft), _botLeft(botLeft), _topRight(topRight), _botRight(botRight), 
-		_iod(interOcularDist), _headMatrix(initialHeadMatrix), _trackingEvent(headTrackingEventName), _nearClip(nearClip), _farClip(farClip)
+	VROffAxisProjectionNode::VROffAxisProjectionNode(const std::string &name, VRPoint3 topLeft, VRPoint3 botLeft, VRPoint3 topRight, VRPoint3 botRight, double nearClip, double farClip) :
+	VRDisplayNode(name), _topLeft(topLeft), _botLeft(botLeft), _topRight(topRight), _botRight(botRight),  _nearClip(nearClip), _farClip(farClip)
 {
 }
 
@@ -21,27 +19,18 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
 {
 	renderState->pushState();
 
-	// Determine which eye is being used
-	float eye = 0;
-    if (std::string(renderState->getValue("Eye", "/")) == "Left") {
-    	eye = 0;
-	}
-    else if (std::string(renderState->getValue("Eye", "/")) == "Right") {
-    	eye = 1;
-	}
-
-	
-	// Calculate headFrame offset based on inter ocular distance
-	VRMatrix4 headFrame = _headMatrix * VRMatrix4::translation(VRVector3(-_iod / 2.0 + _iod*(eye), 0, 0));
-
-
 	// This projection code follows the math described in this paper:
 	// http://csc.lsu.edu/~kooima/pdfs/gen-perspective.pdf
 
 	VRPoint3 pa = _botLeft;
 	VRPoint3 pb = _botRight;
 	VRPoint3 pc = _topLeft;
-	VRPoint3 pe = VRPoint3(headFrame[3][0], headFrame[3][1], headFrame[3][2]);
+	VRPoint3 pe(0,0,0);
+	if (renderState->exists("LookAtMatrix","/")){
+		VRMatrix4 lookAtMatrix = renderState->getValue("LookAtMatrix");
+		VRMatrix4 head_frame = lookAtMatrix.inverse();
+		pe = VRPoint3(head_frame[3][0], head_frame[3][1], head_frame[3][2]);
+	}
 
 
 	// Compute an orthonormal basis for the screen
@@ -80,54 +69,24 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
 
 	renderState->addData("ViewMatrix", viewMat);
 
-	if (_children.size() == 0) {
-		renderHandler->onVRRenderScene(renderState, this);
-	}
-	else {
-		VRDisplayNode::render(renderState, renderHandler);
-	}	
+	VRDisplayNode::render(renderState, renderHandler);
 
 	renderState->popState();
 }
 
-void
-VROffAxisProjectionNode::onVREvent(const std::string &eventName, VRDataIndex *eventData)
-{
-	if (eventName == "/" + _trackingEvent) {
-		_headMatrix = eventData->getValue("Transform", eventName);
-	}
-}
-
-
 
 VRDisplayNode*
-VROffAxisProjectionNode::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) {
+VROffAxisProjectionNode::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
 	std::string nodeNameSpace = nameSpace;
 
-	VRPoint3 topLeft = config->getValue("TopLeft", nodeNameSpace);
-	VRPoint3 botLeft = config->getValue("BottomLeft", nodeNameSpace);
-	VRPoint3 topRight = config->getValue("TopRight", nodeNameSpace);
-	VRPoint3 botRight = config->getValue("BottomRight", nodeNameSpace);
-	float iod = (double)config->getValue("EyeSeparation", nodeNameSpace);
-	double nearClip = config->getValue("NearClip", nodeNameSpace);
-	double farClip = config->getValue("FarClip", nodeNameSpace);
-	std::string trackingEvent = config->getValue("HeadTrackingEvent", nodeNameSpace);
-	VRMatrix4 headMatrix = config->getValue("InitialHeadMatrix", nodeNameSpace);
+	VRPoint3 topLeft = config->getValue("TopLeft", nameSpace);
+	VRPoint3 botLeft = config->getValue("BottomLeft", nameSpace);
+	VRPoint3 topRight = config->getValue("TopRight", nameSpace);
+	VRPoint3 botRight = config->getValue("BottomRight", nameSpace);
+	double nearClip = config->getValue("NearClip", nameSpace);
+	double farClip = config->getValue("FarClip", nameSpace);
 
-	VROffAxisProjectionNode *node = new VROffAxisProjectionNode(valName, topLeft, botLeft, topRight, botRight, iod, trackingEvent, headMatrix, nearClip, farClip);
-
-    if (config->exists("Children", nodeNameSpace)) {
-
-	  std::vector<std::string> childrenNames = config->getValue("Children", nodeNameSpace);
-	  for (std::vector<std::string>::iterator it = childrenNames.begin(); it < childrenNames.end(); ++it) {
-		VRDisplayNode *child = vrMain->getFactory()->create<VRDisplayNode>(vrMain, config, *it, "/MinVR/");
-		if (child != NULL) {
-			node->addChild(child);
-		}
-	  }
-    }
-
-	vrMain->addEventHandler(node);
+	VROffAxisProjectionNode *node = new VROffAxisProjectionNode(nameSpace, topLeft, botLeft, topRight, botRight, nearClip, farClip);
 
 	return node;
 }

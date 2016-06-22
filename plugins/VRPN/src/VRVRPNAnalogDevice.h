@@ -78,7 +78,7 @@ public:
 	PLUGIN_API void        sendEventIfChanged(int channelNumber, double data);
 	PLUGIN_API std::string getEventName(int channelNumber);
 	PLUGIN_API size_t      numChannels() { return _eventNames.size(); }
-	PLUGIN_API static VRInputDevice* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace);
+	PLUGIN_API static VRInputDevice* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 
 private:
 	vrpn_Analog_Remote        *_vrpnDevice;

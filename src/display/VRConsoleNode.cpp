@@ -42,18 +42,18 @@ void VRConsoleNode::println(const std::string &output) {
 
 
 VRDisplayNode*
-VRConsoleNode::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) {
+VRConsoleNode::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
 	std::string nodeNameSpace = nameSpace;
 
     std::ostream *stream;
-    if (std::string(config->getValue("Stream", nodeNameSpace)) == "cerr") {
+	if (std::string(config->getValue("Stream", nameSpace)) == "cerr") {
 		stream = &std::cerr;
 	}
 	else {
 		stream = &std::cout;
 	}
 
-	VRDisplayNode *node = new VRConsoleNode(valName, stream);
+	VRDisplayNode *node = new VRConsoleNode(nameSpace, stream);
 
 	// nothing more to do, no children for a console node.
 

@@ -45,14 +45,7 @@ void VRGraphicsWindowNode::render(VRDataIndex *renderState, VRRenderHandler *ren
 	// windows should call the application programmer's context-level callback
 	renderHandler->onVRRenderContext(renderState, this);
 
-	if (_children.size() == 0) {
-		// if the window node is a leaf node, then call the onRenderScene callback		
-		renderHandler->onVRRenderScene(renderState, this);
-	}
-	else {
-		// otherwise, call render on all children, and they will call onRenderScene if they are leaves
-		VRDisplayNode::render(renderState, renderHandler);
-	}
+	VRDisplayNode::render(renderState, renderHandler);
 
 	_gfxToolkit->flushGraphics();
 
@@ -73,7 +66,7 @@ void VRGraphicsWindowNode::displayFinishedRendering(VRDataIndex *renderState) {
 
 
 
-VRDisplayNode* VRGraphicsWindowNode::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace)
+VRDisplayNode* VRGraphicsWindowNode::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace)
 {
 	std::string nodeNameSpace = nameSpace;
 
@@ -83,33 +76,24 @@ VRDisplayNode* VRGraphicsWindowNode::create(VRMainInterface *vrMain, VRDataIndex
       std::cerr << "Cannot get the graphics toolkit named: " << gtk << std::endl;
     }
 
-    std::string wtk = config->getValue("WindowToolkit", nodeNameSpace);
+	std::string wtk = config->getValue("WindowToolkit", nameSpace);
     VRWindowToolkit *winToolkit = vrMain->getWindowToolkit(wtk);
     if (winToolkit == NULL) {
       std::cerr << "Cannot get the window toolkit named: " << wtk << std::endl;
     }
 
 	VRWindowSettings settings;
-	settings.xpos = config->getValue("XPos", nodeNameSpace);
-	settings.ypos = config->getValue("YPos", nodeNameSpace);
-	settings.width = config->getValue("Width", nodeNameSpace);
-	settings.height = config->getValue("Height", nodeNameSpace);
-	settings.border = (int)config->getValue("Border", nodeNameSpace);
-    settings.caption = std::string(config->getValue("Caption", nodeNameSpace));
-	settings.quadBuffered = (int)config->getValue("QuadBuffered", nodeNameSpace);
-    settings.gpuAffinity = std::string(config->getValue("GPUAffinity", nodeNameSpace));
+	settings.xpos = config->getValue("XPos", nameSpace);
+	settings.ypos = config->getValue("YPos", nameSpace);
+	settings.width = config->getValue("Width", nameSpace);
+	settings.height = config->getValue("Height", nameSpace);
+	settings.border = (int)config->getValue("Border", nameSpace);
+	settings.caption = std::string(config->getValue("Caption", nameSpace));
+	settings.quadBuffered = (int)config->getValue("QuadBuffered", nameSpace);
+	settings.gpuAffinity = std::string(config->getValue("GPUAffinity", nameSpace));
 
-	VRDisplayNode *node = new VRGraphicsWindowNode(valName, gfxToolkit, winToolkit, settings);
+	VRDisplayNode *node = new VRGraphicsWindowNode(nameSpace, gfxToolkit, winToolkit, settings);
 
-    if (config->exists("Children", nodeNameSpace)) {
-	    std::vector<std::string> childrenNames = config->getValue("Children", nodeNameSpace);
-	    for (std::vector<std::string>::iterator it = childrenNames.begin(); it < childrenNames.end(); ++it) {
-		    VRDisplayNode *child = vrMain->getFactory()->create<VRDisplayNode>(vrMain, config, *it, "/MinVR/");
-		    if (child != NULL) {
-			    node->addChild(child);
-		    }
-	    }
-    }
 	return node;
 }
 

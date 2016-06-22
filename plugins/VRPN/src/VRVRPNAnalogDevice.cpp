@@ -122,7 +122,7 @@ void VRVRPNAnalogDevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEve
 
 
 VRInputDevice*
-VRVRPNAnalogDevice::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &valName, const std::string &nameSpace) {
+VRVRPNAnalogDevice::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
 
 	std::string vrpnName = config->getValue("VRPNDeviceName", nameSpace);
 	std::vector<std::string> eventsToGenerate = config->getValue("EventsToGenerate", nameSpace);

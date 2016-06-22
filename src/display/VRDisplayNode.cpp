@@ -7,6 +7,7 @@
  */
 
 #include "VRDisplayNode.h"
+#include <main/VRFactory.h>
 
 namespace MinVR {
 
@@ -23,6 +24,9 @@ void VRDisplayNode::render(VRDataIndex *renderState, VRRenderHandler *renderHand
 		for (vector<VRDisplayNode*>::iterator it = _children.begin(); it != _children.end(); it++) {
 			(*it)->render(renderState, renderHandler);
 		}
+	} else
+	{
+		renderHandler->onVRRenderScene(renderState, this);
 	}
 }
 
@@ -54,6 +58,19 @@ void VRDisplayNode::clearChildren(bool destroyChildren) {
 	}
 
 	_children.clear();
+}
+
+void VRDisplayNode::createChildren(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
+  std::list<std::string> names = config->getValue(nameSpace);
+  std::string validatedNameSpace = config->validateNameSpace(nameSpace);
+  for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
+	  if (config->exists(*it, validatedNameSpace)){
+		  VRDisplayNode *child = vrMain->getFactory()->create<VRDisplayNode>(vrMain, config, config->validateNameSpace(validatedNameSpace) + *it);
+	  if (child != NULL) {
+		addChild(child);
+	  }
+	}
+  }	
 }
 
 } /* namespace MinVR */
