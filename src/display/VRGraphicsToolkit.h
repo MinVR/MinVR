@@ -16,10 +16,6 @@ public:
 	~VRGraphicsToolkit() {}
 
     virtual std::string getName() = 0;
-  
-	virtual void clearScreen() {
-		std::cerr << "clearScreen() not enabled in this VRGraphicsToolkit." << std::endl;
-	}
 
 	enum VRDRAWBUFFER {
 		VRDRAWBUFFER_BACK = 0,
@@ -33,8 +29,8 @@ public:
 		std::cerr << "setDrawBuffer() not enabled in this VRGraphicsToolkit." << std::endl;
 	}
 
-	virtual void setViewport(VRRect rect) {
-		std::cerr << "setViewport() not enabled in this VRGraphicsToolkit." << std::endl;
+	virtual void setSubWindow(VRRect rect) {
+		std::cerr << "setSubWindow() not enabled in this VRGraphicsToolkit." << std::endl;
 	}
 
 	virtual void disableDrawingOnOddColumns() {

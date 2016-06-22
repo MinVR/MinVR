@@ -35,7 +35,7 @@ public:
 		_vrMain->addRenderHandler(this);
         _horizAngle = 0.0;
         _vertAngle = 0.0;
-		_radius =  15.0;
+		_radius =  0.0;
         _incAngle = -0.1f;
 	}
 
@@ -82,6 +82,7 @@ public:
         }
     }
 
+	int count = 0;
   
 	// Callback for rendering, inherited from VRRenderHandler
 	virtual void onVRRenderScene(VRDataIndex *renderState, VRDisplayNode *callingNode) {
@@ -90,10 +91,15 @@ public:
 			console->println("Console output...");
 		}
 		else {
+
 			glEnable(GL_DEPTH_TEST);
 			glDepthFunc(GL_LEQUAL);
 			glClearDepth(1.0f);
-			glClearColor(0.5, 0.5, 0.5, 1.f);
+			count++;
+			glClearColor((count%100)/100.0, 0.5, 0.5, 1.f);
+
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+			//glClear(GL_DEPTH_BUFFER_BIT);
 
             if (renderState->exists("ProjectionMatrix", "/")) {
                 // This is the typical case where the MinVR DisplayGraph contains

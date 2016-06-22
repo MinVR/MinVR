@@ -18,9 +18,8 @@ public:
 
 	PLUGIN_API std::string getName() { return "VROpenGLGraphicsToolkit"; }
   
-	PLUGIN_API void clearScreen();
 	PLUGIN_API void setDrawBuffer(VRDRAWBUFFER buffer);
-	PLUGIN_API void setViewport(VRRect rect);
+	PLUGIN_API void setSubWindow(VRRect rect);
 	PLUGIN_API void flushGraphics();
 	PLUGIN_API void finishGraphics();
 

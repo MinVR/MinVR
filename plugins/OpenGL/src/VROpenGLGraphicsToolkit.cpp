@@ -12,10 +12,6 @@ VROpenGLGraphicsToolkit::~VROpenGLGraphicsToolkit() {
 
 }
 
-void VROpenGLGraphicsToolkit::clearScreen() {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-}
-
 void VROpenGLGraphicsToolkit::setDrawBuffer(VRDRAWBUFFER buffer) {
 	if (buffer == VRDRAWBUFFER_BACK) {
 		glDrawBuffer(GL_BACK);
@@ -37,8 +33,10 @@ void VROpenGLGraphicsToolkit::setDrawBuffer(VRDRAWBUFFER buffer) {
 	}
 }
 
-void VROpenGLGraphicsToolkit::setViewport(VRRect rect) {
-  glViewport(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
+void VROpenGLGraphicsToolkit::setSubWindow(VRRect rect) {
+	glEnable(GL_SCISSOR_TEST);
+	glViewport(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
+	glScissor(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
 }
 
 void VROpenGLGraphicsToolkit::flushGraphics() {

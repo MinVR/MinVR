@@ -27,7 +27,7 @@ void VRViewportNode::render(VRDataIndex *renderState, VRRenderHandler *renderHan
 	renderState->addData("ViewportWidth", (int)_rect.getWidth());
 	renderState->addData("ViewportHeight", (int)_rect.getHeight());
   
-	_gfxToolkit->setViewport(_rect);
+	_gfxToolkit->setSubWindow(_rect);
 
 	VRDisplayNode::render(renderState, renderHandler);
 
