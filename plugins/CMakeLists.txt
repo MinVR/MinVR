@@ -39,9 +39,14 @@ endif()
 
 #------------------FreeGlut-----------------------------
 option(MINVR_FREEGLUT_PLUGIN "If enabled, FreeGlut plugin will be installed" OFF)
-
 if (MINVR_FREEGLUT_PLUGIN OR BASE_GRAPHICS_PLUGINS)
 	add_subdirectory (FREEGLUT)
+endif()
+
+#------------------Scalable-----------------------------
+option(MINVR_SCALABLE_PLUGIN "If enabled, SCALABLE plugin will be installed. Requires proprietary software from scalabledisplay.com" OFF)
+if (MINVR_SCALABLE_PLUGIN OR BASE_PLUGINS)
+	add_subdirectory (Scalable)
 endif()
 
 if(false)
