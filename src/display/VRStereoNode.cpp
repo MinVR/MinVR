@@ -33,9 +33,11 @@ void VRStereoNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandl
 		renderState->addData("StereoFormat", "QuadBuffered");
 
 		_gfxToolkit->setDrawBuffer(VRGraphicsToolkit::VRDRAWBUFFER_BACKLEFT);
+		_gfxToolkit->clearScreen();
 		renderOneEye(renderState, renderHandler, Left);
-
+	
 		_gfxToolkit->setDrawBuffer(VRGraphicsToolkit::VRDRAWBUFFER_BACKRIGHT);
+		_gfxToolkit->clearScreen();
 		renderOneEye(renderState, renderHandler, Right);
 	}
 	else if (_format == VRSTEREOFORMAT_SIDEBYSIDE) {
@@ -151,7 +153,7 @@ void VRStereoNode::createChildren(VRMainInterface *vrMain, VRDataIndex *config, 
 			}
 		}
 		VRDisplayNode *child_right = new VRGroupNode(validatedNameSpace + "_right");
-		addChild(child_left);
+		addChild(child_right);
 		for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
 			if (config->exists(*it, validatedNameSpace))
 			{
