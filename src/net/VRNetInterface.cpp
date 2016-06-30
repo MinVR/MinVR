@@ -1,4 +1,5 @@
 #include <net/VRNetInterface.h>
+#include <sys/time.h>
 
 // unique identifiers for different network messages
 const unsigned char VRNetInterface::EVENTS_MSG = 1;
@@ -8,7 +9,6 @@ const unsigned char VRNetInterface::SWAP_BUFFERS_NOW_MSG = 3;
 // assuming 32-bit ints, note that VRNetInterface::pack/unpackint()
 // use the int32_t type
 const unsigned char VRNetInterface::VRNET_SIZEOFINT = 4;
-
 
 void VRNetInterface::sendSwapBuffersRequest(SOCKET socketID) {
   // this message consists only of a 1-byte header
@@ -21,20 +21,21 @@ void VRNetInterface::sendSwapBuffersNow(SOCKET socketID) {
 }
 
 void VRNetInterface::sendEventData(SOCKET socketID,
-                                   VRDataQueue::serialData eventData) {    
-  // 1. send 1-byte message header
-  sendall(socketID, &EVENTS_MSG, 1);
-  
-  // 2. send the size of the message data so receive will know how
-  // many bytes to expect.
-  unsigned char buf[VRNET_SIZEOFINT];
-  packInt(buf, eventData.size());
-  sendall(socketID, buf, VRNET_SIZEOFINT);
-  
-  // 3. send the chars that make up the eventData.
-  sendall(socketID,
-          (const unsigned char*)eventData.c_str(),
-          eventData.size());
+                                   VRDataQueue::serialData eventData) { 
+									   
+	int dataSize =  eventData.size() + 1 + VRNET_SIZEOFINT;
+	unsigned char *buf = new unsigned char[dataSize+1];
+	//1. add 1-byte message header
+	buf[0] = EVENTS_MSG;
+	// 2. add the size of the message data so receive will know how
+	// many bytes to expect.
+	packInt(&buf[1], eventData.size());
+	// 3. send the chars that make up the eventData.
+	memcpy(&buf[1 + VRNET_SIZEOFINT], (const unsigned char*)eventData.c_str(), eventData.size());
+	//4. send package
+	sendall(socketID,buf,dataSize);
+	//5. delete buffer
+	delete buf;
 }
 
 int VRNetInterface::sendall(SOCKET s, const unsigned char *buf, int len) {
@@ -56,7 +57,7 @@ int VRNetInterface::sendall(SOCKET s, const unsigned char *buf, int len) {
 
 // Meant to receive a message of a single byte.
 void VRNetInterface::waitForAndReceiveOneByte(SOCKET socketID,
-                                              unsigned char messageID) {
+                                              unsigned char messageID) {												  		
   unsigned char receivedID = 0x0;
   while (receivedID != messageID) {
     int status = receiveall(socketID, &receivedID, 1);
@@ -88,7 +89,7 @@ VRDataQueue::serialData
 VRNetInterface::waitForAndReceiveEventData(SOCKET socketID) {
   // 1. receive 1-byte message header
   waitForAndReceiveOneByte(socketID, EVENTS_MSG);
-  
+
   // 2. receive int that tells us the size of the data portion of the
   // message in bytes
   unsigned char buf1[VRNET_SIZEOFINT];
@@ -98,8 +99,6 @@ VRNetInterface::waitForAndReceiveEventData(SOCKET socketID) {
     exit(1);
   }
   int dataSize = unpackInt(buf1);
-  
-  //std::cout << "dataSize = " << dataSize << std::endl;
   
   // 3. receive dataSize bytes, then decode these as InputEvents
   unsigned char *buf2 = new unsigned char[dataSize+1];
