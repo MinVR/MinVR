@@ -37,26 +37,19 @@ if (MINVR_VRPN_PLUGIN OR BASE_PLUGINS)
 	add_subdirectory (VRPN)
 endif()
 
+#------------------FreeGlut-----------------------------
+option(MINVR_FREEGLUT_PLUGIN "If enabled, FreeGlut plugin will be installed" OFF)
 
+if (MINVR_FREEGLUT_PLUGIN OR BASE_GRAPHICS_PLUGINS)
+	add_subdirectory (FREEGLUT)
+endif()
 
 if(false)
-
-#------------------Threading-----------------------------
-option(MINVR_THREADING_PLUGIN "If enabled, Threading plugin will be installed" OFF)
-if (MINVR_THREADING_PLUGIN OR BASE_GRAPHICS_PLUGINS)
-	add_subdirectory (plugins/Threading)
-endif()
-
-#------------------GLUT-----------------------------
-option(MINVR_GLUT_PLUGIN "If enabled, GLUT plugin will be installed" OFF)
-
-find_package(GLUT)
-if (GLUT_FOUND)
-	if (MINVR_GLUT_PLUGIN OR BASE_GRAPHICS_PLUGINS)
-		add_subdirectory (plugins/GLUT)
+	#------------------Threading-----------------------------
+	option(MINVR_THREADING_PLUGIN "If enabled, Threading plugin will be installed" OFF)
+	if (MINVR_THREADING_PLUGIN OR BASE_GRAPHICS_PLUGINS)
+		add_subdirectory (plugins/Threading)
 	endif()
-endif()
-
 endif()
 
 
