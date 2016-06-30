@@ -57,10 +57,10 @@ void VRStereoNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandl
 			h = renderState->getValue("WindowHeight");
 		}
 
-		_gfxToolkit->setViewport(VRRect(x,y,w/2,h));
+		_gfxToolkit->setSubWindow(VRRect(x,y,w/2,h));
 		renderOneEye(renderState, renderHandler, Left);
 
-		_gfxToolkit->setViewport(VRRect(x+w/2+1,y,w/2,h));
+		_gfxToolkit->setSubWindow(VRRect(x + w / 2 + 1, y, w / 2, h));
 		renderOneEye(renderState, renderHandler, Right);
 	}
 	else if (_format == VRSTEREOFORMAT_COLUMNINTERLACED) {

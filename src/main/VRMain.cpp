@@ -245,7 +245,7 @@ VRMain::initialize(int argc, char** argv)
 	strcpy(title, vrSetupsToStartArray[i].c_str());
 	si.lpTitle = title;
     
-    std::string cmdLine = std::string(argv[0]) 
+	std::string cmdLine = std::string(argv[0]);
     for (int i = 1; i < argc; i++)
 		cmdLine = cmdLine + " " + argv[i];
     cmdLine = cmdLine + " VRSetupsToStart=" + vrSetupsToStartArray[i];

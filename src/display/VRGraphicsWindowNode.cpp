@@ -29,18 +29,18 @@ void VRGraphicsWindowNode::render(VRDataIndex *renderState, VRRenderHandler *ren
 	renderState->addData("WindowHeight", _settings.height);
   
 	_winToolkit->makeWindowCurrent(_windowID);
-	if (_settings.quadBuffered)
+	/*if (_settings.quadBuffered)
 	{
 		_gfxToolkit->setDrawBuffer(VRGraphicsToolkit::VRDRAWBUFFER_BACKRIGHT);
-		_gfxToolkit->clearScreen();
+		//_gfxToolkit->clearScreen();
 		_gfxToolkit->setDrawBuffer(VRGraphicsToolkit::VRDRAWBUFFER_BACKLEFT);
-		_gfxToolkit->clearScreen();
+		//_gfxToolkit->clearScreen();
 	}
 	else
 	{
 		_gfxToolkit->setDrawBuffer(VRGraphicsToolkit::VRDRAWBUFFER_BACK);
-		_gfxToolkit->clearScreen();
-	}
+		//_gfxToolkit->clearScreen();
+	}*/
 	
 	// windows should call the application programmer's context-level callback
 	renderHandler->onVRRenderContext(renderState, this);
@@ -92,6 +92,7 @@ VRDisplayNode* VRGraphicsWindowNode::create(VRMainInterface *vrMain, VRDataIndex
 	settings.quadBuffered = (int)config->getValue("QuadBuffered", nameSpace);
 	settings.gpuAffinity = std::string(config->getValue("GPUAffinity", nameSpace));
 
+	std::cout << settings.xpos << ", " << settings.ypos << ", " << settings.width << ", " << settings.height << std::endl;
 	VRDisplayNode *node = new VRGraphicsWindowNode(nameSpace, gfxToolkit, winToolkit, settings);
 
 	return node;

@@ -71,10 +71,10 @@ Window1_Visible         0*/
 	glfwWindowHint(GLFW_STENCIL_BITS, 8);
 	//glfwWindowHint(GLFW_VISIBLE, 0);
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 0);
+	glfwWindowHint(GLFW_DECORATED, false);
 
 	/*glfwWindowHint(GLFW_ALPHA_BITS, settings.->alphaBits);
 	glfwWindowHint(GLFW_DEPTH_BITS, settings->depthBits);
-	glfwWindowHint(GLFW_DECORATED, settings->framed);
 	glfwWindowHint(GLFW_SAMPLES, settings->msaaSamples);
 	glfwWindowHint(GLFW_RESIZABLE, settings->resizable);
 	glfwWindowHint(GLFW_RED_BITS, settings->rgbBits);

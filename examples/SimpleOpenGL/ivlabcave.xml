@@ -83,7 +83,7 @@
       <TopRight type="doublearray">4,4,-4</TopRight>
       <BottomLeft type="doublearray">-4,-4,-4</BottomLeft>
       <BottomRight type="doublearray">4,-4,-4</BottomRight>
-      <DisplayGraph linknode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
+      <DisplayGraph linkNode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
     </FrontWall>
     <Floor hostType="VRClient">
       <XPos>5520</XPos>
@@ -91,32 +91,32 @@
       <TopRight type="doublearray">4,-4,-4</TopRight>
       <BottomLeft type="doublearray">-4,-4,4</BottomLeft>
       <BottomRight type="doublearray">4,-4,4</BottomRight>
-      <DisplayGraph linknode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
+      <DisplayGraph linkNode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
     </Floor>
     <LeftWall hostType="VRClient">
-      <XPos>1681</XPos>
+      <XPos>1680</XPos>
       <TopLeft type="doublearray">-4,4,4</TopLeft>
       <TopRight type="doublearray">-4,4,-4</TopRight>
       <BottomLeft type="doublearray">-4,-4,4</BottomLeft>
       <BottomRight type="doublearray">-4,-4,-4</BottomRight>
-      <DisplayGraph linknode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
+      <DisplayGraph linkNode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
     </LeftWall>
     <RightWall hostType="VRClient">
-      <XPos>2961</XPos>
+      <XPos>2960</XPos>
       <TopLeft type="doublearray">4,4,-4</TopLeft>
       <TopRight type="doublearray">4,4,4</TopRight>
       <BottomLeft type="doublearray">4,-4,-4</BottomLeft>
       <BottomRight type="doublearray">4,-4,4</BottomRight>
-      <DisplayGraph linknode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
+      <DisplayGraph linkNode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
     </RightWall>
 
     <!-- ********************** Display Graph ********************** -->
     <MyDisplayGraph>
-      <WindowNode windowType="VRGraphicsWindowNode">
-        <HeadTracker displayNode="VRHeadTrackedNode">
+      <WindowNode displaynodeType="VRGraphicsWindowNode">
+        <HeadTracker displaynodeType="VRTrackedLookAtNode">
           <StereoNode displaynodeType="VRStereoNode">
             <ProjectionNode displaynodeType="VROffAxisProjectionNode">
-              <DUMMY/>
+				<DUMMY/>
             </ProjectionNode>
           </StereoNode>
         </HeadTracker>
