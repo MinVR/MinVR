@@ -19,6 +19,8 @@
 #include <net/VRNetServer.h>
 #include <plugin/VRPluginManager.h>
 
+#include <sys/time.h>
+
 namespace MinVR {
 
 
@@ -76,7 +78,6 @@ std::string getCurrentWorkingDir()
 VRMain::VRMain() : _initialized(false), _config(NULL), _net(NULL), _factory(NULL), _pluginMgr(NULL)
 {
   _factory = new VRFactory();
-  
   // add sub-factories that are part of the MinVR core library right away
   _factory->registerItemType<VRDisplayNode, VRConsoleNode>("VRConsoleNode");
   _factory->registerItemType<VRDisplayNode, VRGraphicsWindowNode>("VRGraphicsWindowNode");
@@ -197,8 +198,16 @@ VRMain::initialize(int argc, char** argv)
 				for (int i = 1; i < argc; i++)
 					command = command + " " + argv[i];
 				command = command + " VRSetupsToStart=" + *it + " StartedSSH=1";
-				std::string sshcmd = "ssh " + nodeIP + " '" + command + " > /dev/null 2>&1 &'";
+				std::string sshcmd;
+				if(_config->exists("LogToFile",*it)){
+					std::string logFile = _config->getValue("LogToFile",*it);
+					sshcmd = "ssh " + nodeIP + " '" + command + " > " + logFile + " " +  "2>&1 &'";
+				}else{
+					sshcmd = "ssh " + nodeIP + " '" + command + " > /dev/null 2>&1 &'";
+				}
+				
 				std::cerr << "Start " << sshcmd << std::endl;
+				
 				//we start and remove all clients which are started remotely via ssh
 				it = vrSetupsToStartArray.erase(it);
 				system(sshcmd.c_str());
@@ -481,7 +490,7 @@ VRMain::synchronizeAndProcessEvents()
     for (int f = 0; f < _eventHandlers.size(); f++) {
       _eventHandlers[f]->onVREvent(event, _config);
     }
-
+    
     // Get the next item from the queue.
     events->pop();
   }
@@ -550,7 +559,6 @@ VRMain::addRenderHandler(VRRenderHandler* renderHandler)
 VRGraphicsToolkit* 
 VRMain::getGraphicsToolkit(const std::string &name) {
   for (std::vector<VRGraphicsToolkit*>::iterator it = _gfxToolkits.begin(); it < _gfxToolkits.end(); ++it) {
-    //std::cout << (*it)->getName() << std::endl;
     if ((*it)->getName() == name) {
       return *it;
     }
@@ -562,7 +570,6 @@ VRMain::getGraphicsToolkit(const std::string &name) {
 VRWindowToolkit* 
 VRMain::getWindowToolkit(const std::string &name) {
   for (std::vector<VRWindowToolkit*>::iterator it = _winToolkits.begin(); it < _winToolkits.end(); ++it) {
-    //std::cout << (*it)->getName() << std::endl;
     if ((*it)->getName() == name) {
       return *it;
     }
