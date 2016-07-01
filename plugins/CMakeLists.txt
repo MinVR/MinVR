@@ -37,15 +37,13 @@ if (MINVR_VRPN_PLUGIN OR BASE_PLUGINS)
 	add_subdirectory (VRPN)
 endif()
 
-
-
-if(false)
-
 #------------------Threading-----------------------------
 option(MINVR_THREADING_PLUGIN "If enabled, Threading plugin will be installed" OFF)
-if (MINVR_THREADING_PLUGIN OR BASE_GRAPHICS_PLUGINS)
-	add_subdirectory (plugins/Threading)
+if (MINVR_THREADING_PLUGIN OR BASE_PLUGINS)
+	add_subdirectory (Threading)
 endif()
+
+if(false)
 
 #------------------GLUT-----------------------------
 option(MINVR_GLUT_PLUGIN "If enabled, GLUT plugin will be installed" OFF)
