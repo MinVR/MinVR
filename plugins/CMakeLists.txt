@@ -37,6 +37,11 @@ if (MINVR_VRPN_PLUGIN OR BASE_PLUGINS)
 	add_subdirectory (VRPN)
 endif()
 
+#------------------Python-----------------------------
+option(MINVR_PYTHON_PLUGIN "If enabled, Python plugin will be installed" OFF)
+if (MINVR_PYTHON_PLUGIN)
+	add_subdirectory (Python)
+endif()
 
 
 if(false)

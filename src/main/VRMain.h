@@ -97,6 +97,8 @@ public:
 
   VRFactory* getFactory() { return _factory; }
 
+  VRDataIndex* getConfig() { return _config; }
+
   void addInputDevice(VRInputDevice* dev);
  
   VRGraphicsToolkit* getGraphicsToolkit(const std::string &name);

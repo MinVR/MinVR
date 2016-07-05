@@ -35,7 +35,7 @@ public:
 		_vrMain->addRenderHandler(this);
         _horizAngle = 0.0;
         _vertAngle = 0.0;
-		_radius =  0.0;
+		_radius =  15.0;
         _incAngle = -0.1f;
 	}
 
@@ -96,7 +96,7 @@ public:
 			glDepthFunc(GL_LEQUAL);
 			glClearDepth(1.0f);
 			count++;
-			glClearColor((count%100)/100.0, 0.5, 0.5, 1.f);
+			glClearColor(0.0, 0.0, 0.0, 1.f);
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 			//glClear(GL_DEPTH_BUFFER_BIT);
