@@ -37,6 +37,12 @@ if (MINVR_VRPN_PLUGIN OR BASE_PLUGINS)
 	add_subdirectory (VRPN)
 endif()
 
+#------------------OpenVR-----------------------------
+option(MINVR_OPENVR_PLUGIN "If enabled, OpenVR plugin will be installed" OFF)
+if (MINVR_OPENVR_PLUGIN)
+	add_subdirectory (OpenVR)
+endif()
+
 #------------------FreeGlut-----------------------------
 option(MINVR_FREEGLUT_PLUGIN "If enabled, FreeGlut plugin will be installed" OFF)
 if (MINVR_FREEGLUT_PLUGIN OR BASE_GRAPHICS_PLUGINS)
