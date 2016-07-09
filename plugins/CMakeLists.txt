@@ -12,8 +12,13 @@ endif()
 
 include(ExternalProject)
 
-option(BASE_PLUGINS "If enabled, Base plugins will be installed" OFF)
+option(BASE_PLUGINS "If enabled, Base plugins will be installed" ON)
 option(BASE_GRAPHICS_PLUGINS "If enabled, Base graphics plugins will be installed" OFF)
+option(BASE_VR_PLUGINS "If enabled, Base virtual reality plugins will be installed" OFF)
+
+if (BASE_VR_PLUGINS)
+	set(BASE_PLUGINS ON)
+endif(BASE_VR_PLUGINS)
 
 if (BASE_PLUGINS)
 	set(BASE_GRAPHICS_PLUGINS ON)
@@ -33,13 +38,13 @@ endif()
 
 #------------------VRPN-----------------------------
 option(MINVR_VRPN_PLUGIN "If enabled, VRPN plugin will be installed" OFF)
-if (MINVR_VRPN_PLUGIN OR BASE_PLUGINS)
+if (MINVR_VRPN_PLUGIN OR BASE_VR_PLUGINS)
 	add_subdirectory (VRPN)
 endif()
 
 #------------------Python-----------------------------
 option(MINVR_PYTHON_PLUGIN "If enabled, Python plugin will be installed" OFF)
-if (MINVR_PYTHON_PLUGIN)
+if (MINVR_PYTHON_PLUGIN OR BASE_PLUGINS)
 	add_subdirectory (Python)
 endif()
 

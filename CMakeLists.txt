@@ -50,7 +50,7 @@ project(MinVR_Project)
 cmake_minimum_required (VERSION 2.8.2) 
 
 if(NOT CMAKE_BUILD_TYPE)
-  set( CMAKE_BUILD_TYPE Debug CACHE STRING
+  set( CMAKE_BUILD_TYPE Release CACHE STRING
        "Choose the type of build, options are: None Debug Release RelWithDebInfo
 #MinSizeRel." FORCE)
 endif()
@@ -65,7 +65,7 @@ endif()
 # other builds, we'll add a postfix to the name of the lib or exe that we generate.
 
 if(NOT CMAKE_DEBUG_POSTFIX)
-  set(CMAKE_DEBUG_POSTFIX "")
+  set(CMAKE_DEBUG_POSTFIX "d")
 endif()
 set(CMAKE_RELEASE_POSTFIX "")
 set(CMAKE_RELWITHDEBINFO_POSTFIX "rd")
