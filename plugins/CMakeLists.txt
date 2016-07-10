@@ -38,7 +38,7 @@ endif()
 
 #------------------VRPN-----------------------------
 option(MINVR_VRPN_PLUGIN "If enabled, VRPN plugin will be installed" OFF)
-if (MINVR_VRPN_PLUGIN OR BASE_VR_PLUGINS)
+if (MINVR_VRPN_PLUGIN OR BASE_PLUGINS)
 	add_subdirectory (VRPN)
 endif()
 
@@ -54,8 +54,33 @@ if (MINVR_THREADING_PLUGIN OR BASE_PLUGINS)
 	add_subdirectory (Threading)
 endif()
 
+#------------------OpenVR-----------------------------
+option(MINVR_OPENVR_PLUGIN "If enabled, OpenVR plugin will be installed" OFF)
+if (MINVR_OPENVR_PLUGIN)
+	add_subdirectory (OpenVR)
+endif()
+
+#------------------FreeGlut-----------------------------
+option(MINVR_FREEGLUT_PLUGIN "If enabled, FreeGlut plugin will be installed" OFF)
+if (MINVR_FREEGLUT_PLUGIN)
+	add_subdirectory (FREEGLUT)
+endif()
+
+#------------------Scalable-----------------------------
+option(MINVR_SCALABLE_PLUGIN "If enabled, SCALABLE plugin will be installed. Requires proprietary software from scalabledisplay.com" OFF)
+if (MINVR_SCALABLE_PLUGIN)
+	add_subdirectory (Scalable)
+endif()
+
+
 
 if(false)
+
+#------------------Threading-----------------------------
+option(MINVR_THREADING_PLUGIN "If enabled, Threading plugin will be installed" OFF)
+if (MINVR_THREADING_PLUGIN OR BASE_GRAPHICS_PLUGINS)
+	add_subdirectory (plugins/Threading)
+endif()
 
 #------------------GLUT-----------------------------
 option(MINVR_GLUT_PLUGIN "If enabled, GLUT plugin will be installed" OFF)

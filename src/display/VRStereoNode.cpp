@@ -151,7 +151,7 @@ void VRStereoNode::createChildren(VRMainInterface *vrMain, VRDataIndex *config, 
 			}
 		}
 		VRDisplayNode *child_right = new VRGroupNode(validatedNameSpace + "_right");
-		addChild(child_left);
+		addChild(child_right);
 		for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
 			if (config->exists(*it, validatedNameSpace))
 			{
