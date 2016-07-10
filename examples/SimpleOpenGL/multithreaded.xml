@@ -1,0 +1,47 @@
+
+<MinVR>
+	<PluginPath>../../build/plugins</PluginPath>
+	<GLFWPlugin pluginType="MinVR_GLFW"/>
+	<OpenGLPlugin pluginType="MinVR_OpenGL"/>
+	<ThreadingPlugin pluginType="MinVR_Threading"/>
+
+	<VRSetups>
+		<Desktop hostType="VRStandAlone">
+	      <ThreadGroupNode displaynodeType="VRThreadGroupNode">
+		      <GLFWToolkit windowtoolkitType="VRGLFWWindowToolkit"/>
+		      <OpenGLToolkit graphicstoolkitType="VROpenGLGraphicsToolkit"/>
+		      <Window1 displaynodeType="VRGraphicsWindowNode">
+		        	<Border>0</Border>
+		        	<Caption>Desktop</Caption>
+		        	<QuadBuffered>0</QuadBuffered>
+		        	<GPUAffinity>None</GPUAffinity>
+		        	<XPos>50</XPos>
+		        	<YPos>100</YPos>
+		        	<Width>320</Width>
+		        	<Height>200</Height>
+		      </Window1>
+		      <Window2 displaynodeType="VRGraphicsWindowNode">
+		        	<Border>0</Border>
+		        	<Caption>Desktop</Caption>
+		        	<QuadBuffered>0</QuadBuffered>
+		        	<GPUAffinity>None</GPUAffinity>
+		        	<XPos>450</XPos>
+		        	<YPos>100</YPos>
+		        	<Width>320</Width>
+		        	<Height>200</Height>
+		      </Window2>
+		      <Window3 displaynodeType="VRGraphicsWindowNode">
+		        	<Border>0</Border>
+		        	<Caption>Desktop</Caption>
+		        	<QuadBuffered>0</QuadBuffered>
+		        	<GPUAffinity>None</GPUAffinity>
+		        	<XPos>800</XPos>
+		        	<YPos>100</YPos>
+		        	<Width>320</Width>
+		        	<Height>200</Height>
+		      </Window3>
+				
+	      <ThreadGroupNode>
+		</Desktop>
+	</VRSetups>
+</MinVR>
