@@ -10,6 +10,7 @@ _ReSharper*
 Win32
 Debug
 Release
+*.pyc
 
 # build files
 build/
