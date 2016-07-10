@@ -25,6 +25,7 @@ public:
   virtual void addEventHandler(VREventHandler *eHandler) = 0;
   virtual void addRenderHandler(VRRenderHandler *rHandler) = 0;
   virtual void addInputDevice(VRInputDevice *dev) = 0;
+  virtual VRDataIndex* getConfig() = 0;
   virtual VRGraphicsToolkit* getGraphicsToolkit(const std::string &name) = 0;  
   virtual VRWindowToolkit* getWindowToolkit(const std::string &name) = 0;
   virtual VRFactory* getFactory() = 0;

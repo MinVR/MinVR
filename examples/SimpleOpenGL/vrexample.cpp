@@ -81,6 +81,8 @@ public:
         if (!renderState->exists("IsConsole", "/")) {
         }
     }
+
+	int count = 0;
   
 	// Callback for rendering, inherited from VRRenderHandler
 	virtual void onVRRenderScene(VRDataIndex *renderState, VRDisplayNode *callingNode) {
@@ -93,7 +95,7 @@ public:
 			glEnable(GL_DEPTH_TEST);
 			glDepthFunc(GL_LEQUAL);
 			glClearDepth(1.0f);
-			//glClearColor((count%100)/100.0, 0.5, 0.5, 1.f);
+			count++;
 			glClearColor(0.0, 0.0, 0.0, 1.f);
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
