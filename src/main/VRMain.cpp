@@ -19,8 +19,6 @@
 #include <net/VRNetServer.h>
 #include <plugin/VRPluginManager.h>
 
-#include <sys/time.h>
-
 namespace MinVR {
 
 
