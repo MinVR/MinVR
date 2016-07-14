@@ -16,6 +16,7 @@ set(vr_example_config_files
   ivlabcavefront.xml
   simple.xml
   testalldisplaynodes.xml
+  multithreaded.xml
   YURT.xml
 )
 

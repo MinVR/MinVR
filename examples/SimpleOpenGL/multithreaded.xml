@@ -5,40 +5,78 @@
 	<OpenGLPlugin pluginType="MinVR_OpenGL"/>
 	<ThreadingPlugin pluginType="MinVR_Threading"/>
 
-	<VRSetups>
-		<Desktop hostType="VRStandAlone">
-	      <ThreadGroupNode displaynodeType="VRThreadGroupNode">
+  <RGBBits>8</RGBBits>
+  <AlphaBits>8</AlphaBits>
+  <DepthBits>24</DepthBits>
+  <StencilBits>8</StencilBits>
+  <FullScreen>0</FullScreen>
+  <Resizable>1</Resizable>
+  <AllowMaximize>1</AllowMaximize>
+  <Visible>1</Visible>
+  <ContextVersionMajor>3</ContextVersionMajor>
+  <ContextVersionMinor>0</ContextVersionMinor>
+  <UseGPUAffinity>1</UseGPUAffinity>
+  <UseDebugContext>0</UseDebugContext>
+  <MSAASamples>1</MSAASamples>
+  <QuadBuffered>0</QuadBuffered>
+  <AsyncEnabled>1</AsyncEnabled>
+  <SharedContextGroupID>-1</SharedContextGroupID>
+
+  <LookAtMatrix type="doublearray">1,0,0,0, 0,1,0,2, 0,0,1,4, 0,0,0,1</LookAtMatrix>
+  <HeadTrackingEvent>Head_Move</HeadTrackingEvent>
+  <EyeSeparation>0.203</EyeSeparation>
+  <NearClip>0.001</NearClip>
+  <FarClip>500.0</FarClip>
+  
+  <VRSetups>
+    <Desktop hostType="VRStandAlone">
+      <ThreadGroupNode displaynodeType="VRThreadGroupNode">
 		      <GLFWToolkit windowtoolkitType="VRGLFWWindowToolkit"/>
 		      <OpenGLToolkit graphicstoolkitType="VROpenGLGraphicsToolkit"/>
 		      <Window1 displaynodeType="VRGraphicsWindowNode">
 		        	<Border>0</Border>
 		        	<Caption>Desktop</Caption>
-		        	<QuadBuffered>0</QuadBuffered>
-		        	<GPUAffinity>None</GPUAffinity>
 		        	<XPos>50</XPos>
 		        	<YPos>100</YPos>
 		        	<Width>320</Width>
 		        	<Height>200</Height>
-		      </Window1>
+            <Viewport1 displaynodeType="VRViewportNode">
+              <XPos>0</XPos>
+              <YPos>0</YPos>
+              <Width>150</Width>
+              <Height>200</Height>
+              <ProjectionNode displaynodeType="VROffAxisProjectionNode">
+                <TopLeft type="doublearray">-4,4,-4</TopLeft>
+                <TopRight type="doublearray">4,4,-4</TopRight>
+                <BottomLeft type="doublearray">-4,-4,-4</BottomLeft>
+                <BottomRight type="doublearray">4,-4,-4</BottomRight>
+                <DUMMY/>
+              </ProjectionNode>
+            </Viewport1>
+            <Viewport2 displaynodeType="VRViewportNode">
+              <XPos>170</XPos>
+              <YPos>0</YPos>
+              <Width>150</Width>
+              <Height>200</Height>
+            </Viewport2>
+          </Window1>
 		      <Window2 displaynodeType="VRGraphicsWindowNode">
 		        	<Border>0</Border>
 		        	<Caption>Desktop</Caption>
-		        	<QuadBuffered>0</QuadBuffered>
-		        	<GPUAffinity>None</GPUAffinity>
 		        	<XPos>450</XPos>
 		        	<YPos>100</YPos>
 		        	<Width>320</Width>
 		        	<Height>200</Height>
+              <SharedContextGroupID>1</SharedContextGroupID>
 		      </Window2>
 		      <Window3 displaynodeType="VRGraphicsWindowNode">
 		        	<Border>0</Border>
 		        	<Caption>Desktop</Caption>
-		        	<QuadBuffered>0</QuadBuffered>
-		        	<GPUAffinity>None</GPUAffinity>
 		        	<XPos>800</XPos>
 		        	<YPos>100</YPos>
 		        	<Width>320</Width>
 		        	<Height>200</Height>
+            <SharedContextGroupID>1</SharedContextGroupID>
 		      </Window3>
 				
 	      <ThreadGroupNode>

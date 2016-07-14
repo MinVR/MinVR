@@ -45,7 +45,8 @@ void VRThreadGroupNode::render(VRDataIndex* renderState,
 
 	if (async) {
 		// Let threads know they are ready for rendering
-			threadGroup->startThreadAction(THREADACTION_Render, renderState, renderHandler);
+			VRDataIndex rstate;
+			threadGroup->startThreadAction(THREADACTION_Render, &rstate, renderHandler);
 			threadGroup->waitForComplete();
 	}
 	else {
@@ -57,7 +58,8 @@ void VRThreadGroupNode::render(VRDataIndex* renderState,
 void VRThreadGroupNode::waitForRenderToComplete(VRDataIndex* renderState) {
 	if (async) {
 		// Let threads know we are waiting for them to finish rendering
-		threadGroup->startThreadAction(THREADACTION_WaitForRenderToComplete, renderState, NULL);
+		VRDataIndex rstate;
+		threadGroup->startThreadAction(THREADACTION_WaitForRenderToComplete, &rstate, NULL);
 		threadGroup->waitForComplete();
 	}
 	else {
@@ -68,7 +70,8 @@ void VRThreadGroupNode::waitForRenderToComplete(VRDataIndex* renderState) {
 void VRThreadGroupNode::displayFinishedRendering(VRDataIndex* renderState) {
 	if (async) {
 		// Let threads know that we should display the results
-		threadGroup->startThreadAction(THREADACTION_DisplayFinishedRendering, renderState, NULL);
+		VRDataIndex rstate;
+		threadGroup->startThreadAction(THREADACTION_DisplayFinishedRendering, &rstate, NULL);
 		threadGroup->waitForComplete();
 	}
 	else {

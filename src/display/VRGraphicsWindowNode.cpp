@@ -104,7 +104,7 @@ VRDisplayNode* VRGraphicsWindowNode::create(VRMainInterface *vrMain, VRDataIndex
 	settings.fullScreen = int(config->getValue("FullScreen", nameSpace));
 	settings.resizable = int(config->getValue("Resizable", nameSpace));
 	settings.allowMaximize = int(config->getValue("AllowMaximize", nameSpace));
- 	settings.gpuAffinity = int(config->getValue("GPUAffinity", nameSpace));
+ 	settings.gpuAffinity = int(config->getValue("UseGPUAffinity", nameSpace));
 	settings.debugContext = int(config->getValue("UseDebugContext", nameSpace));
 	settings.msaaSamples = int(config->getValue("MSAASamples", nameSpace));
 

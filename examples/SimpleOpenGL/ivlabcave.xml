@@ -57,6 +57,23 @@
   </CaveServer>
   
   <MyClients>
+
+    <RGBBits>8</RGBBits>
+    <AlphaBits>8</AlphaBits>
+    <DepthBits>24</DepthBits>
+    <StencilBits>8</StencilBits>
+    <FullScreen>0</FullScreen>
+    <Resizable>1</Resizable>
+    <AllowMaximize>1</AllowMaximize>
+    <Visible>1</Visible>
+    <SharedContextGroupID>-1</SharedContextGroupID>
+    <ContextVersionMajor>3</ContextVersionMajor>
+    <ContextVersionMinor>0</ContextVersionMinor>
+    <UseGPUAffinity>1</UseGPUAffinity>
+    <UseDebugContext>0</UseDebugContext>
+    <MSAASamples>1</MSAASamples>
+    <QuadBuffered>1</QuadBuffered>
+    
     <!-- Common to all clients -->
     <GLFWToolkit windowtoolkitType="VRGLFWWindowToolkit"/>
     <OpenGLToolkit graphicstoolkitType="VROpenGLGraphicsToolkit"/>
@@ -64,8 +81,6 @@
     <!-- Common display graph configuration -->
     <Border>0</Border>
     <Caption>Desktop</Caption>
-    <QuadBuffered>1</QuadBuffered>
-    <GPUAffinity>None</GPUAffinity>
     <StereoFormat>QuadBuffered</StereoFormat>
     <EyeSeparation>0.203</EyeSeparation>
     <NearClip>0.001</NearClip>
