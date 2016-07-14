@@ -25,9 +25,20 @@ public:
 	bool border;
 	std::string caption;
  	bool quadBuffered;
- 	std::string gpuAffinity;
  	bool visible;
  	int sharedContextGroupID;
+ 	int contextVersionMajor;
+ 	int contextVersionMinor;
+ 	int rgbBits;
+ 	int alphaBits;
+ 	int depthBits;
+ 	int stencilBits;
+ 	bool fullScreen;
+ 	bool resizable;
+ 	bool allowMaximize;
+ 	bool gpuAffinity;
+ 	bool debugContext;
+ 	int msaaSamples;
 
 // 	Window1_Height          1300
 // 	Window1_X               1681

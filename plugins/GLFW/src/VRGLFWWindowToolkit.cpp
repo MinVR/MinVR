@@ -6,6 +6,13 @@
  * 		Dan Orban (dtorban)
  */
 
+#include "GL/glew.h"
+#ifdef _WIN32
+#include "GL/wglew.h"
+#elif (!defined(__APPLE__))
+#include "GL/glxew.h"
+#endif
+
 #include "VRGLFWWindowToolkit.h"
 #include <main/VRMainInterface.h>
 #include <iostream>
@@ -40,53 +47,24 @@ int
 VRGLFWWindowToolkit::createWindow(VRWindowSettings settings) {
     glfwDefaultWindowHints();
 
-	/*Window1_Width           2550
-Window1_Height          1300
-Window1_X               1681
-Window1_Y               0
-Window1_RGBBits         8
-Window1_AlphaBits       8
-Window1_DepthBits       24
-Window1_StencilBits     8
-Window1_MSAASamples     1
-Window1_FullScreen      0
-Window1_Stereo          1
-Window1_Resizable       0
-Window1_AllowMaximize   0
-Window1_Framed          0
-Window1_Caption         MinVR Cave Sides
-Window1_StereoType	    QuadBuffered
-Window1_UseDebugContext 0
-Window1_UseGPUAffinity  1
-Window1_Visible         0*/
-
-	glfwWindowHint(GLFW_ALPHA_BITS, 8);
-	glfwWindowHint(GLFW_DEPTH_BITS, 24);
-	//glfwWindowHint(GLFW_DECORATED, settings->framed);
-	glfwWindowHint(GLFW_SAMPLES, 1);
-	glfwWindowHint(GLFW_RESIZABLE, 0);
-	glfwWindowHint(GLFW_RED_BITS, 8);
-	glfwWindowHint(GLFW_GREEN_BITS, 8);
-	glfwWindowHint(GLFW_BLUE_BITS, 8);
-	glfwWindowHint(GLFW_STENCIL_BITS, 8);
+	glfwWindowHint(GLFW_ALPHA_BITS, settings.alphaBits);
+	glfwWindowHint(GLFW_DEPTH_BITS, settings.depthBits);
+	glfwWindowHint(GLFW_SAMPLES, settings.msaaSamples);
+	glfwWindowHint(GLFW_RESIZABLE, settings.resizable);
+	glfwWindowHint(GLFW_RED_BITS, settings.rgbBits);
+	glfwWindowHint(GLFW_GREEN_BITS, settings.rgbBits);
+	glfwWindowHint(GLFW_BLUE_BITS, settings.rgbBits);
+	glfwWindowHint(GLFW_STENCIL_BITS, settings.stencilBits);
 	glfwWindowHint(GLFW_VISIBLE, settings.visible);
-	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 0);
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, settings.debugContext);
 	glfwWindowHint(GLFW_DECORATED, settings.border);
-
-	/*glfwWindowHint(GLFW_ALPHA_BITS, settings.->alphaBits);
-	glfwWindowHint(GLFW_DEPTH_BITS, settings->depthBits);
-	glfwWindowHint(GLFW_SAMPLES, settings->msaaSamples);
-	glfwWindowHint(GLFW_RESIZABLE, settings->resizable);
-	glfwWindowHint(GLFW_RED_BITS, settings->rgbBits);
-	glfwWindowHint(GLFW_GREEN_BITS, settings->rgbBits);
-	glfwWindowHint(GLFW_BLUE_BITS, settings->rgbBits);
-	glfwWindowHint(GLFW_STENCIL_BITS, settings->stencilBits);
-	glfwWindowHint(GLFW_STEREO, settings->stereo && settings->stereoType == WindowSettings::STEREOTYPE_QUADBUFFERED);
-	glfwWindowHint(GLFW_VISIBLE, settings->visible);
-	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, settings->useDebugContext);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);*/
+	if (settings.contextVersionMajor >= 4 || (settings.contextVersionMajor >= 3 && settings.contextVersionMinor >= 2))
+	{
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, settings.contextVersionMajor);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, settings.contextVersionMinor);
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	}
 
     if (settings.quadBuffered) {
   		glfwWindowHint(GLFW_STEREO, true);
@@ -111,7 +89,57 @@ Window1_Visible         0*/
 		_sharedContextGroups[settings.sharedContextGroupID] = window;
 	}
 
+#ifdef _MSC_VER
+
+#define MAX_AFFINITY_GPUS 16
+
+	if (settings.gpuAffinity) {
+		int currentGPU = -1;
+		GPU_DEVICE gpus[MAX_AFFINITY_GPUS];
+		if (WGLEW_NV_gpu_affinity) {
+			int numGPUs = 0;
+			for( UINT gpu = 0; true; ++gpu ) {
+				HGPUNV hGPU = 0;
+				if( !wglEnumGpusNV( gpu, &hGPU )) {
+					break;
+				}
+
+				Rect2D win(settings->width, settings->height, settings->xPos, settings->yPos);
+				int deviceIndex = 0;
+				int area = win.getArea();
+				int gpuArea = 0;
+				gpus[gpu].cb = sizeof(GPU_DEVICE);
+				while (wglEnumGpuDevicesNV(hGPU, deviceIndex, &gpus[gpu])) {
+
+
+					deviceIndex++;
+					int j = gpu;
+					Rect2D dev(gpus[j].rcVirtualScreen.right - gpus[j].rcVirtualScreen.left, gpus[j].rcVirtualScreen.bottom - gpus[j].rcVirtualScreen.top, gpus[j].rcVirtualScreen.left, gpus[j].rcVirtualScreen.top);
+					Rect2D intersection = dev.intersect(win);
+					gpuArea += intersection.getArea();
+					if (area <= gpuArea)
+					{
+						currentGPU = gpu;
+						//break;
+					}
+
+
+				}
+
+				if (currentGPU > 0)
+				{
+					break;
+				}
+				numGPUs++;
+			}
+
+			glfwWindowHint(GLFW_AFFINITY_GPU, currentGPU);
+		}
+	}
+#endif
+
     glfwSetWindowPos(window, settings.xpos, settings.ypos);
+
 	glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
     glfwMakeContextCurrent(NULL);
@@ -125,6 +153,8 @@ Window1_Visible         0*/
 
 	_windows.push_back(window);
 	return _windows.size()-1;
+
+	glfwShowWindow(window);
 }
 
 void 

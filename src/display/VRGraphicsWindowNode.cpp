@@ -11,19 +11,15 @@
 namespace MinVR {
 
 VRGraphicsWindowNode::VRGraphicsWindowNode(const std::string &name, VRGraphicsToolkit *gfxToolkit, VRWindowToolkit *winToolkit, const VRWindowSettings &settings) : 
-	VRDisplayNode(name), _gfxToolkit(gfxToolkit), _winToolkit(winToolkit), _settings(settings), _windowID(-1)
+	VRDisplayNode(name), _gfxToolkit(gfxToolkit), _winToolkit(winToolkit), _settings(settings)
 {
-
+	_windowID = _winToolkit->createWindow(_settings);
 }
 
 VRGraphicsWindowNode::~VRGraphicsWindowNode() {
 }
 
 void VRGraphicsWindowNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler) {
-
-	if (_windowID < 0) {
-		_windowID = _winToolkit->createWindow(_settings);
-	}
 
   renderState->pushState();
 
@@ -98,8 +94,19 @@ VRDisplayNode* VRGraphicsWindowNode::create(VRMainInterface *vrMain, VRDataIndex
 	settings.visible = (int)config->getValue("Visible", nameSpace);
 	settings.caption = std::string(config->getValue("Caption", nameSpace));
 	settings.quadBuffered = (int)config->getValue("QuadBuffered", nameSpace);
-	settings.gpuAffinity = std::string(config->getValue("GPUAffinity", nameSpace));
-	settings.gpuAffinity = std::string(config->getValue("SharedContextGroupID", nameSpace));
+	settings.sharedContextGroupID = int(config->getValue("SharedContextGroupID", nameSpace));
+	settings.contextVersionMajor = int(config->getValue("ContextVersionMajor", nameSpace));
+	settings.contextVersionMinor = int(config->getValue("ContextVersionMinor", nameSpace));
+	settings.rgbBits = int(config->getValue("RGBBits", nameSpace));
+	settings.alphaBits = int(config->getValue("AlphaBits", nameSpace));
+	settings.depthBits = int(config->getValue("DepthBits", nameSpace));
+	settings.stencilBits = int(config->getValue("StencilBits", nameSpace));
+	settings.fullScreen = int(config->getValue("FullScreen", nameSpace));
+	settings.resizable = int(config->getValue("Resizable", nameSpace));
+	settings.allowMaximize = int(config->getValue("AllowMaximize", nameSpace));
+ 	settings.gpuAffinity = int(config->getValue("GPUAffinity", nameSpace));
+	settings.debugContext = int(config->getValue("UseDebugContext", nameSpace));
+	settings.msaaSamples = int(config->getValue("MSAASamples", nameSpace));
 
 	std::cout << settings.xpos << ", " << settings.ypos << ", " << settings.width << ", " << settings.height << std::endl;
 	VRDisplayNode *node = new VRGraphicsWindowNode(nameSpace, gfxToolkit, winToolkit, settings);
