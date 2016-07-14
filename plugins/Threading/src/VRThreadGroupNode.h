@@ -24,7 +24,7 @@ namespace MinVR {
  */
 class VRThreadGroupNode : public VRDisplayNode {
 public:
-	VRThreadGroupNode(const std::string &name);
+	VRThreadGroupNode(const std::string &name, bool asyncEnabled);
 	virtual ~VRThreadGroupNode();
 
 	virtual std::string getType() { return "VRThreadGroupNode"; }

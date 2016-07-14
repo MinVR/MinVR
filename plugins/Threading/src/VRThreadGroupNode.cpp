@@ -11,7 +11,7 @@
 
 namespace MinVR {
 
-VRThreadGroupNode::VRThreadGroupNode(const std::string& name) : VRDisplayNode(name), threadGroup(NULL), async(true), asyncEnabled(true) {
+VRThreadGroupNode::VRThreadGroupNode(const std::string& name, bool asyncEnabled) : VRDisplayNode(name), threadGroup(NULL), async(true), asyncEnabled(asyncEnabled) {
 }
 
 VRThreadGroupNode::~VRThreadGroupNode() {
@@ -80,7 +80,8 @@ void VRThreadGroupNode::displayFinishedRendering(VRDataIndex* renderState) {
 
 VRDisplayNode* VRThreadGroupNode::create(VRMainInterface* vrMain,
 		VRDataIndex* config, const std::string& nameSpace) {
-	return new VRThreadGroupNode(nameSpace);
+	bool asyncEnabled = int(config->getValue("AsyncEnabled", nameSpace));
+	return new VRThreadGroupNode(nameSpace, asyncEnabled);
 }
 
 } /* namespace MinVR */

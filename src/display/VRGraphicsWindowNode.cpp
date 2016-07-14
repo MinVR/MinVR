@@ -32,6 +32,8 @@ void VRGraphicsWindowNode::render(VRDataIndex *renderState, VRRenderHandler *ren
 	renderState->addData("WindowY", _settings.ypos);
 	renderState->addData("WindowWidth", _settings.width);
 	renderState->addData("WindowHeight", _settings.height);
+	renderState->addData("SharedContextGroupID", _settings.sharedContextGroupID);
+	renderState->addData("WindowID", _windowID);
   
 	_winToolkit->makeWindowCurrent(_windowID);
 	/*if (_settings.quadBuffered)
