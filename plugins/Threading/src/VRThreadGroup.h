@@ -49,7 +49,7 @@ public:
 	void completeAction();
 
 	/// Waits for all threads to be completed
-	VRRenderThreadAction waitForComplete();
+	void waitForComplete();
 
 	VRRenderHandler* getRenderHandler() const {
 		return renderHandler;
