@@ -507,7 +507,7 @@ VRMain::renderOnAllDisplays()
   }
 
   VRDataIndex renderState;
-  renderState.addData("Frame", _frame);
+  renderState.addData("InitRender", _frame == 0);
 
   if (!_displayGraphs.empty()) {
     VRCompositeRenderHandler compositeHandler(_renderHandlers);

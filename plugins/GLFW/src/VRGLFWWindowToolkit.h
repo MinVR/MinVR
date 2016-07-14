@@ -49,6 +49,8 @@ public:
 	PLUGIN_API static VRWindowToolkit* create(VRMainInterface *vrMain, VRDataIndex *config,const std::string &nameSpace);
 
 private:
+	void initGLEW();
+
 	VRMainInterface *_vrMain;
 	std::vector<GLFWwindow*> _windows;
 	VRGLFWInputDevice *_inputDev;

@@ -32,6 +32,8 @@ VRGLFWWindowToolkit::VRGLFWWindowToolkit(VRMainInterface *vrMain) : _vrMain(vrMa
 	    exit(0);
 	}
 
+	initGLEW();
+
 	_inputDev = new VRGLFWInputDevice();
 }
 
@@ -182,6 +184,25 @@ VRGLFWWindowToolkit::swapBuffers(int windowID) {
 VRWindowToolkit*
 VRGLFWWindowToolkit::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
 	return new VRGLFWWindowToolkit(vrMain);
+}
+
+void VRGLFWWindowToolkit::initGLEW()
+{
+	// Initialize glew
+	// Requires that a context exists and is current before it will work, so we create a temporary one here
+	glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE); // Create a debug context so glew is initialized with debug context extensions as well in case we need them later
+	GLFWwindow* tempWin = glfwCreateWindow(200, 200, "Temporary", NULL, NULL);
+	glfwMakeContextCurrent(tempWin);
+	glewExperimental = GL_TRUE;
+	GLenum err = glewInit();
+	if (GLEW_OK != err)
+	{
+		std::cout << "Error initializing GLEW." << std::endl;
+	}
+
+	glfwMakeContextCurrent(NULL);
+	glfwDestroyWindow(tempWin);
 }
 
 
