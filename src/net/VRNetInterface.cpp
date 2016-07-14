@@ -1,5 +1,4 @@
 #include <net/VRNetInterface.h>
-#include <sys/time.h>
 
 // unique identifiers for different network messages
 const unsigned char VRNetInterface::EVENTS_MSG = 1;
