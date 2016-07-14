@@ -122,6 +122,8 @@ private:
   std::vector<VRGraphicsToolkit*> _gfxToolkits;
   std::vector<VRWindowToolkit*>   _winToolkits;
   std::vector<VRDisplayNode*>     _displayGraphs;
+
+  int _frame;
 };
 
 

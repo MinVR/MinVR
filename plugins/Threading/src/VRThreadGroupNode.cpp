@@ -11,7 +11,7 @@
 
 namespace MinVR {
 
-VRThreadGroupNode::VRThreadGroupNode(const std::string& name) : VRDisplayNode(name), threadGroup(NULL) {
+VRThreadGroupNode::VRThreadGroupNode(const std::string& name) : VRDisplayNode(name), threadGroup(NULL), async(true), asyncEnabled(true) {
 }
 
 VRThreadGroupNode::~VRThreadGroupNode() {
@@ -34,6 +34,7 @@ void VRThreadGroupNode::render(VRDataIndex* renderState,
 
 	// If the threadGroup has not been created, create the render threads
 	if (!threadGroup) {
+		async = false;
 		int numThreads = getChildren().size();
 		threadGroup = new VRThreadGroup(numThreads);
 
@@ -42,21 +43,39 @@ void VRThreadGroupNode::render(VRDataIndex* renderState,
 		}
 	}
 
-	// Let threads know they are ready for rendering
-	threadGroup->startThreadAction(THREADACTION_Render, renderState, renderHandler);
-	threadGroup->waitForComplete();
+	if (async) {
+		// Let threads know they are ready for rendering
+			threadGroup->startThreadAction(THREADACTION_Render, renderState, renderHandler);
+			threadGroup->waitForComplete();
+	}
+	else {
+		VRDisplayNode::render(renderState, renderHandler);
+	}
+
 }
 
 void VRThreadGroupNode::waitForRenderToComplete(VRDataIndex* renderState) {
-	// Let threads know we are waiting for them to finish rendering
-	threadGroup->startThreadAction(THREADACTION_WaitForRenderToComplete, renderState, NULL);
-	threadGroup->waitForComplete();
+	if (async) {
+		// Let threads know we are waiting for them to finish rendering
+		threadGroup->startThreadAction(THREADACTION_WaitForRenderToComplete, renderState, NULL);
+		threadGroup->waitForComplete();
+	}
+	else {
+		VRDisplayNode::waitForRenderToComplete(renderState);
+	}
 }
 
 void VRThreadGroupNode::displayFinishedRendering(VRDataIndex* renderState) {
-	// Let threads know that we should display the results
-	threadGroup->startThreadAction(THREADACTION_DisplayFinishedRendering, renderState, NULL);
-	threadGroup->waitForComplete();
+	if (async) {
+		// Let threads know that we should display the results
+		threadGroup->startThreadAction(THREADACTION_DisplayFinishedRendering, renderState, NULL);
+		threadGroup->waitForComplete();
+	}
+	else {
+		VRDisplayNode::displayFinishedRendering(renderState);
+	}
+
+	async = asyncEnabled;
 }
 
 VRDisplayNode* VRThreadGroupNode::create(VRMainInterface* vrMain,

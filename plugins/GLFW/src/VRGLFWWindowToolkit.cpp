@@ -69,9 +69,9 @@ Window1_Visible         0*/
 	glfwWindowHint(GLFW_GREEN_BITS, 8);
 	glfwWindowHint(GLFW_BLUE_BITS, 8);
 	glfwWindowHint(GLFW_STENCIL_BITS, 8);
-	//glfwWindowHint(GLFW_VISIBLE, 0);
+	glfwWindowHint(GLFW_VISIBLE, settings.visible);
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 0);
-	glfwWindowHint(GLFW_DECORATED, false);
+	glfwWindowHint(GLFW_DECORATED, settings.border);
 
 	/*glfwWindowHint(GLFW_ALPHA_BITS, settings.->alphaBits);
 	glfwWindowHint(GLFW_DEPTH_BITS, settings->depthBits);
@@ -92,9 +92,23 @@ Window1_Visible         0*/
   		glfwWindowHint(GLFW_STEREO, true);
     }
 
-	GLFWwindow* window = glfwCreateWindow(settings.width, settings.height, settings.caption.c_str(), NULL, NULL);
+    GLFWwindow* sharedContext = NULL;
+    bool foundSharedContextGroup = false;
+    if (settings.sharedContextGroupID >= 0) {
+    	std::map<int, GLFWwindow*>::iterator it = _sharedContextGroups.find(settings.sharedContextGroupID);
+    	if (it != _sharedContextGroups.end()) {
+    		foundSharedContextGroup = true;
+    		sharedContext = it->second;
+    	}
+    }
+
+	GLFWwindow* window = glfwCreateWindow(settings.width, settings.height, settings.caption.c_str(), NULL, sharedContext);
 	if (!window) {
 		std::cout << "Error creating window." << std::endl;
+	}
+
+	if (settings.sharedContextGroupID >= 0 || !foundSharedContextGroup) {
+		_sharedContextGroups[settings.sharedContextGroupID] = window;
 	}
 
     glfwSetWindowPos(window, settings.xpos, settings.ypos);

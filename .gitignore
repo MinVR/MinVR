@@ -27,6 +27,7 @@ Makefile
 *local.sh
 *local.vrsetup
 *local.*
+deps
 
 # Emacs
 *~

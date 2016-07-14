@@ -11,15 +11,20 @@
 namespace MinVR {
 
 VRGraphicsWindowNode::VRGraphicsWindowNode(const std::string &name, VRGraphicsToolkit *gfxToolkit, VRWindowToolkit *winToolkit, const VRWindowSettings &settings) : 
-	VRDisplayNode(name), _gfxToolkit(gfxToolkit), _winToolkit(winToolkit), _settings(settings) 
+	VRDisplayNode(name), _gfxToolkit(gfxToolkit), _winToolkit(winToolkit), _settings(settings), _windowID(-1)
 {
-	_windowID = _winToolkit->createWindow(_settings);
+
 }
 
 VRGraphicsWindowNode::~VRGraphicsWindowNode() {
 }
 
 void VRGraphicsWindowNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler) {
+
+	if (_windowID < 0) {
+		_windowID = _winToolkit->createWindow(_settings);
+	}
+
   renderState->pushState();
 
 	// Is this the kind of state information we expect to pass from one node to the next?
@@ -88,9 +93,11 @@ VRDisplayNode* VRGraphicsWindowNode::create(VRMainInterface *vrMain, VRDataIndex
 	settings.width = config->getValue("Width", nameSpace);
 	settings.height = config->getValue("Height", nameSpace);
 	settings.border = (int)config->getValue("Border", nameSpace);
+	settings.visible = (int)config->getValue("Visible", nameSpace);
 	settings.caption = std::string(config->getValue("Caption", nameSpace));
 	settings.quadBuffered = (int)config->getValue("QuadBuffered", nameSpace);
 	settings.gpuAffinity = std::string(config->getValue("GPUAffinity", nameSpace));
+	settings.gpuAffinity = std::string(config->getValue("SharedContextGroupID", nameSpace));
 
 	std::cout << settings.xpos << ", " << settings.ypos << ", " << settings.width << ", " << settings.height << std::endl;
 	VRDisplayNode *node = new VRGraphicsWindowNode(nameSpace, gfxToolkit, winToolkit, settings);

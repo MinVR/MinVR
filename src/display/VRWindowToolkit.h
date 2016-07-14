@@ -26,7 +26,27 @@ public:
 	std::string caption;
  	bool quadBuffered;
  	std::string gpuAffinity;
- 	// ...
+ 	bool visible;
+ 	int sharedContextGroupID;
+
+// 	Window1_Height          1300
+// 	Window1_X               1681
+// 	Window1_Y               0
+// 	Window1_RGBBits         8
+// 	Window1_AlphaBits       8
+// 	Window1_DepthBits       24
+// 	Window1_StencilBits     8
+// 	Window1_MSAASamples     1
+// 	Window1_FullScreen      0
+// 	Window1_Stereo          1
+// 	Window1_Resizable       0
+// 	Window1_AllowMaximize   0
+// 	Window1_Framed          0
+// 	Window1_Caption         MinVR Cave Sides
+// 	Window1_StereoType	    QuadBuffered
+// 	Window1_UseDebugContext 0
+// 	Window1_UseGPUAffinity  1
+// 	Window1_Visible         0
 };
 
 

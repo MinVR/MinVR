@@ -75,7 +75,7 @@ std::string getCurrentWorkingDir()
 }
 
   
-VRMain::VRMain() : _initialized(false), _config(NULL), _net(NULL), _factory(NULL), _pluginMgr(NULL)
+VRMain::VRMain() : _initialized(false), _config(NULL), _net(NULL), _factory(NULL), _pluginMgr(NULL), _frame(0)
 {
   _factory = new VRFactory();
   // add sub-factories that are part of the MinVR core library right away
@@ -507,6 +507,7 @@ VRMain::renderOnAllDisplays()
   }
 
   VRDataIndex renderState;
+  renderState.addData("Frame", _frame);
 
   if (!_displayGraphs.empty()) {
     VRCompositeRenderHandler compositeHandler(_renderHandlers);
@@ -531,6 +532,8 @@ VRMain::renderOnAllDisplays()
   if (!_displayGraphs.empty()) {
 	  for (std::vector<VRDisplayNode*>::iterator it = _displayGraphs.begin(); it != _displayGraphs.end(); ++it) (*it)->displayFinishedRendering(&renderState);
   }
+
+  _frame++;
 }
 
 

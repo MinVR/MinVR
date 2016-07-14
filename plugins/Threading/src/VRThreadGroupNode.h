@@ -39,6 +39,8 @@ public:
 private:
 	std::vector<VRRenderThread*> renderThreads;
 	VRThreadGroup* threadGroup;
+	bool async;
+	bool asyncEnabled;
 };
 
 } /* namespace MinVR */

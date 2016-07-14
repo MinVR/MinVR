@@ -16,6 +16,7 @@
 #include <main/VRFactory.h>
 #include <main/VRMainInterface.h>
 #include "VRGLFWInputDevice.h"
+#include <map>
 
 
 namespace MinVR {
@@ -51,6 +52,7 @@ private:
 	VRMainInterface *_vrMain;
 	std::vector<GLFWwindow*> _windows;
 	VRGLFWInputDevice *_inputDev;
+	std::map<int, GLFWwindow*> _sharedContextGroups;
 };
 
 
