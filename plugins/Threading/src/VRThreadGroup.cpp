@@ -51,7 +51,7 @@ void VRThreadGroup::completeAction() {
 	actionCompletedMutex.unlock();
 }
 
-VRRenderThreadAction VRThreadGroup::waitForComplete() {
+void VRThreadGroup::waitForComplete() {
 	// Waits until all the threads are completed
 	UniqueMutexLock completedActionLock(actionCompletedMutex);
 	while (numThreadsCompleted < numThreads) {
