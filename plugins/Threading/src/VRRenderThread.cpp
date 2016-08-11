@@ -48,6 +48,7 @@ void VRRenderThread::render() {
 
 			// Various render actions for the display nodes
 			if (action == THREADACTION_Render) {
+				//std::cout << "Thread " << threadId << std::endl;
 				displayNode->render(&index, threadGroup->getRenderHandler());
 			}
 			else if (action == THREADACTION_WaitForRenderToComplete) {

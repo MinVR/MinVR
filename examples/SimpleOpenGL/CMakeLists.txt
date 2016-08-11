@@ -13,6 +13,7 @@ set(vr_example_config_files
   3DTV.xml
   desktop.xml
   ivlabcave.xml
+  ivlabcave_multithreaded.xml
   ivlabcavefront.xml
   simple.xml
   testalldisplaynodes.xml
