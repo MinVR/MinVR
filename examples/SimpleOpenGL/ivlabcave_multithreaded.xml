@@ -104,22 +104,28 @@
         <BottomRight type="doublearray">4,-4,4</BottomRight>
         <DisplayGraph linkNode="/MinVR/Cave/MyDisplayGraph/HeadTracker"/>
       </Floor>
-      <LeftWall displaynodeType="VRGraphicsWindowNode">
+      <Sides displaynodeType="VRGraphicsWindowNode">
         <XPos>1680</XPos>
-        <TopLeft type="doublearray">-4,4,4</TopLeft>
-        <TopRight type="doublearray">-4,4,-4</TopRight>
-        <BottomLeft type="doublearray">-4,-4,4</BottomLeft>
-        <BottomRight type="doublearray">-4,-4,-4</BottomRight>
-        <DisplayGraph linkNode="/MinVR/Cave/MyDisplayGraph/HeadTracker"/>
-      </LeftWall>
-      <RightWall displaynodeType="VRGraphicsWindowNode">
-        <XPos>2960</XPos>
-        <TopLeft type="doublearray">4,4,-4</TopLeft>
-        <TopRight type="doublearray">4,4,4</TopRight>
-        <BottomLeft type="doublearray">4,-4,-4</BottomLeft>
-        <BottomRight type="doublearray">4,-4,4</BottomRight>
-        <DisplayGraph linkNode="/MinVR/Cave/MyDisplayGraph/HeadTracker"/>
-      </RightWall>
+        <Width>2560</Width>
+        <LeftWall displaynodeType="VRViewportNode">
+          <XPos>0</XPos>
+          <TopLeft type="doublearray">-4,4,4</TopLeft>
+          <TopRight type="doublearray">-4,4,-4</TopRight>
+          <BottomLeft type="doublearray">-4,-4,4</BottomLeft>
+          <BottomRight type="doublearray">-4,-4,-4</BottomRight>
+          <Width>1280</Width>
+          <DisplayGraph linkNode="/MinVR/Cave/MyDisplayGraph/HeadTracker"/>
+        </LeftWall>
+        <RightWall displaynodeType="VRViewportNode">
+          <XPos>1280</XPos>
+          <Width>1280</Width>
+          <TopLeft type="doublearray">4,4,-4</TopLeft>
+          <TopRight type="doublearray">4,4,4</TopRight>
+          <BottomLeft type="doublearray">4,-4,-4</BottomLeft>
+          <BottomRight type="doublearray">4,-4,4</BottomRight>
+          <DisplayGraph linkNode="/MinVR/Cave/MyDisplayGraph/HeadTracker"/>
+        </RightWall>
+      </Sides>
     </ThreadGroupNode>
     
     <!-- ********************** Display Graph ********************** -->
