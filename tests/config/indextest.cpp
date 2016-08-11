@@ -12,7 +12,7 @@ int testLinkNode();
 int testLinkContent();
 
 // Make this a large number to get decent timing data.
-#define LOOP for (int loopctr = 0; loopctr < 10; loopctr++)
+#define LOOP for (int loopctr = 0; loopctr < 100; loopctr++)
 
 int indextest(int argc, char* argv[]) {
   
@@ -196,91 +196,95 @@ int testSelections() {
     
   
   int out = 0;
-  VRDataIndex *index = new VRDataIndex();
-  index->addSerializedValue(xmlteststring, VRDataIndex::rootNameSpace);
+
+  LOOP {
+    VRDataIndex *index = new VRDataIndex();
+    index->addSerializedValue(xmlteststring, VRDataIndex::rootNameSpace);
     
-  // Test selection by attribute, not dependent on value.
-  VRContainer firstList = index->selectByAttribute("name", "*");
+    // Test selection by attribute, not dependent on value.
+    VRContainer firstList = index->selectByAttribute("name", "*");
 
-  VRContainer::iterator jt = firstTestList.begin(); 
-  for (VRContainer::iterator it = firstList.begin();
-       it != firstList.end(); it++) {
+    VRContainer::iterator jt = firstTestList.begin(); 
+    for (VRContainer::iterator it = firstList.begin();
+         it != firstList.end(); it++) {
 
-    if (jt == firstTestList.end()) {
+      if (jt == firstTestList.end()) {
 
-      std::cout << "mismatch:" << *it << std::endl;
-      return 1;
+        std::cout << "mismatch:" << *it << std::endl;
+        return 1;
+      }
+
+      // Here's the test.
+      if ((*it).compare(*jt++) != 0) out++;
     }
 
-    // Here's the test.
-    if ((*it).compare(*jt++) != 0) out++;
-  }
+    // Test selection by attribute, specific value
+    VRContainer secondList = index->selectByAttribute("name", "FitzRoy");
 
-  // Test selection by attribute, specific value
-  VRContainer secondList = index->selectByAttribute("name", "FitzRoy");
+    jt = secondTestList.begin(); 
+    for (VRContainer::iterator it = secondList.begin();
+         it != secondList.end(); it++) {
 
-  jt = secondTestList.begin(); 
-  for (VRContainer::iterator it = secondList.begin();
-       it != secondList.end(); it++) {
+      if (jt == secondTestList.end()) {
 
-    if (jt == secondTestList.end()) {
+        std::cout << "mismatch:" << *it << std::endl;
+        return 1;
+      }
 
-      std::cout << "mismatch:" << *it << std::endl;
-      return 1;
+      if ((*it).compare(*jt++) != 0) out++;
     }
 
-    if ((*it).compare(*jt++) != 0) out++;
-  }
-
-  // Test selection by type.
-  VRContainer thirdList = index->selectByType(VRCORETYPE_STRING);
+    // Test selection by type.
+    VRContainer thirdList = index->selectByType(VRCORETYPE_STRING);
         
-  jt = thirdTestList.begin();
-  for (VRContainer::iterator it = thirdList.begin();
-       it != thirdList.end(); it++) {
+    jt = thirdTestList.begin();
+    for (VRContainer::iterator it = thirdList.begin();
+         it != thirdList.end(); it++) {
 
-    if (jt == thirdTestList.end()) {
+      if (jt == thirdTestList.end()) {
 
-      std::cout << "mismatch:" << *it << std::endl;
-      return 1;
-    }
+        std::cout << "mismatch:" << *it << std::endl;
+        return 1;
+      }
     
-    if ((*it).compare(*jt++) != 0) out++;
-  }
+      if ((*it).compare(*jt++) != 0) out++;
+    }
 
   
-  // Test selection by fully qualified name.
-  VRContainer fourthList = index->selectByName("/MVR/John/Isabella/Eleanor");
+    // Test selection by fully qualified name.
+    VRContainer fourthList = index->selectByName("/MVR/John/Isabella/Eleanor");
         
-  jt = fourthTestList.begin();
-  for (VRContainer::iterator it = fourthList.begin();
-       it != fourthList.end(); it++) {
+    jt = fourthTestList.begin();
+    for (VRContainer::iterator it = fourthList.begin();
+         it != fourthList.end(); it++) {
 
-    if ((*it).compare(*jt++) != 0) out++;
-  }
+      if ((*it).compare(*jt++) != 0) out++;
+    }
 
-  // Test selection by partial name.
-  VRContainer fifthList = index->selectByName("John/Isabella");
+    // Test selection by partial name.
+    VRContainer fifthList = index->selectByName("John/Isabella");
         
-  jt = fifthTestList.begin();
-  for (VRContainer::iterator it = fifthList.begin();
-       it != fifthList.end(); it++) {
+    jt = fifthTestList.begin();
+    for (VRContainer::iterator it = fifthList.begin();
+         it != fifthList.end(); it++) {
 
-    if ((*it).compare(*jt++) != 0) out++;
-      
-  }
+      if ((*it).compare(*jt++) != 0) out++;
+    }
 
 
-  // Test selection by partial name with wildcard.
-  VRContainer sixthList = index->selectByName("John/*/Isabella");
+    // Test selection by partial name with wildcard.
+    VRContainer sixthList = index->selectByName("John/*/Isabella");
         
-  jt = sixthTestList.begin();
-  for (VRContainer::iterator it = sixthList.begin();
-       it != sixthList.end(); it++) {
+    jt = sixthTestList.begin();
+    for (VRContainer::iterator it = sixthList.begin();
+         it != sixthList.end(); it++) {
 
-    if ((*it).compare(*jt++) != 0) out++;
-      
+      if ((*it).compare(*jt++) != 0) out++;
+    }
+
+    delete index;
   }
+    
   return out;
 }
 
@@ -374,6 +378,7 @@ int testPushPopIndex() {
     output = n->serialize("/MVR");
 
     out += output.compare(testString);
+    delete n;
   }
   return out;
 }
@@ -481,12 +486,12 @@ int testIndexLotsaEntries() {
 
   int out = 0;
 
-  VRDataIndex *n = setupIndex();
-
-  int lctr;
-  int N = 1000;
-
   LOOP {
+  
+    VRDataIndex *n = setupIndex();
+
+    int lctr;
+    int N = 1000;
   
     for (lctr = 0; lctr < N; lctr++) {
       std::stringstream name;
@@ -501,6 +506,8 @@ int testIndexLotsaEntries() {
 
       out += ((lctr == (int)n->getValue(name.str())) ? 0 : 1);
     }
+
+    delete n;
   }
 
   return out;
@@ -510,17 +517,17 @@ int testEscapedChars() {
 
   int out = 0;
 
-  VRDataIndex *n = setupIndex();
-
-  // Escaping the comma separator between Gamma and Delta.
-  std::string inString = "<mimi type=\"stringarray\" separator=\",\">Alpha,Beta,Gamma\\,Delta,Epsilon</mimi>";
-  n->addSerializedValue(inString, VRDataIndex::rootNameSpace);
-  
   int lctr;
   int N = 1000;
 
   LOOP {
-  
+
+    VRDataIndex *n = setupIndex();
+
+    // Escaping the comma separator between Gamma and Delta.
+    std::string inString = "<mimi type=\"stringarray\" separator=\",\">Alpha,Beta,Gamma\\,Delta,Epsilon</mimi>";
+    n->addSerializedValue(inString, VRDataIndex::rootNameSpace);
+    
     VRStringArray s = n->getValue("/mimi");
 
     out += (s.size() == 4) ? 0 : 1;
@@ -532,7 +539,7 @@ int testEscapedChars() {
 
     //    std::cout << inString << std::endl;
     //    std::cout << s[0] << "/"  << s[1] << "/"  << s[2] << "/"  << s[3] << "/" << std::endl;
-    
+    delete n;
   }
 
   return out;
@@ -546,25 +553,30 @@ int testLinkNode() {
   std::string xmlstring =  "<MVR><!-- some of the illegitimate children of John I --><John name=\"Lackland\"><Isabella name=\"Angouleme\"><Henry seq=\"III\" title=\"King\">1</Henry> <Izzie linkNode=\"Isabella\"/><Richard title=\"Earl of Cornwall\">2</Richard> <Joan title=\"Queen Consort\">3</Joan> <Isabella title=\"Queen Consort\">4</Isabella> <Eleanor type=\"string\">5</Eleanor> </Isabella><Joan title=\"Lady of Wales\"><Richard name=\"FitzRoy\">6</Richard><Izzie linkNode=\"Isabella\"/><Oliver name=\"FitzRoy\">7</Oliver></Joan> <Unknown><Geoffrey name=\"FitzRoy\" type=\"string\">8</Geoffrey><John name=\"FitzRoy\">9</John> <Henry name=\"FitzRoy\">10</Henry> <Osbert name=\"Gifford\">11</Osbert><Thomas linkNode=\"/MVR/John/Joan\"/> <Eudes name=\"FitzRoy\">12</Eudes> <Bartholomew name=\"FitzRoy\">13</Bartholomew> <Maud name=\"FitzRoy\" title=\"Abbess of Barking\">14</Maud><Isabella name=\"FitzRoy\">15</Isabella><Philip name=\"FitzRoy\" type=\"string\">16</Philip></Unknown> </John></MVR>";
   
   std::string teststring="<MVR type=\"container\"><John type=\"container\" name=\"Lackland\"><Isabella type=\"container\" name=\"Angouleme\"><Henry type=\"int\" seq=\"III\" title=\"King\">1</Henry><Izzie type=\"int\" title=\"Queen Consort\">4</Izzie><Richard type=\"int\" title=\"Earl of Cornwall\">2</Richard><Joan type=\"int\" title=\"Queen Consort\">3</Joan><Isabella type=\"int\" title=\"Queen Consort\">4</Isabella><Eleanor type=\"string\">5</Eleanor></Isabella><Joan type=\"container\" letter=\"alpha\" title=\"Lady of Wales\"><Richard type=\"int\" name=\"FitzRoy\">6</Richard><Izzie type=\"container\" name=\"Angouleme\"><Henry type=\"int\" seq=\"III\" title=\"King\">1</Henry><Izzie type=\"int\" title=\"Queen Consort\">4</Izzie><Richard type=\"int\" title=\"Earl of Cornwall\">2</Richard><Joan type=\"int\" title=\"Queen Consort\">3</Joan><Isabella type=\"int\" title=\"Queen Consort\">4</Isabella><Eleanor type=\"string\">5</Eleanor></Izzie><Oliver type=\"int\" name=\"FitzRoy\">7</Oliver></Joan><Unknown type=\"container\"><Geoffrey type=\"string\" name=\"FitzRoy\">8</Geoffrey><John type=\"int\" name=\"FitzRoy\">9</John><Henry type=\"int\" name=\"FitzRoy\">10</Henry><Osbert type=\"int\" name=\"Gifford\">11</Osbert><Thomas type=\"container\" letter=\"alpha\" title=\"Lady of Wales\"><Richard type=\"int\" name=\"FitzRoy\">6</Richard><Izzie type=\"container\" name=\"Angouleme\"><Henry type=\"int\" seq=\"III\" title=\"King\">1</Henry><Izzie type=\"int\" title=\"Queen Consort\">4</Izzie><Richard type=\"int\" title=\"Earl of Cornwall\">2</Richard><Joan type=\"int\" title=\"Queen Consort\">3</Joan><Isabella type=\"int\" title=\"Queen Consort\">4</Isabella><Eleanor type=\"string\">5</Eleanor></Izzie><Oliver type=\"int\" name=\"FitzRoy\">7</Oliver></Thomas><Eudes type=\"int\" name=\"FitzRoy\">12</Eudes><Bartholomew type=\"int\" name=\"FitzRoy\">13</Bartholomew><Maud type=\"int\" name=\"FitzRoy\" title=\"Abbess of Barking\">14</Maud><Isabella type=\"int\" name=\"FitzRoy\">15</Isabella><Philip type=\"string\" name=\"FitzRoy\">16</Philip></Unknown></John></MVR>";
+  int out = 0;
+
+  LOOP {
+    VRDataIndex *index = new VRDataIndex();
+    index->addSerializedValue(xmlstring, VRDataIndex::rootNameSpace, false);
+
+    std::cout << index->printStructure() << std::endl;
+
+    // Look for all the nodes with 'linkNode' attributes, and evaluate.
+    index->linkNodes();
+
+    // To prove that the linked nodes are actually the same node.  We
+    // adjust one node's attributes to make sure it appears at the copy,
+    // as well.
+    index->getDatum("/MVR/John/Unknown/Thomas")->setAttributeValue("letter", "alpha");
+
+    std::cout << index->printStructure() << std::endl;
   
-  VRDataIndex *index = new VRDataIndex();
-  index->addSerializedValue(xmlstring, VRDataIndex::rootNameSpace, false);
+    std::string outputstring = index->serialize("/MVR");
 
-   std::cout << index->printStructure() << std::endl;
-
-  // Look for all the nodes with 'linkNode' attributes, and evaluate.
-  index->linkNodes();
-
-  // To prove that the linked nodes are actually the same node.  We
-  // adjust one node's attributes to make sure it appears at the copy,
-  // as well.
-  index->getDatum("/MVR/John/Unknown/Thomas")->setAttributeValue("letter", "alpha");
-
-   std::cout << index->printStructure() << std::endl;
-  
-  std::string outputstring = index->serialize("/MVR");
-
-  return teststring.compare(outputstring);
+    out += teststring.compare(outputstring);
+    delete index;
+  }
+  return out;
 
 }
 
@@ -575,20 +587,25 @@ int testLinkContent() {
  std:;string teststring = "<MVR type=\"container\"><John type=\"container\" name=\"Lackland\"><Isabella type=\"container\" name=\"Angouleme\"><Henry type=\"int\" seq=\"III\" title=\"King\">1</Henry><Richard type=\"int\" title=\"Earl of Cornwall\">2</Richard><Joan type=\"int\" title=\"Queen Consort\">3</Joan><Isabella type=\"int\" title=\"Queen Consort\">4</Isabella><Eleanor type=\"string\">5</Eleanor></Isabella><Joan type=\"container\" title=\"Lady of Wales\"><Richard type=\"int\" name=\"FitzRoy\">6</Richard><Oliver type=\"int\" name=\"FitzRoy\">7</Oliver></Joan><Unknown type=\"container\"><Richard type=\"int\" name=\"FitzRoy\">6</Richard><Oliver type=\"int\" name=\"FitzRoy\">7</Oliver><Geoffrey type=\"string\" name=\"FitzRoy\">8</Geoffrey><John type=\"int\" name=\"FitzRoy\">9</John><Henry type=\"int\" name=\"FitzRoy\">10</Henry><Osbert type=\"int\" name=\"Gifford\">11</Osbert><Eudes type=\"int\" name=\"FitzRoy\">12</Eudes><Bartholomew type=\"int\" name=\"FitzRoy\">13</Bartholomew><Maud type=\"int\" name=\"FitzRoy\" title=\"Abbess of Barking\">14</Maud><Isabella type=\"int\" name=\"FitzRoy\">15</Isabella><Philip type=\"string\" name=\"FitzRoy\">16</Philip></Unknown></John></MVR>";
 
   
-  //  int out = 0;
-  VRDataIndex *index = new VRDataIndex();
-  index->addSerializedValue(xmlstring, VRDataIndex::rootNameSpace, false);
+  int out = 0;
+  LOOP {
+    VRDataIndex *index = new VRDataIndex();
+    index->addSerializedValue(xmlstring, VRDataIndex::rootNameSpace, false);
 
-  //  std::cout << index->printStructure() << std::endl;
+    //  std::cout << index->printStructure() << std::endl;
 
-  // Look for all the nodes with 'linknode' attributes, and evaluate.
-  index->linkNodes(); index->linkContent();
+    // Look for all the nodes with 'linknode' attributes, and evaluate.
+    index->linkNodes(); index->linkContent();
 
-  // To prove that the copied nodes are actually the same node.  We
-  // adjust one node's attributes to make sure it appears at the copy,
-  // as well.
-  //  index->getDatum("/MVR/John/Unknown/Thomas")->setAttributeValue("letter", "alpha");
+    // To prove that the copied nodes are actually the same node.  We
+    // adjust one node's attributes to make sure it appears at the copy,
+    // as well.
+    //  index->getDatum("/MVR/John/Unknown/Thomas")->setAttributeValue("letter", "alpha");
 
-  return teststring.compare(index->serialize("/MVR"));
+    out +=  teststring.compare(index->serialize("/MVR"));
+    delete index;
+  }
+
+  return out;
 
 }

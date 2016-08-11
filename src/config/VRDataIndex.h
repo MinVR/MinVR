@@ -299,13 +299,14 @@ private:
   template <typename T, const VRCORETYPE_ID TID>
   std::string addDataSpecialized(const std::string valName, T value) {
 
-    // Check if the name is already in use.
-    VRDataMap::iterator it = mindex.find(valName);
-    if (it == mindex.end()) {
+    std::pair<VRDataMap::iterator, bool>res =
+      mindex.insert(VRDataMap::value_type(valName, NULL));
 
-      // Still no? Create it and stick it in index.
+    // Was it already used?
+    if (res.second) {
+
       VRDatumPtr obj = factory.CreateVRDatum(TID, &value);
-      mindex.insert(VRDataMap::value_type(valName, obj));
+      res.first->second = obj;
 
       // Add this value to the parent container, if any.
       VRContainer cValue;
@@ -315,14 +316,18 @@ private:
       if (ns.compare("/") != 0) addData(ns.substr(0, ns.size() - 1), cValue);
 
     } else {
-      // Quietly overwrite value
+
+      // Entry already exists. Decide whether to modify or throw an exception.
       if (overwrite > 0) {
-        setValueSpecialized(it->second, (T)value);
+
+        setValueSpecialized(res.first->second, (T)value);
+
       } else if (overwrite == 0) {
 
         throw std::runtime_error(std::string("overwriting values not allowed"));
       }
     }
+        
     return valName;
   }
 
