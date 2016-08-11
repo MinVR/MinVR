@@ -78,6 +78,15 @@
 		        	<Height>200</Height>
             <SharedContextGroupID>1</SharedContextGroupID>
 		      </Window3>
+        
+       		<Window4 displaynodeType="VRGraphicsWindowNode">
+		        	<Border>0</Border>
+		        	<Caption>Desktop</Caption>
+		        	<XPos>800</XPos>
+		        	<YPos>500</YPos>
+		        	<Width>320</Width>
+		        	<Height>200</Height>
+		      </Window4>
 				
 	      <ThreadGroupNode>
 		</Desktop>

@@ -27,6 +27,8 @@ public:
 	/// The render method which controls actions.
 	void render();
 
+	int threadId;
+
 private:
 	VRDisplayNode* displayNode;
 	VRThreadGroup* threadGroup;
