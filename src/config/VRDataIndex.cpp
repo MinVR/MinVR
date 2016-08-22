@@ -961,9 +961,6 @@ std::string VRDataIndex::addData(const std::string valName, VRStringArray value)
 std::string VRDataIndex::addData(const std::string valName,
                                  VRContainer value) {
 
-  VRContainer sorted = value;
-  sorted.sort();
-
   // If the container to add to is the root, ignore.
   if (valName.compare("/") == 0)
     throw std::runtime_error(std::string("cannot replace the root namespace"));
@@ -973,7 +970,7 @@ std::string VRDataIndex::addData(const std::string valName,
   if (it == mindex.end()) {
 
     // No.  Create a new object.
-    VRDatumPtr obj = factory.CreateVRDatum(VRCORETYPE_CONTAINER, &sorted);
+    VRDatumPtr obj = factory.CreateVRDatum(VRCORETYPE_CONTAINER, &value);
     //std::cout << "added " << obj.containerVal()->getDatum() << std::endl;
     mindex.insert(VRDataMap::value_type(valName, obj));
 
@@ -986,7 +983,7 @@ std::string VRDataIndex::addData(const std::string valName,
     
   } else {
     // Add value to existing container.
-    it->second.containerVal()->addToValue(sorted);
+    it->second.containerVal()->addToValue(value);
   }
   return valName;
 }
