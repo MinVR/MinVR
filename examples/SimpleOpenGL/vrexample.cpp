@@ -82,7 +82,7 @@ public:
         }
     }
 
-	int count = 0;
+	int count;
   
 	// Callback for rendering, inherited from VRRenderHandler
 	virtual void onVRRenderScene(VRDataIndex *renderState, VRDisplayNode *callingNode) {
