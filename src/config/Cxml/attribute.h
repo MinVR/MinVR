@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <string>
 
 class attribute
 {
@@ -23,8 +23,10 @@ class attribute
     // gets the value of the attribute
     char* get_value();
     // Setter for the value of the attribute
+    bool set_value(std::string m_value);
     bool set_value(char* m_value);
     // Setter for the name of the attribute
+    bool set_name(std::string m_name);
     bool set_name(char* m_name);
     // Operator for sorting
     bool operator < (attribute& a);

@@ -69,6 +69,9 @@ std::map<std::string, std::string> element::get_attribute_map() {
   return out;
 }
 
+bool element::add_attribute(std::string the_attribute_name, std::string the_value) {
+  return add_attribute((char *)the_attribute_name.c_str(), (char *)the_value.c_str());
+}
 
 // Adds an attribute to the attribute list
 bool element::add_attribute(char* the_attribute_name, char* the_value)
@@ -144,6 +147,10 @@ char* element::get_value()
     return m_value;
 }
 
+bool element::set_value(const std::string the_value) {
+  return set_value((char *)the_value.c_str());
+}
+
 bool element::set_value(const char* the_value)
 {
     if(the_value != NULL)
@@ -171,6 +178,10 @@ element* element::add_child_element(element* child)
     m_element_list.push_back(child);
     i = m_element_list.end();
     return (*(--i));
+}
+
+bool element::set_name(const std::string the_name) {
+  return set_name((char *)the_name.c_str());
 }
 
 bool element::set_name(const char* the_name)

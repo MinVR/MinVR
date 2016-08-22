@@ -44,6 +44,9 @@ char* attribute::get_value()
     return m_value;
 }
 
+bool attribute::set_value(std::string value) {
+  return set_value((char *)value.c_str());
+}
 
 // Setter for the value of the attribute
 bool attribute::set_value(char* value)
@@ -65,6 +68,9 @@ bool attribute::set_value(char* value)
     return false;
 }
 
+bool attribute::set_name(std::string name) {
+  return set_name((char *)name.c_str());
+}
 
 bool attribute::set_name(char* name)
 {

@@ -28,9 +28,12 @@ class element
   public:
     std::map<std::string, std::string> get_attribute_map();
     // Adds an attribute to the attribute list
+    bool add_attribute(std::string attribute_name, std::string value);
     bool add_attribute(char* attribute_name, char* value=NULL);
     bool add_attribute(attribute* m_attribute);
+    bool set_value(const std::string value);
     bool set_value(const char* value);
+    bool set_name(const std::string the_name);
     bool set_name(const char* the_name);
     bool set_parent(element* the_element);
     bool is_root();

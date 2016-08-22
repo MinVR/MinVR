@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdlib.h>
+#include <string>
 #include "utils.h"
 #include "Cxml.h"
 
@@ -48,10 +49,15 @@ bool Cxml::get_node(char* xml_string)
     const char SZCDATA[9] = "![CDATA[";
     const char CQM = '?';
     const char CRET = 13; // carriage return
-    char *szNodeNameBuff = (char *)calloc(256,sizeof(char));
-    char *szNodeValBuff  = (char *)calloc(256,sizeof(char));
-    char *szAttrNameBuff = (char *)calloc(256,sizeof(char));
-    char *szAttrValBuff  = (char *)calloc(256,sizeof(char));
+    std::string szNodeNameBuff;
+    szNodeNameBuff.reserve(256);
+    std::string szNodeValBuff;
+    szNodeValBuff.reserve(256);
+    std::string szAttrNameBuff;
+    szAttrNameBuff.reserve(256);
+    std::string szAttrValBuff;
+    szAttrValBuff.reserve(256);
+
     if(k >= m_length)
         return false;
     m_root_node->set_name("XML_DOC");
@@ -73,12 +79,12 @@ bool Cxml::get_node(char* xml_string)
         {
             if(xml_string[k+1] == CEXCLAMATION && xml_string[k+2] == CMINUS && xml_string[k+3] == CMINUS) // this is a comment
             { //the comment section
-                clean_str(szAttrNameBuff);
+	        szAttrNameBuff.clear();
                 k+=4;
                 c = xml_string[k];
                 while(!(xml_string[k] == CMINUS && xml_string[k+1] == CMINUS && xml_string[k+2] == CCLOSE)) // Find the end of the comment.
                 {
-                    szAttrNameBuff = concat(szAttrNameBuff, c);
+                    szAttrNameBuff += c;
                     c = xml_string[++k];
                 }
                 k+=3;
@@ -121,7 +127,7 @@ bool Cxml::get_node(char* xml_string)
                 bCDATA = false;
                 continue;
             }
-            clean_str(szNodeNameBuff);
+            szNodeNameBuff.clear();
             if(xml_string[k+1] == CSLASH)
             {// This is a close tag, hopefully for the last opened node.
                 Current = Current->get_parent();
@@ -143,7 +149,7 @@ bool Cxml::get_node(char* xml_string)
             while(c != CSLASH && c != CSPACE && c != CCLOSE)
             {//Loop until the node name has been entirely read.
                 if(c != CNEW && c != CTAB && c != CRET)
-                    szNodeNameBuff = concat(szNodeNameBuff,c);
+                    szNodeNameBuff += c;
                 c = xml_string[++k];
             }
             if(Current != NULL)   // this node is set, navigate to a child of it
@@ -165,8 +171,8 @@ bool Cxml::get_node(char* xml_string)
                 {
                     break;
                 }
-                clean_str(szAttrNameBuff);
-                clean_str(szAttrValBuff);
+                szAttrNameBuff.clear();
+                szAttrValBuff.clear();
 
                 // Get ready for a new attribute.
                 attribute* pA = new attribute();
@@ -176,7 +182,7 @@ bool Cxml::get_node(char* xml_string)
                 while(c != CEQUAL)
                 {
                     if (c != CNEW && c != CTAB && c != CRET)
-                        szAttrNameBuff = concat(szAttrNameBuff, c);
+                        szAttrNameBuff += c;
                     c = xml_string[++k];
                 }
 
@@ -193,7 +199,7 @@ bool Cxml::get_node(char* xml_string)
                 while(c != cDelim && cDelim != 0)
                 {
                     if(c != CNEW && c != CTAB && c != CRET)
-                        szAttrValBuff = concat(szAttrValBuff, c);
+                        szAttrValBuff += c;
                     c = xml_string[++k];
                 }
 
@@ -239,11 +245,11 @@ bool Cxml::get_node(char* xml_string)
         // been tentatively commented out by TS 6/11/16
         if(c != COPEN && c != CCLOSE /*&& c != CSLASH*//* && c != CSPACE*/)
         {
-            clean_str(szNodeValBuff);
+  	    szNodeValBuff.clear();
             while((c != COPEN ) && (k < m_length))
             {
                 if(c != CNEW && c != CTAB && c != CRET/* && c != CSPACE*/)
-                    szNodeValBuff =concat(szNodeValBuff,c);
+                    szNodeValBuff += c;
                 c = xml_string[++k];
             }
             Current->set_value(szNodeValBuff);
@@ -251,10 +257,6 @@ bool Cxml::get_node(char* xml_string)
         }
         k++;
     }
-    free(szNodeNameBuff);
-    free(szNodeValBuff);
-    free(szAttrNameBuff);
-    free(szAttrValBuff);
     return true;
 }
 

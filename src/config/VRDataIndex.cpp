@@ -577,27 +577,23 @@ std::string VRDataIndex::validateNameSpace(const std::string nameSpace) {
 // Returns the container name, derived from a long, fully-qualified, name.
 std::string VRDataIndex::getNameSpace(const std::string fullName) {
 
-  std::vector<std::string> elems = explodeName(fullName);
-  std::string out;
+  if (fullName.length() > 0) {
 
-  if (elems.size() > 1) {
+    // Start at the end.
+    std::string::const_iterator it = fullName.end();
 
-    elems.pop_back();
+    // March backward to the first '/'.
+    while ((*(--it)) != '/') {};
 
-    for (std::vector<std::string>::iterator it = elems.begin();
-         it != elems.end(); ++it) {
+    // std::cout << "fullName:" << fullName << ">>" <<  std::string(fullName.begin(), it+1) << ">>" << *it << "))" << std::endl;
 
-      out += *it + std::string("/");
-    }
+    return std::string(fullName.begin(), it + 1);
 
   } else {
 
-    // There is no container beside the root.
-
-    out = "/";
+    return std::string("");
   }
 
-  return out;
 }
 
 void VRDataIndex::pushState() {
@@ -965,6 +961,9 @@ std::string VRDataIndex::addData(const std::string valName, VRStringArray value)
 std::string VRDataIndex::addData(const std::string valName,
                                  VRContainer value) {
 
+  VRContainer sorted = value;
+  sorted.sort();
+
   // If the container to add to is the root, ignore.
   if (valName.compare("/") == 0)
     throw std::runtime_error(std::string("cannot replace the root namespace"));
@@ -974,7 +973,7 @@ std::string VRDataIndex::addData(const std::string valName,
   if (it == mindex.end()) {
 
     // No.  Create a new object.
-    VRDatumPtr obj = factory.CreateVRDatum(VRCORETYPE_CONTAINER, &value);
+    VRDatumPtr obj = factory.CreateVRDatum(VRCORETYPE_CONTAINER, &sorted);
     //std::cout << "added " << obj.containerVal()->getDatum() << std::endl;
     mindex.insert(VRDataMap::value_type(valName, obj));
 
@@ -987,7 +986,7 @@ std::string VRDataIndex::addData(const std::string valName,
     
   } else {
     // Add value to existing container.
-    it->second.containerVal()->addToValue(value);
+    it->second.containerVal()->addToValue(sorted);
   }
   return valName;
 }
