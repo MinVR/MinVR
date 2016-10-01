@@ -63,6 +63,7 @@ public:
   /// create a new process (on windows systems) as necessary so that each vrsetup
   /// has its own process.
   void initialize(int argc, char **argv);
+  void initialize(int argc, char **argv, const std::string& configFile, std::vector<std::string> args = std::vector<std::string>());
   void initialize(const VRAppLauncher& launcher);
   
 

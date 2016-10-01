@@ -144,6 +144,16 @@ VRMain::initialize(int argc, char** argv)
 	initialize(launcher);
 }
 
+void VRMain::initialize(int argc, char **argv, const std::string& configFile, std::vector<std::string> args) {
+	std::string initStr = configFile;
+	for (int f = 0; f < args.size(); f++) {
+		initStr = initStr + " " + args[f];
+	}
+
+	VRDefaultAppLauncher launcher(argc, argv, initStr);
+	initialize(launcher);
+}
+
 
 void VRMain::initialize(const VRAppLauncher& launcher) {
 	std::string data = launcher.getInitString();

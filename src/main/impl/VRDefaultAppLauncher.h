@@ -25,7 +25,7 @@ public:
 	}
 
 	const std::string& getInitString() const {
-		return encoded ? initString : cmd;
+		return initString;
 	}
 
 private:

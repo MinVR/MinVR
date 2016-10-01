@@ -30,8 +30,11 @@ VRDefaultAppLauncher::VRDefaultAppLauncher(int argc, char** argv, const std::str
 		}
 	}
 
-	if (customInitString.size() > 0) {
-		cmd = customInitString;
+	if (customInitString.size() > 0 && !encoded) {
+		initString = customInitString;
+	}
+	else if (!encoded) {
+		initString = cmd;
 	}
 }
 

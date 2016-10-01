@@ -36,7 +36,13 @@ public:
 		//VRDefaultAppLauncher launcher(argc, argv, minVRCommandLine);
 		//_vrMain->initialize(launcher);
 
-        _vrMain->initialize(argc, argv);
+		//std::string args[] = {"test=3", "again=44"};
+        //_vrMain->initialize(argc, argv, argv[1], std::vector<std::string>(args, args + sizeof(args) / sizeof(args[0])));
+
+		std::string configFile = argv[1];
+		_vrMain->initialize(argc, argv, configFile);
+
+		//_vrMain->initialize(argc, argv);
       	_vrMain->addEventHandler(this);
 		_vrMain->addRenderHandler(this);
         _horizAngle = 0.0;
