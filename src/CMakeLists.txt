@@ -53,6 +53,7 @@ set(vr_config_cpp
   ${vr_src_dir}/config/Cxml/element.cpp
   ${vr_src_dir}/config/Cxml/utils.cpp
   ${vr_src_dir}/config/Cxml/XML.cpp
+  ${vr_src_dir}/config/base64/base64.cpp
 )
 
 set(vr_config_h
@@ -66,6 +67,7 @@ set(vr_config_h
   ${vr_src_dir}/config/Cxml/element.h
   ${vr_src_dir}/config/Cxml/utils.h
   ${vr_src_dir}/config/Cxml/XML.h
+  ${vr_src_dir}/config/base64/base64.h
 )
 
 set(vr_display_cpp
@@ -104,6 +106,7 @@ set(vr_input_h
 set(vr_main_cpp
   ${vr_src_dir}/main/VRFactory.cpp
   ${vr_src_dir}/main/VRMain.cpp
+  ${vr_src_dir}/main/impl/VRDefaultAppLauncher.cpp
 )
 
 set(vr_main_h
@@ -113,6 +116,8 @@ set(vr_main_h
   ${vr_src_dir}/main/VRMain.h
   ${vr_src_dir}/main/VRMainInterface.h
   ${vr_src_dir}/main/VRRenderHandler.h
+  ${vr_src_dir}/main/VRAppLauncher.h
+  ${vr_src_dir}/main/impl/VRDefaultAppLauncher.h
 )
 
 set(vr_math_cpp

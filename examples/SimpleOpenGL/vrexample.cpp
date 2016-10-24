@@ -7,6 +7,7 @@
 #include <main/VREventHandler.h>
 #include <main/VRRenderHandler.h>
 #include <math/VRMath.h>
+#include <main/impl/VRDefaultAppLauncher.h>
 
 
 #if defined(WIN32)
@@ -30,7 +31,18 @@ class MyVRApp : public VREventHandler, public VRRenderHandler {
 public:
   MyVRApp(int argc, char** argv) : _vrMain(NULL), _quit(false) {
 		_vrMain = new VRMain();
-        _vrMain->initialize(argc, argv);
+
+		//std::string minVRCommandLine = std::string(argv[3]) + " /My/ConfigVal1=1 /VRSetupToStart=FrontWall";
+		//VRDefaultAppLauncher launcher(argc, argv, minVRCommandLine);
+		//_vrMain->initialize(launcher);
+
+		//std::string args[] = {"test=3", "again=44"};
+        //_vrMain->initialize(argc, argv, argv[1], std::vector<std::string>(args, args + sizeof(args) / sizeof(args[0])));
+
+		std::string configFile = argv[1];
+		_vrMain->initialize(argc, argv, configFile);
+
+		//_vrMain->initialize(argc, argv);
       	_vrMain->addEventHandler(this);
 		_vrMain->addRenderHandler(this);
         _horizAngle = 0.0;
