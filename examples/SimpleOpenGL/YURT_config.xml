@@ -8,8 +8,9 @@
 	<ServerIP>cave001</ServerIP>
 
 	<ACaveServer hostType="VRServer">
-		<NumClients>28</NumClients>
+		<NumClients>69</NumClients>
 		<HostIP>cave001</HostIP>
+		<LogToFile>CaveServer.log</LogToFile>
 		
 		<VRPNPlugin pluginType="MinVR_VRPN"/>
 		
@@ -27,14 +28,59 @@
 				<FinalOffset type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
 			</Head>
 		</Optitrack1>
-	</ACaveServer>
+		<Optitrack2 inputdeviceType="VRVRPNTrackerDevice">
+			<VRPNDeviceName type="string">Wand0@tcp:172.20.160.21:3883</VRPNDeviceName>
+			<EventsToGenerate type="stringarray">Wand</EventsToGenerate>
+			<Wand>
+				<PropToTracker type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</PropToTracker>
+				<FinalOffset type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+			</Wand>
+		</Optitrack2>
+	  <Optitrack3 inputdeviceType="VRVRPNTrackerDevice">
+			<VRPNDeviceName type="string">Wand1@tcp:172.20.160.21:3883</VRPNDeviceName>
+			<EventsToGenerate type="stringarray">WirelessMouse</EventsToGenerate>
+			<WirelessMouse>
+				<PropToTracker type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</PropToTracker>
+				<FinalOffset type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+			</WirelessMouse>
+		</Optitrack3>
+
+    
+    <WandAnalogs inputdeviceType="VRVRPNAnalogDevice">
+      <VRPNDeviceName type="string">Joystick0@172.20.160.21:3121</VRPNDeviceName>
+      <EventsToGenerate type="stringarray">Wand_Joystick_Y,Wand_Joystick_X,Wand_Trigger_Top</EventsToGenerate>
+    </WandAnalogs>
+
+
+    <Buttons inputdeviceType="VRVRPNButtonDevice">
+      <VRPNDeviceName type="string">Joystick0@172.20.160.21:3121</VRPNDeviceName>
+      <EventsToGenerate type="stringarray">Wand_Top_Trigger,Wand_Bottom_Trigger,Wand_Joystick_Press,Wand_Up,Wand_Down,Wand_Left,Wand_Right,Wand_Select,???,Mouse_Up,Mouse_Down,Mouse_Left,Mouse_Right,Mouse_Click</EventsToGenerate>
+    </Buttons>
+
+</ACaveServer>
+	
+	<RGBBits>8</RGBBits>
+	<AlphaBits>8</AlphaBits>
+	<DepthBits>24</DepthBits>
+	<StencilBits>8</StencilBits>
+	<FullScreen>0</FullScreen>
+	<Resizable>1</Resizable>
+	<AllowMaximize>1</AllowMaximize>
+	<Visible>1</Visible>
+	<SharedContextGroupID>-1</SharedContextGroupID>
+	<ContextVersionMajor>3</ContextVersionMajor>
+	<ContextVersionMinor>0</ContextVersionMinor>
+	<UseGPUAffinity>1</UseGPUAffinity>
+	<UseDebugContext>0</UseDebugContext>
+	<MSAASamples>0</MSAASamples>
+	<QuadBuffered>1</QuadBuffered>
 	
 	<Border>0</Border>
 	<Caption>Desktop</Caption>
-	<QuadBuffered>1</QuadBuffered>
 	<GPUAffinity>None</GPUAffinity>
-    <StereoFormat>QuadBuffered</StereoFormat>
-    <EyeSeparation>0.2</EyeSeparation>
+	<StereoFormat>QuadBuffered</StereoFormat>
+	<EyeSeparation>0.2</EyeSeparation>
+	<Visible>1</Visible>
     
 	<HeadTrackingEvent>Head_Move</HeadTrackingEvent>
 
@@ -234,4 +280,265 @@
 		<ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_12</ScalableWarpFile>
 		<copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
 	</Cave28>
+
+  <Cave29 hostType="VRClient">
+    <HostIP>cave008</HostIP>
+    <HostDisplay>:0.0</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_7</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave29>
+  <Cave30 hostType="VRClient">
+    <HostIP>cave008</HostIP>
+    <HostDisplay>:0.1</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_8</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave30>
+  <Cave31 hostType="VRClient">
+    <HostIP>cave008</HostIP>
+    <HostDisplay>:0.2</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_9</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave31>
+
+  <Cave32 hostType="VRClient">
+    <HostIP>cave009</HostIP>
+    <HostDisplay>:0.0</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_3</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave32>
+  <Cave33 hostType="VRClient">
+    <HostIP>cave009</HostIP>
+    <HostDisplay>:0.1</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_4</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave33>
+  <Cave34 hostType="VRClient">
+    <HostIP>cave009</HostIP>
+    <HostDisplay>:0.2</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_5</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave34>
+  <Cave35 hostType="VRClient">
+    <HostIP>cave009</HostIP>
+    <HostDisplay>:0.3</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_6</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave35>
+
+  <Cave36 hostType="VRClient">
+    <HostIP>cave010</HostIP>
+    <HostDisplay>:0.0</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_0</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave36>
+  <Cave37 hostType="VRClient">
+    <HostIP>cave010</HostIP>
+    <HostDisplay>:0.1</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_1</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave37>
+  <Cave38 hostType="VRClient">
+    <HostIP>cave010</HostIP>
+    <HostDisplay>:0.2</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_2</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave38>
+
+  <Cave39 hostType="VRClient">
+    <HostIP>cave011</HostIP>
+    <HostDisplay>:0.0</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_38</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave39>
+  <Cave40 hostType="VRClient">
+    <HostIP>cave011</HostIP>
+    <HostDisplay>:0.1</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_39</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave40>
+  <Cave41 hostType="VRClient">
+    <HostIP>cave011</HostIP>
+    <HostDisplay>:0.2</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_41</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave41>
+  <Cave42 hostType="VRClient">
+    <HostIP>cave011</HostIP>
+    <HostDisplay>:0.3</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_40</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave42>
+
+  <Cave46 hostType="VRClient">
+    <HostIP>cave013</HostIP>
+    <HostDisplay>:0.0</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_46</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave46>
+  <Cave47 hostType="VRClient">
+    <HostIP>cave013</HostIP>
+    <HostDisplay>:0.1</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_47</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave47>
+  <Cave48 hostType="VRClient">
+    <HostIP>cave013</HostIP>
+    <HostDisplay>:0.2</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_49</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave48>
+  <Cave49 hostType="VRClient">
+    <HostIP>cave013</HostIP>
+    <HostDisplay>:0.3</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_48</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave49>
+
+  <Cave50 hostType="VRClient">
+    <HostIP>cave014</HostIP>
+    <HostDisplay>:0.0</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_50</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave50>
+  <Cave51 hostType="VRClient">
+    <HostIP>cave014</HostIP>
+    <HostDisplay>:0.1</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_51</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave51>
+  <Cave52 hostType="VRClient">
+    <HostIP>cave014</HostIP>
+    <HostDisplay>:0.2</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_52</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave52>
+
+  <Cave53 hostType="VRClient">
+    <HostIP>cave015</HostIP>
+    <HostDisplay>:0.0</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_53</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave53>
+  <Cave54 hostType="VRClient">
+    <HostIP>cave015</HostIP>
+    <HostDisplay>:0.1</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_54</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave54>
+  <Cave55 hostType="VRClient">
+    <HostIP>cave015</HostIP>
+    <HostDisplay>:0.2</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_58</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave55>
+  <Cave56 hostType="VRClient">
+    <HostIP>cave015</HostIP>
+    <HostDisplay>:0.3</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_57</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave56>
+
+  <Cave57 hostType="VRClient">
+    <HostIP>cave016</HostIP>
+    <HostDisplay>:0.0</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_55</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave57>
+  <Cave58 hostType="VRClient">
+    <HostIP>cave016</HostIP>
+    <HostDisplay>:0.1</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_56</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave58>
+  <Cave59 hostType="VRClient">
+    <HostIP>cave016</HostIP>
+    <HostDisplay>:0.2</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_60</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave59>
+  <Cave60 hostType="VRClient">
+    <HostIP>cave016</HostIP>
+    <HostDisplay>:0.3</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_59</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave60>
+
+  <Cave61 hostType="VRClient">
+    <HostIP>cave017</HostIP>
+    <HostDisplay>:0.0</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_61</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave61>
+  <Cave62 hostType="VRClient">
+    <HostIP>cave017</HostIP>
+    <HostDisplay>:0.1</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_62</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave62>
+  <Cave63 hostType="VRClient">
+    <HostIP>cave017</HostIP>
+    <HostDisplay>:0.2</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_63</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave63>
+  <Cave64 hostType="VRClient">
+    <HostIP>cave017</HostIP>
+    <HostDisplay>:0.3</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_66</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave64>
+
+  <Cave65 hostType="VRClient">
+    <HostIP>cave018</HostIP>
+    <HostDisplay>:0.0</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_64</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave65>
+  <Cave66 hostType="VRClient">
+    <HostIP>cave018</HostIP>
+    <HostDisplay>:0.1</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_65</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave66>
+  <Cave67 hostType="VRClient">
+    <HostIP>cave018</HostIP>
+    <HostDisplay>:0.2</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_67</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave67>
+  <Cave68 hostType="VRClient">
+    <HostIP>cave018</HostIP>
+    <HostDisplay>:0.3</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_68</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave68>
+
+<!-- I messed up numbering somewhere earlier and this is the easy way to fix it. Started at 70 to be clearly wrong. These names are arbitary anyway.-->
+  <Cave70 hostType="VRClient">
+    <HostIP>cave019</HostIP>
+    <HostDisplay>:0.0</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_42</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave70>
+  <Cave71 hostType="VRClient">
+    <HostIP>cave019</HostIP>
+    <HostDisplay>:0.1</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_43</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave71>
+
+  <Cave72 hostType="VRClient">
+    <HostIP>cave012</HostIP>
+    <HostDisplay>:0.0</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_44</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave72>
+  <Cave73 hostType="VRClient">
+    <HostIP>cave012</HostIP>
+    <HostDisplay>:0.1</HostDisplay>
+    <ScalableWarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_45</ScalableWarpFile>
+    <copiedNode linkNode="/MinVR/MyGraph/RootNode"/>
+  </Cave73>
+ 
+
 </MinVR>
