@@ -179,8 +179,25 @@ source_group("net\\Source Files" FILES ${vr_net_cpp})
 source_group("plugin\\Header Files" FILES ${vr_plugin_h})
 source_group("plugin\\Source Files" FILES ${vr_plugin_cpp})
 
-
 add_library(MinVR ${vr_sources})
+
+install(TARGETS MinVR
+        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+
+INSTALL(FILES ${vr_config_h} 
+              ${vr_display_h} 
+	      ${vr_input_h} 
+	      ${vr_main_h} 
+	      ${vr_math_h} 
+	      ${vr_net_h} 
+	      ${vr_plugin_h}
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
+
 
 add_executable(MVRLookup ${vr_src_dir}/config/MVRLookup.cpp)
 target_link_libraries(MVRLookup MinVR)
+
+install(TARGETS MVRLookup
+	RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+
