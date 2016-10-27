@@ -56,18 +56,31 @@ set(vr_config_cpp
   ${vr_src_dir}/config/base64/base64.cpp
 )
 
-set(vr_config_h
+set(vr_config_h_config
   ${vr_src_dir}/config/VRCoreTypes.h
   ${vr_src_dir}/config/VRDataIndex.h
   ${vr_src_dir}/config/VRDataQueue.h
   ${vr_src_dir}/config/VRDatum.h
   ${vr_src_dir}/config/VRDatumFactory.h
+  ${vr_src_dir}/config/VRWritable.h
+)
+
+set(vr_config_h_cxml
   ${vr_src_dir}/config/Cxml/attribute.h
   ${vr_src_dir}/config/Cxml/Cxml.h
   ${vr_src_dir}/config/Cxml/element.h
   ${vr_src_dir}/config/Cxml/utils.h
   ${vr_src_dir}/config/Cxml/XML.h
+)
+
+set(vr_config_h_base
   ${vr_src_dir}/config/base64/base64.h
+)
+
+set(vr_config_h
+  ${vr_config_h_config}
+  ${vr_config_h_cxml}
+  ${vr_config_h_base}
 )
 
 set(vr_display_cpp
@@ -109,7 +122,7 @@ set(vr_main_cpp
   ${vr_src_dir}/main/impl/VRDefaultAppLauncher.cpp
 )
 
-set(vr_main_h
+set(vr_main_h_base
   ${vr_src_dir}/main/VREventHandler.h
   ${vr_src_dir}/main/VRFactory.h
   ${vr_src_dir}/main/VRItemFactory.h
@@ -117,7 +130,15 @@ set(vr_main_h
   ${vr_src_dir}/main/VRMainInterface.h
   ${vr_src_dir}/main/VRRenderHandler.h
   ${vr_src_dir}/main/VRAppLauncher.h
+)
+
+set(vr_main_h_impl
   ${vr_src_dir}/main/impl/VRDefaultAppLauncher.h
+)
+
+set(vr_main_h
+  ${vr_main_h_main}
+  ${vr_main_h_impl}
 )
 
 set(vr_math_cpp
@@ -185,15 +206,18 @@ install(TARGETS MinVR
         LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
 	ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
-INSTALL(FILES ${vr_config_h} 
-              ${vr_display_h} 
-	      ${vr_input_h} 
-	      ${vr_main_h} 
-	      ${vr_math_h} 
-	      ${vr_net_h} 
-	      ${vr_plugin_h}
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
-
+install(FILES ${vr_config_h_config}
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/config)
+install(FILES ${vr_config_h_cxml}
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/config/Cxml)
+install(FILES ${vr_config_h_base}
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/config/base64)
+install(FILES ${vr_display_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/display)
+install(FILES ${vr_input_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/input)
+install(FILES ${vr_main_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/main)
+install(FILES ${vr_math_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/math)
+install(FILES ${vr_net_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/net)
+install(FILES ${vr_plugin_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/plugin)
 
 add_executable(MVRLookup ${vr_src_dir}/config/MVRLookup.cpp)
 target_link_libraries(MVRLookup MinVR)
