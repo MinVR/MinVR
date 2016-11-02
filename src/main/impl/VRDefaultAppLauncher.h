@@ -28,6 +28,10 @@ public:
 		return initString;
 	}
 
+	const std::string& getExecutable() const {
+		return program;
+	}
+
 private:
 	std::string program;
 	std::string cmd;

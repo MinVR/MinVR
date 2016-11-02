@@ -87,7 +87,8 @@ bool VRPluginManager::loadPlugin(const std::string& pluginFilePath) {
 		version_t* getVersion = lib->loadSymbol<version_t>("getPluginFrameworkVersion");
 		if (getVersion() != getPluginFrameworkVersion())
 		{
-			std::cout << "Cannot load plugin: " << pluginFilePath << " - Incorrect framework version." << std::endl;
+			//std::cerr << "Cannot load plugin: " << pluginFilePath << " - Incorrect framework version." << std::endl;
+			delete lib;
 			return false;
 		}
 
@@ -95,7 +96,8 @@ bool VRPluginManager::loadPlugin(const std::string& pluginFilePath) {
 		create_t* createVRPlugin = lib->loadSymbol<create_t>("createPlugin");
 		if (createVRPlugin == NULL)
 		{
-			std::cout << "Cannot load plugin: " << pluginFilePath << " - createVRPlugin funciton not found." << std::endl;
+			//std::cerr << "Cannot load plugin: " << pluginFilePath << " - createVRPlugin funciton not found." << std::endl;
+			delete lib;
 			return false;
 		}
 
@@ -107,6 +109,9 @@ bool VRPluginManager::loadPlugin(const std::string& pluginFilePath) {
 		_libraries.push_back(lib);
 
 		return true;
+	}
+	else {
+		delete lib;
 	}
 
 	return false;

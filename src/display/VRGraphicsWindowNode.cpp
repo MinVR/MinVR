@@ -108,7 +108,7 @@ VRDisplayNode* VRGraphicsWindowNode::create(VRMainInterface *vrMain, VRDataIndex
 	settings.debugContext = int(config->getValue("UseDebugContext", nameSpace));
 	settings.msaaSamples = int(config->getValue("MSAASamples", nameSpace));
 
-	std::cout << settings.xpos << ", " << settings.ypos << ", " << settings.width << ", " << settings.height << std::endl;
+	//std::cout << settings.xpos << ", " << settings.ypos << ", " << settings.width << ", " << settings.height << std::endl;
 	VRDisplayNode *node = new VRGraphicsWindowNode(nameSpace, gfxToolkit, winToolkit, settings);
 
 	return node;

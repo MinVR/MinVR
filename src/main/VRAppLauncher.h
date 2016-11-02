@@ -19,6 +19,7 @@ public:
 
 	virtual std::string generateCommandLine(const std::string& initString) const = 0;
 	virtual const std::string& getInitString() const = 0;
+	virtual const std::string& getExecutable() const = 0;
 };
 
 
