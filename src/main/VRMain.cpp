@@ -157,7 +157,6 @@ void VRMain::initialize(int argc, char **argv, const std::string& configFile, st
 
 void VRMain::initialize(const VRAppLauncher& launcher) {
 	std::string data = launcher.getInitString();
-	std::cout << data << std::endl;
 
 	std::stringstream ss(data);
 
@@ -335,22 +334,50 @@ void VRMain::initialize(const VRAppLauncher& launcher) {
 
 	// Load plugins from the plugin directory.  This will add their factories to the master VRFactory.
 	{
+
 		std::list<std::string> names = _config->selectByAttribute("pluginType", "*", _name);
-		for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
+		for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); it++) {
+			std::vector<std::string> pluginSearchPaths;
 			if (_config->exists("PluginPath", *it)){
 				std::string path = _config->getValue("PluginPath", *it);
-				std::string file = _config->getDatum(*it)->getAttributeValue("pluginType");
-				path = path + "/" + file;
+				pluginSearchPaths.push_back(path);
+			}
+			pluginSearchPaths.push_back(".");
+			pluginSearchPaths.push_back("./plugins");
+			std::size_t endPos = launcher.getExecutable().find_last_of("/\\");
+			std::string execPath = endPos != std::string::npos ? launcher.getExecutable().substr(0,endPos) : ".";
+			pluginSearchPaths.push_back(execPath + "/../plugins");
+			pluginSearchPaths.push_back(std::string(INSTALLPATH) + "/plugins");
 
-				string buildType = "";
+			for (int f = 0; f < _pluginSearchPaths.size(); f++) {
+				pluginSearchPaths.push_back(_pluginSearchPaths[f]);
+			}
+
+			bool found = false;
+			std::string file = "";
+			string buildType = "";
 #ifdef MinVR_DEBUG
-				buildType = "d";
+			buildType = "d";
 #endif
 
-				if (!_pluginMgr->loadPlugin(path, file + buildType)) {
-					cerr << "VRMain Error: Problem loading plugin " << path << file << buildType << endl;
+			for (std::vector<std::string>::const_iterator searchPath = pluginSearchPaths.begin(); searchPath != pluginSearchPaths.end(); ++searchPath) {
+				file = _config->getDatum(*it)->getAttributeValue("pluginType");
+				std::string path = *searchPath + "/" + file;
+
+				if(_pluginMgr->loadPlugin(path, file + buildType)) {
+					found = true;
+					break;
 				}
 			}
+
+			if (!found) {
+				cerr << "VRMain Error: Problem loading plugin: " << file << buildType << endl;
+				std::cout << "  Could not load from any of the following paths: " << std::endl;
+				for (std::vector<std::string>::const_iterator searchPath = pluginSearchPaths.begin(); searchPath != pluginSearchPaths.end(); ++searchPath) {
+					std::cerr << "\t"<< *searchPath << std::endl;
+				}
+			}
+
 			//else if(_config->getDatum(*it)->hasAttribute("pluginlibfile")){
 			//	std::string file = _config->getDatum(*it)->getAttributeValue("pluginlibfile");
 			//	if (!_pluginMgr->loadPlugin(file)) {

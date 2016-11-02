@@ -106,6 +106,9 @@ public:
  
   VRGraphicsToolkit* getGraphicsToolkit(const std::string &name);
   VRWindowToolkit* getWindowToolkit(const std::string &name);
+  void addPluginSearchPath(const std::string& path) {
+
+  }
    
 private:
 
@@ -125,6 +128,7 @@ private:
   std::vector<VRGraphicsToolkit*> _gfxToolkits;
   std::vector<VRWindowToolkit*>   _winToolkits;
   std::vector<VRDisplayNode*>     _displayGraphs;
+  std::vector<std::string> _pluginSearchPaths;
 
   int _frame;
 };
