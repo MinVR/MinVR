@@ -26,7 +26,7 @@
 // data index. It's just hacked together, so don't read too much into
 // it.
 int main(int argc, char** argv) {
-  VRDataIndex *index = new VRDataIndex;
+  MinVR::VRDataIndex *index = new MinVR::VRDataIndex;
 
   if (argc == 1) {
     // No argument.  Set up some sample data names and values.
@@ -175,64 +175,64 @@ int main(int argc, char** argv) {
         // You can also do something like this:
         //
         //  int ip = index->getValue("henry", "/")
-        VRDatumPtr p = index->getDatum(elems[1], nameSpace);
+        MinVR::VRDatumPtr p = index->getDatum(elems[1], nameSpace);
 
         switch (p->getType()) {
-        case VRCORETYPE_INT:
+        case MinVR::VRCORETYPE_INT:
           std::cout << "an integer containing: " << ((int)p->getValue()) << std::endl;
 
           std::cout << "same as: " << (int)index->getValue(elems[1], nameSpace) << std::endl;
           break;
 
-        case VRCORETYPE_DOUBLE:
+        case MinVR::VRCORETYPE_DOUBLE:
           std::cout << "a double containing: " << ((double)p->getValue()) << std::endl;
           break;
 
-        case VRCORETYPE_STRING:
+        case MinVR::VRCORETYPE_STRING:
           std::cout << "a string containing: " << ((std::string)p->getValue()) << std::endl;
           break;
 
-        case VRCORETYPE_INTARRAY:
+        case MinVR::VRCORETYPE_INTARRAY:
           {
-            VRIntArray pdata = p->getValue();
-            for (VRIntArray::iterator it = pdata.begin(); it != pdata.end(); ++it) {
+            MinVR::VRIntArray pdata = p->getValue();
+            for (MinVR::VRIntArray::iterator it = pdata.begin(); it != pdata.end(); ++it) {
               std::cout << "element: " << *it << std::endl;
             }
             break;
           }
 
-        case VRCORETYPE_DOUBLEARRAY:
+        case MinVR::VRCORETYPE_DOUBLEARRAY:
           {
-            VRDoubleArray pdata = p->getValue();
-            for (VRDoubleArray::iterator it = pdata.begin(); it != pdata.end(); ++it) {
+            MinVR::VRDoubleArray pdata = p->getValue();
+            for (MinVR::VRDoubleArray::iterator it = pdata.begin(); it != pdata.end(); ++it) {
               std::cout << "element: " << *it << std::endl;
             }
             break;
           }
 
-        case VRCORETYPE_STRINGARRAY:
+        case MinVR::VRCORETYPE_STRINGARRAY:
           {
-            VRStringArray pdata = p->getValue();
-            for (VRStringArray::iterator it = pdata.begin(); it != pdata.end(); ++it) {
+            MinVR::VRStringArray pdata = p->getValue();
+            for (MinVR::VRStringArray::iterator it = pdata.begin(); it != pdata.end(); ++it) {
               std::cout << "element: " << *it << std::endl;
             }
             break;
           }
 
-        case VRCORETYPE_CONTAINER:
+        case MinVR::VRCORETYPE_CONTAINER:
 
           {
             std::cout << "a container containing: " << std::endl;
 
-            VRContainer nameList = p->getValue();
-            for (VRContainer::iterator nl = nameList.begin();
+            MinVR::VRContainer nameList = p->getValue();
+            for (MinVR::VRContainer::iterator nl = nameList.begin();
                  nl != nameList.end(); nl++) {
               std::cout << "                        " << *nl << std::endl;
             }
             break;
           }
 
-        case VRCORETYPE_NONE:
+        case MinVR::VRCORETYPE_NONE:
           {
             break;
           }	     
@@ -248,7 +248,7 @@ int main(int argc, char** argv) {
     ////// command: l (list all values)
     } else if (elems[0].compare("ls") == 0) {
 
-      VRContainer nameList;
+      MinVR::VRContainer nameList;
       if (elems.size() > 1) {
         nameList = index->getValue(elems[1]);
       } else {
@@ -258,7 +258,7 @@ int main(int argc, char** argv) {
           nameList = index->getValue(nameSpace.substr(0,nameSpace.size() - 1));
         }
       }
-      for (VRContainer::iterator it = nameList.begin();
+      for (MinVR::VRContainer::iterator it = nameList.begin();
            it != nameList.end(); it++) {
         std::cout << *it << std::endl;
       }
@@ -270,14 +270,14 @@ int main(int argc, char** argv) {
         // Make a list of data values to add to the parent container.
         // In this case, the list will have only one value, but it
         // could have more.
-        VRContainer c;
+        MinVR::VRContainer c;
         c.push_back(nameSpace + elems[1]);
 
         std::cout << "nameSpace: " << nameSpace << " c: " << c.front() << std::endl;
 
         if (elems[2].compare("container") == 0) {
 
-          VRContainer Empty;
+          MinVR::VRContainer Empty;
           index->addData(nameSpace + elems[1], Empty);
           
         } else {

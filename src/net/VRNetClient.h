@@ -8,7 +8,7 @@
   #include <arpa/inet.h>
 #endif
 
-
+namespace MinVR {
 
 class VRNetClient : public VRNetInterface {
  public:
@@ -28,7 +28,7 @@ class VRNetClient : public VRNetInterface {
 };
 
 
-
+} // end namespace MinVR  
 
 
 #endif

@@ -40,12 +40,12 @@ int queuetest(int argc, char* argv[]) {
 // This is pretty much the same function as setupIndex() in
 // indextest.cpp, but has its name changed to avoid link conflicts in
 // the construction of test_runner.
-VRDataIndex* setupQIndex() {
+MinVR::VRDataIndex* setupQIndex() {
 
-  VRDataIndex *n = new VRDataIndex;
+  MinVR::VRDataIndex *n = new MinVR::VRDataIndex;
   
-  VRInt a = 4;
-  VRDouble b = 3.1415926;
+  MinVR::VRInt a = 4;
+  MinVR::VRDouble b = 3.1415926;
   
   n->addData("/george/a0", a);
   n->addData("/george/a1", a + 1);
@@ -69,7 +69,7 @@ VRDataIndex* setupQIndex() {
   n->addData("/martha/b8", b * 8);
   n->addData("/martha/b9", b * 9);
 
-  VRString c = "abigail";
+  MinVR::VRString c = "abigail";
   n->addData("/john/c0", c + "0");
   n->addData("/john/c1", c + "1");
   n->addData("/john/c2", c + "2");
@@ -132,8 +132,8 @@ int TestQueueArray() {
 
   testString = removeTimeStamps(testString);
   
-  VRDataIndex *n = setupQIndex();
-  VRDataQueue *q = new VRDataQueue;
+  MinVR::VRDataIndex *n = setupQIndex();
+  MinVR::VRDataQueue *q = new MinVR::VRDataQueue;
   
   std::vector<int>e;
 
@@ -165,8 +165,8 @@ int TestQueueUnpack() {
   std::string testString;
 
   // Create an index and a queue.
-  VRDataIndex *n = setupQIndex();
-  VRDataQueue *q = new VRDataQueue;
+  MinVR::VRDataIndex *n = setupQIndex();
+  MinVR::VRDataQueue *q = new MinVR::VRDataQueue;
   
   std::vector<int>e;
 
@@ -183,7 +183,7 @@ int TestQueueUnpack() {
   // Put that object into the queue.
   q->push(n->serialize("/george"));
   
-  VRDataIndex* index = new VRDataIndex;
+  MinVR::VRDataIndex* index = new MinVR::VRDataIndex;
 
   // Unpack the serialized object.
   index->addSerializedValue( q->getSerializedObject(), "/" );

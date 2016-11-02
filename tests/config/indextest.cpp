@@ -78,12 +78,12 @@ int indextest(int argc, char* argv[]) {
   return output;
 }
 
-VRDataIndex * setupIndex() {
+MinVR::VRDataIndex * setupIndex() {
 
-  VRDataIndex *n = new VRDataIndex;
+  MinVR::VRDataIndex *n = new MinVR::VRDataIndex;
 
-  VRInt a = 4;
-  VRDouble b = 3.1415926;
+  MinVR::VRInt a = 4;
+  MinVR::VRDouble b = 3.1415926;
   
   n->addData("/george/a0", a);
   n->addData("/george/a1", a + 1);
@@ -107,7 +107,7 @@ VRDataIndex * setupIndex() {
   n->addData("/martha/b8", b * 8);
   n->addData("/martha/b9", b * 9);
 
-  VRString c = "abigail";
+  MinVR::VRString c = "abigail";
   n->addData("/john/c0", c + "0");
   n->addData("/john/c1", c + "1");
   n->addData("/john/c2", c + "2");
@@ -141,7 +141,7 @@ int testSelections() {
   // Set up the test string and several expected outputs.
   std::string xmlteststring =  "<MVR><!-- some of the illegitimate children of John I --><John name=\"Lackland\"><Isabella name=\"Angouleme\"><Henry seq=\"III\" title=\"King\">1</Henry> <Richard title=\"Earl of Cornwall\">2</Richard> <Joan title=\"Queen Consort\">3</Joan> <Isabella title=\"Queen Consort\">4</Isabella> <Eleanor type=\"string\">5</Eleanor> </Isabella><Joan title=\"Lady of Wales\"><Richard name=\"FitzRoy\">6</Richard><Oliver name=\"FitzRoy\">7</Oliver></Joan> <Unknown><Geoffrey name=\"FitzRoy\" type=\"string\">8</Geoffrey><John name=\"FitzRoy\">9</John> <Henry name=\"FitzRoy\">10</Henry> <Osbert name=\"Gifford\">11</Osbert> <Eudes name=\"FitzRoy\">12</Eudes> <Bartholomew name=\"FitzRoy\">13</Bartholomew> <Maud name=\"FitzRoy\" title=\"Abbess of Barking\">14</Maud><Isabella name=\"FitzRoy\">15</Isabella><Philip name=\"FitzRoy\" type=\"string\">16</Philip></Unknown> </John></MVR>";
   
-  VRContainer firstTestList;
+  MinVR::VRContainer firstTestList;
 
   firstTestList.push_back("/MVR/John");
   firstTestList.push_back("/MVR/John/Isabella");
@@ -157,7 +157,7 @@ int testSelections() {
   firstTestList.push_back("/MVR/John/Unknown/Osbert");
   firstTestList.push_back("/MVR/John/Unknown/Philip");
   
-  VRContainer secondTestList;
+  MinVR::VRContainer secondTestList;
 
   secondTestList.push_back("/MVR/John/Joan/Oliver");
   secondTestList.push_back("/MVR/John/Joan/Richard");
@@ -170,17 +170,17 @@ int testSelections() {
   secondTestList.push_back("/MVR/John/Unknown/Maud");
   secondTestList.push_back("/MVR/John/Unknown/Philip");
 
-  VRContainer thirdTestList;
+  MinVR::VRContainer thirdTestList;
 
   thirdTestList.push_back("/MVR/John/Isabella/Eleanor");
   thirdTestList.push_back("/MVR/John/Unknown/Geoffrey");
   thirdTestList.push_back("/MVR/John/Unknown/Philip");
     
-  VRContainer fourthTestList;
+  MinVR::VRContainer fourthTestList;
 
   fourthTestList.push_back("/MVR/John/Isabella/Eleanor");
     
-  VRContainer fifthTestList;
+  MinVR::VRContainer fifthTestList;
 
   fifthTestList.push_back("/MVR/John/Isabella");
   fifthTestList.push_back("/MVR/John/Isabella/Eleanor");
@@ -189,7 +189,7 @@ int testSelections() {
   fifthTestList.push_back("/MVR/John/Isabella/Joan");
   fifthTestList.push_back("/MVR/John/Isabella/Richard");
   
-  VRContainer sixthTestList;
+  MinVR::VRContainer sixthTestList;
 
   sixthTestList.push_back("/MVR/John/Isabella/Isabella");
   sixthTestList.push_back("/MVR/John/Unknown/Isabella");
@@ -198,14 +198,14 @@ int testSelections() {
   int out = 0;
 
   LOOP {
-    VRDataIndex *index = new VRDataIndex();
-    index->addSerializedValue(xmlteststring, VRDataIndex::rootNameSpace);
+    MinVR::VRDataIndex *index = new MinVR::VRDataIndex();
+    index->addSerializedValue(xmlteststring, MinVR::VRDataIndex::rootNameSpace);
     
     // Test selection by attribute, not dependent on value.
-    VRContainer firstList = index->selectByAttribute("name", "*");
+    MinVR::VRContainer firstList = index->selectByAttribute("name", "*");
 
-    VRContainer::iterator jt = firstTestList.begin(); 
-    for (VRContainer::iterator it = firstList.begin();
+    MinVR::VRContainer::iterator jt = firstTestList.begin(); 
+    for (MinVR::VRContainer::iterator it = firstList.begin();
          it != firstList.end(); it++) {
 
       if (jt == firstTestList.end()) {
@@ -219,10 +219,10 @@ int testSelections() {
     }
 
     // Test selection by attribute, specific value
-    VRContainer secondList = index->selectByAttribute("name", "FitzRoy");
+    MinVR::VRContainer secondList = index->selectByAttribute("name", "FitzRoy");
 
     jt = secondTestList.begin(); 
-    for (VRContainer::iterator it = secondList.begin();
+    for (MinVR::VRContainer::iterator it = secondList.begin();
          it != secondList.end(); it++) {
 
       if (jt == secondTestList.end()) {
@@ -235,10 +235,10 @@ int testSelections() {
     }
 
     // Test selection by type.
-    VRContainer thirdList = index->selectByType(VRCORETYPE_STRING);
+    MinVR::VRContainer thirdList = index->selectByType(MinVR::VRCORETYPE_STRING);
         
     jt = thirdTestList.begin();
-    for (VRContainer::iterator it = thirdList.begin();
+    for (MinVR::VRContainer::iterator it = thirdList.begin();
          it != thirdList.end(); it++) {
 
       if (jt == thirdTestList.end()) {
@@ -252,20 +252,20 @@ int testSelections() {
 
   
     // Test selection by fully qualified name.
-    VRContainer fourthList = index->selectByName("/MVR/John/Isabella/Eleanor");
+    MinVR::VRContainer fourthList = index->selectByName("/MVR/John/Isabella/Eleanor");
         
     jt = fourthTestList.begin();
-    for (VRContainer::iterator it = fourthList.begin();
+    for (MinVR::VRContainer::iterator it = fourthList.begin();
          it != fourthList.end(); it++) {
 
       if ((*it).compare(*jt++) != 0) out++;
     }
 
     // Test selection by partial name.
-    VRContainer fifthList = index->selectByName("John/Isabella");
+    MinVR::VRContainer fifthList = index->selectByName("John/Isabella");
         
     jt = fifthTestList.begin();
-    for (VRContainer::iterator it = fifthList.begin();
+    for (MinVR::VRContainer::iterator it = fifthList.begin();
          it != fifthList.end(); it++) {
 
       if ((*it).compare(*jt++) != 0) out++;
@@ -273,10 +273,10 @@ int testSelections() {
 
 
     // Test selection by partial name with wildcard.
-    VRContainer sixthList = index->selectByName("John/*/Isabella");
+    MinVR::VRContainer sixthList = index->selectByName("John/*/Isabella");
         
     jt = sixthTestList.begin();
-    for (VRContainer::iterator it = sixthList.begin();
+    for (MinVR::VRContainer::iterator it = sixthList.begin();
          it != sixthList.end(); it++) {
 
       if ((*it).compare(*jt++) != 0) out++;
@@ -299,7 +299,7 @@ int testPushPopIndex() {
   std::string testStringSecondPush = "<Server type=\"container\"><Port type=\"string\">3490</Port><Host type=\"string\">localhost</Host><NumClients type=\"int\">1</NumClients><walterjohnson type=\"string\">Big Train</walterjohnson></Server>";
   
   LOOP {
-    VRDataIndex *n = setupIndex();
+    MinVR::VRDataIndex *n = setupIndex();
 
     std::string output = n->serialize("/MVR");
 
@@ -307,8 +307,8 @@ int testPushPopIndex() {
     
     n->pushState();
 
-    VRInt a = 4;
-    VRDouble b = 3.1415926;
+    MinVR::VRInt a = 4;
+    MinVR::VRDouble b = 3.1415926;
   
     n->addData("/MVR/george/a0", a);
     n->addData("/MVR/george/a1", a + 1);
@@ -332,7 +332,7 @@ int testPushPopIndex() {
     n->addData("b8", "/MVR/martha", b * 8); // misspelled to check on validation
     n->addData("b9", "/MVR/martha", b * 9);
 
-    VRString c = "abigail";
+    MinVR::VRString c = "abigail";
     n->addData("/MVR/john/c0", c + "0");
     n->addData("/MVR/john/c1", c + "1");
     n->addData("/MVR/john/c2", c + "2");
@@ -390,7 +390,7 @@ int testIndexSerializeIntArray() {
   int out = 0;
 
   LOOP {
-    VRDataIndex *n = setupIndex();
+    MinVR::VRDataIndex *n = setupIndex();
 
     std::vector<int>e;
 
@@ -418,7 +418,7 @@ int testIndexSerializeIntArraySep() {
   int out = 0;
 
   LOOP {
-    VRDataIndex *n = setupIndex();
+    MinVR::VRDataIndex *n = setupIndex();
 
     std::vector<int>e;
 
@@ -447,7 +447,7 @@ int testIndexSerialize() {
 
   LOOP {
   
-    VRDataIndex *n = setupIndex();
+    MinVR::VRDataIndex *n = setupIndex();
 
     std::string output = n->serialize("/MVR");
 
@@ -468,7 +468,7 @@ int testIndexPrintDoubleArray() {
 
   LOOP {
   
-    VRDataIndex *n = setupIndex();
+    MinVR::VRDataIndex *n = setupIndex();
 
     std::string output = n->printStructure("/donna",200);  
     delete n;
@@ -488,7 +488,7 @@ int testIndexLotsaEntries() {
 
   LOOP {
   
-    VRDataIndex *n = setupIndex();
+    MinVR::VRDataIndex *n = setupIndex();
 
     int lctr;
     int N = 1000;
@@ -522,13 +522,13 @@ int testEscapedChars() {
 
   LOOP {
 
-    VRDataIndex *n = setupIndex();
+    MinVR::VRDataIndex *n = setupIndex();
 
     // Escaping the comma separator between Gamma and Delta.
     std::string inString = "<mimi type=\"stringarray\" separator=\",\">Alpha,Beta,Gamma\\,Delta,Epsilon</mimi>";
-    n->addSerializedValue(inString, VRDataIndex::rootNameSpace);
+    n->addSerializedValue(inString, MinVR::VRDataIndex::rootNameSpace);
     
-    VRStringArray s = n->getValue("/mimi");
+    MinVR::VRStringArray s = n->getValue("/mimi");
 
     out += (s.size() == 4) ? 0 : 1;
 
@@ -556,8 +556,8 @@ int testLinkNode() {
   int out = 0;
 
   LOOP {
-    VRDataIndex *index = new VRDataIndex();
-    index->addSerializedValue(xmlstring, VRDataIndex::rootNameSpace, false);
+    MinVR::VRDataIndex *index = new MinVR::VRDataIndex();
+    index->addSerializedValue(xmlstring, MinVR::VRDataIndex::rootNameSpace, false);
 
     std::cout << index->printStructure() << std::endl;
 
@@ -589,8 +589,8 @@ int testLinkContent() {
   
   int out = 0;
   LOOP {
-    VRDataIndex *index = new VRDataIndex();
-    index->addSerializedValue(xmlstring, VRDataIndex::rootNameSpace, false);
+    MinVR::VRDataIndex *index = new MinVR::VRDataIndex();
+    index->addSerializedValue(xmlstring, MinVR::VRDataIndex::rootNameSpace, false);
 
     //  std::cout << index->printStructure() << std::endl;
 

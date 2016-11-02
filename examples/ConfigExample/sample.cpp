@@ -9,7 +9,7 @@
 // use of the VRDataIndex type system.  Also check out the exercz program.
 
 int main() {
-  VRDataIndex *index = new VRDataIndex;
+  MinVR::VRDataIndex *index = new MinVR::VRDataIndex;
 
   // Create a container object called cora, with two member objects.
   index->addData("/cora/nora", 4);
@@ -23,7 +23,7 @@ int main() {
   std::cout << "Index Structure" << std::endl;
   std::cout << index->printStructure();
 
-  VRDataQueue *queue = new VRDataQueue;
+  MinVR::VRDataQueue *queue = new MinVR::VRDataQueue;
 
   // Push cora onto the queue.
   queue->push(index->serialize("cora", "/"));
@@ -32,19 +32,19 @@ int main() {
   index->addData("/cora/nora", 7);
   index->addData("/cora/flora", "are you sure?");
 
-  VRIntArray ia;
+  MinVR::VRIntArray ia;
   ia.push_back(1);
   ia.push_back(2);
   ia.push_back(3);
   index->addData("/cora/ia", ia);
 
-  VRDoubleArray da;
+  MinVR::VRDoubleArray da;
   da.push_back(1.2);
   da.push_back(3.4);
   da.push_back(5.6);
   index->addData("/cora/da", da);
 
-  VRStringArray sa;
+  MinVR::VRStringArray sa;
   sa.push_back("hello");
   sa.push_back("good-bye");
   index->addData("/cora/sa", sa);
@@ -69,10 +69,10 @@ int main() {
   // Pretend we are in a remote program, having received event data
   // over the net.  It comes in as some kind of string data called
   // queueData.
-  VRDataQueue *newQueue = new VRDataQueue(queueData);
+  MinVR::VRDataQueue *newQueue = new MinVR::VRDataQueue(queueData);
 
   // Here's the index we'll populate with the new data.
-  VRDataIndex *remoteIndex = new VRDataIndex;
+  MinVR::VRDataIndex *remoteIndex = new MinVR::VRDataIndex;
   
   // While there is something in the queue, unpack it into the index,
   // and examine it.
@@ -85,12 +85,12 @@ int main() {
     std::cout << std::endl << "examining the data..." << std::endl;
     std::cout << "The object named " << p << " is a " <<
       remoteIndex->getTypeString(p) << "." << std::endl;
-    if (remoteIndex->getType(p) == VRCORETYPE_CONTAINER) {
-      VRContainer lp = remoteIndex->getValue(p);
+    if (remoteIndex->getType(p) == MinVR::VRCORETYPE_CONTAINER) {
+      MinVR::VRContainer lp = remoteIndex->getValue(p);
 
       std::cout << "... it contains these" << std::endl;
 
-      for (VRContainer::iterator it = lp.begin(); it != lp.end(); it++) {
+      for (MinVR::VRContainer::iterator it = lp.begin(); it != lp.end(); it++) {
         std::cout << "  " << *it << " (" << remoteIndex->getTypeString(*it) << ")" << std::endl;
       }
     }

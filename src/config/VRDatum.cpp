@@ -1,5 +1,7 @@
 #include "VRDatum.h"
 
+namespace MinVR {
+
 // This is the canonical list of how to spell the types given here.
 // The strings here will appear in the XML serialization, in the
 // 'type="XX"' part.  So you can change them here, and these changes
@@ -230,3 +232,4 @@ std::ostream & operator<<(std::ostream &os, VRDatumPtr& p) {
   return os << p->getValueString();
 }
 
+} // end namespace MinVR

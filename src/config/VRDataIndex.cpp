@@ -1,5 +1,7 @@
 #include "VRDataIndex.h"
 
+namespace MinVR {
+  
 std::string VRDataIndex::rootNameSpace = "/";
 
 // Step 7 of the specialization instructions (in VRDatum.h) is to
@@ -1228,3 +1230,5 @@ bool VRDataIndex::linkContent() {
   }
   return true;
 }
+
+}  // end namespace MinVR

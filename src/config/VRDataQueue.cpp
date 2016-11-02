@@ -1,5 +1,7 @@
 #include "VRDataQueue.h"
 
+namespace MinVR {
+
 // Use this when the client has no new data to offer.
 const VRDataQueue::serialData VRDataQueue::noData = "";
 
@@ -139,3 +141,5 @@ std::string VRDataQueue::printQueue() {
 
   return out;
 }
+
+} // end namespace MinVR

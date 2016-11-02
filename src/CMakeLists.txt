@@ -122,7 +122,7 @@ set(vr_main_cpp
   ${vr_src_dir}/main/impl/VRDefaultAppLauncher.cpp
 )
 
-set(vr_main_h_base
+set(vr_main_h_main
   ${vr_src_dir}/main/VREventHandler.h
   ${vr_src_dir}/main/VRFactory.h
   ${vr_src_dir}/main/VRItemFactory.h

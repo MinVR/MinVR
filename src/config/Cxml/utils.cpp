@@ -1,5 +1,6 @@
 #include "utils.h"
 
+namespace MinVR {
 
 char* concat(char *str,char c)
 {
@@ -26,3 +27,4 @@ void clean_str(char* str)
     memset(str,0,strlen(str) * sizeof(char));
 }
 
+} // ending namespace MinVR

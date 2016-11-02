@@ -4,10 +4,11 @@
 
 #include "VRDatum.h"
 
+namespace MinVR {
+
 // This factory architecture was suggested by Andrei Alexandrescu in
 // his book "Modern C++ Design" --- read it to get the full
-// explanation (and a more generic implementation); this is just an
-// example
+// explanation.
 
 // This class is where we parse the serialized data and create the
 // appropriate VRDatum to hold that information.
@@ -31,4 +32,6 @@ private:
   CallbackMap m_callbacks;
 };
 
+} // end namespace MinVR
+  
 #endif

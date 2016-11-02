@@ -103,9 +103,9 @@ int testDatumAttributes() {
   LOOP {
     std::string testString = " four=\"4\" one=\"1\" three=\"3\" two=\"2\"";
   
-    VRDatumInt a = VRDatumInt(37);
+    MinVR::VRDatumInt a = MinVR::VRDatumInt(37);
   
-    VRDatum::VRAttributeList alist = a.getAttributeList();
+    MinVR::VRDatum::VRAttributeList alist = a.getAttributeList();
 
     alist["one"] = "11";
     alist["two"] = "2";
@@ -136,7 +136,7 @@ int testDatumInt() {
 
   LOOP {
   
-    VRDatumInt a = VRDatumInt(37);
+    MinVR::VRDatumInt a = MinVR::VRDatumInt(37);
 
     // Is the type description correct?
     out = a.getDescription().compare("int");
@@ -150,7 +150,7 @@ int testDatumInt() {
     out += (x == 37.00) ? 0 : 1;
     
     // Is the type correct?
-    out += (a.getType() == VRCORETYPE_INT) ? 0 : 1;
+    out += (a.getType() == MinVR::VRCORETYPE_INT) ? 0 : 1;
 
     // Is the serialization correct?
     out += a.getValueString().compare("37");
@@ -160,13 +160,13 @@ int testDatumInt() {
     out += a.getValueString().compare(buf.str());
 
     // This is for testing the VRDatumPtr.
-    VRInt c = 1234;
-    VRDatumPtr p = CreateVRDatumInt(&c);
+    MinVR::VRInt c = 1234;
+    MinVR::VRDatumPtr p = MinVR::CreateVRDatumInt(&c);
     
-    VRInt d = p->getValue();
+    MinVR::VRInt d = p->getValue();
     out += (1234 == d) ? 0 : 1;
     
-    out += (p->getType() == VRCORETYPE_INT) ? 0: 1;
+    out += (p->getType() == MinVR::VRCORETYPE_INT) ? 0: 1;
     out += p->getValueString().compare("1234");
 
     std::ostringstream buf2;
@@ -183,7 +183,7 @@ int testDatumDouble() {
   int out = 0;
 
   LOOP {
-    VRDatumDouble a = VRDatumDouble(37.123);
+    MinVR::VRDatumDouble a = MinVR::VRDatumDouble(37.123);
 
     out = a.getDescription().compare("double");
 
@@ -191,7 +191,7 @@ int testDatumDouble() {
   
     out += (37.123 == b) ? 0 : 1;
   
-    out += (a.getType() == VRCORETYPE_DOUBLE) ? 0 : 1;
+    out += (a.getType() == MinVR::VRCORETYPE_DOUBLE) ? 0 : 1;
 
     out += a.getValueString().compare("37.123000");
     // std::cout << a.getValueString() << std::endl;
@@ -214,7 +214,7 @@ int testDatumString() {
 
   LOOP {
   
-    VRDatumString a = VRDatumString(std::string("this is a string"));
+    MinVR::VRDatumString a = MinVR::VRDatumString(std::string("this is a string"));
 
     out = a.getDescription().compare("string");
 
@@ -224,7 +224,7 @@ int testDatumString() {
   
     out += c.compare(b);
 
-    out += (a.getType() == VRCORETYPE_STRING) ? 0 : 1;
+    out += (a.getType() == MinVR::VRCORETYPE_STRING) ? 0 : 1;
 
     out += a.getValueString().compare("this is a string");
 
@@ -245,7 +245,7 @@ int testDatumIntArray() {
     int someInts[] = {16,2,77,29};
     std::vector<int> f (someInts, someInts + sizeof(someInts) / sizeof(int) );
   
-    VRDatumIntArray a = VRDatumIntArray(f);
+    MinVR::VRDatumIntArray a = MinVR::VRDatumIntArray(f);
     
     out = a.getDescription().compare("intarray");
 
@@ -256,7 +256,7 @@ int testDatumIntArray() {
     out += (77 == b[2]) ? 0 : 1;
     out += (29 == b[3]) ? 0 : 1;
 
-    out += (a.getType() == VRCORETYPE_INTARRAY) ? 0 : 1;
+    out += (a.getType() == MinVR::VRCORETYPE_INTARRAY) ? 0 : 1;
 
     out += a.getValueString().compare("16,2,77,29");
 
@@ -277,7 +277,7 @@ int testDatumDoubleArray() {
     double someDoubles[] = {16.2,2.71828,77.3,29.165};
     std::vector<double> f (someDoubles, someDoubles + sizeof(someDoubles) / sizeof(double) );
  
-    VRDatumDoubleArray a = VRDatumDoubleArray(f);
+    MinVR::VRDatumDoubleArray a = MinVR::VRDatumDoubleArray(f);
 
     out = a.getDescription().compare("doublearray");
 
@@ -285,7 +285,7 @@ int testDatumDoubleArray() {
     
     out += (b[2] == 77.3) ? 0 : 1;
 
-    out += (a.getType() == VRCORETYPE_DOUBLEARRAY) ? 0 : 1;
+    out += (a.getType() == MinVR::VRCORETYPE_DOUBLEARRAY) ? 0 : 1;
 
     a.setAttributeValue("separator", ";");
   
@@ -307,7 +307,7 @@ int testDatumStringArray() {
 
   LOOP {
   
-    VRStringArray f;
+    MinVR::VRStringArray f;
 
     f.push_back("one");
     f.push_back("two");
@@ -315,11 +315,11 @@ int testDatumStringArray() {
     f.push_back("four");
     f.push_back("five");
     
-    VRDatumStringArray a = VRDatumStringArray(f);
+    MinVR::VRDatumStringArray a = MinVR::VRDatumStringArray(f);
 
     out = a.getDescription().compare("stringarray");
 
-    VRStringArray b = a.getValue();
+    MinVR::VRStringArray b = a.getValue();
   
     out += b[0].compare("one");
     out += b[1].compare("two");
@@ -327,7 +327,7 @@ int testDatumStringArray() {
     out += b[3].compare("four");
     out += b[4].compare("five");
 
-    out += (a.getType() == VRCORETYPE_STRINGARRAY) ? 0 : 1;
+    out += (a.getType() == MinVR::VRCORETYPE_STRINGARRAY) ? 0 : 1;
 
     a.setAttributeValue("separator", "/");
   
@@ -347,7 +347,7 @@ int testDatumArrayConversions() {
 
   LOOP {
   
-    VRDatumString a = VRDatumString(std::string("this is a string"));
+    MinVR::VRDatumString a = MinVR::VRDatumString(std::string("this is a string"));
 
     out = a.getDescription().compare("string");
 
@@ -357,21 +357,21 @@ int testDatumArrayConversions() {
   
     out += c[0].compare(b);
 
-    out += (a.getType() == VRCORETYPE_STRING) ? 0 : 1;
+    out += (a.getType() == MinVR::VRCORETYPE_STRING) ? 0 : 1;
 
     out += a.getValueString().compare("this is a string");
 
-    VRDatumInt d = VRDatumInt(37);
+    MinVR::VRDatumInt d = MinVR::VRDatumInt(37);
 
-    VRIntArray e = d.getValue();
+    MinVR::VRIntArray e = d.getValue();
 
-    out += (e[0] == (VRInt)d.getValue()) ? 0 : 1;
+    out += (e[0] == (MinVR::VRInt)d.getValue()) ? 0 : 1;
 
-    VRDatumDouble f = VRDatumDouble(3.1415926);
+    MinVR::VRDatumDouble f = MinVR::VRDatumDouble(3.1415926);
 
-    VRDoubleArray g = f.getValue();
+    MinVR::VRDoubleArray g = f.getValue();
 
-    out += (g[0] = (VRDouble)f.getValue()) ? 0 : 1;
+    out += (g[0] = (MinVR::VRDouble)f.getValue()) ? 0 : 1;
 
   }
 
@@ -388,7 +388,7 @@ int testDatumContainer() {
   // the index here.
   
   LOOP {
-    VRContainer f;
+    MinVR::VRContainer f;
 
     f.push_back("one");
     f.push_back("two");
@@ -396,11 +396,11 @@ int testDatumContainer() {
     f.push_back("four");
     f.push_back("five");
     
-    VRDatumContainer a = VRDatumContainer(f);
+    MinVR::VRDatumContainer a = MinVR::VRDatumContainer(f);
 
     out = a.getDescription().compare("container");
 
-    VRContainer b = a.getValue();
+    MinVR::VRContainer b = a.getValue();
   
     out += b.front().compare("one");
     b.pop_front();
@@ -412,7 +412,7 @@ int testDatumContainer() {
     b.pop_front();
     out += b.front().compare("five");
 
-    out += (a.getType() == VRCORETYPE_CONTAINER) ? 0 : 1;
+    out += (a.getType() == MinVR::VRCORETYPE_CONTAINER) ? 0 : 1;
 
     std::ostringstream buf;
     buf << a;
@@ -431,11 +431,11 @@ int testDatumPushPopInt() {
 
   LOOP {
 
-    VRInt f = 5;
-    VRDatumInt a = VRDatumInt(f);
+    MinVR::VRInt f = 5;
+    MinVR::VRDatumInt a = MinVR::VRDatumInt(f);
 
     // We'll try pushing and popping the attribute list here, too.
-    VRDatum::VRAttributeList alist = a.getAttributeList();
+    MinVR::VRDatum::VRAttributeList alist = a.getAttributeList();
 
     alist["one"] = "11";
     alist["two"] = "2";
@@ -448,7 +448,7 @@ int testDatumPushPopInt() {
 
     a.push();
     a.setValue(37);
-    VRInt g = a.getValue();
+    MinVR::VRInt g = a.getValue();
     out += (37 == g) ? 0 : 1;
 
     a.setAttributeValue("one", "01");
@@ -458,7 +458,7 @@ int testDatumPushPopInt() {
     out += moreString.compare(pushTestString);
     
     a.pop();
-    VRInt h = a.getValue();
+    MinVR::VRInt h = a.getValue();
     out += (5 == h) ? 0 : 1;
 
     std::string outString = a.getAttributeListAsString();
@@ -474,16 +474,16 @@ int testDatumPushPopDouble() {
 
   LOOP {
 
-    VRDouble f = 3.1415926;
-    VRDatumDouble a = VRDatumDouble(f);
+    MinVR::VRDouble f = 3.1415926;
+    MinVR::VRDatumDouble a = MinVR::VRDatumDouble(f);
 
     a.push();
     a.setValue(2.71828);
-    VRDouble g = a.getValue();
+    MinVR::VRDouble g = a.getValue();
     out += (2.71828 == g) ? 0 : 1;
 
     a.pop();
-    VRDouble h = a.getValue();
+    MinVR::VRDouble h = a.getValue();
     out += (3.1415926 == h) ? 0 : 1;
   }
   
@@ -496,16 +496,16 @@ int testDatumPushPopString() {
 
   LOOP {
 
-    VRString f = "hello";
-    VRDatumString a = VRDatumString(f);
+    MinVR::VRString f = "hello";
+    MinVR::VRDatumString a = MinVR::VRDatumString(f);
 
     a.push();
     a.setValue("good-bye");
-    VRString g = a.getValue();
+    MinVR::VRString g = a.getValue();
     out += g.compare("good-bye");
 
     a.pop();
-    VRString h = a.getValue();
+    MinVR::VRString h = a.getValue();
     out += h.compare("hello");
   }
   
@@ -519,17 +519,17 @@ int testDatumPushPopIntArray() {
   LOOP {
   
     int someInts[] = {16,25,77,29};
-    VRIntArray f (someInts, someInts + sizeof(someInts) / sizeof(int) );
+    MinVR::VRIntArray f (someInts, someInts + sizeof(someInts) / sizeof(int) );
   
-    VRDatumIntArray a = VRDatumIntArray(f);
+    MinVR::VRDatumIntArray a = MinVR::VRDatumIntArray(f);
     
     a.push();
 
     int moreInts[] = {11,22,33,44};
-    VRIntArray g (moreInts, moreInts + sizeof(moreInts) / sizeof(int) );
+    MinVR::VRIntArray g (moreInts, moreInts + sizeof(moreInts) / sizeof(int) );
     a.setValue(g);
 
-    VRIntArray b = a.getValue();
+    MinVR::VRIntArray b = a.getValue();
     out += (11 == b[0]) ? 0 : 1;
     out += (22 == b[1]) ? 0 : 1;
     out += (33 == b[2]) ? 0 : 1;
@@ -537,7 +537,7 @@ int testDatumPushPopIntArray() {
 
     a.pop();    
 
-    VRIntArray c = a.getValue();
+    MinVR::VRIntArray c = a.getValue();
     out += (16 == c[0]) ? 0 : 1;
     out += (25 == c[1]) ? 0 : 1;
     out += (77 == c[2]) ? 0 : 1;
@@ -554,17 +554,17 @@ int testDatumPushPopDoubleArray() {
   LOOP {
   
     double someDoubles[] = {3.14159,2.71828,1.41459,0.142857};
-    VRDoubleArray f (someDoubles, someDoubles + sizeof(someDoubles)/sizeof(double) );
+    MinVR::VRDoubleArray f (someDoubles, someDoubles + sizeof(someDoubles)/sizeof(double) );
   
-    VRDatumDoubleArray a = VRDatumDoubleArray(f);
+    MinVR::VRDatumDoubleArray a = MinVR::VRDatumDoubleArray(f);
     
     a.push();
 
     double moreDoubles[] = {1.234,2.345,3.456,4.567};
-    VRDoubleArray g (moreDoubles, moreDoubles + sizeof(moreDoubles)/sizeof(double) );
+    MinVR::VRDoubleArray g (moreDoubles, moreDoubles + sizeof(moreDoubles)/sizeof(double) );
     a.setValue(g);
 
-    VRDoubleArray b = a.getValue();
+    MinVR::VRDoubleArray b = a.getValue();
     out += (1.234 == b[0]) ? 0 : 1;
     out += (2.345 == b[1]) ? 0 : 1;
     out += (3.456 == b[2]) ? 0 : 1;
@@ -572,7 +572,7 @@ int testDatumPushPopDoubleArray() {
 
     a.pop();    
 
-    VRDoubleArray c = a.getValue();
+    MinVR::VRDoubleArray c = a.getValue();
     out += (3.14159 == c[0]) ? 0 : 1;
     out += (2.71828 == c[1]) ? 0 : 1;
     out += (1.41459 == c[2]) ? 0 : 1;
@@ -588,7 +588,7 @@ int testDatumPushPopStringArray() {
 
   LOOP {
   
-    VRStringArray f;
+    MinVR::VRStringArray f;
 
     f.push_back("one");
     f.push_back("two");
@@ -596,11 +596,11 @@ int testDatumPushPopStringArray() {
     f.push_back("four");
     f.push_back("five");
     
-    VRDatumStringArray a = VRDatumStringArray(f);
+    MinVR::VRDatumStringArray a = MinVR::VRDatumStringArray(f);
 
     a.push();
 
-    VRStringArray g;
+    MinVR::VRStringArray g;
 
     g.push_back("six");
     g.push_back("seven");
@@ -611,7 +611,7 @@ int testDatumPushPopStringArray() {
     a.setValue(g);
 
     
-    VRStringArray b = a.getValue();
+    MinVR::VRStringArray b = a.getValue();
 
     out += b[0].compare("six");
     out += b[1].compare("seven");
@@ -621,7 +621,7 @@ int testDatumPushPopStringArray() {
 
     a.pop();
     
-    VRStringArray c = a.getValue();
+    MinVR::VRStringArray c = a.getValue();
   
     out += c[0].compare("one");
     out += c[1].compare("two");
@@ -643,7 +643,7 @@ int testDatumPushPopContainer() {
   // the index here.
   
   LOOP {
-    VRContainer f;
+    MinVR::VRContainer f;
 
     f.push_back("one");
     f.push_back("two");
@@ -651,13 +651,13 @@ int testDatumPushPopContainer() {
     f.push_back("four");
     f.push_back("five");
     
-    VRDatumContainer a = VRDatumContainer(f);
+    MinVR::VRDatumContainer a = MinVR::VRDatumContainer(f);
 
     out = a.getDescription().compare("container");
 
     a.push();
 
-    VRContainer g;
+    MinVR::VRContainer g;
 
     g.push_back("three");
     g.push_back("six");
@@ -665,7 +665,7 @@ int testDatumPushPopContainer() {
 
     a.addToValue(g);
 
-    VRContainer c = a.getValue();
+    MinVR::VRContainer c = a.getValue();
 
     out += (c.size() != 7);
 
@@ -685,7 +685,7 @@ int testDatumPushPopContainer() {
 
     a.pop();
 
-    VRContainer b = a.getValue();
+    MinVR::VRContainer b = a.getValue();
 
     out += (b.size() != 5);
 
@@ -699,7 +699,7 @@ int testDatumPushPopContainer() {
     b.pop_front();
     out += b.front().compare("five");
 
-    out += (a.getType() == VRCORETYPE_CONTAINER) ? 0 : 1;
+    out += (a.getType() == MinVR::VRCORETYPE_CONTAINER) ? 0 : 1;
 
   }
   

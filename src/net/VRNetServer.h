@@ -14,6 +14,8 @@
 #include <math/VRMath.h>
 #include <config/VRDataIndex.h>
 
+namespace MinVR {
+  
 class VRNetServer : public VRNetInterface {
  public:
 
@@ -32,6 +34,6 @@ class VRNetServer : public VRNetInterface {
 
 };
 
-
+}
 
 #endif

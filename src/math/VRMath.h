@@ -16,6 +16,7 @@
 
 #include <config/VRDatum.h>
 
+namespace MinVR {
 
 /** @class VRPoint3 
   * @brief 3D Point with floating point coordinates.
@@ -333,4 +334,6 @@ std::istream & operator>> ( std::istream &is, VRVector3 &v);
 std::ostream & operator<< ( std::ostream &os, const VRMatrix4 &m);
 std::istream & operator>> ( std::istream &is, VRMatrix4 &m);
 
+} // ending namespace MinVR
+ 
 #endif

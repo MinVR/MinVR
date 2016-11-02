@@ -6,6 +6,8 @@
 #include <string.h>
 #include <string>
 
+namespace MinVR {
+  
 class attribute
 {
   public:
@@ -43,4 +45,6 @@ class attribute
     bool name_is_allocated;
 };
 
+} // ending namespace MinVR
+ 
 #endif // ATTRIBUTE_H

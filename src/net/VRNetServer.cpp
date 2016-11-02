@@ -2,6 +2,8 @@
 
 using namespace std;
 
+namespace MinVR {
+
 #define PORT "3490"  // the port users will be connecting to
 
 #define BACKLOG 100	 // how many pending connections queue will hold
@@ -281,4 +283,4 @@ void VRNetServer::syncSwapBuffersAcrossAllNodes() {
   }
 }
 
-
+} // end namespace MinVR  

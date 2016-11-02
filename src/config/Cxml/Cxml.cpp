@@ -4,6 +4,8 @@
 #include "utils.h"
 #include "Cxml.h"
 
+namespace MinVR {
+
 Cxml::Cxml() : m_cursor(0),
                m_length(0)
 {
@@ -266,3 +268,4 @@ element* Cxml::get_root_element()
     return m_root_node;
 }
 
+} // ending namespace MinVR

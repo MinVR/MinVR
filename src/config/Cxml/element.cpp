@@ -1,5 +1,6 @@
 #include "element.h"
 
+namespace MinVR {
 
 element::element() : is_empty_attribute_list(true),
                    m_value(NULL),
@@ -315,3 +316,4 @@ bool element::is_pi_element()
     return false;
 }
 
+} // ending namespace MinVR

@@ -1,5 +1,7 @@
 #include <net/VRNetInterface.h>
 
+namespace MinVR {
+
 // unique identifiers for different network messages
 const unsigned char VRNetInterface::EVENTS_MSG = 1;
 const unsigned char VRNetInterface::SWAP_BUFFERS_REQUEST_MSG = 2;
@@ -129,3 +131,6 @@ int VRNetInterface::receiveall(SOCKET s, unsigned char *buf, int len) {
   }
   return n==-1?-1:total; // return -1 on failure, total on success
 }
+
+} // end namespace MinVR
+

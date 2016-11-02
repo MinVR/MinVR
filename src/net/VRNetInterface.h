@@ -27,6 +27,7 @@
 #include <sys/socket.h>
 #endif
 
+namespace MinVR {
 
 class VRNetInterface {
 public:
@@ -89,6 +90,8 @@ public:
 		return toReturn;
 	}
 };
+
+}
 
 #endif
 

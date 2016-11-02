@@ -1,5 +1,7 @@
 #include "attribute.h"
 
+namespace MinVR {
+  
 attribute::attribute() : m_value(NULL),
                              m_name(NULL),
                              value_is_allocated(false),
@@ -138,4 +140,5 @@ attribute* attribute::operator = (attribute* a)
     set_value(a->get_value());
     return this;
 }
-
+  
+} // ending namespace MinVR

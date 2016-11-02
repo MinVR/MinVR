@@ -191,6 +191,8 @@ Author(s) of Significant Updates/Modifications to the File:
 ///  reader, see those files for the original credit.
 ///
 
+namespace MinVR {
+
 class VRDataIndex {
 private:
   VRDatumFactory factory;
@@ -656,4 +658,5 @@ public:
 //     actual name.
 //
 //
+}  // end namespace MinVR
 #endif

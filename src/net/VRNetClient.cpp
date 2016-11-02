@@ -1,6 +1,7 @@
 #include <net/VRNetClient.h>
 //#include <math/VRMath.h>
 
+namespace MinVR {
 
 // get sockaddr, IPv4 or IPv6:
 void *get_in_addr2(struct sockaddr *sa) {
@@ -162,3 +163,5 @@ VRNetClient::syncSwapBuffersAcrossAllNodes()
   // 2. wait for and receive a swap_buffers_now message from the server
   waitForAndReceiveSwapBuffersNow(_socketFD);
 }
+
+} // end namespace MinVR  

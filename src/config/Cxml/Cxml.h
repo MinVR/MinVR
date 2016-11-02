@@ -4,6 +4,8 @@
 #include "utils.h"
 #include <stdlib.h>
 
+namespace MinVR {
+
 class Cxml
 {
   public:
@@ -19,6 +21,9 @@ class Cxml
   public:
     element* get_root_element();
 };
+
+} // ending namespace MinVR
+ 
 #endif // CXML_H
 
 // TODO list -- Needed improvements to the Cxml parser.

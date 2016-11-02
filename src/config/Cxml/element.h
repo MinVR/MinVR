@@ -6,6 +6,8 @@
 #include <string>
 #include <map>
 
+namespace MinVR {
+
 class element
 {
   public:
@@ -70,4 +72,7 @@ private:
     char* m_value;
     element* m_parent;
 };
+
+} // ending namespace MinVR
+
 #endif // ELEMENT_H

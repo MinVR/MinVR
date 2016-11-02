@@ -1,5 +1,7 @@
 #include "VRDatumFactory.h"
 
+namespace MinVR {
+
 VRDatumPtr VRDatumFactory::CreateVRDatum(int VRDatumId,
                                          void* pData) {
   // try to find the callback corresponding to the given type id;
@@ -20,3 +22,4 @@ bool VRDatumFactory::RegisterVRDatum(int VRDatumId,
   return m_callbacks.insert(CallbackMap::value_type(VRDatumId, Creator)).second;
 }
 
+} // end namespace MinVR

@@ -9,12 +9,12 @@
 
 int main(int argc, char** argv) {
 
-  VRDataIndex *n = new VRDataIndex;
+  MinVR::VRDataIndex *n = new MinVR::VRDataIndex;
 
   struct malloc_introspection_t	*in;
   
-  VRInt a = 4;
-  VRDouble b = 3.1415926;
+  MinVR::VRInt a = 4;
+  MinVR::VRDouble b = 3.1415926;
   
   n->addData("/george/a0", a);
   n->addData("/george/a1", a + 1);
@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
   n->addData("/martha/b8", b * 8);
   n->addData("/martha/b9", b * 9);
 
-  VRString c = "abigail";
+  MinVR::VRString c = "abigail";
   n->addData("/john/c0", c + "0");
   n->addData("/john/c1", c + "1");
   n->addData("/john/c2", c + "2");

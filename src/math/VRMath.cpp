@@ -3,6 +3,8 @@
 #include <math.h>
 #define VRMATH_EPSILON 1e-8
 
+namespace MinVR {
+
 VRPoint3::VRPoint3() {
   x = y = z = 0;
 } 
@@ -569,3 +571,5 @@ std::istream & operator>> ( std::istream &is, VRMatrix4 &m) {
         >> c >> m(2,0) >> c >> m(2,1) >> c >> m(2,2) >> c >> m(2,3) >> c >> c
         >> c >> m(3,0) >> c >> m(3,1) >> c >> m(3,2) >> c >> m(3,3) >> c >> c;
 }
+
+} // ending namespace MinVR

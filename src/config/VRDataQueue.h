@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <stdexcept>
 
+namespace MinVR {
 
 // This object maintains a queue (FIFO) of serialized VRDatum objects.
 // Serialization turns them into strings, so this is basically just a
@@ -78,4 +79,5 @@ public:
   
 };
 
+} // end namespace MinVR
 #endif

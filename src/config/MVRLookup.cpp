@@ -36,7 +36,7 @@ inline void printHelpMessage() {
 
 int doTheRealWork(int argc, char **argv) {
 
-  VRDataIndex *index = new VRDataIndex;
+  MinVR::VRDataIndex *index = new MinVR::VRDataIndex;
 
   // These will be extracted from argv.
   int nth = 0;
@@ -72,50 +72,50 @@ int doTheRealWork(int argc, char **argv) {
 
   index->processXMLFile(argv[1], std::string("/"));
 
-  VRCORETYPE_ID tp = index->getType(argv[2]);
+  MinVR::VRCORETYPE_ID tp = index->getType(argv[2]);
 
   // std::cout << "datumName:" << datumName << " N:" << nth << " tp:" << tp << std::endl;
 
   // Now print out the values, according to the data type.
   switch(tp) {
 
-  case VRCORETYPE_INT: 
-    std::cout << (VRInt)index->getValue(argv[2]);
+  case MinVR::VRCORETYPE_INT: 
+    std::cout << (MinVR::VRInt)index->getValue(argv[2]);
     break;
 
-  case VRCORETYPE_DOUBLE: 
-    std::cout << (VRDouble)index->getValue(argv[2]);
+  case MinVR::VRCORETYPE_DOUBLE: 
+    std::cout << (MinVR::VRDouble)index->getValue(argv[2]);
     break;
 
-  case VRCORETYPE_STRING:
-    std::cout << (VRString)index->getValue(argv[2]);
+  case MinVR::VRCORETYPE_STRING:
+    std::cout << (MinVR::VRString)index->getValue(argv[2]);
     break;
 
-  case VRCORETYPE_INTARRAY: {
-    VRIntArray ia = index->getValue(argv[2]);
+  case MinVR::VRCORETYPE_INTARRAY: {
+    MinVR::VRIntArray ia = index->getValue(argv[2]);
     if (nth >= ia.size())
       throw std::runtime_error("N too large for array");
     std::cout << ia[nth];
     break;
   }
     
-  case VRCORETYPE_DOUBLEARRAY: {
-    VRDoubleArray ia = index->getValue(argv[2]);
+  case MinVR::VRCORETYPE_DOUBLEARRAY: {
+    MinVR::VRDoubleArray ia = index->getValue(argv[2]);
     if (nth >= ia.size())
       throw std::runtime_error("N too large for array");
     std::cout << ia[nth];
     break;
   }
 
-  case VRCORETYPE_STRINGARRAY: {
-    VRStringArray ia = index->getValue(argv[2]);
+  case MinVR::VRCORETYPE_STRINGARRAY: {
+    MinVR::VRStringArray ia = index->getValue(argv[2]);
     if (nth >= ia.size())
       throw std::runtime_error("N too large for array");
     std::cout << ia[nth];
     break;
   }
 
-  case VRCORETYPE_CONTAINER:
+  case MinVR::VRCORETYPE_CONTAINER:
     std::cout << index->serialize(argv[2]);
     break;
     

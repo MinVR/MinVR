@@ -14,6 +14,8 @@
 #include <cstdlib>
 #include <sstream>
 
+namespace MinVR {
+
 // This is the default separator used to separate values in a
 // serialized vector.  There is a 'separator=' attribute in the
 // serialized (XML) form that can override.
@@ -580,6 +582,7 @@ VRDatumPtr CreateVRDatumDoubleArray(void *pData);
 VRDatumPtr CreateVRDatumStringArray(void *pData);
 VRDatumPtr CreateVRDatumContainer(void *pData);
 
+} // end namespace MinVR
 
 #endif
 
