@@ -20,6 +20,7 @@
 #include <plugin/VRPluginManager.h>
 #include <sstream>
 #include <main/impl/VRDefaultAppLauncher.h>
+#include <cstdlib>
 
 namespace MinVR {
 
@@ -348,6 +349,10 @@ void VRMain::initialize(const VRAppLauncher& launcher) {
 			std::string execPath = endPos != std::string::npos ? launcher.getExecutable().substr(0,endPos) : ".";
 			pluginSearchPaths.push_back(execPath + "/../plugins");
 			pluginSearchPaths.push_back(std::string(INSTALLPATH) + "/plugins");
+			const char* minvrRoot = std::getenv("MINVR_ROOT");
+			if (minvrRoot) {
+				pluginSearchPaths.push_back(std::string(minvrRoot) + "/plugins");
+			}
 
 			for (int f = 0; f < _pluginSearchPaths.size(); f++) {
 				pluginSearchPaths.push_back(_pluginSearchPaths[f]);
