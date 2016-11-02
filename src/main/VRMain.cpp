@@ -345,6 +345,9 @@ void VRMain::initialize(const VRAppLauncher& launcher) {
 			}
 			pluginSearchPaths.push_back(".");
 			pluginSearchPaths.push_back("./plugins");
+			for (int f = 0; f < _pluginSearchPaths.size(); f++) {
+				pluginSearchPaths.push_back(_pluginSearchPaths[f]);
+			}
 			std::size_t endPos = launcher.getExecutable().find_last_of("/\\");
 			std::string execPath = endPos != std::string::npos ? launcher.getExecutable().substr(0,endPos) : ".";
 			pluginSearchPaths.push_back(execPath + "/../plugins");
@@ -352,10 +355,6 @@ void VRMain::initialize(const VRAppLauncher& launcher) {
 			const char* minvrRoot = std::getenv("MINVR_ROOT");
 			if (minvrRoot) {
 				pluginSearchPaths.push_back(std::string(minvrRoot) + "/plugins");
-			}
-
-			for (int f = 0; f < _pluginSearchPaths.size(); f++) {
-				pluginSearchPaths.push_back(_pluginSearchPaths[f]);
 			}
 
 			bool found = false;
