@@ -157,7 +157,7 @@ void VRMain::initialize(int argc, char **argv, const std::string& configFile, st
 
 void VRMain::initialize(const VRAppLauncher& launcher) {
 	std::string data = launcher.getInitString();
-	std::cout << data << std::endl;
+  //	std::cout << "initializing launcher with: " << data << std::endl;
 
 	std::stringstream ss(data);
 
