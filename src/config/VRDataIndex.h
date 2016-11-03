@@ -537,7 +537,7 @@ public:
 
   // Still another utility, to accommodate the use of environment
   // variables in the file names.  Also potentially useful, so public.
-  std::string dereferenceEnvVars(const std::string fileName);
+  static std::string dereferenceEnvVars(const std::string fileName);
   
   // Mostly just for debug purposes.
   std::string printStructure();
