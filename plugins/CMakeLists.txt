@@ -54,6 +54,12 @@ if (MINVR_THREADING_PLUGIN OR BASE_PLUGINS)
 	add_subdirectory (Threading)
 endif()
 
+#------------------TUIO-----------------------------
+option(MINVR_TUIO_PLUGIN "If enabled, TUIO plugin will be installed" OFF)
+if (MINVR_TUIO_PLUGIN)
+	add_subdirectory (TUIO)
+endif()
+
 #------------------OpenVR-----------------------------
 option(MINVR_OPENVR_PLUGIN "If enabled, OpenVR plugin will be installed" OFF)
 if (MINVR_OPENVR_PLUGIN)
