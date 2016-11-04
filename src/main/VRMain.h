@@ -63,7 +63,14 @@ public:
   /// create a new process (on windows systems) as necessary so that each vrsetup
   /// has its own process.
   void initialize(int argc, char **argv);
-  void initialize(int argc, char **argv, const std::string& configFile, std::vector<std::string> args = std::vector<std::string>());
+  /// If a user wants more control of the command line, this initialize method is the one
+  /// that should be used.  Here a user can provide any set of command line arguments in any order.
+  /// The only required item that also needs to be passed is the configFile path.  Optionally, a
+  /// user can also provide data index overrides in the format "/path/to/item=value".
+  void initialize(int argc, char **argv, const std::string& configFile, std::vector<std::string> dataIndexOverrides = std::vector<std::string>());
+  /// If a user wants to control everything about the command line including how MinVR parameters
+  /// are passed to forked processes, this initialize method should be used.  This is a more advanced
+  /// feature and a user should refer to VRAppLauncher and the default implementation in VRDefaultAppLauncher
   void initialize(const VRAppLauncher& launcher);
   
 
