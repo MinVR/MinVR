@@ -145,10 +145,10 @@ VRMain::initialize(int argc, char** argv)
 	initialize(launcher);
 }
 
-void VRMain::initialize(int argc, char **argv, const std::string& configFile, std::vector<std::string> args) {
+void VRMain::initialize(int argc, char **argv, const std::string& configFile, std::vector<std::string> dataIndexOverrides) {
 	std::string initStr = configFile;
-	for (int f = 0; f < args.size(); f++) {
-		initStr = initStr + " " + args[f];
+	for (int f = 0; f < dataIndexOverrides.size(); f++) {
+		initStr = initStr + " " + dataIndexOverrides[f];
 	}
 
 	VRDefaultAppLauncher launcher(argc, argv, initStr);
@@ -335,6 +335,20 @@ void VRMain::initialize(const VRAppLauncher& launcher) {
 
 	// Load plugins from the plugin directory.  This will add their factories to the master VRFactory.
 	{
+
+		// MinVR will try to load plugins based on a search path.  If it doesn't find the plugin
+		// in one path, it will look in another supplied path.  To specify custom paths for an application
+		// a user can set vrmain->addPLuginSearchPath(mypath);
+		//
+		// Here is the search path order that MinVR searches for plugins:
+		//
+		//    1. Plugin path specified in config ("/PluginPath" in VRDataIndex)
+		//    2. Working directory (".")
+		//    3. <Working directory>/plugins ("./plugins")
+		//    4. Custom user defined paths (i.e. vrmain->addPluginSearchPath(mypath))
+		//    5. <Binary directory>/../plugins ("build/bin/../plugins")
+		//    6. <Install directory>/plugins ("install/plugins")
+		//    7. <$MINVR_ROOT>/plugins ("$MINVR_ROOT/plugins")
 
 		std::list<std::string> names = _config->selectByAttribute("pluginType", "*", _name);
 		for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); it++) {

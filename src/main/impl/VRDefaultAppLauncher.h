@@ -13,6 +13,10 @@
 
 namespace MinVR {
 
+/** VRDefaultAppLauncher sends the MinVR initString through a command line parameter named
+ 	MINVR_DATA after encoding it into a base64 string.  The reason for the encoding is so
+ 	that it is easy to send a simple string as an argument and decoding when a fork is launched.
+ */
 class VRDefaultAppLauncher : public VRAppLauncher {
 public:
 	VRDefaultAppLauncher(int argc, char** argv, const std::string& customInitString = "");
