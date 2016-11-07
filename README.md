@@ -1,6 +1,6 @@
 # MinVR
 
-MinVR is an Open Source Project developed and maintained collaboratively by the University of Minnesota and Brown University.
+MinVR is an Open Source Project developed and maintained collaboratively by the University of Minnesota, Macalester College, and Brown University.
 
 The goal of MinVR is to facilitate a variety of data visualization and virtual reality research projects by providing a robust, cross-platform VR toolkit for use with many different VR displays (e.g., CAVE's, PowerWalls, multi-touch stereoscopic tables, 3DTV's, head-mounted displays) and input devices (e.g., 6 degree-of-freedom trackers, multi-touch input devices, haptic devices, home-built devices).
 
@@ -83,7 +83,7 @@ python cube.py desktop.xml
 
 ## Overview
 
-MinVR is an Open Source Project developed and maintained collaboratively by the University of Minnesota and Brown University.
+MinVR is an Open Source Project developed and maintained collaboratively by the University of Minnesota, Macalester College, and Brown University.
 
 The goal of MinVR is to facilitate a variety of data visualization and virtual reality research projects by providing a robust, cross-platform VR toolkit for use with many different VR displays (e.g., CAVE's, PowerWalls, multi-touch stereoscopic tables, 3DTV's, head-mounted displays) and input devices (e.g., 6 degree-of-freedom trackers, multi-touch input devices, haptic devices, home-built devices).
 
