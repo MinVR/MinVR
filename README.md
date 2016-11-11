@@ -9,8 +9,8 @@ The goal of MinVR is to facilitate a variety of data visualization and virtual r
 #### Download Repository
 
   ```
-  git clone http://github.com/ivlab/MinVR2
-  cd MinVR2
+  git clone http://github.com/MinVR/MinVR
+  cd MinVR
   ```
   
 #### Configure and build
