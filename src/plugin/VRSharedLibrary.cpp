@@ -70,7 +70,7 @@ void VRSharedLibrary::load() {
 
 		if (!_lib) {
 			//MinVR::Logger::getInstance().assertMessage(false, "Could not load library: " + _filePath + " - " + error);
-			std::cout << "Could not load library: " + _filePath + " - " + error << std::endl;
+			//std::cerr << "Could not load library: " + _filePath + " - " + error << std::endl;
 			return;
 		}
 

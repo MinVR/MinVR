@@ -109,6 +109,7 @@ VRDisplayNode* VRGraphicsWindowNode::create(VRMainInterface *vrMain, VRDataIndex
 	settings.msaaSamples = int(config->getValue("MSAASamples", nameSpace));
 
   //	std::cout << "Window corners: " << settings.xpos << ", " << settings.ypos << ", " << settings.width << ", " << settings.height << std::endl;
+
 	VRDisplayNode *node = new VRGraphicsWindowNode(nameSpace, gfxToolkit, winToolkit, settings);
 
 	return node;

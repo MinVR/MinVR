@@ -20,6 +20,7 @@
 #include <plugin/VRPluginManager.h>
 #include <sstream>
 #include <main/impl/VRDefaultAppLauncher.h>
+#include <cstdlib>
 
 namespace MinVR {
 
@@ -144,10 +145,10 @@ VRMain::initialize(int argc, char** argv)
 	initialize(launcher);
 }
 
-void VRMain::initialize(int argc, char **argv, const std::string& configFile, std::vector<std::string> args) {
+void VRMain::initialize(int argc, char **argv, const std::string& configFile, std::vector<std::string> dataIndexOverrides) {
 	std::string initStr = configFile;
-	for (int f = 0; f < args.size(); f++) {
-		initStr = initStr + " " + args[f];
+	for (int f = 0; f < dataIndexOverrides.size(); f++) {
+		initStr = initStr + " " + dataIndexOverrides[f];
 	}
 
 	VRDefaultAppLauncher launcher(argc, argv, initStr);
@@ -157,6 +158,7 @@ void VRMain::initialize(int argc, char **argv, const std::string& configFile, st
 
 void VRMain::initialize(const VRAppLauncher& launcher) {
 	std::string data = launcher.getInitString();
+
   //	std::cout << "initializing launcher with: " << data << std::endl;
 
 	std::stringstream ss(data);
@@ -335,22 +337,67 @@ void VRMain::initialize(const VRAppLauncher& launcher) {
 
 	// Load plugins from the plugin directory.  This will add their factories to the master VRFactory.
 	{
+
+		// MinVR will try to load plugins based on a search path.  If it doesn't find the plugin
+		// in one path, it will look in another supplied path.  To specify custom paths for an application
+		// a user can set vrmain->addPLuginSearchPath(mypath);
+		//
+		// Here is the search path order that MinVR searches for plugins:
+		//
+		//    1. Plugin path specified in config ("/PluginPath" in VRDataIndex)
+		//    2. Working directory (".")
+		//    3. <Working directory>/plugins ("./plugins")
+		//    4. Custom user defined paths (i.e. vrmain->addPluginSearchPath(mypath))
+		//    5. <Binary directory>/../plugins ("build/bin/../plugins")
+		//    6. <Install directory>/plugins ("install/plugins")
+		//    7. <$MINVR_ROOT>/plugins ("$MINVR_ROOT/plugins")
+
 		std::list<std::string> names = _config->selectByAttribute("pluginType", "*", _name);
-		for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
+		for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); it++) {
+			std::vector<std::string> pluginSearchPaths;
 			if (_config->exists("PluginPath", *it)){
 				std::string path = _config->getValue("PluginPath", *it);
-				std::string file = _config->getDatum(*it)->getAttributeValue("pluginType");
-				path = path + "/" + file;
+				pluginSearchPaths.push_back(path);
+			}
+			pluginSearchPaths.push_back(".");
+			pluginSearchPaths.push_back("./plugins");
+			for (int f = 0; f < _pluginSearchPaths.size(); f++) {
+				pluginSearchPaths.push_back(_pluginSearchPaths[f]);
+			}
+			std::size_t endPos = launcher.getExecutable().find_last_of("/\\");
+			std::string execPath = endPos != std::string::npos ? launcher.getExecutable().substr(0,endPos) : ".";
+			pluginSearchPaths.push_back(execPath + "/../plugins");
+			pluginSearchPaths.push_back(std::string(INSTALLPATH) + "/plugins");
+			const char* minvrRoot = std::getenv("MINVR_ROOT");
+			if (minvrRoot) {
+				pluginSearchPaths.push_back(std::string(minvrRoot) + "/plugins");
+			}
 
-				string buildType = "";
+			bool found = false;
+			std::string file = "";
+			string buildType = "";
 #ifdef MinVR_DEBUG
-				buildType = "d";
+			buildType = "d";
 #endif
 
-				if (!_pluginMgr->loadPlugin(path, file + buildType)) {
-					cerr << "VRMain Error: Problem loading plugin " << path << file << buildType << endl;
+			for (std::vector<std::string>::const_iterator searchPath = pluginSearchPaths.begin(); searchPath != pluginSearchPaths.end(); ++searchPath) {
+				file = _config->getDatum(*it)->getAttributeValue("pluginType");
+				std::string path = *searchPath + "/" + file;
+
+				if(_pluginMgr->loadPlugin(path, file + buildType)) {
+					found = true;
+					break;
 				}
 			}
+
+			if (!found) {
+				cerr << "VRMain Error: Problem loading plugin: " << file << buildType << endl;
+				std::cout << "  Could not load from any of the following paths: " << std::endl;
+				for (std::vector<std::string>::const_iterator searchPath = pluginSearchPaths.begin(); searchPath != pluginSearchPaths.end(); ++searchPath) {
+					std::cerr << "\t"<< *searchPath << std::endl;
+				}
+			}
+
 			//else if(_config->getDatum(*it)->hasAttribute("pluginlibfile")){
 			//	std::string file = _config->getDatum(*it)->getAttributeValue("pluginlibfile");
 			//	if (!_pluginMgr->loadPlugin(file)) {
