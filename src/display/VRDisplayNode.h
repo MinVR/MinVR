@@ -13,7 +13,7 @@
 #include <string>
 
 #include <config/VRDataIndex.h>
-#include <main/VRRenderHandler.h>
+#include <api/VRRenderHandler.h>
 
 namespace MinVR {
 

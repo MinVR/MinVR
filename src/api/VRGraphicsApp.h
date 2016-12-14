@@ -9,7 +9,7 @@
 #ifndef VRGRAPHICSAPP_H_
 #define VRGRAPHICSAPP_H_
 
-#include <main/VRMain.h>
+#include "VRApp.h"
 #include "VRGraphicsHandler.h"
 
 namespace MinVR {
@@ -42,17 +42,19 @@ namespace MinVR {
 
   ------------------------------------------------------------------------
  */
-class VRGraphicsApp : public VREventHandler, public VRGraphicsHandler {
+class VRGraphicsApp : public VRApp, public VRGraphicsHandler {
 public:
 	/**
 	 * VRGraphicsApp expects the command line parameters and a config file path.
 	 */
-	VRGraphicsApp(int argc, char** argv, const std::string& configFile);
+	VRGraphicsApp(int argc, char** argv, const std::string& configFile) : VRApp(argc, argv, configFile) {
+		addRenderHandler(*this);
+	}
 
 	/**
 	 * Default constructor shuts down the application and the interface with MinVR
 	 */
-	virtual ~VRGraphicsApp();
+	virtual ~VRGraphicsApp() {}
 
 	/**
 	 * onVREvent is called when MinVR issues an event callback.  Since event data is extremely diverse,
@@ -88,23 +90,6 @@ public:
 	      mesh data into graphics card memory.
 	 */
 	virtual void onVRRenderGraphicsContext(VRGraphicsState& renderState) {}
-
-	/** Starts the application. */
-	void run();
-
-	/** Shuts the application down */
-	void shutdown();
-
-	/** Returns whether or not the application is running. */
-	bool isRunning() const;
-
-	/** Returns the current frame number */
-	int getFrame() const;
-
-private:
-	VRMain *vrMain;
-	bool running;
-	int frame;
 };
 
 } /* namespace MinVR */

@@ -1,6 +1,8 @@
 #ifndef VREVENTHANDLER_H
 #define VREVENTHANDLER_H
 
+#include <config/VRDataIndex.h>
+
 namespace MinVR {
 
 

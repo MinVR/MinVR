@@ -9,6 +9,7 @@
 #ifndef MINVR_H_
 #define MINVR_H_
 
-#include "graphics/VRGraphicsApp.h"
+#include <api/VRApp.h>
+#include <api/VRGraphicsApp.h>
 
 #endif /* MINVR_H_ */

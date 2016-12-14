@@ -9,7 +9,7 @@
 #ifndef VRGRAPHICSHANDLER_H_
 #define VRGRAPHICSHANDLER_H_
 
-#include "main/VRRenderHandler.h"
+#include "api/VRRenderHandler.h"
 #include "VRGraphicsState.h"
 
 namespace MinVR {
@@ -19,9 +19,10 @@ namespace MinVR {
     from VRRenderHandler and then register their class with MinVR using
     VRMain::registerRenderHandler(..);
  */
-class VRGraphicsHandler : public VRRenderHandler {
+class VRGraphicsHandler : public VRRenderHandlerImpl {
 public:
-	virtual ~VRGraphicsHandler() {}
+	VRGraphicsHandler();
+	virtual ~VRGraphicsHandler();
 
 	/** This function is called once for each time a display node requires the scene
 	      to be drawn.  For example, a stereo display node will require the scene to
@@ -50,17 +51,7 @@ public:
 	      computation that is the same for both eyes, such as loading textures or
 	      mesh data into graphics card memory.
 	 */
-	virtual void onVRRenderGraphicsContext(VRGraphicsState& renderState) {}
-
-	/**  onVRRenderScene calls onVRRenderGraphics by transforming the VRDataIndex into
-		 a VRGraphicsState object
-	 */
-	void onVRRenderScene(VRDataIndex *renderState, VRDisplayNode *callingNode);
-
-	/**  onVRRenderScene calls onVRRenderGraphicsContext by transforming the VRDataIndex into
-		 a VRGraphicsState object
-	 */
-	void onVRRenderContext(VRDataIndex *renderState, VRDisplayNode *callingNode);
+	virtual void onVRRenderGraphicsContext(VRGraphicsState& renderState) = 0;
 };
 
 } /* namespace MinVR */

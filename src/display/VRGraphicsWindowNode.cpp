@@ -30,23 +30,16 @@ void VRGraphicsWindowNode::render(VRDataIndex *renderState, VRRenderHandler *ren
 	renderState->addData("WindowHeight", _settings.height);
 	renderState->addData("SharedContextGroupID", _settings.sharedContextGroupID);
 	renderState->addData("WindowID", _windowID);
+	renderState->addData("HasGraphicsContext", 1);
   
 	_winToolkit->makeWindowCurrent(_windowID);
-	/*if (_settings.quadBuffered)
-	{
-		_gfxToolkit->setDrawBuffer(VRGraphicsToolkit::VRDRAWBUFFER_BACKRIGHT);
-		//_gfxToolkit->clearScreen();
-		_gfxToolkit->setDrawBuffer(VRGraphicsToolkit::VRDRAWBUFFER_BACKLEFT);
-		//_gfxToolkit->clearScreen();
-	}
-	else
-	{
-		_gfxToolkit->setDrawBuffer(VRGraphicsToolkit::VRDRAWBUFFER_BACK);
-		//_gfxToolkit->clearScreen();
-	}*/
 	
+
 	// windows should call the application programmer's context-level callback
-	renderHandler->onVRRenderContext(renderState, this);
+	renderState->addData("Render", "Context");
+	renderHandler->onVRRender(renderState, this);
+
+	renderState->addData("Render", "Scene");
 
 	VRDisplayNode::render(renderState, renderHandler);
 
