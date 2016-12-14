@@ -12,7 +12,7 @@
 #include <string>
 
 #include <display/VRDisplayNode.h>
-#include <main/VREventHandler.h>
+#include <api/VREventHandler.h>
 #include <main/VRFactory.h>
 #include <math/VRMath.h>
 

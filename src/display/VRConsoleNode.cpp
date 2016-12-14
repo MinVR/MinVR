@@ -26,8 +26,7 @@ void VRConsoleNode::render(VRDataIndex *renderState, VRRenderHandler *renderHand
   renderState->pushState();
 	renderState->addData("IsConsole", 1);
 
-	renderHandler->onVRRenderContext(renderState, this);
-	renderHandler->onVRRenderScene(renderState, this);
+	renderHandler->onVRRender(renderState, this);
 
    renderState->popState();
 }

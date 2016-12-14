@@ -123,7 +123,7 @@ void VRStereoNode::renderOneEye(VRDataIndex *renderState, VRRenderHandler *rende
 		}
 		else
 		{
-			renderHandler->onVRRenderScene(renderState, this);
+			renderHandler->onVRRender(renderState, this);
 		}
 	renderState->popState();
 }

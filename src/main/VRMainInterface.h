@@ -4,8 +4,8 @@
 #include <display/VRGraphicsToolkit.h>
 #include <display/VRWindowToolkit.h>
 #include <input/VRInputDevice.h>
-#include <main/VREventHandler.h>
-#include <main/VRRenderHandler.h>
+#include <api/VREventHandler.h>
+#include <api/VRRenderHandler.h>
 
 
 

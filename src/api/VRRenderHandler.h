@@ -15,7 +15,8 @@ class VRDisplayNode;
 */
 class VRRenderHandler {
 public:
-  /// This function must be implemented in subclasses.  onVRRenderScene(..) is
+	virtual ~VRRenderHandler() {}
+  /// This function must be implemented in subclasses.  onVRRender(..) is
   /// called from within VRMain::renderDisplayGraph() once for each time a
   /// display node requires the scene to be drawn.  For example, a stereo
   /// display node will require the scene to be drawn twice (once per eye).
@@ -31,20 +32,33 @@ public:
   /// any information you may need to draw graphics (e.g., the correct 
   /// projection matrix to apply in your shaders in order to support head
   /// tracked stereo rendering).
-  virtual void onVRRenderScene(VRDataIndex *renderState, VRDisplayNode *callingNode) = 0;
+  virtual void onVRRender(VRDataIndex *renderState, VRDisplayNode *callingNode) = 0;
+};
 
-  /// This function has a default empty implementation because it is not
-  /// always required.  However, it is important to use if you want to
-  /// write optimal rendering code.  Whereas onVRRenderScene(..) is called
-  /// once per scene (e.g., twice for a simple stereo display), onVRRenderContext(..)
-  /// is called once per rendering context.  For a stereo graphics application, 
-  /// onVRRenderContext will be called once per frame for each active graphics
-  /// context (i.e., graphics window), and THEN onVRRenderScene(..) will be called
-  /// once per eye to draw the scene multiple times.  Thus, to write optimal graphics
-  /// rendering code, onVRRenderContext(..) is the place where programmers 
-  /// should do any computation that is the same for both eyes, such as loading
-  /// textures or mesh data into graphics card memory.
-  virtual void onVRRenderContext(VRDataIndex *renderState, VRDisplayNode *callingNode) {};
+/**
+ * VRRenderHandlerImpl allows subclasses to specify an implementation of the
+ * render handler.  This mostly helps in allowing developers to specify their
+ * own implementation of onVRRender(...) in cpp files rather than in the header
+ * files.
+ */
+class VRRenderHandlerImpl : public VRRenderHandler {
+public:
+	/**
+	 * Pass in a pointer to a render handler proxy object.  The VRRenderHandlerImpl will
+	 * delete the implementation object for simplicity.
+	 */
+	VRRenderHandlerImpl(VRRenderHandler* handler) : handler(handler) {}
+	virtual ~VRRenderHandlerImpl() { delete handler; }
+
+	/** Calls internal implementation of the render handler.
+	 */
+	void onVRRender(VRDataIndex *renderState, VRDisplayNode *callingNode) {
+		handler->onVRRender(renderState, callingNode);
+	}
+
+private:
+	VRRenderHandler* handler;
+
 };
 
 } // end namespace

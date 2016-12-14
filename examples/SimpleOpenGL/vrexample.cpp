@@ -4,8 +4,8 @@
 
 #include <display/VRConsoleNode.h>
 #include <main/VRMain.h>
-#include <main/VREventHandler.h>
-#include <main/VRRenderHandler.h>
+#include <api/VREventHandler.h>
+#include <api/VRRenderHandler.h>
 #include <math/VRMath.h>
 #include <main/impl/VRDefaultAppLauncher.h>
 
@@ -88,16 +88,14 @@ public:
         if (_vertAngle < 0.0) _vertAngle += 6.283185;
 	}
 
-  
-    virtual void onVRRenderContext(VRDataIndex *renderState, VRDisplayNode *callingNode) {
-        if (!renderState->exists("IsConsole", "/")) {
-        }
-    }
-
 	int count;
   
 	// Callback for rendering, inherited from VRRenderHandler
-	virtual void onVRRenderScene(VRDataIndex *renderState, VRDisplayNode *callingNode) {
+	virtual void onVRRender(VRDataIndex *renderState, VRDisplayNode *callingNode) {
+		if ("Context" == (std::string)renderState->getValue("Render")) {
+			return;
+		}
+
 		if (renderState->exists("IsConsole", "/")) {
 			VRConsoleNode *console = dynamic_cast<VRConsoleNode*>(callingNode);
 			console->println("Console output...");

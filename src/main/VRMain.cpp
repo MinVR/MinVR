@@ -44,15 +44,9 @@ public:
 	}
 	virtual ~VRCompositeRenderHandler() {}
 
-	virtual void onVRRenderScene(VRDataIndex *renderState, VRDisplayNode *callingNode) {
+	virtual void onVRRender(VRDataIndex *renderState, VRDisplayNode *callingNode) {
 		for (std::vector<VRRenderHandler*>::iterator it = _handlers.begin(); it != _handlers.end(); it++) {
-			(*it)->onVRRenderScene(renderState, callingNode);
-		}
-	}
-
-	virtual void onVRRenderContext(VRDataIndex *renderState, VRDisplayNode *callingNode) {
-		for (std::vector<VRRenderHandler*>::iterator it = _handlers.begin(); it != _handlers.end(); it++) {
-			(*it)->onVRRenderContext(renderState, callingNode);
+			(*it)->onVRRender(renderState, callingNode);
 		}
 	}
 

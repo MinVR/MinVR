@@ -122,13 +122,26 @@ set(vr_main_cpp
   ${vr_src_dir}/main/impl/VRDefaultAppLauncher.cpp
 )
 
+set(vr_api_cpp
+  ${vr_src_dir}/api/impl/VRApp.cpp
+  ${vr_src_dir}/api/impl/VRGraphicsHandler.cpp
+  ${vr_src_dir}/api/impl/VRGraphicsState.cpp
+)
+
+set(vr_api_h
+  ${vr_src_dir}/api/VRApp.h
+  ${vr_src_dir}/api/VRGraphicsApp.h
+  ${vr_src_dir}/api/VRGraphicsHandler.h
+  ${vr_src_dir}/api/VRGraphicsState.h
+  ${vr_src_dir}/api/VRRenderHandler.h
+  ${vr_src_dir}/api/VREventHandler.h
+)
+
 set(vr_main_h_main
-  ${vr_src_dir}/main/VREventHandler.h
   ${vr_src_dir}/main/VRFactory.h
   ${vr_src_dir}/main/VRItemFactory.h
   ${vr_src_dir}/main/VRMain.h
   ${vr_src_dir}/main/VRMainInterface.h
-  ${vr_src_dir}/main/VRRenderHandler.h
   ${vr_src_dir}/main/VRAppLauncher.h
 )
 
@@ -178,6 +191,7 @@ set(vr_plugin_h
 set(vr_sources 
   ${vr_config_cpp} ${vr_config_h}
   ${vr_display_cpp} ${vr_display_h}
+  ${vr_api_cpp} ${vr_api_h}
   ${vr_input_h}
   ${vr_main_cpp} ${vr_main_h}
   ${vr_math_cpp} ${vr_math_h}
@@ -189,6 +203,8 @@ source_group("config\\Header Files" FILES ${vr_config_h})
 source_group("config\\Source Files" FILES ${vr_config_cpp})
 source_group("display\\Header Files" FILES ${vr_display_h})
 source_group("display\\Source Files" FILES ${vr_display_cpp})
+source_group("api\\Header Files" FILES ${vr_api_h})
+source_group("api\\Source Files" FILES ${vr_api_cpp})
 source_group("input\\Header Files" FILES ${vr_input_h})
 source_group("input\\Source Files" FILES ${vr_input_cpp})
 source_group("main\\Header Files" FILES ${vr_main_h})
@@ -213,6 +229,7 @@ install(FILES ${vr_config_h_cxml}
 install(FILES ${vr_config_h_base}
   DESTINATION ${CMAKE_INSTALL_PREFIX}/include/config/base64)
 install(FILES ${vr_display_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/display)
+install(FILES ${vr_api_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/api)
 install(FILES ${vr_input_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/input)
 install(FILES ${vr_main_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/main)
 install(FILES ${vr_math_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/math)
