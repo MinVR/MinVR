@@ -22,10 +22,10 @@ void VRViewportNode::render(VRDataIndex *renderState, VRRenderHandler *renderHan
   renderState->pushState();
 
 	// Is this the kind of state information we expect to pass from one node to the next?
-	renderState->addData("ViewportX", (int)_rect.getX());
-	renderState->addData("ViewportY", (int)_rect.getY());
-	renderState->addData("ViewportWidth", (int)_rect.getWidth());
-	renderState->addData("ViewportHeight", (int)_rect.getHeight());
+	renderState->addData("/ViewportX", (int)_rect.getX());
+	renderState->addData("/ViewportY", (int)_rect.getY());
+	renderState->addData("/ViewportWidth", (int)_rect.getWidth());
+	renderState->addData("/ViewportHeight", (int)_rect.getHeight());
   
 	_gfxToolkit->setSubWindow(_rect);
 

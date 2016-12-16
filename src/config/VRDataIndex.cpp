@@ -970,19 +970,26 @@ std::string VRDataIndex::addData(const std::string valName,
   if (valName.compare("/") == 0)
     throw std::runtime_error(std::string("cannot replace the root namespace"));
 
+  // All names must be in some namespace. If there is no namespace, put this
+  // into the root namespace.
+  std::string fixedValName = valName;
+  if (valName[0] != '/') {
+    fixedValName = std::string("/") + valName;
+  }
+  
   // Check if the name is already in use.
-  VRDataMap::iterator it = mindex.find(valName);
+  VRDataMap::iterator it = mindex.find(fixedValName);
   if (it == mindex.end()) {
 
     // No.  Create a new object.
     VRDatumPtr obj = factory.CreateVRDatum(VRCORETYPE_CONTAINER, &value);
     //std::cout << "added " << obj.containerVal()->getDatum() << std::endl;
-    mindex.insert(VRDataMap::value_type(valName, obj));
+    mindex.insert(VRDataMap::value_type(fixedValName, obj));
 
     // Add this value to the parent container, if any.
     VRContainer cValue;
-    cValue.push_back(getTrimName(valName));
-    std::string ns = getNameSpace(valName);
+    cValue.push_back(getTrimName(fixedValName));
+    std::string ns = getNameSpace(fixedValName);
     // The parent container is the namespace minus the trailing /.
     if (ns.compare("/") != 0) addData(ns.substr(0,ns.size() - 1), cValue);
     
@@ -990,7 +997,7 @@ std::string VRDataIndex::addData(const std::string valName,
     // Add value to existing container.
     it->second.containerVal()->addToValue(value);
   }
-  return valName;
+  return fixedValName;
 }
 
 // Prints the whole index.

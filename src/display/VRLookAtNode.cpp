@@ -19,7 +19,7 @@ VRLookAtNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 {
 	renderState->pushState();
 
-	renderState->addData("LookAtMatrix", _lookAtMatrix);
+	renderState->addData("/LookAtMatrix", _lookAtMatrix);
 	VRDisplayNode::render(renderState, renderHandler);
 
 	renderState->popState();

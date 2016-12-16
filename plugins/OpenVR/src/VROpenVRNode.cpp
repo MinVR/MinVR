@@ -125,8 +125,8 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 	VRMatrix4 view_left = m_mat4eyePosLeft * head_pose;
-	renderState->addData("ProjectionMatrix", m_mat4ProjectionLeft);
-	renderState->addData("ViewMatrix", view_left);
+	renderState->addData("/ProjectionMatrix", m_mat4ProjectionLeft);
+	renderState->addData("/ViewMatrix", view_left);
 
 	if (_children.size() == 0) {
 		renderHandler->onVRRenderScene(renderState, this);
@@ -156,8 +156,8 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 
 	VRMatrix4 view_right = m_mat4eyePosRight * head_pose;
 	
-	renderState->addData("ProjectionMatrix",m_mat4ProjectionRight);
-	renderState->addData("ViewMatrix", view_right);
+	renderState->addData("/ProjectionMatrix",m_mat4ProjectionRight);
+	renderState->addData("/ViewMatrix", view_right);
 
 	if (_children.size() == 0) {
 		renderHandler->onVRRenderScene(renderState, this);

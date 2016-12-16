@@ -54,7 +54,7 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
 
 	VRMatrix4 projMat = VRMatrix4::projection(l, r, b, t, _nearClip, _farClip);
 
-	renderState->addData("ProjectionMatrix", projMat);
+	renderState->addData("/ProjectionMatrix", projMat);
 
 	// Rotate the projection to be non-perpendicular
 	VRMatrix4 Mrot(vr[0], vr[1], vr[2], 0.0,
@@ -67,7 +67,7 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
 
 	VRMatrix4 viewMat = Mrot * Mtrans;
 
-	renderState->addData("ViewMatrix", viewMat);
+	renderState->addData("/ViewMatrix", viewMat);
 
 	VRDisplayNode::render(renderState, renderHandler);
 

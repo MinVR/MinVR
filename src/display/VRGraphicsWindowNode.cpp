@@ -24,12 +24,12 @@ void VRGraphicsWindowNode::render(VRDataIndex *renderState, VRRenderHandler *ren
   renderState->pushState();
 
 	// Is this the kind of state information we expect to pass from one node to the next?
-	renderState->addData("WindowX", _settings.xpos);
-	renderState->addData("WindowY", _settings.ypos);
-	renderState->addData("WindowWidth", _settings.width);
-	renderState->addData("WindowHeight", _settings.height);
-	renderState->addData("SharedContextGroupID", _settings.sharedContextGroupID);
-	renderState->addData("WindowID", _windowID);
+	renderState->addData("/WindowX", _settings.xpos);
+	renderState->addData("/WindowY", _settings.ypos);
+	renderState->addData("/WindowWidth", _settings.width);
+	renderState->addData("/WindowHeight", _settings.height);
+	renderState->addData("/SharedContextGroupID", _settings.sharedContextGroupID);
+	renderState->addData("/WindowID", _windowID);
   
 	_winToolkit->makeWindowCurrent(_windowID);
 	/*if (_settings.quadBuffered)

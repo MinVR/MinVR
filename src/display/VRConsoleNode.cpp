@@ -24,7 +24,7 @@ void VRConsoleNode::addChild(VRDisplayNode *child) {
 void VRConsoleNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler) {
 
   renderState->pushState();
-	renderState->addData("IsConsole", 1);
+	renderState->addData("/IsConsole", 1);
 
 	renderHandler->onVRRenderContext(renderState, this);
 	renderHandler->onVRRenderScene(renderState, this);
