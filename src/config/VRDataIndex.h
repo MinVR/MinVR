@@ -301,8 +301,13 @@ private:
   template <typename T, const VRCORETYPE_ID TID>
   std::string addDataSpecialized(const std::string valName, T value) {
 
+    // All names must be in some namespace. If there is no namespace,
+    // put this into the root namespace.
+    std::string fixedValName = valName;
+    if (valName[0] != '/') fixedValName = std::string("/") + valName;
+      
     std::pair<VRDataMap::iterator, bool>res =
-      mindex.insert(VRDataMap::value_type(valName, NULL));
+      mindex.insert(VRDataMap::value_type(fixedValName, NULL));
 
     // Was it already used?
     if (res.second) {
@@ -312,8 +317,8 @@ private:
 
       // Add this value to the parent container, if any.
       VRContainer cValue;
-      cValue.push_back(explodeName(valName).back());
-      std::string ns = getNameSpace(valName);
+      cValue.push_back(explodeName(fixedValName).back());
+      std::string ns = getNameSpace(fixedValName);
       // The parent container is the namespace minus the trailing /.
       if (ns.compare("/") != 0) addData(ns.substr(0, ns.size() - 1), cValue);
 
@@ -330,7 +335,7 @@ private:
       }
     }
         
-    return valName;
+    return fixedValName;
   }
 
 

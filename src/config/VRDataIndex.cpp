@@ -973,9 +973,7 @@ std::string VRDataIndex::addData(const std::string valName,
   // All names must be in some namespace. If there is no namespace, put this
   // into the root namespace.
   std::string fixedValName = valName;
-  if (valName[0] != '/') {
-    fixedValName = std::string("/") + valName;
-  }
+  if (valName[0] != '/') fixedValName = std::string("/") + valName;
   
   // Check if the name is already in use.
   VRDataMap::iterator it = mindex.find(fixedValName);
