@@ -306,8 +306,7 @@ void VRMain::initialize(const VRAppLauncher& launcher) {
 				&si,            // Pointer to STARTUPINFO structure
 				&pi )           // Pointer to PROCESS_INFORMATION structure
 		) {
-			std::cerr << "CreateProcess failed: " << GetLastError() << std::endl;
-			exit(1);
+			throw std::runtime_error("CreateProcess failed: " + GetLastError());
 		}
 
 		delete[] title;
@@ -544,8 +543,7 @@ void
 VRMain::synchronizeAndProcessEvents() 
 {
 	if (!_initialized) {
-		std::cerr << "VRMain not initialized." << std::endl;
-		return;
+		throw std::runtime_error("VRMain not initialized.");
 	}
 
 	VRDataQueue eventsFromDevices;
@@ -587,11 +585,8 @@ VRMain::synchronizeAndProcessEvents()
 void
 VRMain::renderOnAllDisplays() 
 {
-	if (!_initialized) {
-		std::cerr << "VRMain not initialized." << std::endl;
-		return;
-	}
-
+  if (!_initialized) throw std::runtime_error("VRMain not initialized.");
+  
 	VRDataIndex renderState;
 	renderState.addData("/InitRender", _frame == 0);
 
@@ -620,6 +615,29 @@ VRMain::renderOnAllDisplays()
 	}
 
 	_frame++;
+}
+
+std::list<std::string>
+VRMain::auditValuesFromAllDisplays() 
+{
+  std::list<std::string> out;
+
+  if (!_initialized) throw std::runtime_error("VRMain not initialized.");
+  
+	if (!_displayGraphs.empty()) {
+
+		for (std::vector<VRDisplayNode*>::iterator it = _displayGraphs.begin();
+         it != _displayGraphs.end(); ++it) {
+      std::map<std::string,std::string> subOut = (*it)->getValuesAdded();
+
+      for (std::map<std::string,std::string>::iterator jt = subOut.begin();
+           jt != subOut.end(); jt++) {
+        out.push_back(jt->first + " : " + jt->second);
+      }
+    }
+  }
+
+  return out;
 }
 
 

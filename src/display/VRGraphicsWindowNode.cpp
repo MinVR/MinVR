@@ -14,6 +14,13 @@ VRGraphicsWindowNode::VRGraphicsWindowNode(const std::string &name, VRGraphicsTo
 	VRDisplayNode(name), _gfxToolkit(gfxToolkit), _winToolkit(winToolkit), _settings(settings)
 {
 	_windowID = _winToolkit->createWindow(_settings);
+  _valuesAdded.push_back("/WindowX");
+  _valuesAdded.push_back("/WindowX");
+  _valuesAdded.push_back("/WindowWidth");
+  _valuesAdded.push_back("/WindowHeight");
+  _valuesAdded.push_back("/SharedContextGroupID");
+  _valuesAdded.push_back("/WindowID");
+
 }
 
 VRGraphicsWindowNode::~VRGraphicsWindowNode() {

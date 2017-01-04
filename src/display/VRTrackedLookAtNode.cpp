@@ -7,6 +7,7 @@ namespace MinVR {
 	VRTrackedLookAtNode::VRTrackedLookAtNode(const std::string &name, const std::string &headTrackingEventName, VRMatrix4 initiallookAtMatrix) :
 		VRDisplayNode(name), _lookAtMatrix(initiallookAtMatrix), _trackingEvent(headTrackingEventName)
 {
+  _valuesAdded.push_back("/LookAtMatrix");
 }
 
 VRTrackedLookAtNode::~VRTrackedLookAtNode()

@@ -11,6 +11,7 @@
 namespace MinVR {
 
 VRConsoleNode::VRConsoleNode(const std::string &name, std::ostream *stream) : VRDisplayNode(name), m_stream(stream)  {
+  _valuesAdded.push_back("/IsConsole");
 }
 
 VRConsoleNode::~VRConsoleNode() {

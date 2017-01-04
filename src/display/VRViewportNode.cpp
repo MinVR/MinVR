@@ -13,6 +13,10 @@ namespace MinVR {
 
 VRViewportNode::VRViewportNode(const std::string &name, VRGraphicsToolkit *gfxToolkit, const VRRect& rect) :
 	VRDisplayNode(name), _rect(rect), _gfxToolkit(gfxToolkit)  {
+  _valuesAdded.push_back("/ViewportX");
+  _valuesAdded.push_back("/ViewportY");
+  _valuesAdded.push_back("/ViewportWidth");
+  _valuesAdded.push_back("/ViewportHeight");
 }
 
 VRViewportNode::~VRViewportNode() {
