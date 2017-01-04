@@ -716,7 +716,15 @@ std::string VRDataIndex::getName(const std::string valName,
 
 // Returns the data object for this name.
 VRDatumPtr VRDataIndex::getDatum(const std::string valName) {
-  VRDataMap::const_iterator p = mindex.find(valName);
+  // If there is no namespace specified, assume the root space.  Note that this is
+  // seldom what is really wanted, so it's better to try to use namespaces well.
+  std::string testName;
+  if (valName[0] != '/')
+    testName = "/" + valName;
+  else
+    testName = valName;
+  
+  VRDataMap::const_iterator p = mindex.find(testName);
 
   if (p == mindex.end()) {
     throw std::runtime_error("Never heard of " + valName);
