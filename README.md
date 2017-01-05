@@ -48,14 +48,14 @@ The goal of MinVR is to facilitate a variety of data visualization and virtual r
   # Build debug (makefile build)
   cmake .. -DCMAKE_BUILD_TYPE=DEBUG
   
-  # Build without any plugins (base graphics plugins will be built)
+  # Build without any plugins (base plugins will be not built)
   cmake .. -DBASE_PLUGINS=OFF
-
-  # Build with only graphics plugins (base graphics plugins will be built)
-  cmake .. -DBASE_PLUGINS=OFF -DBASE_GRAPHICS_PLUGINS=ON
   
-  # Build with base VR plugins (base graphic and device plugins will be built)
-  cmake .. -DBASE_VR_PLUGINS=ON
+  # Build with VRPN plugin
+  cmake .. -DMINVR_VRPN_PLUGIN=ON
+
+  # Build with other available plugin
+  cmake .. -DMINVR_<Plugin Name>_PLUGIN=ON
   ```
 
 #### Run Example
@@ -65,8 +65,8 @@ MinVR applications can be run with different configurations by passing in enviro
 * Simple OpenGL Example
 
 ```
-cd examples/SimpleOpenGL
-../../build/bin/SimpleOpenGL desktop.xml
+# From base directory
+build/bin/SimpleOpenGL examples/SimpleOpenGL/desktop.xml
 ```
 
 * Python Example (MinVR applicaitons can be written in Python)
