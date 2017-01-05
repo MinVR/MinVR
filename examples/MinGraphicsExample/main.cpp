@@ -21,26 +21,26 @@
 using namespace MinVR;
 
 /** MyVRApp changes the clear color as frames progress. */
-class MyVRApp : public VRGraphicsApp {
+class MyVRApp : public VRApp {
 public:
-	MyVRApp(int argc, char** argv, const std::string& configFile) : VRGraphicsApp(argc, argv, configFile) {}
+	MyVRApp(int argc, char** argv, const std::string& configFile) : VRApp(argc, argv, configFile) {}
 
-	void onVREvent(const std::string &eventName, VRDataIndex *eventData) {
+	void onVREvent(const VREvent &event) {
 		// Set time since application began
-		if (eventName == "/Time") {
-			time = eventData->getValue(eventName);
+		if (event.getName() == "/Time") {
+            time = event.getDataAsFloat("/Time");
 			return;
 		}
 
-		std::cout << eventName << std::endl;
+		std::cout << event.getName() << std::endl;
 
 		// Quit if the escape button is pressed
-		if (eventName == "/KbdEsc_Down") {
+		if (event.getName() == "/KbdEsc_Down") {
 			shutdown();
 		}
 	}
 
-	void onVRRenderGraphicsContext(VRGraphicsState& renderState) {
+	void onVRRenderGraphicsContext(const VRGraphicsState &renderState) {
 		// Print out when the window was opened and closed
 		if (renderState.isInitialRenderCall()) {
 			std::cout << "Window opened." << std::endl;
@@ -53,7 +53,7 @@ public:
 		}
 	}
 
-	void onVRRenderGraphics(VRGraphicsState& renderState) {
+	void onVRRenderGraphics(const VRGraphicsState &renderState) {
 		// Get projection an view matrices
 		const float* projectionMatrix = renderState.getProjectionMatrix();
 		const float* viewMatrix = renderState.getViewMatrix();

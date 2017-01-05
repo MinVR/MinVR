@@ -10,7 +10,7 @@
 #define VRGRAPHICSHANDLER_H_
 
 #include "main/VRRenderHandler.h"
-#include "VRGraphicsState.h"
+#include "api/VRGraphicsState.h"
 
 namespace MinVR {
 
@@ -38,7 +38,7 @@ public:
 	      need to draw graphics (e.g., the correct projection matrix to apply in your
 	      shaders in order to support head tracked stereo rendering).
 	 */
-	virtual void onVRRenderGraphics(VRGraphicsState& renderState) = 0;
+	virtual void onVRRenderGraphics(const VRGraphicsState& renderState) = 0;
 
 	/** Whereas onVRRenderGraphics(..) is called once per scene (e.g., twice for a
 	      simple stereo display), onVRRenderGraphicsContext(..) is called once per
@@ -50,7 +50,7 @@ public:
 	      computation that is the same for both eyes, such as loading textures or
 	      mesh data into graphics card memory.
 	 */
-	virtual void onVRRenderGraphicsContext(VRGraphicsState& renderState) {}
+	virtual void onVRRenderGraphicsContext(const VRGraphicsState& renderState) {}
 
 	/**  onVRRenderScene calls onVRRenderGraphics by transforming the VRDataIndex into
 		 a VRGraphicsState object

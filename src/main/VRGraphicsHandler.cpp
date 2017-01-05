@@ -7,21 +7,22 @@
  */
 
 #include "VRGraphicsHandler.h"
+#include "VRGraphicsStateInternal.h"
 
 namespace MinVR {
 
 void VRGraphicsHandler::onVRRenderScene(VRDataIndex* renderState,
 		VRDisplayNode* callingNode) {
 	// Wraps VRDataIndex inside VRGraphicsState
-	VRGraphicsState state(*renderState);
-	onVRRenderGraphics(state);
+	VRGraphicsStateInternal state(renderState);
+	onVRRenderGraphics(*(state.getAPIState()));
 }
 
 void VRGraphicsHandler::onVRRenderContext(VRDataIndex* renderState,
 		VRDisplayNode* callingNode) {
 	// Wraps VRDataIndex inside VRGraphicsState
-	VRGraphicsState state(*renderState);
-	onVRRenderGraphicsContext(state);
+	VRGraphicsStateInternal state(renderState);
+	onVRRenderGraphicsContext(*(state.getAPIState()));
 }
 
 } /* namespace MinVR */

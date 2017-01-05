@@ -20,6 +20,7 @@
 #include <plugin/VRPluginManager.h>
 #include <sstream>
 #include <main/impl/VRDefaultAppLauncher.h>
+#include <main/VREventInternal.h>
 #include <cstdlib>
 
 namespace MinVR {
@@ -568,11 +569,13 @@ VRMain::synchronizeAndProcessEvents()
 	VRDataQueue *events = new VRDataQueue(eventData);
 	while (events->notEmpty()) {
 		// Unpack the next item from the queue.
-		std::string event = _config->addSerializedValue( events->getSerializedObject() );
+		std::string eventName = _config->addSerializedValue( events->getSerializedObject() );
 
+        VREventInternal event(eventName, _config);
+      
 		// Invoke the user's callback on the new event
 		for (int f = 0; f < _eventHandlers.size(); f++) {
-			_eventHandlers[f]->onVREvent(event, _config);
+			_eventHandlers[f]->onVREvent(*event.getAPIEvent());
 		}
 
 		// Get the next item from the queue.

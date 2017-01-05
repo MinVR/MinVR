@@ -6,16 +6,22 @@
  * 		Dan Orban (dtorban)
  */
 
-#ifndef VRGRAPHICSAPP_H_
-#define VRGRAPHICSAPP_H_
+#ifndef VRAPP_H_
+#define VRAPP_H_
 
-#include <main/VRMain.h>
-#include "VRGraphicsHandler.h"
+#include "VREvent.h"
+//#include "VRAudioState.h"
+#include "VRGraphicsState.h"
+//#include "VRHapticsState.h"
 
 namespace MinVR {
 
+
+class VRAppInternal; // forward declaration for implementation details
+
+
 /** VRGraphicsApp is a simple way to create a graphics VR application.  Developers
-  need only to subclass VRGraphicsApp and override the onVREvent(...), onVRRenderGraphics(...),
+  need only to subclass VRApp and override the onVREvent(...), onVRRenderGraphics(...),
   and/or onVRRenderGraphicsContext(...).  To run the application, developers can call run.
   To shut down the application, users can call the shutdown() method.  For example here is how
   to create a simple MinVR Graphics application:
@@ -24,9 +30,9 @@ namespace MinVR {
 
   #include <api/MinVR.h>
 
-  class MyVRApp : public VRGraphicsApp {
+  class MyVRApp : public VRApp {
   public:
-	MyVRApp(int argc, char** argv, const std::string& configFile) : VRGraphicsApp(argc, argv, configFile) {}
+	MyVRApp(int argc, char** argv, const std::string& configFile) : VRApp(argc, argv, configFile) {}
 
 	virtual void onVRRenderGraphics(VRGraphicsState& renderState) {
 		// draw graphics
@@ -42,23 +48,27 @@ namespace MinVR {
 
   ------------------------------------------------------------------------
  */
-class VRGraphicsApp : public VREventHandler, public VRGraphicsHandler {
+class VRApp {
 public:
 	/**
-	 * VRGraphicsApp expects the command line parameters and a config file path.
+	 * VRApp expects the command line parameters and a config file path.
 	 */
-	VRGraphicsApp(int argc, char** argv, const std::string& configFile);
+	VRApp(int argc, char** argv, const std::string& configFile);
 
 	/**
-	 * Default constructor shuts down the application and the interface with MinVR
+	 * Default destructor shuts down the application and the interface with MinVR
 	 */
-	virtual ~VRGraphicsApp();
+	virtual ~VRApp();
 
 	/**
 	 * onVREvent is called when MinVR issues an event callback.  Since event data is extremely diverse,
 	 * developers can get the specific event data from the VRDataIndex.
 	 */
-	virtual void onVREvent(const std::string &eventName, VRDataIndex *eventData) {}
+	virtual void onVREvent(const VREvent &event) {}
+
+
+	//virtual void onVRRenderAudio(const VRAudioState& state) {}
+
 
 	/** This function is called once for each time a display node requires the scene
 		      to be drawn.  For example, a stereo display node will require the scene to
@@ -75,7 +85,7 @@ public:
 		      need to draw graphics (e.g., the correct projection matrix to apply in your
 		      shaders in order to support head tracked stereo rendering).
 	 */
-	virtual void onVRRenderGraphics(VRGraphicsState& renderState) {}
+	virtual void onVRRenderGraphics(const VRGraphicsState& state) {}
 
 	/** Whereas onVRRenderGraphics(..) is called once per scene (e.g., twice for a
 	      simple stereo display), onVRRenderGraphicsContext(..) is called once per
@@ -87,7 +97,15 @@ public:
 	      computation that is the same for both eyes, such as loading textures or
 	      mesh data into graphics card memory.
 	 */
-	virtual void onVRRenderGraphicsContext(VRGraphicsState& renderState) {}
+	virtual void onVRRenderGraphicsContext(const VRGraphicsState& state) {}
+
+
+	//virtual void onVRRenderHaptics(const VRHapticsState& state) {}
+
+
+    /** Returns whether or not the application is running. */
+    bool isRunning() const;
+  
 
 	/** Starts the application. */
 	void run();
@@ -95,18 +113,12 @@ public:
 	/** Shuts the application down */
 	void shutdown();
 
-	/** Returns whether or not the application is running. */
-	bool isRunning() const;
-
-	/** Returns the current frame number */
-	int getFrame() const;
-
 private:
-	VRMain *vrMain;
-	bool running;
-	int frame;
+
+	VRAppInternal *_internal;  // opaque pointer to internal implementation
+	
 };
 
 } /* namespace MinVR */
 
-#endif /* VRGRAPHICSAPP_H_ */
+#endif /* VRAPP_H_ */

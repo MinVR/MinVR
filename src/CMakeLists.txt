@@ -117,31 +117,38 @@ set(vr_input_h
 )
 
 set(vr_main_cpp
+  ${vr_src_dir}/main/VREventInternal.cpp
   ${vr_src_dir}/main/VRFactory.cpp
+  ${vr_src_dir}/main/VRGraphicsHandler.cpp
+  ${vr_src_dir}/main/VRGraphicsStateInternal.cpp
   ${vr_src_dir}/main/VRMain.cpp
   ${vr_src_dir}/main/impl/VRDefaultAppLauncher.cpp
 )
 
 set(vr_api_cpp
-  ${vr_src_dir}/api/graphics/VRGraphicsApp.cpp
-  ${vr_src_dir}/api/graphics/VRGraphicsHandler.cpp
-  ${vr_src_dir}/api/graphics/VRGraphicsState.cpp
+  ${vr_src_dir}/api/impl/VRApp.cpp
+  ${vr_src_dir}/api/impl/VREvent.cpp
+  ${vr_src_dir}/api/impl/VRGraphicsState.cpp
 )
 
 set(vr_api_h
-  ${vr_src_dir}/api/graphics/VRGraphicsApp.h
-  ${vr_src_dir}/api/graphics/VRGraphicsHandler.h
-  ${vr_src_dir}/api/graphics/VRGraphicsState.h
+  ${vr_src_dir}/api/MinVR.h
+  ${vr_src_dir}/api/VRApp.h
+  ${vr_src_dir}/api/VREvent.h
+  ${vr_src_dir}/api/VRGraphicsState.h
 )
 
 set(vr_main_h_main
+  ${vr_src_dir}/main/VRAppLauncher.h
   ${vr_src_dir}/main/VREventHandler.h
+  ${vr_src_dir}/main/VREventInternal.h
   ${vr_src_dir}/main/VRFactory.h
+  ${vr_src_dir}/main/VRGraphicsHandler.h
+  ${vr_src_dir}/main/VRGraphicsStateInternal.h
   ${vr_src_dir}/main/VRItemFactory.h
   ${vr_src_dir}/main/VRMain.h
   ${vr_src_dir}/main/VRMainInterface.h
   ${vr_src_dir}/main/VRRenderHandler.h
-  ${vr_src_dir}/main/VRAppLauncher.h
 )
 
 set(vr_main_h_impl

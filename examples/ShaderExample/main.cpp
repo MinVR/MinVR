@@ -27,16 +27,16 @@ using namespace MinVR;
  * from VRGraphicsApp, which allows you to override onVREvent to get input events, onRenderContext
  * to setup context sepecific objects, and onRenderScene that renders to each viewport.
  */
-class MyVRApp : public VRGraphicsApp {
+class MyVRApp : public VRApp {
 public:
 	/// The application expects the user to specify the command line arguments and a path to the vr config file.
-	MyVRApp(int argc, char** argv, const std::string& configFile) : VRGraphicsApp(argc, argv, configFile) {}
+	MyVRApp(int argc, char** argv, const std::string& configFile) : VRApp(argc, argv, configFile) {}
 
 	/// onVREvent is called when a new intput event happens.
-	void onVREvent(const std::string &eventName, VRDataIndex *eventData) {
+	void onVREvent(const VREvent &event) {
 		// Set time since application began
-		if (eventName == "/Time") {
-			double time = eventData->getValue(eventName);
+		if (event.getName() == "/Time") {
+			float time = event.getDataAsFloat("Seconds");
 			// Calculate model matrix based on time
 			VRMatrix4 modelMatrix = VRMatrix4::rotationX(0.5*time);
 			modelMatrix = modelMatrix * VRMatrix4::rotationY(0.5*time);
@@ -47,17 +47,17 @@ public:
 		}
 
 		// Output event name
-		std::cout << eventName << std::endl;
+		std::cout << event.getName() << std::endl;
 
 		// Quit if the escape button is pressed
-		if (eventName == "/KbdEsc_Down") {
+		if (event.getName() == "/KbdEsc_Down") {
 			shutdown();
 		}
 	}
 
 	/// onVRRenderContext is the override which allows users to setup context specific
 	/// variables like VBO's, VAO's, textures, framebuffers, and shader programs.
-	void onVRRenderGraphicsContext(VRGraphicsState& renderState) {
+	void onVRRenderGraphicsContext(const VRGraphicsState &renderState) {
 		// If this is the inital call, initialize context variables
 		if (renderState.isInitialRenderCall()) {
 			// Init GL
@@ -193,7 +193,7 @@ public:
 	}
 
 	/// onVRRenderScene will run draw calls on each viewport inside a context.
-	void onVRRenderGraphics(VRGraphicsState& renderState) {
+	void onVRRenderGraphics(const VRGraphicsState &renderState) {
 		// Only draw if the application is still running.
 		if (isRunning()) {
 			// clear screen
