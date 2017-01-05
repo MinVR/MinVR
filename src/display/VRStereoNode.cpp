@@ -12,8 +12,11 @@
 
 namespace MinVR {
 
-	VRStereoNode::VRStereoNode(const std::string &name, float interOcularDist, VRGraphicsToolkit *gfxToolkit, VRStereoFormat format) :
-VRDisplayNode(name), _iod(interOcularDist), _gfxToolkit(gfxToolkit), _format(format) {
+VRStereoNode::VRStereoNode(const std::string &name, float interOcularDist, VRGraphicsToolkit *gfxToolkit, VRStereoFormat format) :
+  VRDisplayNode(name), _iod(interOcularDist), _gfxToolkit(gfxToolkit), _format(format) {
+  _valuesAdded.push_back("/StereoFormat");
+  _valuesAdded.push_back("/LookAtMatrix");
+  _valuesAdded.push_back("/Eye");
 }
 
 VRStereoNode::~VRStereoNode() {
@@ -24,13 +27,13 @@ void VRStereoNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandl
   renderState->pushState();
 
 	if (_format == VRSTEREOFORMAT_MONO) {
-		renderState->addData("StereoFormat", "Mono");
+		renderState->addData("/StereoFormat", "Mono");
 	
 		_gfxToolkit->setDrawBuffer(VRGraphicsToolkit::VRDRAWBUFFER_BACK);
 		renderOneEye(renderState, renderHandler, Cyclops);
 	}
 	else if (_format == VRSTEREOFORMAT_QUADBUFFERED) {
-		renderState->addData("StereoFormat", "QuadBuffered");
+		renderState->addData("/StereoFormat", "QuadBuffered");
 
 		_gfxToolkit->setDrawBuffer(VRGraphicsToolkit::VRDRAWBUFFER_BACKLEFT);
 		renderOneEye(renderState, renderHandler, Left);
@@ -39,20 +42,20 @@ void VRStereoNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandl
 		renderOneEye(renderState, renderHandler, Right);
 	}
 	else if (_format == VRSTEREOFORMAT_SIDEBYSIDE) {
-		renderState->addData("StereoFormat", "SideBySide");
+		renderState->addData("/StereoFormat", "SideBySide");
 		
 		int x,y,w,h;
-		if (renderState->exists("ViewportX", "/")) {
-            x = renderState->getValue("ViewportX");
-            y = renderState->getValue("ViewportY");
-			w = renderState->getValue("ViewportWidth");
-			h = renderState->getValue("ViewportHeight");
+		if (renderState->exists("/ViewportX")) {
+            x = renderState->getValue("/ViewportX");
+            y = renderState->getValue("/ViewportY");
+			w = renderState->getValue("/ViewportWidth");
+			h = renderState->getValue("/ViewportHeight");
 		}
 		else {
             x = 0;
             y = 0;
-			w = renderState->getValue("WindowWidth");
-			h = renderState->getValue("WindowHeight");
+			w = renderState->getValue("/WindowWidth");
+			h = renderState->getValue("/WindowHeight");
 		}
 
 		_gfxToolkit->setSubWindow(VRRect(x,y,w/2,h));
@@ -62,7 +65,7 @@ void VRStereoNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandl
 		renderOneEye(renderState, renderHandler, Right);
 	}
 	else if (_format == VRSTEREOFORMAT_COLUMNINTERLACED) {
-		renderState->addData("StereoFormat", "ColumnInterlaced");
+		renderState->addData("/StereoFormat", "ColumnInterlaced");
 
 		_gfxToolkit->disableDrawingOnEvenColumns();
 		renderOneEye(renderState, renderHandler, Left);
@@ -81,8 +84,9 @@ void VRStereoNode::updateLookAtMatrix(VRDataIndex *renderState, VREyePosition ey
 
 	VRMatrix4 lookAtMatrix;
 
-	if (renderState->exists("LookAtMatrix", "/")){
-		lookAtMatrix = renderState->getValue("LookAtMatrix");
+	if (renderState->exists("/LookAtMatrix"))
+  {
+		lookAtMatrix = renderState->getValue("/LookAtMatrix");
 	}
 
 	if (eye == Left)
@@ -98,7 +102,7 @@ void VRStereoNode::updateLookAtMatrix(VRDataIndex *renderState, VREyePosition ey
 		lookAtMatrix = head_frame.inverse();
 	}
 
-	renderState->addData("LookAtMatrix", lookAtMatrix);
+	renderState->addData("/LookAtMatrix", lookAtMatrix);
 }
 
 void VRStereoNode::renderOneEye(VRDataIndex *renderState, VRRenderHandler *renderHandler, VREyePosition eye)
@@ -108,16 +112,16 @@ void VRStereoNode::renderOneEye(VRDataIndex *renderState, VRRenderHandler *rende
 		if (_children.size() > 0) {
 			if (eye == Cyclops)
 			{
-				renderState->addData("Eye", "Cyclops");
+				renderState->addData("/Eye", "Cyclops");
 				_children[0]->render(renderState, renderHandler);		
 			}
 			else if (eye == Left){
-				renderState->addData("Eye", "Left");
+				renderState->addData("/Eye", "Left");
 				_children[0]->render(renderState, renderHandler);		
 			} 
 			else if (eye == Right)
 			{
-				renderState->addData("Eye", "Right");
+				renderState->addData("/Eye", "Right");
 				_children[1]->render(renderState, renderHandler);
 			}
 		}

@@ -71,7 +71,7 @@ VRScalableNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 	double t = near*tan(DEGTORAD*Frustum.TopAngle);
 	
 	VRMatrix4 projMat = VRMatrix4::projection(l, r, b, t, near, far);
-	renderState->addData("ProjectionMatrix", projMat);
+	renderState->addData("/ProjectionMatrix", projMat);
 	
 	VRMatrix4 rotZ = VRMatrix4::rotationZ(DEGTORAD*Frustum.ViewAngleA);
 	VRMatrix4 rotY = VRMatrix4::rotationY(DEGTORAD*Frustum.ViewAngleB);
@@ -79,7 +79,7 @@ VRScalableNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 	VRMatrix4 Mtrans = VRMatrix4::translation(VRPoint3(0, 0, 0) - pe);
 	VRMatrix4 viewMat = rotZ * rotY * rotX * Mtrans;
 
-	renderState->addData("ViewMatrix", viewMat);
+	renderState->addData("/ViewMatrix", viewMat);
 
 	VRDisplayNode::render(renderState, renderHandler);
 	

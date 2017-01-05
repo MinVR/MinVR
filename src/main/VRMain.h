@@ -116,7 +116,9 @@ public:
   void addPluginSearchPath(const std::string& path) {
 
   }
-   
+
+  std::list<std::string> auditValuesFromAllDisplays();
+  
 private:
 
   void initialize();

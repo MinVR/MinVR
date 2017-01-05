@@ -14,6 +14,13 @@ VRGraphicsWindowNode::VRGraphicsWindowNode(const std::string &name, VRGraphicsTo
 	VRDisplayNode(name), _gfxToolkit(gfxToolkit), _winToolkit(winToolkit), _settings(settings)
 {
 	_windowID = _winToolkit->createWindow(_settings);
+  _valuesAdded.push_back("/WindowX");
+  _valuesAdded.push_back("/WindowX");
+  _valuesAdded.push_back("/WindowWidth");
+  _valuesAdded.push_back("/WindowHeight");
+  _valuesAdded.push_back("/SharedContextGroupID");
+  _valuesAdded.push_back("/WindowID");
+
 }
 
 VRGraphicsWindowNode::~VRGraphicsWindowNode() {
@@ -24,12 +31,12 @@ void VRGraphicsWindowNode::render(VRDataIndex *renderState, VRRenderHandler *ren
   renderState->pushState();
 
 	// Is this the kind of state information we expect to pass from one node to the next?
-	renderState->addData("WindowX", _settings.xpos);
-	renderState->addData("WindowY", _settings.ypos);
-	renderState->addData("WindowWidth", _settings.width);
-	renderState->addData("WindowHeight", _settings.height);
-	renderState->addData("SharedContextGroupID", _settings.sharedContextGroupID);
-	renderState->addData("WindowID", _windowID);
+	renderState->addData("/WindowX", _settings.xpos);
+	renderState->addData("/WindowY", _settings.ypos);
+	renderState->addData("/WindowWidth", _settings.width);
+	renderState->addData("/WindowHeight", _settings.height);
+	renderState->addData("/SharedContextGroupID", _settings.sharedContextGroupID);
+	renderState->addData("/WindowID", _windowID);
   
 	_winToolkit->makeWindowCurrent(_windowID);
 	/*if (_settings.quadBuffered)
@@ -108,7 +115,8 @@ VRDisplayNode* VRGraphicsWindowNode::create(VRMainInterface *vrMain, VRDataIndex
 	settings.debugContext = int(config->getValue("UseDebugContext", nameSpace));
 	settings.msaaSamples = int(config->getValue("MSAASamples", nameSpace));
 
-	//std::cout << settings.xpos << ", " << settings.ypos << ", " << settings.width << ", " << settings.height << std::endl;
+  //	std::cout << "Window corners: " << settings.xpos << ", " << settings.ypos << ", " << settings.width << ", " << settings.height << std::endl;
+
 	VRDisplayNode *node = new VRGraphicsWindowNode(nameSpace, gfxToolkit, winToolkit, settings);
 
 	return node;

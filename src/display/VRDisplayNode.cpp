@@ -19,13 +19,14 @@ VRDisplayNode::~VRDisplayNode() {
 	clearChildren(true);
 }
 
-void VRDisplayNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler) {
-    if (_children.size() > 0) {
-		for (vector<VRDisplayNode*>::iterator it = _children.begin(); it != _children.end(); it++) {
+void VRDisplayNode::render(VRDataIndex *renderState,
+                           VRRenderHandler *renderHandler) {
+  if (_children.size() > 0) {
+		for (vector<VRDisplayNode*>::iterator it = _children.begin();
+         it != _children.end(); it++) {
 			(*it)->render(renderState, renderHandler);
 		}
-	} else
-	{
+	} else {
 		renderHandler->onVRRenderScene(renderState, this);
 	}
 }
@@ -60,17 +61,62 @@ void VRDisplayNode::clearChildren(bool destroyChildren) {
 	_children.clear();
 }
 
-void VRDisplayNode::createChildren(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
+void VRDisplayNode::createChildren(VRMainInterface *vrMain,
+                                   VRDataIndex *config,
+                                   const std::string &nameSpace) {
+
   std::list<std::string> names = config->getValue(nameSpace);
   std::string validatedNameSpace = config->validateNameSpace(nameSpace);
-  for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
+
+  for (std::list<std::string>::const_iterator it = names.begin();
+       it != names.end(); ++it) {
+
 	  if (config->exists(*it, validatedNameSpace)){
-		  VRDisplayNode *child = vrMain->getFactory()->create<VRDisplayNode>(vrMain, config, config->validateNameSpace(validatedNameSpace) + *it);
-	  if (child != NULL) {
-		addChild(child);
-	  }
-	}
+		  VRDisplayNode *child =
+        vrMain->getFactory()->create<VRDisplayNode>(vrMain,
+                                                    config,
+                                                    validatedNameSpace + *it);
+      if (child != NULL) {
+        addChild(child);
+      }
+    }
   }	
 }
+
+  
+/// Returns a list of the values added to the render state by this
+/// node, and its children nodes.
+std::map<std::string,std::string> VRDisplayNode::getValuesAdded() {
+
+  std::map<std::string,std::string> out;
+
+  // Stick the node name with the values added.
+  if (_valuesAdded.size() > 0) {
+    for (std::list<std::string>::iterator it = _valuesAdded.begin();
+         it != _valuesAdded.end(); it++) {
+      out[*it] = _name + "(" + getType() + ")";
+    }
+  }
+
+  // Look through all the children nodes, and append their values to
+  // the list, with the current node name on the front.
+  if (_children.size() > 0) {
+		for (vector<VRDisplayNode*>::iterator it = _children.begin();
+         it != _children.end(); it++) {
+
+      std::map<std::string,std::string> childOut = (*it)->getValuesAdded();
+
+      if (childOut.size() > 0) {
+        for (std::map<std::string,std::string>::iterator jt = childOut.begin();
+             jt != childOut.end(); jt++) {
+          out[jt->first] = jt->second;
+        }
+      }
+		}
+	} 
+
+  return out;
+}
+
 
 } /* namespace MinVR */
