@@ -19,6 +19,7 @@ Author(s) of Significant Updates/Modifications to the File:
 
 #include <api/VREvent.h>
 #include <config/VRDataIndex.h>
+#include <unordered_map>
 
 
 namespace MinVR {
@@ -36,12 +37,83 @@ public:
 	*/
 	VREventInternal(const std::string &name, VRDataIndex *dataIndex);
 
+    ~VREventInternal();
+
+  
     /** Returns the name of the event, not to be confused with the event's
         data payload.
      */
     std::string getName() { return _name; }
   
+  
+    /** Returns the data stored in the named data field interpreted as an int.
+        If the key is not found then a 0 is returned.  Example use:
+   
+        int id = event->getDataAsInt("TouchID");
+     */
+    int getDataAsInt(const std::string &fieldName) const;
+  
+    /** Returns the data stored in the named data field interpreted as a float.
+        If the key is not found then a 0.0 is returned.  Example use:
+   
+        double speed = event->getDataAsFloat("Speed");
+     */
+    float getDataAsDouble(const std::string &fieldName) const;
+  
+    /** Returns the data stored in the named data field interpreted as a char
+        array.  If the key is not found then "\0" is returned.  Example use:
+   
+        char *name = event->getDataAsCharArray("Name");
+   
+        Memory is managed by the VREvent object.  The pointer is valid as long
+        as the VREvent object is valid.
+     */
+    const char * getDataAsCharArray(const std::string &fieldName) const;
 
+    /** Returns the size of the array for the named char array data field */
+    int getCharArraySize(const std::string &fieldName) const;
+
+  
+    /** Returns the data stored in the named data field interpreted as an int array.
+        If the key is not found then NULL is returned.  Example use:
+   
+        int xy[] = event->getDataAsIntArray("Position");
+        if (xy != NULL) {
+			cout << "(" << xy[0] << "," << xy[1] << ")" << endl;
+        }
+   
+        Memory is managed by the VREvent object.  The pointer is valid as long
+        as the VREvent object is valid.
+     */
+    const int * getDataAsIntArray(const std::string &fieldName) const;
+  
+    /** Returns the size of the array for the named int array data field */
+    int getIntArraySize(const std::string &fieldName) const;
+
+  
+    /** Returns the data stored in the named data field interpreted as a float array.
+        If the key is not found then NULL is returned.  Example use:
+   
+        float quat[] = event->getDataAsFloatArray("Quaternion");
+        if (quat != NULL) {
+			cout << "<" << quat[0] << "," << quat[1] << "," << quat[2] << "," << quat[3] << ">" << endl;
+        }
+   
+        Memory is managed by the VREvent object.  The pointer is valid as long
+        as the VREvent object is valid.
+    */
+    const double * getDataAsDoubleArray(const std::string &fieldName) const;
+
+    /** Returns the size of the array for the named double array data field */
+    int getDoubleArraySize(const std::string &fieldName) const;
+
+  
+    /** Returns the type for the named data field using the enumerated type
+        defined in VREvent.
+     */
+    VREvent::DataType getDataType(const std::string &fieldName) const;
+  
+  
     /** Returns a pointer to the streamlined VREvent data type associated with this VREventInternal.
     */
     VREvent* getAPIEvent();
@@ -61,6 +133,17 @@ private:
 	VREvent      _event;
 	VRDataIndex* _dataIndex;
 
+    std::unordered_map<std::string,int>     _intMap;
+    std::unordered_map<std::string,double>  _doubleMap;
+
+    std::unordered_map<std::string,char*>   _charArrayMap;
+    std::unordered_map<std::string,int>     _charArraySizes;
+
+    std::unordered_map<std::string,int*>    _intArrayMap;
+    std::unordered_map<std::string,int>     _intArraySizes;
+
+    std::unordered_map<std::string,double*> _doubleArrayMap;
+    std::unordered_map<std::string,int>     _doubleArraySizes;
 };
 
 

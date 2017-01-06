@@ -36,7 +36,7 @@ public:
 	void onVREvent(const VREvent &event) {
 		// Set time since application began
 		if (event.getName() == "/Time") {
-			float time = event.getDataAsFloat("Seconds");
+            double time = event.getDataAsDouble("Seconds"); //????
 			// Calculate model matrix based on time
 			VRMatrix4 modelMatrix = VRMatrix4::rotationX(0.5*time);
 			modelMatrix = modelMatrix * VRMatrix4::rotationY(0.5*time);

@@ -89,7 +89,7 @@ public:
 
 		double speed = event->getDataAsFloat("Speed");
 	*/
-	float getDataAsFloat(const std::string &fieldName) const;
+	float getDataAsDouble(const std::string &fieldName) const;
 
 	/** Returns the data stored in the named data field interpreted as a char
 	    array.  If the key is not found then "\0" is returned.  Example use:
@@ -101,7 +101,10 @@ public:
 	*/
 	const char * getDataAsCharArray(const std::string &fieldName) const;
 
-	/** Returns the data stored in the named data field interpreted as an int array.  
+    /** Returns the size of the array for the named char array data field */
+    int getCharArraySize(const std::string &fieldName) const;
+  
+	/** Returns the data stored in the named data field interpreted as an int array.
 	    If the key is not found then NULL is returned.  Example use:
 
 		int xy[] = event->getDataAsIntArray("Position");
@@ -114,8 +117,10 @@ public:
 	*/
 	const int * getDataAsIntArray(const std::string &fieldName) const;
 
+    /** Returns the size of the array for the named int array data field */
+    int getIntArraySize(const std::string &fieldName) const;
 
-	/** Returns the data stored in the named data field interpreted as a float array.  
+	/** Returns the data stored in the named data field interpreted as a float array.
 	    If the key is not found then NULL is returned.  Example use:
 
 		float quat[] = event->getDataAsFloatArray("Quaternion");
@@ -128,7 +133,9 @@ public:
 	*/
 	const double * getDataAsDoubleArray(const std::string &fieldName) const;
 
-
+    /** Returns the size of the array for the named double array data field */
+    int getDoubleArraySize(const std::string &fieldName) const;
+  
 	/** Enumerated type for the builtin data types used in MinVR to store event data
 	*/
 	enum DataType {IntData, DoubleData, CharArrayData, IntArrayData, DoubleArrayData};
@@ -136,10 +143,6 @@ public:
 	/** Returns the type for the named data field using an enumerated type.
 	*/
 	DataType getDataType(const std::string &fieldName) const;
-
-	/** Returns the size of the named data field, 1 for non-array types.
-	*/
-    int getDataSize(const std::string &fieldName) const;
 
 
 	/** Returns a pointer to the raw data type used internally by MinVR to

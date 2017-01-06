@@ -20,9 +20,12 @@ Author(s) of Significant Updates/Modifications to the File:
 
 namespace MinVR {
 
+
+  
 // This is the only constructor that needs to be implemented. The default and 
 // copy constructors are listed as private simply to avoid accidental use.
 VREvent::VREvent(VREventInternal *internalEvent) : _internal(internalEvent) {
+
 }
 
 
@@ -35,65 +38,40 @@ std::list<std::string> VREvent::getDataFields() const {
 }
 
 int VREvent::getDataAsInt(const std::string &fieldName) const {
-	return _internal->getDataIndex()->getValue(fieldName, getName());
+  return _internal->getDataAsInt(fieldName);
 }
 
-float VREvent::getDataAsFloat(const std::string &fieldName) const {
-	return (double)_internal->getDataIndex()->getValue(fieldName, getName());
+float VREvent::getDataAsDouble(const std::string &fieldName) const {
+  return _internal->getDataAsDouble(fieldName);
 }
 
 const char * VREvent::getDataAsCharArray(const std::string &fieldName) const {
-	std::string s = _internal->getDataIndex()->getValue(fieldName, getName());
-	return s.c_str();
+  return _internal->getDataAsCharArray(fieldName);
+}
+  
+int VREvent::getCharArraySize(const std::string &fieldName) const {
+  return _internal->getCharArraySize(fieldName);
 }
 
 const int * VREvent::getDataAsIntArray(const std::string &fieldName) const {
-	std::vector<int> ia = _internal->getDataIndex()->getValue(fieldName, getName());
-	return &ia[0];
+  return _internal->getDataAsIntArray(fieldName);
+}
+
+int VREvent::getIntArraySize(const std::string &fieldName) const {
+  return _internal->getIntArraySize(fieldName);
 }
 
 const double * VREvent::getDataAsDoubleArray(const std::string &fieldName) const {
-    std::vector<double> fa = _internal->getDataIndex()->getValue(fieldName, getName());
-	return &fa[0];
+  return _internal->getDataAsDoubleArray(fieldName);
 }
 
+int VREvent::getDoubleArraySize(const std::string &fieldName) const {
+  return _internal->getDoubleArraySize(fieldName);
+}
+
+  
 VREvent::DataType VREvent::getDataType(const std::string &fieldName) const {
-
-	// TODO: This doesn't quite match the VRCoreTypes.  Discuss this.
-
-	VRCORETYPE_ID t = _internal->getDataIndex()->getType(fieldName, getName());
-	if (t == VRCORETYPE_INT) 
-		return DataType::IntData;
-	else if (t == VRCORETYPE_DOUBLE)
-		return DataType::DoubleData;
-	else if (t == VRCORETYPE_STRING) 
-		return DataType::CharArrayData;
-	else if (t == VRCORETYPE_INTARRAY) 
-		return DataType::IntArrayData;
-	else if (t == VRCORETYPE_DOUBLEARRAY)
-		return DataType::DoubleArrayData;
-	else
-		return DataType::IntData;
-}
-
-
-int VREvent::getDataSize(const std::string &fieldName) const {
-	DataType t = getDataType(fieldName);
-  if (t == DataType::IntArrayData) {
-		std::vector<int> ia = _internal->getDataIndex()->getValue(fieldName, getName());
-		return ia.size();
-	}
-	else if (t == DataType::DoubleArrayData) {
-		std::vector<double> fa = _internal->getDataIndex()->getValue(fieldName, getName());
-		return fa.size();
-	}
-	else if (t == DataType::CharArrayData) {
-		std::string s = _internal->getDataIndex()->getValue(fieldName, getName());
-		return s.size();
-	}
-	else {
-		return 1;
-	}
+  return _internal->getDataType(fieldName);
 }
 
 

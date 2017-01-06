@@ -28,7 +28,7 @@ public:
 	void onVREvent(const VREvent &event) {
 		// Set time since application began
 		if (event.getName() == "/Time") {
-            time = event.getDataAsFloat("/Time");
+            time = event.getDataAsDouble("/Time");
 			return;
 		}
 
