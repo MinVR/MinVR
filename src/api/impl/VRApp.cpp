@@ -65,11 +65,8 @@ public:
     }
                         
 	void run() {
-      _running = true;
-      // TODO: mainloop should return true/false based on whether shutdown has been called
-		while (1) {
-          _main->mainloop();
-		}
+        _running = true;
+        while (_main->mainloop()) {}
 	}
 
 	void shutdown() {

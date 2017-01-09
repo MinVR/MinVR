@@ -15,10 +15,11 @@
 #include <GL/glu.h>
 #endif
 
-// MinVR header (needed for VRGraphicsApp)
+// MinVR header
 #include <api/MinVR.h>
-
 using namespace MinVR;
+
+
 
 /** MyVRApp changes the clear color as frames progress. */
 class MyVRApp : public VRApp {
@@ -26,16 +27,17 @@ public:
 	MyVRApp(int argc, char** argv, const std::string& configFile) : VRApp(argc, argv, configFile) {}
 
 	void onVREvent(const VREvent &event) {
-		// Set time since application began
-		if (event.getName() == "/Time") {
-            time = event.getDataAsDouble("/Time");
+        
+        event.print();
+		
+        // Get the time since application began
+		if (event.getName() == "FrameStart") {
+            time = event.getDataAsDouble("ElapsedSeconds");
 			return;
 		}
 
-		std::cout << event.getName() << std::endl;
-
 		// Quit if the escape button is pressed
-		if (event.getName() == "/KbdEsc_Down") {
+		if (event.getName() == "KbdEsc_Down") {
 			shutdown();
 		}
 	}

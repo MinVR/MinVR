@@ -18,6 +18,8 @@ Author(s) of Significant Updates/Modifications to the File:
 #include <config/VRDataIndex.h>
 #include <config/VRCoreTypes.h>
 
+#include <iostream>
+
 namespace MinVR {
 
 
@@ -33,8 +35,8 @@ std::string VREvent::getName() const {
 	return _internal->getName();
 }
 
-std::list<std::string> VREvent::getDataFields() const {
-	return _internal->getDataIndex()->getNames();
+std::vector<std::string> VREvent::getDataFields() const {
+  return _internal->getDataFields();
 }
 
 int VREvent::getDataAsInt(const std::string &fieldName) const {
@@ -68,12 +70,56 @@ const double * VREvent::getDataAsDoubleArray(const std::string &fieldName) const
 int VREvent::getDoubleArraySize(const std::string &fieldName) const {
   return _internal->getDoubleArraySize(fieldName);
 }
-
   
 VREvent::DataType VREvent::getDataType(const std::string &fieldName) const {
   return _internal->getDataType(fieldName);
 }
 
+void VREvent::print() const {
+  std::cout << "VREvent '" << getName() << "' with ";
+  int n = getDataFields().size();
+  if (n == 0) {
+    std::cout << "no data fields." << std::endl;
+  }
+  else {
+    std::cout << n << " data fields:" << std::endl;
+    std::vector<std::string> fields = getDataFields();
+    for (std::vector<std::string>::iterator field = fields.begin(); field != fields.end(); ++field) {
+      DataType t = getDataType(*field);
+      if (t == IntData) {
+        std::cout << "  " << *field << " (int)           = " << getDataAsInt(*field) << std::endl;
+      }
+      else if (t == DoubleData) {
+        std::cout << "  " << *field << " (double)        = " << getDataAsDouble(*field) << std::endl;
+      }
+      else if (t == CharArrayData) {
+        std::cout << "  " << *field << " (char array)    = " << getDataAsCharArray(*field) << std::endl;
+      }
+      else if (t == IntArrayData) {
+        std::cout << "  " << *field << " (int array)     = [";
+        for (int i=0;i<getIntArraySize(*field);i++) {
+          if (i>0) {
+            std::cout << ", ";
+          }
+          std::cout << getDataAsIntArray(*field)[i];
+        }
+        std::cout << "]" << endl;
+      }
+      else if (t == DoubleArrayData) {
+        std::cout << "  " << *field << " (double array)  = [";
+        for (int i=0;i<getDoubleArraySize(*field);i++) {
+          if (i>0) {
+            std::cout << ", ";
+          }
+          std::cout << getDataAsDoubleArray(*field)[i];
+        }
+        std::cout << "]" << endl;
+      }
+    }
+  }
+}
+  
+  
 
 VREventInternal* VREvent::getInternal() const {
 	return _internal;

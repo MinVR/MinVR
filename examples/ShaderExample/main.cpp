@@ -1,8 +1,5 @@
 #include <iostream>
 
-// MinVR header (needed for VRGraphicsApp)
-#include <api/MinVR.h>
-
 // OpenGL Headers
 #if defined(WIN32)
 #define NOMINMAX
@@ -17,10 +14,15 @@
 #include <GL/gl.h>
 #endif
 
-// Math library
-#include "math/VRMath.h"
-
+// MinVR header
+#include <api/MinVR.h>
 using namespace MinVR;
+
+// Just included for some simple Matrix math used below
+// This is not required for use of MinVR in general
+#include <math/VRMath.h>
+
+
 
 /**
  * MyVRApp is an example of a modern OpenGL using VBOs, VAOs, and shaders.  MyVRApp inherits
@@ -32,11 +34,15 @@ public:
 	/// The application expects the user to specify the command line arguments and a path to the vr config file.
 	MyVRApp(int argc, char** argv, const std::string& configFile) : VRApp(argc, argv, configFile) {}
 
+    
 	/// onVREvent is called when a new intput event happens.
 	void onVREvent(const VREvent &event) {
+        
+        event.print();
+        
 		// Set time since application began
-		if (event.getName() == "/Time") {
-            double time = event.getDataAsDouble("Seconds"); //????
+		if (event.getName() == "FrameStart") {
+            double time = event.getDataAsDouble("ElapsedSeconds");
 			// Calculate model matrix based on time
 			VRMatrix4 modelMatrix = VRMatrix4::rotationX(0.5*time);
 			modelMatrix = modelMatrix * VRMatrix4::rotationY(0.5*time);
@@ -46,15 +52,13 @@ public:
 			return;
 		}
 
-		// Output event name
-		std::cout << event.getName() << std::endl;
-
 		// Quit if the escape button is pressed
-		if (event.getName() == "/KbdEsc_Down") {
+		if (event.getName() == "KbdEsc_Down") {
 			shutdown();
 		}
 	}
 
+    
 	/// onVRRenderContext is the override which allows users to setup context specific
 	/// variables like VBO's, VAO's, textures, framebuffers, and shader programs.
 	void onVRRenderGraphicsContext(const VRGraphicsState &renderState) {

@@ -77,7 +77,7 @@ std::string getCurrentWorkingDir()
 }
 
 
-VRMain::VRMain() : _initialized(false), _config(NULL), _net(NULL), _factory(NULL), _pluginMgr(NULL), _frame(0)
+VRMain::VRMain() : _initialized(false), _config(NULL), _net(NULL), _factory(NULL), _pluginMgr(NULL), _frame(0), _shutdown(false)
 {
 	_factory = new VRFactory();
 	// add sub-factories that are part of the MinVR core library right away
@@ -536,7 +536,7 @@ void VRMain::initialize(const VRAppLauncher& launcher) {
 	}
 
 	_initialized = true;
-
+    _shutdown = false;
 }
 
 void 
@@ -548,6 +548,7 @@ VRMain::synchronizeAndProcessEvents()
 	}
 
 	VRDataQueue eventsFromDevices;
+  
 	for (int f = 0; f < _inputDevices.size(); f++) {
 		_inputDevices[f]->appendNewInputEventsSinceLastCall(&eventsFromDevices);
 	}
@@ -630,6 +631,7 @@ VRMain::shutdown()
 	// TODO
 	_renderHandlers.clear();
 	_eventHandlers.clear();
+    _shutdown = true;
 }
 
 

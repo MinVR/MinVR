@@ -1023,6 +1023,7 @@ std::string VRDataIndex::printStructure(const std::string itemName, const int li
 
     // Get the pieces of the current name.
     std::vector<std::string> elems = explodeName( it->first );
+    if (elems.size() == 0) continue;
 
     // Is it the same as the itemName?
     for (i = 1; i < min(itemElems.size(), elems.size()); i++) {

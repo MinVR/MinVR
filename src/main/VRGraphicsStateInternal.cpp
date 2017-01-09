@@ -24,14 +24,25 @@ VRGraphicsStateInternal::~VRGraphicsStateInternal() {
 float* VRGraphicsStateInternal::getMatrix(VRDataIndex* state, const std::string& name) const {
 	float* val = new float[16];
 
+    /**
+    std::cout << "DataIndex = " << std::endl;
+    std::cout << state->printStructure() << std::endl;
+    **/
+     
 	VRMatrix4 mat;
 	if (dataIndex->exists(name, "/")) {
 		mat = dataIndex->getValue(name, "/");
 	}
-
+    //else {
+    //    std::cout << name << ": NOT FOUND" << std::endl;
+    //}
+    
+    //std::cout << name;
 	for (int f = 0; f < 16; f++) {
 		val[f] = mat.m[f];
+        //std::cout << " [" << f << "]=" << val[f];
 	}
+    //std::cout << std::endl;
 
 	return val;
 }

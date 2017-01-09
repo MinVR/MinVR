@@ -46,8 +46,11 @@ VRGLFWInputDevice::~VRGLFWInputDevice() {
 void VRGLFWInputDevice::appendNewInputEventsSinceLastCall(VRDataQueue* queue) {
     glfwPollEvents();
 
-    std::string event = "Time";
-    _dataIndex.addData(event, glfwGetTime());
+    // TODO: This should be moved out of the GLFW plugin and made a standard
+    // event that MinVR creates at the start of each frame.
+    std::string event = "FrameStart";
+    std::string dataField = "/ElapsedSeconds";
+    _dataIndex.addData(event + dataField, glfwGetTime());
     _events.push_back(_dataIndex.serialize(event));
 
     for (int f = 0; f < _events.size(); f++)
@@ -83,6 +86,10 @@ void VRGLFWInputDevice::cursorPositionCallback(GLFWwindow* window, double xpos, 
   std::string event = "Mouse_Move";
   _dataIndex.addData(event + "/XPos", xpos);
   _dataIndex.addData(event + "/YPos", ypos);
+  std::vector<double> pos;
+  pos.push_back(xpos);
+  pos.push_back(ypos);
+  _dataIndex.addData(event + "/Position", pos);
   _events.push_back(_dataIndex.serialize(event));
 }
 

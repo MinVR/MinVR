@@ -40,11 +40,15 @@ public:
     ~VREventInternal();
 
   
-    /** Returns the name of the event, not to be confused with the event's
-        data payload.
+    /** Returns the name of the event itself, not to be confused with the event's
+        payload of named data fields.
      */
     std::string getName() { return _name; }
   
+  
+    /** Returns the names of all data fields stored within the current event.
+     */
+    std::vector<std::string> getDataFields() const;
   
     /** Returns the data stored in the named data field interpreted as an int.
         If the key is not found then a 0 is returned.  Example use:
@@ -130,8 +134,10 @@ public:
 private:
 
     std::string  _name;
+    std::string  _indexName;
 	VREvent      _event;
 	VRDataIndex* _dataIndex;
+    std::vector<std::string> _fieldNames;
 
     std::unordered_map<std::string,int>     _intMap;
     std::unordered_map<std::string,double>  _doubleMap;

@@ -18,7 +18,7 @@ Author(s) of Significant Updates/Modifications to the File:
 
 
 #include <string>
-#include <list>
+#include <vector>
 
 
 namespace MinVR {
@@ -74,7 +74,7 @@ public:
 
 	/** Returns the names of all data fields stored within the current event. 
 	*/
-	std::list<std::string> getDataFields() const;
+	std::vector<std::string> getDataFields() const;
 
 
 	/** Returns the data stored in the named data field interpreted as an int.  
@@ -144,6 +144,11 @@ public:
 	*/
 	DataType getDataType(const std::string &fieldName) const;
 
+  
+    /** Prints all data fields and data to stdout.
+     */
+    void print() const;
+  
 
 	/** Returns a pointer to the raw data type used internally by MinVR to
 		create this VREvent.  Advanced users may use this pointer to access
