@@ -77,6 +77,27 @@ void VRDataQueue::clear() {
   dataMap.clear();
 }
 
+// Suggested on Stackoverflow:
+//
+// inline uint64_t rdtsc() {
+//     uint32_t lo, hi;
+//     __asm__ __volatile__ (
+//       "xorl %%eax, %%eax\n"
+//       "cpuid\n"
+//       "rdtsc\n"
+//       : "=a" (lo), "=d" (hi)
+//       :
+//       : "%ebx", "%ecx");
+//     return (uint64_t)hi << 32 | lo;
+// }
+//
+// http://stackoverflow.com/questions/88/is-gettimeofday-guaranteed-to-be-of-microsecond-resolution
+//
+// Possibly this is a better way to do the timestamps in the push() method
+// below.  There seems to be a resolution issue on some Windows machines that
+// makes lots of events have the same time stamp.
+
+  
 void VRDataQueue::push(const VRDataQueue::serialData serializedData) {
 
 #ifdef WIN32
