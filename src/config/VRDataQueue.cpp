@@ -145,7 +145,7 @@ VRDataQueue::serialData VRDataQueue::serialize() {
   out = "<VRDataQueue num=\"" + lenStr.str() + "\">";
   for (VRDataList::iterator it = dataMap.begin(); it != dataMap.end(); ++it) {
     std::ostringstream timeStamp;
-    timeStamp << it->first.first << "-" << it->first.second;
+    timeStamp << it->first.first << "-" << std::setfill('0') << std::setw(3) << it->first.second;
     out += "<VRDataQueueItem timeStamp=\"" + timeStamp.str() + "\">" +
       it->second + "</VRDataQueueItem>";
   }

@@ -208,7 +208,7 @@ int TestQueueUnpack() {
 
 int TestQueueMultipleTimeStamps() {
 
-  std::string testString = "<VRDataQueue num=\"4\"><VRDataQueueItem timeStamp=\"1484015499734567-0\"><vladimir type=\"container\"><earray type=\"intarray\">0,1,2,3,4,5,6,7,8,9</earray></vladimir></VRDataQueueItem><VRDataQueueItem timeStamp=\"1484015499734567-1\"><estragon type=\"container\"><farray type=\"intarray\">10,11,12,13,14,15,16,17,18,19</farray></estragon></VRDataQueueItem><VRDataQueueItem timeStamp=\"1484015499734567-2\"><pozzo type=\"container\"><garray type=\"intarray\">20,21,22,23,24,25,26,27,28,29</garray></pozzo></VRDataQueueItem><VRDataQueueItem timeStamp=\"1484015499734567-3\"><lucky type=\"container\"><harray type=\"intarray\">30,31,32,33,34,35,36,37,38,39</harray></lucky></VRDataQueueItem></VRDataQueue>";
+  std::string testString = "<VRDataQueue num=\"4\"><VRDataQueueItem timeStamp=\"1484015499734567-000\"><vladimir type=\"container\"><earray type=\"intarray\">0,1,2,3,4,5,6,7,8,9</earray></vladimir></VRDataQueueItem><VRDataQueueItem timeStamp=\"1484015499734567-001\"><estragon type=\"container\"><farray type=\"intarray\">10,11,12,13,14,15,16,17,18,19</farray></estragon></VRDataQueueItem><VRDataQueueItem timeStamp=\"1484015499734567-002\"><pozzo type=\"container\"><garray type=\"intarray\">20,21,22,23,24,25,26,27,28,29</garray></pozzo></VRDataQueueItem><VRDataQueueItem timeStamp=\"1484015499734567-003\"><lucky type=\"container\"><harray type=\"intarray\">30,31,32,33,34,35,36,37,38,39</harray></lucky></VRDataQueueItem></VRDataQueue>";
 
   int out = 0;
   
@@ -242,7 +242,9 @@ int TestQueueMultipleTimeStamps() {
 
   // Make sure it serializes the way we expect.
   out += testString.compare(q->serialize());
+  std::cout << "queue:" << q->serialize() << std::endl;
 
+  
   // Make sure the values with the same timestamps come out in a
   // consistent order.
   out += q->getSerializedObject().substr(1, 8).compare("vladimir");

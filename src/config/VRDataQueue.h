@@ -6,6 +6,7 @@
 #include <map>
 #include <sstream>
 #include <iostream>
+#include <iomanip>
 
 #ifdef WIN32
 	#include <winsock2.h> // must be included before windows.h because we are also using it in net
