@@ -125,7 +125,13 @@ void VRDataQueue::push(const VRDataQueue::serialData serializedData) {
 void VRDataQueue::push(const long long timeStamp,
                        const VRDataQueue::serialData serializedData) {
 
-  dataMap.insert(std::pair<long long,VRDataQueue::serialData>(timeStamp, serializedData));
+  VRTimeStamp testStamp = VRTimeStamp(timeStamp, 0);
+  while (dataMap.find(testStamp) != dataMap.end()) {
+    testStamp = VRTimeStamp(timeStamp, testStamp.second + 1);
+  }
+  
+  dataMap.insert(std::pair<VRTimeStamp,VRDataQueue::serialData>
+                 (testStamp, serializedData));
 }
 
 
@@ -139,7 +145,7 @@ VRDataQueue::serialData VRDataQueue::serialize() {
   out = "<VRDataQueue num=\"" + lenStr.str() + "\">";
   for (VRDataList::iterator it = dataMap.begin(); it != dataMap.end(); ++it) {
     std::ostringstream timeStamp;
-    timeStamp << it->first;
+    timeStamp << it->first.first << "-" << it->first.second;
     out += "<VRDataQueueItem timeStamp=\"" + timeStamp.str() + "\">" +
       it->second + "</VRDataQueueItem>";
   }

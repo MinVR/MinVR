@@ -39,7 +39,8 @@ public:
   
 private:
 
-  typedef std::map<long long,serialData> VRDataList;
+  typedef std::pair<long long,int> VRTimeStamp;
+  typedef std::map<VRTimeStamp,serialData> VRDataList;
   VRDataList dataMap;
   
 public:
@@ -76,6 +77,9 @@ public:
 
   // A debug-friendly output function.
   std::string printQueue(); 
+
+  // How big is the queue?
+  int size() { return dataMap.size(); };
   
 };
 
