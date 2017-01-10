@@ -160,6 +160,8 @@ void VRMain::initialize(int argc, char **argv, const std::string& configFile, st
 void VRMain::initialize(const VRAppLauncher& launcher) {
 	std::string data = launcher.getInitString();
 
+  //	std::cout << "initializing launcher with: " << data << std::endl;
+
 	std::stringstream ss(data);
 
 	std::string configFile;
@@ -305,8 +307,7 @@ void VRMain::initialize(const VRAppLauncher& launcher) {
 				&si,            // Pointer to STARTUPINFO structure
 				&pi )           // Pointer to PROCESS_INFORMATION structure
 		) {
-			std::cerr << "CreateProcess failed: " << GetLastError() << std::endl;
-			exit(1);
+			throw std::runtime_error("CreateProcess failed: " + GetLastError());
 		}
 
 		delete[] title;
@@ -543,8 +544,7 @@ void
 VRMain::synchronizeAndProcessEvents() 
 {
 	if (!_initialized) {
-		std::cerr << "VRMain not initialized." << std::endl;
-		return;
+		throw std::runtime_error("VRMain not initialized.");
 	}
 
 	VRDataQueue eventsFromDevices;
@@ -589,13 +589,10 @@ VRMain::synchronizeAndProcessEvents()
 void
 VRMain::renderOnAllDisplays() 
 {
-	if (!_initialized) {
-		std::cerr << "VRMain not initialized." << std::endl;
-		return;
-	}
-
+  if (!_initialized) throw std::runtime_error("VRMain not initialized.");
+  
 	VRDataIndex renderState;
-	renderState.addData("InitRender", _frame == 0);
+	renderState.addData("/InitRender", _frame == 0);
 
 	if (!_displayGraphs.empty()) {
 		VRCompositeRenderHandler compositeHandler(_renderHandlers);
@@ -622,6 +619,29 @@ VRMain::renderOnAllDisplays()
 	}
 
 	_frame++;
+}
+
+std::list<std::string>
+VRMain::auditValuesFromAllDisplays() 
+{
+  std::list<std::string> out;
+
+  if (!_initialized) throw std::runtime_error("VRMain not initialized.");
+  
+	if (!_displayGraphs.empty()) {
+
+		for (std::vector<VRDisplayNode*>::iterator it = _displayGraphs.begin();
+         it != _displayGraphs.end(); ++it) {
+      std::map<std::string,std::string> subOut = (*it)->getValuesAdded();
+
+      for (std::map<std::string,std::string>::iterator jt = subOut.begin();
+           jt != subOut.end(); jt++) {
+        out.push_back(jt->first + " : " + jt->second);
+      }
+    }
+  }
+
+  return out;
 }
 
 

@@ -115,7 +115,9 @@ public:
   VRGraphicsToolkit* getGraphicsToolkit(const std::string &name);
   VRWindowToolkit* getWindowToolkit(const std::string &name);
   void addPluginSearchPath(const std::string& path) {}
-   
+
+  std::list<std::string> auditValuesFromAllDisplays();
+  
 private:
 
   void initialize();

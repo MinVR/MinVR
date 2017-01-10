@@ -6,6 +6,7 @@
 #include <map>
 #include <sstream>
 #include <iostream>
+#include <iomanip>
 
 #ifdef WIN32
 	#include <winsock2.h> // must be included before windows.h because we are also using it in net
@@ -39,7 +40,8 @@ public:
   
 private:
 
-  typedef std::map<long long,serialData> VRDataList;
+  typedef std::pair<long long,int> VRTimeStamp;
+  typedef std::map<VRTimeStamp,serialData> VRDataList;
   VRDataList dataMap;
   
 public:
@@ -76,6 +78,9 @@ public:
 
   // A debug-friendly output function.
   std::string printQueue(); 
+
+  // How big is the queue?
+  int size() { return dataMap.size(); };
   
 };
 

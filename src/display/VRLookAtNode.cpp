@@ -4,9 +4,10 @@
 namespace MinVR {
 
 
-	VRLookAtNode::VRLookAtNode(const std::string &name, VRMatrix4 initiallookAtMatrix) :
-		VRDisplayNode(name),_lookAtMatrix(initiallookAtMatrix)
+VRLookAtNode::VRLookAtNode(const std::string &name, VRMatrix4 initiallookAtMatrix) :
+  VRDisplayNode(name),_lookAtMatrix(initiallookAtMatrix)
 {
+  _valuesAdded.push_back("/LookAtMatrix");
 }
 
 VRLookAtNode::~VRLookAtNode()
@@ -19,7 +20,7 @@ VRLookAtNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 {
 	renderState->pushState();
 
-	renderState->addData("LookAtMatrix", _lookAtMatrix);
+	renderState->addData("/LookAtMatrix", _lookAtMatrix);
 	VRDisplayNode::render(renderState, renderHandler);
 
 	renderState->popState();

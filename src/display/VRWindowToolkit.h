@@ -66,9 +66,9 @@ public:
  */
 class VRWindowToolkit {
 public:
-	~VRWindowToolkit() {}
+	virtual ~VRWindowToolkit() {}
 
-    virtual std::string getName() = 0;
+  virtual std::string getName() = 0;
 
 	virtual int createWindow(VRWindowSettings settings) = 0;
 

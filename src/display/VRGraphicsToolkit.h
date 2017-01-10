@@ -13,7 +13,7 @@ namespace MinVR {
  */
 class VRGraphicsToolkit {
 public:
-	~VRGraphicsToolkit() {}
+	virtual ~VRGraphicsToolkit() {}
 
     virtual std::string getName() = 0;
 
