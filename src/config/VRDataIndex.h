@@ -201,6 +201,8 @@ private:
   std::map<std::string, VRCORETYPE_ID> mVRTypeMap;
 
   typedef std::map<std::string, VRDatumPtr> VRDataMap;
+  // Aspirational:
+  //typedef std::map<std::string, std::vector<VRDatumPtr> > VRDataMap;
   VRDataMap mindex;
 
   // If this is 1, new values will overwrite old ones.  For -1, new
@@ -645,7 +647,9 @@ public:
 //   - After those are done, the VRDataIndex::addData() methods can
 //     probably be template-ized, too.
 //
-//
+//   - An audit of all the calls might be good, to look into
+//     reference-izing anything that is actually called by value and
+//     shouldn't be.
 //
 //   - We are adding a "list" of index objects.  These are an ordered
 //     collection of VRDataIndex objects, all with more or less the
@@ -654,14 +658,25 @@ public:
 //     managing them is your problem.  We will refer to this as an
 //     "imaginary" type called VRList.
 //
-//     This is implemented by including the index value with the name,
-//     so an object might be called "nancy[0]" and another called
-//     "nancy[1]".  These are two different objects, linked by a
-//     similarity in their names.  The idea is only that we will leave
-//     this as a similarity, and inform the various sorting and
-//     comparing functions that the index value is an appendix to the
-//     actual name.
+//     This is implemented by redefining the data index typemap to
+//     point to a std::vector of VRDatumPtr objects.  It will require
+//     some extra parsing of an index name, but that's all.  Hardest
+//     part is the semantics of reading stuff in -- overwrite or just
+//     add to list?
 //
+//     Will need:
+//
+//       - Add std::vector<VRDatumPtr> to the typemap instead of
+//         VRDatumPtr.
+//
+//       - Make work for single element sets.
+//
+//       - Provide some parsing aids to look for subscripts on the
+//         ends of names.  Perhaps names are no longer a string, but a
+//         string and a subscript value struct?
+//
+//       - Probably need a couple of management aids, like a size()
+//         method and something like an iterator.
 //
 }  // end namespace MinVR
 #endif

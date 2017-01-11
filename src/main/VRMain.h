@@ -76,9 +76,10 @@ public:
 
   // STEP 3:  CALL MINVR'S MAINLOOP() FUNCTION OR INCORPORATE THE FOLLOWING
   // TWO CALLS INTO YOUR PROGRAM'S EXISTING MAINLOOP
-  void mainloop() {
+  bool mainloop() {
     synchronizeAndProcessEvents();
     renderOnAllDisplays();
+    return (!_shutdown);
   }
 
   // STEP 3a:  Typically this is the first call in your program's mainloop.
@@ -113,9 +114,7 @@ public:
  
   VRGraphicsToolkit* getGraphicsToolkit(const std::string &name);
   VRWindowToolkit* getWindowToolkit(const std::string &name);
-  void addPluginSearchPath(const std::string& path) {
-
-  }
+  void addPluginSearchPath(const std::string& path) {}
 
   std::list<std::string> auditValuesFromAllDisplays();
   
@@ -140,6 +139,7 @@ private:
   std::vector<std::string> _pluginSearchPaths;
 
   int _frame;
+  bool _shutdown;
 };
 
 

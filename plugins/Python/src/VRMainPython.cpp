@@ -7,14 +7,16 @@
  */
 
 #include "main/VRMain.h"
+#include <main/VREventHandler.h>
+#include <main/VRGraphicsHandler.h>
 #include <plugin/VRPlugin.h>
 
 using namespace MinVR;
 
 // Event and Render python callback functions
 extern "C" {
-	PLUGIN_API typedef int (*eventcallback_type)(const char* eventName);
-	PLUGIN_API typedef int (*rendercallback_type)(void* renderState);
+	PLUGIN_API typedef int (*eventcallback_type)(void* eventInternal);
+	PLUGIN_API typedef int (*rendercallback_type)(void* graphicsStateInternal);
 }
 
 // Event handler callback wrapper
@@ -23,8 +25,8 @@ public:
 	PLUGIN_API VRPythonEventCallbackHandler(eventcallback_type eventCallback) : eventCallback(eventCallback) {}
 	PLUGIN_API virtual ~VRPythonEventCallbackHandler() {}
 
-	PLUGIN_API void onVREvent(const std::string &eventName, VRDataIndex *eventData) {
-		eventCallback(eventName.c_str());
+	PLUGIN_API void onVREvent(const VREvent &event) {
+		eventCallback(event.getInternal());
 	}
 
 private:
@@ -32,14 +34,14 @@ private:
 };
 
 // Render handler callback wrapper
-class VRPythonRenderCallbackHandler : public VRRenderHandler {
+class VRPythonGraphicsCallbackHandler : public VRGraphicsHandler {
 public:
-	PLUGIN_API VRPythonRenderCallbackHandler(rendercallback_type renderCallback) : renderCallback(renderCallback) {}
-	PLUGIN_API virtual ~VRPythonRenderCallbackHandler() {}
-	PLUGIN_API virtual void onVRRenderScene(VRDataIndex *renderState, VRDisplayNode *callingNode) {
-		renderCallback(renderState);
+	PLUGIN_API VRPythonGraphicsCallbackHandler(rendercallback_type renderCallback) : renderCallback(renderCallback) {}
+	PLUGIN_API virtual ~VRPythonGraphicsCallbackHandler() {}
+	PLUGIN_API virtual void onVRRenderGraphics(const VRGraphicsState &state) {
+		renderCallback(state.getInternal());
 	}
-	PLUGIN_API virtual void onVRRenderContext(VRDataIndex *renderState, VRDisplayNode *callingNode) {}
+	PLUGIN_API virtual void onVRRenderGraphicsContext(const VRGraphicsState &state) {}
 
 private:
 	rendercallback_type renderCallback;
@@ -75,7 +77,7 @@ extern "C" {
 
 	// Register render callback
 	PLUGIN_API VRRenderHandler* VRMain_registerRenderCallback(VRMain* vrmain, rendercallback_type renderCallback) {
-		VRRenderHandler* handler = new VRPythonRenderCallbackHandler(renderCallback);
+		VRGraphicsHandler* handler = new VRPythonGraphicsCallbackHandler(renderCallback);
 		vrmain->addRenderHandler(handler);
 		return handler;
 	}

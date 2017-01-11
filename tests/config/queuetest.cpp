@@ -3,6 +3,7 @@
 
 int TestQueueArray();
 int TestQueueUnpack();
+int TestQueueMultipleTimeStamps();
 
 int queuetest(int argc, char* argv[]) {
   
@@ -28,6 +29,10 @@ int queuetest(int argc, char* argv[]) {
     output = TestQueueUnpack();
     break;
 
+  case 3:
+    output = TestQueueMultipleTimeStamps();
+    break;
+    
     // Add case statements to handle other values.
   default:
     std::cout << "Test #" << choice << " does not exist!\n";
@@ -201,3 +206,58 @@ int TestQueueUnpack() {
   return out;
 }
 
+int TestQueueMultipleTimeStamps() {
+
+  std::string testString = "<VRDataQueue num=\"4\"><VRDataQueueItem timeStamp=\"1484015499734567-000\"><vladimir type=\"container\"><earray type=\"intarray\">0,1,2,3,4,5,6,7,8,9</earray></vladimir></VRDataQueueItem><VRDataQueueItem timeStamp=\"1484015499734567-001\"><estragon type=\"container\"><farray type=\"intarray\">10,11,12,13,14,15,16,17,18,19</farray></estragon></VRDataQueueItem><VRDataQueueItem timeStamp=\"1484015499734567-002\"><pozzo type=\"container\"><garray type=\"intarray\">20,21,22,23,24,25,26,27,28,29</garray></pozzo></VRDataQueueItem><VRDataQueueItem timeStamp=\"1484015499734567-003\"><lucky type=\"container\"><harray type=\"intarray\">30,31,32,33,34,35,36,37,38,39</harray></lucky></VRDataQueueItem></VRDataQueue>";
+
+  int out = 0;
+  
+  // Create an index and a queue.
+  MinVR::VRDataIndex *n = new MinVR::VRDataIndex;
+  MinVR::VRDataQueue *q = new MinVR::VRDataQueue;
+  
+  std::vector<int> e;
+  std::vector<int> f;
+  std::vector<int> g;
+  std::vector<int> h;
+  
+  for (int i = 0; i < 10; i++) {
+    e.push_back(i);
+    f.push_back(10 + i);
+    g.push_back(20 + i);
+    h.push_back(30 + i);
+  }
+
+  // Add these arrays to the index.
+  n->addData("/vladimir/earray", e);
+  n->addData("/estragon/farray", f);
+  n->addData("/pozzo/garray", g);
+  n->addData("/lucky/harray", h);
+
+  // Put that object into the queue.
+  q->push(((long long)1484015499734567), n->serialize("/vladimir"));
+  q->push(((long long)1484015499734567), n->serialize("/estragon"));
+  q->push(((long long)1484015499734567), n->serialize("/pozzo"));
+  q->push(((long long)1484015499734567), n->serialize("/lucky"));
+
+  // Make sure it serializes the way we expect.
+  out += testString.compare(q->serialize());
+  std::cout << "queue:" << q->serialize() << std::endl;
+
+  
+  // Make sure the values with the same timestamps come out in a
+  // consistent order.
+  out += q->getSerializedObject().substr(1, 8).compare("vladimir");
+  q->pop();
+
+  out += q->getSerializedObject().substr(1, 8).compare("estragon");
+  q->pop();
+
+  out += q->getSerializedObject().substr(1, 5).compare("pozzo");
+  q->pop();
+
+  out += q->getSerializedObject().substr(1, 5).compare("lucky");
+  q->pop();
+
+  return out;
+}
