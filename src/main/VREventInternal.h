@@ -19,7 +19,7 @@ Author(s) of Significant Updates/Modifications to the File:
 
 #include <api/VREvent.h>
 #include <config/VRDataIndex.h>
-#include <unordered_map>
+#include <map>
 
 
 namespace MinVR {
@@ -139,17 +139,17 @@ private:
 	VRDataIndex* _dataIndex;
     std::vector<std::string> _fieldNames;
 
-    std::unordered_map<std::string,int>     _intMap;
-    std::unordered_map<std::string,double>  _doubleMap;
+    std::map<std::string,int>     _intMap;
+    std::map<std::string,double>  _doubleMap;
 
-    std::unordered_map<std::string,char*>   _charArrayMap;
-    std::unordered_map<std::string,int>     _charArraySizes;
+    std::map<std::string,char*>   _charArrayMap;
+    std::map<std::string,int>     _charArraySizes;
 
-    std::unordered_map<std::string,int*>    _intArrayMap;
-    std::unordered_map<std::string,int>     _intArraySizes;
+    std::map<std::string,int*>    _intArrayMap;
+    std::map<std::string,int>     _intArraySizes;
 
-    std::unordered_map<std::string,double*> _doubleArrayMap;
-    std::unordered_map<std::string,int>     _doubleArraySizes;
+    std::map<std::string,double*> _doubleArrayMap;
+    std::map<std::string,int>     _doubleArraySizes;
 };
 
 

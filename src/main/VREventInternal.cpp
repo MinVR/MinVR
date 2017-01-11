@@ -79,13 +79,13 @@ VREventInternal::VREventInternal(const std::string &name, VRDataIndex *dataIndex
 
 VREventInternal::~VREventInternal() {
     // Clean up memory for data copied over into C-style arrays
-    for (std::unordered_map<std::string, char*>::iterator it = _charArrayMap.begin(); it != _charArrayMap.end(); ++it) {
+    for (std::map<std::string, char*>::iterator it = _charArrayMap.begin(); it != _charArrayMap.end(); ++it) {
         delete [] it->second;
     }
-    for (std::unordered_map<std::string, int*>::iterator it = _intArrayMap.begin(); it != _intArrayMap.end(); ++it) {
+    for (std::map<std::string, int*>::iterator it = _intArrayMap.begin(); it != _intArrayMap.end(); ++it) {
         delete [] it->second;
     }
-    for (std::unordered_map<std::string, double*>::iterator it = _doubleArrayMap.begin(); it != _doubleArrayMap.end(); ++it) {
+    for (std::map<std::string, double*>::iterator it = _doubleArrayMap.begin(); it != _doubleArrayMap.end(); ++it) {
         delete [] it->second;
     }
 }
@@ -130,22 +130,22 @@ int VREventInternal::getDoubleArraySize(const std::string &fieldName) const {
 
 VREvent::DataType VREventInternal::getDataType(const std::string &fieldName) const {
     if (_intMap.find(fieldName) != _intMap.end()) {
-        return VREvent::DataType::IntData;
+        return VREvent::IntData;
     }
     else if (_doubleMap.find(fieldName) != _doubleMap.end()) {
-        return VREvent::DataType::DoubleData;
+        return VREvent::DoubleData;
     }
     else if (_charArrayMap.find(fieldName) != _charArrayMap.end()) {
-        return VREvent::DataType::CharArrayData;
+        return VREvent::CharArrayData;
     }
     else if (_intArrayMap.find(fieldName) != _intArrayMap.end()) {
-        return VREvent::DataType::IntArrayData;
+        return VREvent::IntArrayData;
     }
     else if (_doubleArrayMap.find(fieldName) != _doubleArrayMap.end()) {
-        return VREvent::DataType::DoubleArrayData;
+        return VREvent::DoubleArrayData;
     }
     // TODO: Error, throw exception???
-    return VREvent::DataType::IntData;
+    return VREvent::IntData;
 }
 
 
