@@ -38,9 +38,6 @@ VRGLFWWindowToolkit::VRGLFWWindowToolkit(VRMainInterface *vrMain) : _vrMain(vrMa
 }
 
 VRGLFWWindowToolkit::~VRGLFWWindowToolkit() {
-	if (_inputDev != NULL) {
-		delete _inputDev;
-	}
     glfwTerminate();
 }
 

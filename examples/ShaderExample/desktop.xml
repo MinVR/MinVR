@@ -2,6 +2,7 @@
   <PluginPath>../../../MinVR2/build/Release/plugins</PluginPath>
 	<GLFWPlugin pluginType="MinVR_GLFW"/>
 	<OpenGLPlugin pluginType="MinVR_OpenGL"/>
+	<CPP11Plugin pluginType="MinVR_CPP11"/>
 
 	  <RGBBits>8</RGBBits>
 	  <AlphaBits>8</AlphaBits>
@@ -29,6 +30,8 @@
   <EyeSeparation>0.203</EyeSeparation>
   <NearClip>0.001</NearClip>
   <FarClip>500.0</FarClip>
+  
+  <Timer inputdeviceType="VRCpp11Timer"/>
   
 	<VRSetups>
 		<Desktop hostType="VRStandAlone">
