@@ -26,6 +26,12 @@ if (MINVR_GLFW_PLUGIN OR BASE_PLUGINS)
 	add_subdirectory (GLFW)
 endif()
 
+#------------------C++ 11-----------------------------
+option(MINVR_CPP11_PLUGIN "If enabled, CPP11 plugin will be installed" OFF)
+if (MINVR_CPP11_PLUGIN OR BASE_PLUGINS)
+	add_subdirectory (CPP11)
+endif()
+
 #------------------VRPN-----------------------------
 option(MINVR_VRPN_PLUGIN "If enabled, VRPN plugin will be installed" OFF)
 if (MINVR_VRPN_PLUGIN)
