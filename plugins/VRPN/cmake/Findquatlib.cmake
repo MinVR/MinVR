@@ -70,6 +70,7 @@ else()
 		libquat.a
 		HINTS
 		"${QUATLIB_ROOT_DIR}"
+		ENV LIBRARY_PATH # For OSCAR modules at Brown/CCV
 		PATH_SUFFIXES
 		${_libsuffixes}
 		PATHS

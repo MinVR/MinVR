@@ -115,4 +115,4 @@ install( TARGETS ${PROJECT_NAME}
          ARCHIVE DESTINATION ${VRPlugins_install_dir}/${PROJECT_NAME}/lib
          RUNTIME DESTINATION ${VRPlugins_install_dir}/${PROJECT_NAME}/bin)
 		 
-set_property(TARGET MinVR_OpenGL PROPERTY FOLDER "plugins")
+set_property(TARGET MinVR_Scalable PROPERTY FOLDER "plugins")
