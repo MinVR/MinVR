@@ -16,14 +16,26 @@
 #  FREEGLUT_FOUND        - True if FreeGLUT found.
 
 # Look for the header file.
-FIND_PATH(FREEGLUT_INCLUDE_DIR NAMES GL/freeglut.h)
+FIND_PATH(FREEGLUT_INCLUDE_DIR 
+          NAMES GL/freeglut.h
+	  HINTS 
+	  ENV CPATH # For OSCAR modules at Brown/CCV
+	  )
 
 # Look for the library.
-FIND_LIBRARY(FREEGLUT_LIBRARY NAMES freeglut)
+FIND_LIBRARY(FREEGLUT_LIBRARY 
+             NAMES glut
+	     HINTS
+	     ENV LD_LIBRARY_PATH # For OSCAR modules at Brown/CCV
+	     )
 
 # Handle the QUIETLY and REQUIRED arguments and set FREEGLUT_FOUND to TRUE if all listed variables are TRUE.
 INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(FREEGLUT DEFAULT_MSG FREEGLUT_LIBRARY FREEGLUT_INCLUDE_DIR)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(
+  FREEGLUT 
+  DEFAULT_MSG 
+  FREEGLUT_LIBRARY 
+  FREEGLUT_INCLUDE_DIR)
 
 # Copy the results to the output variables.
 IF(FREEGLUT_FOUND)
