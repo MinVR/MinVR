@@ -79,8 +79,22 @@ public:
 	static std::string getAttributeName(){ return "displaynodeType"; };
 
   /// Returns a list of the values added to the render state by this
-  /// node, and its children nodes.
+  /// node, and its children nodes.  Call this on the root node to get
+  /// a list of all the values added to the render state, and by whom.
   virtual std::map<std::string,std::string> getValuesAdded();
+
+  // This function is meant to be called by a parent node.  It accepts
+  // a list of value names and compares it to a set of names that it
+  // requires.  Essentially it is answering the question of whether it
+  // will have the data it needs to do its job when its render()
+  // method is called.  This function's role is to provide as
+  // informative a set of error messages as possible so that the user
+  // will not be left to puzzle over some "value not found" message
+  // later, during the render phase.  The method is called on this
+  // object, as well as on its children, so we can audit the entire
+  // display node graph.  The return is void because the function will
+  // throw an error if a mismatch is found.  Return = success.
+  virtual void auditValues(std::list<std::string> valuesSupplied);
   
 protected:
 	std::vector<VRDisplayNode*> _children;
@@ -90,6 +104,9 @@ protected:
   // getValuesAdded() is invoked, this will be returned, appended to a
   // list of values added by this node's children.
   std::list<std::string> _valuesAdded;
+
+  // This is a list of the values needed by this node.
+  std::list<std::string> _valuesNeeded;
 };
 
 }
