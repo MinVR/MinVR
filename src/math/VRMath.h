@@ -145,22 +145,12 @@ public:
   /// Default constructor creates an identity matrix:
   VRMatrix4();
 
-  /// Constructs a matrix given the elments.  Be careful, the elements are 
-  /// passed in using row major order, so the matrix looks "correct" on the
-  /// screen if you write this constructor using 4 lines as it is below.  But,
-  /// to stay consistent with OpenGL, the matrix is stored internally in
-  /// column major order!
-  VRMatrix4(const double r1c1, const double r1c2, const double r1c3, const double r1c4, 
-            const double r2c1, const double r2c2, const double r2c3, const double r2c4,
-            const double r3c1, const double r3c2, const double r3c3, const double r3c4, 
-            const double r4c1, const double r4c2, const double r4c3, const double r4c4);
-
   /// Constructs a matrix given from an array of 16 doubles in OpenGL matrix format
   /// (i.e., column major).
   VRMatrix4(const double* a);
   
-  /// Constructs a matrix from a VRDoubleArray, where the convention is to format
-  /// for on-screen readability, so stored in row-major order.
+  /// Constructs a matrix from a VRDoubleArray -- an array of 16 doubles in OpenGL
+  ///  matrix format (i.e., column major order).
   VRMatrix4(VRDoubleArray da);
   
   /// Constructs a matrix from the VRAnyCoreType wrapper class. The argument
@@ -182,19 +172,21 @@ public:
   /// Matrix assignment operator
   VRMatrix4& operator=(const VRMatrix4& m2);
   
-  
-  
-  /// TODO: It's strange that these use row-major indexing when the matrix is
-  /// stored in column-major following the OpenGL convention.  Remove this in
-  /// favor of the [] operator.
-  double operator()(const int r, const int c) const;
-  double& operator()(const int r, const int c);
 
-  /// Returns a pointer to a double array for the c-th column of the matrix so
-  /// that elements of the matrix may be accessed using a syntax like:
-  /// VRMatrix4 mat;  mat[0][0] = 1.0;
-  double* operator[](const int c);
-  
+  /// Returns a pointer to the raw data array used to store the matrix.  This
+  /// is a 1D array of 16-elements stored in column-major order.
+  double* getArray() { return m; }
+    
+  /// Access an individual element of the array using the syntax:
+  /// VRMatrix4 mat; dobule row1col2 = mat(1,2);
+  double operator()(const int row, const int col) const;
+
+  /// Access an individual element of the array using the syntax:
+  /// VRMatrix4 mat; mat(1,2) = 1.0;
+  double& operator()(const int row, const int col);
+                    
+  /// Returns the c-th column of the matrix as a VRVector type, e.g.,:
+  /// VRVector3 x = mat.getColumn(0);
   VRVector3 getColumn(int c) const;
   
   
@@ -222,6 +214,18 @@ public:
   /// Returns a projection matrix based on clipping
   static VRMatrix4 projection(double left, double right, double bottom, double top, double near, double far);
 
+  /// Returns a matrix constructed from individual elements passed in row major
+  /// order so that the matrix looks "correct" on the screen as you write this
+  /// constructor on 4 lines of code as below.  Note the that internally the
+  /// matrix constructed will be stored in a 16 element column major array to
+  /// be consistent with OpenGL.
+  static VRMatrix4 fromRowMajorElements(
+      const double r1c1, const double r1c2, const double r1c3, const double r1c4,
+      const double r2c1, const double r2c2, const double r2c3, const double r2c4,
+      const double r3c1, const double r3c2, const double r3c3, const double r3c4,
+      const double r4c1, const double r4c2, const double r4c3, const double r4c4);
+    
+    
   // --- Transpose, Inverse, and Other General Matrix Functions ---
 
   /// Returns an orthonormal version of the matrix, i.e., guarantees that the
@@ -246,13 +250,15 @@ public:
   // identity matrix. 
   VRMatrix4 inverse() const;
   
-  
-  
-  /// Converts the point to a VRDoubleArray for data in a VRDataIndex
+    
+  /// Converts the point to a VRDoubleArray for storage in a VRDataIndex
   VRDoubleArray toVRDoubleArray();
+    
+    
+private:
 
-public:		
-  double m[16]; // hold a 4 by 4 matrix 
+  double m[16]; // hold a 4 by 4 matrix
+
 };
 
 

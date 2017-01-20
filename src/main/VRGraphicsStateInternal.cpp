@@ -39,7 +39,7 @@ float* VRGraphicsStateInternal::getMatrix(VRDataIndex* state, const std::string&
     
     //std::cout << name;
 	for (int f = 0; f < 16; f++) {
-		val[f] = mat.m[f];
+		val[f] = mat.getArray()[f];
         //std::cout << " [" << f << "]=" << val[f];
 	}
     //std::cout << std::endl;

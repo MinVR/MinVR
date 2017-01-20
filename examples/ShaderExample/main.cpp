@@ -47,7 +47,7 @@ public:
 			VRMatrix4 modelMatrix = VRMatrix4::rotationX(0.5*time);
 			modelMatrix = modelMatrix * VRMatrix4::rotationY(0.5*time);
 			for (int f = 0; f < 16; f++) {
-				model[f] = modelMatrix.m[f];
+				model[f] = modelMatrix.getArray()[f];
 			}
 			return;
 		}

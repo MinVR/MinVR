@@ -31,7 +31,7 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
 	if (renderState->exists("/LookAtMatrix")){
 		VRMatrix4 lookAtMatrix = renderState->getValue("/LookAtMatrix");
 		VRMatrix4 head_frame = lookAtMatrix.inverse();
-		pe = VRPoint3(head_frame[3][0], head_frame[3][1], head_frame[3][2]);
+		pe = VRPoint3(head_frame(0,3), head_frame(1,3), head_frame(2,3));
 	}
 
 
@@ -59,10 +59,10 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
 	renderState->addData("/ProjectionMatrix", projMat);
 
 	// Rotate the projection to be non-perpendicular
-	VRMatrix4 Mrot(vr[0], vr[1], vr[2], 0.0,
-		vu[0], vu[1], vu[2], 0.0,
-		vn[0], vn[1], vn[2], 0.0,
-		0.0, 0.0, 0.0, 1.0);
+    VRMatrix4 Mrot = VRMatrix4::fromRowMajorElements(vr[0], vr[1], vr[2], 0.0,
+                                                     vu[0], vu[1], vu[2], 0.0,
+                                                     vn[0], vn[1], vn[2], 0.0,
+                                                     0.0, 0.0, 0.0, 1.0);
 
 	// Move the apex of the frustum to the origin
 	VRMatrix4 Mtrans = VRMatrix4::translation(VRPoint3(0, 0, 0) - pe);

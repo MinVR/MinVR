@@ -168,44 +168,24 @@ VRDoubleArray VRVector3::toVRDoubleArray() {
 
 
 VRMatrix4::VRMatrix4() {
-    m[0] = m[5]  = m[10] = m[15] = 1.0; 
-    m[1] = m[2]  = m[3]  = m[4]  = 0.0; 
-    m[6] = m[7]  = m[8]  = m[9]  = 0.0; 
-    m[11]= m[12] = m[13] = m[14] = 0.0; 
-  } 
-  
-/// Constructs a matrix given the elments.  Be careful, the elements are 
-/// passed in using row major order, so the matrix looks "correct" on the
-/// screen if you write this constructor using 4 lines as it is below.  But,
-/// to stay consistent with OpenGL, the matrix is stored internally in
-/// column major order!
-VRMatrix4::VRMatrix4(const double r1c1, const double r1c2, const double r1c3, const double r1c4, 
-                     const double r2c1, const double r2c2, const double r2c3, const double r2c4, 
-                     const double r3c1, const double r3c2, const double r3c3, const double r3c4, 
-                     const double r4c1, const double r4c2, const double r4c3, const double r4c4) {
-  m[0]=r1c1; m[4]=r1c2;  m[8]=r1c3; m[12]=r1c4;
-  m[1]=r2c1; m[5]=r2c2;  m[9]=r2c3; m[13]=r2c4;
-  m[2]=r3c1; m[6]=r3c2; m[10]=r3c3; m[14]=r3c4;
-  m[3]=r4c1; m[7]=r4c2; m[11]=r4c3; m[15]=r4c4;
+  m[0] = m[5]  = m[10] = m[15] = 1.0;
+  m[1] = m[2]  = m[3]  = m[4]  = 0.0;
+  m[6] = m[7]  = m[8]  = m[9]  = 0.0;
+  m[11]= m[12] = m[13] = m[14] = 0.0; 
 }
+  
   
 VRMatrix4::VRMatrix4(const double* a) { 
   memcpy(m,a,16*sizeof(double)); 
 }
 
 VRMatrix4::VRMatrix4(VRDoubleArray da) {
-	m[0] = da[0]; m[4] = da[1];  m[8] = da[2]; m[12] = da[3];
-	m[1] = da[4]; m[5] = da[5];  m[9] = da[6]; m[13] = da[7];
-	m[2] = da[8]; m[6] = da[9];  m[10] = da[10]; m[14] = da[11];
-	m[3] = da[12]; m[7] = da[13];  m[11] = da[14]; m[15] = da[15];
+    memcpy(m,&da[0],16*sizeof(double));
 }
 
 VRMatrix4::VRMatrix4(VRAnyCoreType t) {
   VRDoubleArray da = t;
-  m[0] = da[0]; m[4] = da[1];  m[8] = da[2]; m[12] = da[3];
-  m[1] = da[4]; m[5] = da[5];  m[9] = da[6]; m[13] = da[7];
-  m[2] = da[8]; m[6] = da[9];  m[10] = da[10]; m[14] = da[11];
-  m[3] = da[12]; m[7] = da[13];  m[11] = da[14]; m[15] = da[15];
+  memcpy(m,&da[0],16*sizeof(double));
 }
 
   
@@ -216,6 +196,7 @@ VRMatrix4::VRMatrix4(const VRMatrix4& m2) {
 VRMatrix4::~VRMatrix4() {
 }
   
+    
 bool VRMatrix4::operator==(const VRMatrix4& m2) const {
   for (int i=0;i<16;i++) {
     if (fabs(m2.m[i] - m[i]) > VRMATH_EPSILON) {
@@ -242,51 +223,54 @@ double& VRMatrix4::operator()(const int r, const int c) {
   return m[c*4+r]; 
 }
 
-double* VRMatrix4::operator[](const int c) {
-  return &m[c*4];
-}
 
+    
 VRMatrix4 VRMatrix4::scale(const VRVector3& v) {
-  return VRMatrix4(v[0], 0, 0, 0,
-                   0, v[1], 0, 0, 
-                   0, 0, v[2], 0, 
-                   0, 0, 0, 1);
+    return VRMatrix4::fromRowMajorElements(v[0], 0, 0, 0,
+                                           0, v[1], 0, 0,
+                                           0, 0, v[2], 0,
+                                           0, 0, 0, 1);
 }
 
+    
 VRMatrix4 VRMatrix4::translation(const VRVector3& v) {
-  return VRMatrix4(1, 0, 0, v[0], 
-                   0, 1, 0, v[1], 
-                   0, 0, 1, v[2], 
-                   0, 0, 0, 1);
+  return VRMatrix4::fromRowMajorElements(1, 0, 0, v[0],
+                                         0, 1, 0, v[1],
+                                         0, 0, 1, v[2],
+                                         0, 0, 0, 1);
 }
 
+    
 VRMatrix4 VRMatrix4::rotationX(const double radians) {
   const double cosTheta = cos(radians); 
   const double sinTheta = sin(radians);  
-  return VRMatrix4(1, 0, 0, 0, 
-                   0, cosTheta, -sinTheta, 0, 
-                   0, sinTheta, cosTheta, 0, 
-                   0, 0, 0, 1);
+  return VRMatrix4::fromRowMajorElements(1, 0, 0, 0,
+                                         0, cosTheta, -sinTheta, 0,
+                                         0, sinTheta, cosTheta, 0,
+                                         0, 0, 0, 1);
 }
 
+    
 VRMatrix4 VRMatrix4::rotationY(const double radians) {
   const double cosTheta = cos(radians); 
   const double sinTheta = sin(radians);  
-  return VRMatrix4(cosTheta, 0, sinTheta, 0, 
-                   0, 1, 0, 0, 
-                   -sinTheta, 0, cosTheta, 0, 
-                   0, 0, 0, 1);
+  return VRMatrix4::fromRowMajorElements(cosTheta, 0, sinTheta, 0,
+                                         0, 1, 0, 0,
+                                         -sinTheta, 0, cosTheta, 0,
+                                         0, 0, 0, 1);
 }
 
+    
 VRMatrix4 VRMatrix4::rotationZ(const double radians) {
   const double cosTheta = cos(radians); 
   const double sinTheta = sin(radians);  
-  return VRMatrix4(cosTheta, -sinTheta, 0, 0, 
-                   sinTheta, cosTheta, 0, 0, 
-                   0, 0, 1, 0, 
-                   0, 0, 0, 1);
+  return VRMatrix4::fromRowMajorElements(cosTheta, -sinTheta, 0, 0,
+                                         sinTheta, cosTheta, 0, 0,
+                                         0, 0, 1, 0,
+                                         0, 0, 0, 1);
 }
 
+    
 VRMatrix4 VRMatrix4::rotation(const VRPoint3& p, const VRVector3& v, const double a) {
   // Translate to origin from point p
   const double vZ = v[2];
@@ -305,34 +289,57 @@ VRMatrix4 VRMatrix4::rotation(const VRPoint3& p, const VRVector3& v, const doubl
   return transBack * invA * invB * C * B * A * transToOrigin;
 }
 
-VRMatrix4 VRMatrix4::projection(double left, double right, double bottom, double top,
-		double near, double far) {
-	return VRMatrix4(2.0*near/(right-left), 0, (right+left)/(right-left), 0,
-		           0, 2.0*near/(top-bottom), (top+bottom)/(top-bottom), 0,
-		           0, 0, -(far+near)/(far-near), -2.0*far*near/(far-near),
-		           0, 0, -1, 0);
+    
+VRMatrix4 VRMatrix4::projection(double left, double right,
+                                double bottom, double top,
+		                        double near, double far)
+{
+  return VRMatrix4::fromRowMajorElements(2.0*near/(right-left), 0, (right+left)/(right-left), 0,
+                                         0, 2.0*near/(top-bottom), (top+bottom)/(top-bottom), 0,
+                                         0, 0, -(far+near)/(far-near), -2.0*far*near/(far-near),
+                                         0, 0, -1, 0);
 }
 
+    
+VRMatrix4 VRMatrix4::fromRowMajorElements(
+    const double r1c1, const double r1c2, const double r1c3, const double r1c4,
+    const double r2c1, const double r2c2, const double r2c3, const double r2c4,
+    const double r3c1, const double r3c2, const double r3c3, const double r3c4,
+    const double r4c1, const double r4c2, const double r4c3, const double r4c4)
+{
+  double m[16];
+  m[0]=r1c1; m[4]=r1c2;  m[8]=r1c3; m[12]=r1c4;
+  m[1]=r2c1; m[5]=r2c2;  m[9]=r2c3; m[13]=r2c4;
+  m[2]=r3c1; m[6]=r3c2; m[10]=r3c3; m[14]=r3c4;
+  m[3]=r4c1; m[7]=r4c2; m[11]=r4c3; m[15]=r4c4;
+  return VRMatrix4(m);
+}
+    
+
+    
 
 VRMatrix4 VRMatrix4::orthonormal() const {
   VRVector3 x = getColumn(0).normalize();
   VRVector3 y = getColumn(1);
   y = (y - y.dot(x)*x).normalize();
   VRVector3 z = x.cross(y).normalize();
-  return VRMatrix4(x[0], y[0], z[0], m[3],
-                   x[1], y[1], z[1], m[7],
-                   x[2], y[2], z[2], m[11],
-                   m[12], m[13], m[14], m[15]);
+    return VRMatrix4::fromRowMajorElements(x[0], y[0], z[0], m[3],
+                                           x[1], y[1], z[1], m[7],
+                                           x[2], y[2], z[2], m[11],
+                                           m[12], m[13], m[14], m[15]);
 }
 
 
 VRMatrix4 VRMatrix4::transpose() const {
-  return VRMatrix4(m[0], m[1], m[2], m[3], 
-                   m[4], m[5], m[6], m[7], 
-                   m[8], m[9], m[10], m[11], 
-                   m[12], m[13], m[14], m[15]);
+    return VRMatrix4::fromRowMajorElements(m[0], m[1], m[2], m[3],
+                                           m[4], m[5], m[6], m[7],
+                                           m[8], m[9], m[10], m[11],
+                                           m[12], m[13], m[14], m[15]);
 }
 
+    
+    
+    
 // Returns the determinant of the 3x3 matrix formed by excluding the specified row and column
 // from the 4x4 matrix.  The formula for the determinant of a 3x3 is discussed on
 // page 705 of Hill & Kelley, but note that there is a typo within the m_ij indices in the 
@@ -422,23 +429,23 @@ VRVector3 VRMatrix4::getColumn(int c) const {
 VRDoubleArray VRMatrix4::toVRDoubleArray() {
   VRDoubleArray a;
   a.push_back(m[0]);
-  a.push_back(m[4]);
-  a.push_back(m[8]);
-  a.push_back(m[12]);
-
   a.push_back(m[1]);
-  a.push_back(m[5]);
-  a.push_back(m[9]);
-  a.push_back(m[13]);
-
   a.push_back(m[2]);
-  a.push_back(m[6]);
-  a.push_back(m[10]);
-  a.push_back(m[14]);
-
   a.push_back(m[3]);
+
+  a.push_back(m[4]);
+  a.push_back(m[5]);
+  a.push_back(m[6]);
   a.push_back(m[7]);
+
+  a.push_back(m[8]);
+  a.push_back(m[9]);
+  a.push_back(m[10]);
   a.push_back(m[11]);
+
+  a.push_back(m[12]);
+  a.push_back(m[13]);
+  a.push_back(m[14]);
   a.push_back(m[15]);
   return a;
 }
@@ -505,34 +512,38 @@ VRMatrix4 operator*(const double& s, const VRMatrix4& m) {
   return m*s;
 }
 
+    
 VRPoint3 operator*(const VRMatrix4& m, const VRPoint3& p) {
 	// For our points, p[3]=1 and we don't even bother storing p[3], so need to homogenize
 	// by dividing by w before returning the new point.
-	const double winv = 1 / (p[0] * m.m[3] + p[1] * m.m[7] + p[2] * m.m[11] + 1.0 * m.m[15]);  
-	return VRPoint3(winv * (p[0] * m.m[0] + p[1] * m.m[4] + p[2] * m.m[8] + 1.0 * m.m[12]),
-				          winv * (p[0] * m.m[1] + p[1] * m.m[5] + p[2] * m.m[9] + 1.0 * m.m[13]),
-				          winv * (p[0] * m.m[2] + p[1] * m.m[6] + p[2] * m.m[10] + 1.0 * m.m[14])); 
+    const double winv = 1 / (p[0] * m(3,0) + p[1] * m(3,1) + p[2] * m(3,2) + 1.0 * m(3,3));
+    return VRPoint3(winv * (p[0] * m(0,0) + p[1] * m(0,1) + p[2] * m(0,2) + 1.0 * m(0,3)),
+                    winv * (p[0] * m(1,0) + p[1] * m(1,1) + p[2] * m(1,2) + 1.0 * m(1,3)),
+                    winv * (p[0] * m(2,0) + p[1] * m(2,1) + p[2] * m(2,2) + 1.0 * m(2,3)));
+
 }
 
+    
 VRVector3 operator*(const VRMatrix4& m, const VRVector3& v) {
-	// For a vector v[3]=0
-  return VRVector3(v[0] * m.m[0] + v[1] * m.m[4] + v[2] * m.m[8], 
-		               v[0] * m.m[1] + v[1] * m.m[5] + v[2] * m.m[9],
-		               v[0] * m.m[2] + v[1] * m.m[6] + v[2] * m.m[10]);
+  // For a vector v[3]=0
+  return VRVector3(v[0] * m(0,0) + v[1] * m(0,1) + v[2] * m(0,2),
+                   v[0] * m(1,0) + v[1] * m(1,1) + v[2] * m(1,2),
+                   v[0] * m(2,0) + v[1] * m(2,1) + v[2] * m(2,2));
+
 }
 
+
+    
 VRMatrix4 operator*(const VRMatrix4& m1, const VRMatrix4& m2) {
-  VRMatrix4 result = VRMatrix4();
-  register int a;
-  for(a = 16; a--;) {
-    // Dot product:  row(m1, a % 4) * col(m2, a / 4)
-    const double *row = &(m1.m[a & 3]), *col = &(m2.m[a & ~3]);    
-    result.m[a] = (*row) * (*col++);
-    result.m[a] += *(row + 4) * (*col++);
-    result.m[a] += *(row + 8) * (*col++);
-    result.m[a] += *(row + 12) * (*col);
+  VRMatrix4 m = VRMatrix4::fromRowMajorElements(0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0);
+  for (int r = 0; r < 4; r++) {
+    for (int c = 0; c < 4; c++) {
+      for (int i = 0; i < 4; i++) {
+        m(r,c) += m1(r,i) * m2(i,c);
+      }
+    }
   }
-  return result;
+  return m;
 }
 
 std::ostream & operator<< ( std::ostream &os, const VRPoint3 &p) {
