@@ -41,8 +41,8 @@ VREventInternal::VREventInternal(const std::string &name, VRDataIndex *dataIndex
             _intMap[*field] = _dataIndex->getValue(*field, _indexName);
             _fieldNames.push_back(*field);
         }
-        else if (t == VRCORETYPE_DOUBLE) {
-            _doubleMap[*field] = _dataIndex->getValue(*field, _indexName);
+        else if (t == VRCORETYPE_FLOAT) {
+            _floatMap[*field] = _dataIndex->getValue(*field, _indexName);
             _fieldNames.push_back(*field);
         }
         else if (t == VRCORETYPE_STRING) {
@@ -62,12 +62,12 @@ VREventInternal::VREventInternal(const std::string &name, VRDataIndex *dataIndex
             _intArraySizes[*field] = v.size();
             _fieldNames.push_back(*field);
         }
-        else if (t == VRCORETYPE_DOUBLEARRAY) {
-            std::vector<double> v = _dataIndex->getValue(*field, _indexName);
-            double *a = new double[v.size()];
+        else if (t == VRCORETYPE_FLOATARRAY) {
+            std::vector<float> v = _dataIndex->getValue(*field, _indexName);
+            float *a = new float[v.size()];
             std::copy(v.begin(), v.end(), a);
-            _doubleArrayMap[*field] = a;
-            _doubleArraySizes[*field] = v.size();
+            _floatArrayMap[*field] = a;
+            _floatArraySizes[*field] = v.size();
             _fieldNames.push_back(*field);
         }
         else {
@@ -85,7 +85,7 @@ VREventInternal::~VREventInternal() {
     for (std::map<std::string, int*>::iterator it = _intArrayMap.begin(); it != _intArrayMap.end(); ++it) {
         delete [] it->second;
     }
-    for (std::map<std::string, double*>::iterator it = _doubleArrayMap.begin(); it != _doubleArrayMap.end(); ++it) {
+    for (std::map<std::string, float*>::iterator it = _floatArrayMap.begin(); it != _floatArrayMap.end(); ++it) {
         delete [] it->second;
     }
 }
@@ -100,8 +100,8 @@ int VREventInternal::getDataAsInt(const std::string &fieldName) const {
     return _intMap.at(fieldName);
 }
 
-float VREventInternal::getDataAsDouble(const std::string &fieldName) const {
-    return _doubleMap.at(fieldName);
+float VREventInternal::getDataAsFloat(const std::string &fieldName) const {
+    return _floatMap.at(fieldName);
 }
 
 const char * VREventInternal::getDataAsCharArray(const std::string &fieldName) const {
@@ -120,20 +120,20 @@ int VREventInternal::getIntArraySize(const std::string &fieldName) const {
     return _intArraySizes.at(fieldName);
 }
 
-const double * VREventInternal::getDataAsDoubleArray(const std::string &fieldName) const {
-    return _doubleArrayMap.at(fieldName);
+const float * VREventInternal::getDataAsFloatArray(const std::string &fieldName) const {
+    return _floatArrayMap.at(fieldName);
 }
 
-int VREventInternal::getDoubleArraySize(const std::string &fieldName) const {
-    return _doubleArraySizes.at(fieldName);
+int VREventInternal::getFloatArraySize(const std::string &fieldName) const {
+    return _floatArraySizes.at(fieldName);
 }
 
 VREvent::DataType VREventInternal::getDataType(const std::string &fieldName) const {
     if (_intMap.find(fieldName) != _intMap.end()) {
         return VREvent::IntData;
     }
-    else if (_doubleMap.find(fieldName) != _doubleMap.end()) {
-        return VREvent::DoubleData;
+    else if (_floatMap.find(fieldName) != _floatMap.end()) {
+        return VREvent::FloatData;
     }
     else if (_charArrayMap.find(fieldName) != _charArrayMap.end()) {
         return VREvent::CharArrayData;
@@ -141,8 +141,8 @@ VREvent::DataType VREventInternal::getDataType(const std::string &fieldName) con
     else if (_intArrayMap.find(fieldName) != _intArrayMap.end()) {
         return VREvent::IntArrayData;
     }
-    else if (_doubleArrayMap.find(fieldName) != _doubleArrayMap.end()) {
-        return VREvent::DoubleArrayData;
+    else if (_floatArrayMap.find(fieldName) != _floatArrayMap.end()) {
+        return VREvent::FloatArrayData;
     }
     // TODO: Error, throw exception???
     return VREvent::IntData;

@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
   struct malloc_introspection_t	*in;
   
   MinVR::VRInt a = 4;
-  MinVR::VRDouble b = 3.1415926;
+  MinVR::VRFloat b = 3.1415926;
   
   n->addData("/george/a0", a);
   n->addData("/george/a1", a + 1);
@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
   n->addData("/john/c8", c + "8");
   n->addData("/john/c9", c + "9");
 
-  std::vector<double>d;
+  std::vector<float>d;
   d.push_back(1.2);
   d.push_back(2.3);
   d.push_back(3.4);

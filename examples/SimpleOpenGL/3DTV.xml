@@ -54,11 +54,11 @@
 
 <FrontProjectionNode>
     <Type>VROffAxisProjectionNode</Type>
-    <TopLeft type="doublearray">-2.0, 1.32, 0.0</TopLeft>
-    <TopRight type="doublearray"> 2.0, 1.32, 0.0</TopRight>
-    <BottomLeft type="doublearray">-2.0,-1.32, 0.0</BottomLeft>
-    <BottomRight type="doublearray">2.0,-1.32, 0.0</BottomRight>
-  <InitialHeadMatrix type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,5, 0,0,0,1</InitialHeadMatrix>
+    <TopLeft type="floatarray">-2.0, 1.32, 0.0</TopLeft>
+    <TopRight type="floatarray"> 2.0, 1.32, 0.0</TopRight>
+    <BottomLeft type="floatarray">-2.0,-1.32, 0.0</BottomLeft>
+    <BottomRight type="floatarray">2.0,-1.32, 0.0</BottomRight>
+  <InitialHeadMatrix type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,5, 0,0,0,1</InitialHeadMatrix>
   <EyeSeparation>0.203</EyeSeparation>
   <NearClip>0.01</NearClip>
   <FarClip>100.0</FarClip>
@@ -81,15 +81,15 @@
   <IgnoreZeroes>1</IgnoreZeroes>
   <WaitForNewReportInPoll>0</WaitForNewReportInPoll>
   <TrackerUnitsToRoomUnitsScale>3.28084</TrackerUnitsToRoomUnitsScale>
-  <DeviceToRoom type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</DeviceToRoom>
+  <DeviceToRoom type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</DeviceToRoom>
 
   <Optitrack1>
     <Type>VRVRPNTrackerDevice</Type>
     <VRPNDeviceName type="string">head@tcp:134.84.121.68:3884</VRPNDeviceName>
     <EventsToGenerate type="stringarray">Head</EventsToGenerate>
     <Head>
-      <PropToTracker type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</PropToTracker>
-      <FinalOffset type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+      <PropToTracker type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</PropToTracker>
+      <FinalOffset type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
     </Head>
   </Optitrack1>
 
@@ -98,8 +98,8 @@
     <VRPNDeviceName type="string">stylus0@tcp:134.84.121.68:3884</VRPNDeviceName>
     <EventsToGenerate type="stringarray">RedStylus</EventsToGenerate>
     <RedStylus>
-      <PropToTracker type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0.25, 0,0,0,1</PropToTracker>
-      <FinalOffset type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+      <PropToTracker type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0.25, 0,0,0,1</PropToTracker>
+      <FinalOffset type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
     </RedStylus>
   </Optitrack2>
 
@@ -108,8 +108,8 @@
     <VRPNDeviceName type="string">stylus1@tcp:134.84.121.68:3884</VRPNDeviceName>
     <EventsToGenerate type="stringarray">BlueStylus</EventsToGenerate>
     <BlueStylus>
-      <PropToTracker type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0.25, 0,0,0,1</PropToTracker>
-      <FinalOffset type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+      <PropToTracker type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0.25, 0,0,0,1</PropToTracker>
+      <FinalOffset type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
     </BlueStylus>
   </Optitrack3>
 

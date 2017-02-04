@@ -10,10 +10,10 @@ namespace MinVR {
 const VRDatum::VRTypePair VRDatum::VRTypeMap[VRCORETYPE_NTYPES] = {
   {"none", VRCORETYPE_NONE},
   {"int", VRCORETYPE_INT},
-  {"double", VRCORETYPE_DOUBLE},
+  {"float", VRCORETYPE_FLOAT},
   {"string", VRCORETYPE_STRING},
   {"intarray", VRCORETYPE_INTARRAY},
-  {"doublearray", VRCORETYPE_DOUBLEARRAY},
+  {"floatarray", VRCORETYPE_FLOATARRAY},
   {"stringarray", VRCORETYPE_STRINGARRAY},
   {"container", VRCORETYPE_CONTAINER}
 };
@@ -53,15 +53,15 @@ VRDatumPtr CreateVRDatumInt(void *pData) {
   return VRDatumPtr(obj);
 }
 
-//////////////////////////////////////////// VRDouble
-std::string VRDatumDouble::getValueString() const {
+//////////////////////////////////////////// VRFloat
+std::string VRDatumFloat::getValueString() const {
   char buffer[20];
   sprintf(buffer, "%f", value.front());
   return std::string(buffer);
 }
 
-VRDatumPtr CreateVRDatumDouble(void *pData) {
-  VRDatumDouble *obj = new VRDatumDouble(*static_cast<VRDouble *>(pData));
+VRDatumPtr CreateVRDatumFloat(void *pData) {
+  VRDatumFloat *obj = new VRDatumFloat(*static_cast<VRFloat *>(pData));
   return VRDatumPtr(obj);
 }
 
@@ -102,8 +102,8 @@ VRDatumPtr CreateVRDatumIntArray(void *pData) {
   return VRDatumPtr(obj);
 }
 
-//////////////////////////////////////////// VRDoubleArray
-std::string VRDatumDoubleArray::getValueString() const {
+//////////////////////////////////////////// VRFloatArray
+std::string VRDatumFloatArray::getValueString() const {
 
   std::string out;
   char buffer[20];
@@ -116,7 +116,7 @@ std::string VRDatumDoubleArray::getValueString() const {
     separator = static_cast<char>(it->second[0]);
   }
 
-  for (VRDoubleArray::const_iterator it = value.front().begin();
+  for (VRFloatArray::const_iterator it = value.front().begin();
        it != value.front().end(); ++it) {
     sprintf(buffer, "%f%c", *it, separator);
     out += std::string(buffer);
@@ -126,9 +126,9 @@ std::string VRDatumDoubleArray::getValueString() const {
   return out.substr(0, out.size() - 1);
 }
 
-VRDatumPtr CreateVRDatumDoubleArray(void *pData) {
-  VRDatumDoubleArray *obj =
-    new VRDatumDoubleArray(*static_cast<VRDoubleArray *>(pData));
+VRDatumPtr CreateVRDatumFloatArray(void *pData) {
+  VRDatumFloatArray *obj =
+    new VRDatumFloatArray(*static_cast<VRFloatArray *>(pData));
   return VRDatumPtr(obj);
 }
 

@@ -4,7 +4,7 @@
 namespace MinVR {
 
 
-	VROffAxisProjectionNode::VROffAxisProjectionNode(const std::string &name, VRPoint3 topLeft, VRPoint3 botLeft, VRPoint3 topRight, VRPoint3 botRight, double nearClip, double farClip) :
+	VROffAxisProjectionNode::VROffAxisProjectionNode(const std::string &name, VRPoint3 topLeft, VRPoint3 botLeft, VRPoint3 topRight, VRPoint3 botRight, float nearClip, float farClip) :
 	VRDisplayNode(name), _topLeft(topLeft), _botLeft(botLeft), _topRight(topRight), _botRight(botRight),  _nearClip(nearClip), _farClip(farClip)
 {
   _valuesAdded.push_back("/ProjectionMatrix");
@@ -46,13 +46,13 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
 	VRVector3 vc = pc - pe;
 
 	// Find the distance from the eye to screen plane
-	double d = -va.dot(vn);
+	float d = -va.dot(vn);
 
 	// Find the extent of the perpendicular projection
-	double l = vr.dot(va) * _nearClip / d;
-	double r = vr.dot(vb) * _nearClip / d;
-	double b = vu.dot(va) * _nearClip / d;
-	double t = vu.dot(vc) * _nearClip / d;
+	float l = vr.dot(va) * _nearClip / d;
+	float r = vr.dot(vb) * _nearClip / d;
+	float b = vu.dot(va) * _nearClip / d;
+	float t = vu.dot(vc) * _nearClip / d;
 
 	VRMatrix4 projMat = VRMatrix4::projection(l, r, b, t, _nearClip, _farClip);
 
@@ -85,8 +85,8 @@ VROffAxisProjectionNode::create(VRMainInterface *vrMain, VRDataIndex *config, co
 	VRPoint3 botLeft = config->getValue("BottomLeft", nameSpace);
 	VRPoint3 topRight = config->getValue("TopRight", nameSpace);
 	VRPoint3 botRight = config->getValue("BottomRight", nameSpace);
-	double nearClip = config->getValue("NearClip", nameSpace);
-	double farClip = config->getValue("FarClip", nameSpace);
+	float nearClip = config->getValue("NearClip", nameSpace);
+	float farClip = config->getValue("FarClip", nameSpace);
 
 	VROffAxisProjectionNode *node = new VROffAxisProjectionNode(nameSpace, topLeft, botLeft, topRight, botRight, nearClip, farClip);
 

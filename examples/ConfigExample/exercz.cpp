@@ -32,8 +32,8 @@ int main(int argc, char** argv) {
     // No argument.  Set up some sample data names and values.
     int a = 4;
     int b = 6;
-    double f = 3.1415926;
-    double g = 2.71828;
+    float f = 3.1415926;
+    float g = 2.71828;
     std::string s1 = "wowie!";
     std::string s2 = "shazam!";
 
@@ -46,9 +46,9 @@ int main(int argc, char** argv) {
     index->addData("/billy", s1);
     index->addData("/johnny", s2);
 
-    index->addSerializedValue("<bob type=\"container\"><flora type=\"int\">3274</flora><morton type=\"double\">34.5</morton><cora type=\"container\"><flora type=\"int\">1234</flora><nora type=\"double\">23.45</nora></cora></bob>");
+    index->addSerializedValue("<bob type=\"container\"><flora type=\"int\">3274</flora><morton type=\"float\">34.5</morton><cora type=\"container\"><flora type=\"int\">1234</flora><nora type=\"float\">23.45</nora></cora></bob>");
 
-    index->addSerializedValue("<chester type=\"doublearray\">32.7@44.56@22.3@78.2@99.134@</chester>");
+    index->addSerializedValue("<chester type=\"floatarray\">32.7@44.56@22.3@78.2@99.134@</chester>");
 
   } else if (argc == 2) {
 
@@ -184,8 +184,8 @@ int main(int argc, char** argv) {
           std::cout << "same as: " << (int)index->getValue(elems[1], nameSpace) << std::endl;
           break;
 
-        case MinVR::VRCORETYPE_DOUBLE:
-          std::cout << "a double containing: " << ((double)p->getValue()) << std::endl;
+        case MinVR::VRCORETYPE_FLOAT:
+          std::cout << "a float containing: " << ((float)p->getValue()) << std::endl;
           break;
 
         case MinVR::VRCORETYPE_STRING:
@@ -201,10 +201,10 @@ int main(int argc, char** argv) {
             break;
           }
 
-        case MinVR::VRCORETYPE_DOUBLEARRAY:
+        case MinVR::VRCORETYPE_FLOATARRAY:
           {
-            MinVR::VRDoubleArray pdata = p->getValue();
-            for (MinVR::VRDoubleArray::iterator it = pdata.begin(); it != pdata.end(); ++it) {
+            MinVR::VRFloatArray pdata = p->getValue();
+            for (MinVR::VRFloatArray::iterator it = pdata.begin(); it != pdata.end(); ++it) {
               std::cout << "element: " << *it << std::endl;
             }
             break;
@@ -289,10 +289,10 @@ int main(int argc, char** argv) {
             // Add the value to the index.
             index->addData(elems[1], nameSpace, iVal);
 
-          } else if (elems[2].compare("double") == 0) {
+          } else if (elems[2].compare("float") == 0) {
 
-            double dVal;
-            sscanf(elems[3].c_str(), "%lf", &dVal);
+            float dVal;
+            sscanf(elems[3].c_str(), "%f", &dVal);
             index->addData(elems[1], nameSpace, dVal);
 
           } else if (elems[2].compare("string") == 0) {

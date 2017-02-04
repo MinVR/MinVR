@@ -83,8 +83,8 @@ int doTheRealWork(int argc, char **argv) {
     std::cout << (MinVR::VRInt)index->getValue(argv[2]);
     break;
 
-  case MinVR::VRCORETYPE_DOUBLE: 
-    std::cout << (MinVR::VRDouble)index->getValue(argv[2]);
+  case MinVR::VRCORETYPE_FLOAT: 
+    std::cout << (MinVR::VRFloat)index->getValue(argv[2]);
     break;
 
   case MinVR::VRCORETYPE_STRING:
@@ -99,8 +99,8 @@ int doTheRealWork(int argc, char **argv) {
     break;
   }
     
-  case MinVR::VRCORETYPE_DOUBLEARRAY: {
-    MinVR::VRDoubleArray ia = index->getValue(argv[2]);
+  case MinVR::VRCORETYPE_FLOATARRAY: {
+    MinVR::VRFloatArray ia = index->getValue(argv[2]);
     if (nth >= ia.size())
       throw std::runtime_error("N too large for array");
     std::cout << ia[nth];

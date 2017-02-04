@@ -31,7 +31,7 @@ void
 VRTrackedLookAtNode::onVREvent(const VREvent &e)
 {
 	if (e.getName() == "/" + _trackingEvent) {
-		VRMatrix4 head_frame(e.getDataAsDoubleArray("Transform"));
+		VRMatrix4 head_frame(e.getDataAsFloatArray("Transform"));
 		_lookAtMatrix = head_frame.inverse();
 	}
 }
