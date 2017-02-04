@@ -42,7 +42,7 @@ public:
         
 		// Set time since application began
 		if (event.getName() == "FrameStart") {
-            double time = event.getDataAsFloat("ElapsedSeconds");
+            float time = event.getDataAsFloat("ElapsedSeconds");
 			// Calculate model matrix based on time
 			VRMatrix4 modelMatrix = VRMatrix4::rotationX(0.5*time);
 			modelMatrix = modelMatrix * VRMatrix4::rotationY(0.5*time);
