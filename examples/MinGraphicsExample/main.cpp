@@ -32,7 +32,7 @@ public:
 		
         // Get the time since application began
 		if (event.getName() == "FrameStart") {
-            time = event.getDataAsDouble("ElapsedSeconds");
+            time = event.getDataAsFloat("ElapsedSeconds");
 			return;
 		}
 
@@ -69,7 +69,7 @@ public:
 	}
 
 private:
-	double time;
+	float time;
 };
 
 int main(int argc, char **argv) {

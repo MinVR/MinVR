@@ -13,14 +13,14 @@
     <IgnoreZeroes>1</IgnoreZeroes>
     <WaitForNewReportInPoll>0</WaitForNewReportInPoll>
     <TrackerUnitsToRoomUnitsScale>3.28084</TrackerUnitsToRoomUnitsScale>
-    <DeviceToRoom type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</DeviceToRoom>
+    <DeviceToRoom type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</DeviceToRoom>
     <!-- Input Devices -->
     <Optitrack1 inputdeviceType="VRVRPNTrackerDevice">
       <VRPNDeviceName type="string">head@tcp:134.84.121.68:3884</VRPNDeviceName>
       <EventsToGenerate type="stringarray">Head</EventsToGenerate>
       <Head>
-        <PropToTracker type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</PropToTracker>
-        <FinalOffset type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+        <PropToTracker type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</PropToTracker>
+        <FinalOffset type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
       </Head>
     </Optitrack1>
 
@@ -28,8 +28,8 @@
       <VRPNDeviceName type="string">stylus0@tcp:134.84.121.68:3884</VRPNDeviceName>
       <EventsToGenerate type="stringarray">RedStylus</EventsToGenerate>
       <RedStylus>
-        <PropToTracker type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0.25, 0,0,0,1</PropToTracker>
-        <FinalOffset type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+        <PropToTracker type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0.25, 0,0,0,1</PropToTracker>
+        <FinalOffset type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
       </RedStylus>
     </Optitrack2>
 
@@ -37,8 +37,8 @@
       <VRPNDeviceName type="string">stylus1@tcp:134.84.121.68:3884</VRPNDeviceName>
       <EventsToGenerate type="stringarray">BlueStylus</EventsToGenerate>
       <BlueStylus>
-        <PropToTracker type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0.25, 0,0,0,1</PropToTracker>
-        <FinalOffset type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+        <PropToTracker type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0.25, 0,0,0,1</PropToTracker>
+        <FinalOffset type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
       </BlueStylus>
     </Optitrack3>
 
@@ -81,7 +81,7 @@
     <NearClip>0.001</NearClip>
     <FarClip>500.0</FarClip>
     <HeadTrackingEvent>Head_Move</HeadTrackingEvent>
-    <LookAtMatrix type="doublearray">1,0,0,0, 0,1,0,2, 0,0,1,4, 0,0,0,1</LookAtMatrix>
+    <LookAtMatrix type="floatarray">1,0,0,0, 0,1,0,2, 0,0,1,4, 0,0,0,1</LookAtMatrix>
 
     <YPos>0</YPos>
     <Width>1280</Width>
@@ -90,18 +90,18 @@
     <ThreadGroupNode displaynodeType="VRThreadGroupNode">
       <FrontWall displaynodeType="VRGraphicsWindowNode">
         <XPos>4240</XPos>
-        <TopLeft type="doublearray">-4,4,-4</TopLeft>
-        <TopRight type="doublearray">4,4,-4</TopRight>
-        <BottomLeft type="doublearray">-4,-4,-4</BottomLeft>
-        <BottomRight type="doublearray">4,-4,-4</BottomRight>
+        <TopLeft type="floatarray">-4,4,-4</TopLeft>
+        <TopRight type="floatarray">4,4,-4</TopRight>
+        <BottomLeft type="floatarray">-4,-4,-4</BottomLeft>
+        <BottomRight type="floatarray">4,-4,-4</BottomRight>
         <DisplayGraph linkNode="/MinVR/Cave/MyDisplayGraph/HeadTracker"/>
       </FrontWall>
       <Floor displaynodeType="VRGraphicsWindowNode">
         <XPos>5520</XPos>
-        <TopLeft type="doublearray">-4,-4,-4</TopLeft>
-        <TopRight type="doublearray">4,-4,-4</TopRight>
-        <BottomLeft type="doublearray">-4,-4,4</BottomLeft>
-        <BottomRight type="doublearray">4,-4,4</BottomRight>
+        <TopLeft type="floatarray">-4,-4,-4</TopLeft>
+        <TopRight type="floatarray">4,-4,-4</TopRight>
+        <BottomLeft type="floatarray">-4,-4,4</BottomLeft>
+        <BottomRight type="floatarray">4,-4,4</BottomRight>
         <DisplayGraph linkNode="/MinVR/Cave/MyDisplayGraph/HeadTracker"/>
       </Floor>
       <Sides displaynodeType="VRGraphicsWindowNode">
@@ -109,20 +109,20 @@
         <Width>2560</Width>
         <LeftWall displaynodeType="VRViewportNode">
           <XPos>0</XPos>
-          <TopLeft type="doublearray">-4,4,4</TopLeft>
-          <TopRight type="doublearray">-4,4,-4</TopRight>
-          <BottomLeft type="doublearray">-4,-4,4</BottomLeft>
-          <BottomRight type="doublearray">-4,-4,-4</BottomRight>
+          <TopLeft type="floatarray">-4,4,4</TopLeft>
+          <TopRight type="floatarray">-4,4,-4</TopRight>
+          <BottomLeft type="floatarray">-4,-4,4</BottomLeft>
+          <BottomRight type="floatarray">-4,-4,-4</BottomRight>
           <Width>1280</Width>
           <DisplayGraph linkNode="/MinVR/Cave/MyDisplayGraph/HeadTracker"/>
         </LeftWall>
         <RightWall displaynodeType="VRViewportNode">
           <XPos>1280</XPos>
           <Width>1280</Width>
-          <TopLeft type="doublearray">4,4,-4</TopLeft>
-          <TopRight type="doublearray">4,4,4</TopRight>
-          <BottomLeft type="doublearray">4,-4,-4</BottomLeft>
-          <BottomRight type="doublearray">4,-4,4</BottomRight>
+          <TopLeft type="floatarray">4,4,-4</TopLeft>
+          <TopRight type="floatarray">4,4,4</TopRight>
+          <BottomLeft type="floatarray">4,-4,-4</BottomLeft>
+          <BottomRight type="floatarray">4,-4,4</BottomRight>
           <DisplayGraph linkNode="/MinVR/Cave/MyDisplayGraph/HeadTracker"/>
         </RightWall>
       </Sides>

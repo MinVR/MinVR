@@ -50,7 +50,7 @@ MinVR::VRDataIndex* setupQIndex() {
   MinVR::VRDataIndex *n = new MinVR::VRDataIndex;
   
   MinVR::VRInt a = 4;
-  MinVR::VRDouble b = 3.1415926;
+  MinVR::VRFloat b = 3.1415926;
   
   n->addData("/george/a0", a);
   n->addData("/george/a1", a + 1);
@@ -86,7 +86,7 @@ MinVR::VRDataIndex* setupQIndex() {
   n->addData("/john/c8", c + "8");
   n->addData("/john/c9", c + "9");
 
-  std::vector<double>d;
+  std::vector<float>d;
   d.push_back(1.2);
   d.push_back(2.3);
   d.push_back(3.4);
@@ -133,7 +133,7 @@ std::string removeTimeStamps(const std::string inString) {
 
 int TestQueueArray() {
 
-  std::string testString = "<VRDataQueue num=\"2\"><VRDataQueueItem timeStamp=\"1454671331220377\"><atestarray type=\"intarray\" separator=\"@\">0@1@2@3@4@5@6@7@8@9@10@11@12@13@14@15@16@17@18@19@20@21@22@23@24@25@26@27@28@29@30@31@32@33@34@35@36@37@38@39@40@41@42@43@44@45@46@47@48@49@50@51@52@53@54@55@56@57@58@59@60@61@62@63@64@65@66@67@68@69@70@71@72@73@74@75@76@77@78@79@80@81@82@83@84@85@86@87@88@89@90@91@92@93@94@95@96@97@98@99</atestarray></VRDataQueueItem><VRDataQueueItem timeStamp=\"1454671331220395\"><d0 type=\"doublearray\">1.200000,2.300000,3.400000,4.500000,5.600000</d0></VRDataQueueItem></VRDataQueue>";
+  std::string testString = "<VRDataQueue num=\"2\"><VRDataQueueItem timeStamp=\"1454671331220377\"><atestarray type=\"intarray\" separator=\"@\">0@1@2@3@4@5@6@7@8@9@10@11@12@13@14@15@16@17@18@19@20@21@22@23@24@25@26@27@28@29@30@31@32@33@34@35@36@37@38@39@40@41@42@43@44@45@46@47@48@49@50@51@52@53@54@55@56@57@58@59@60@61@62@63@64@65@66@67@68@69@70@71@72@73@74@75@76@77@78@79@80@81@82@83@84@85@86@87@88@89@90@91@92@93@94@95@96@97@98@99</atestarray></VRDataQueueItem><VRDataQueueItem timeStamp=\"1454671331220395\"><d0 type=\"floatarray\">1.200000,2.300000,3.400000,4.500000,5.600000</d0></VRDataQueueItem></VRDataQueue>";
 
   testString = removeTimeStamps(testString);
   

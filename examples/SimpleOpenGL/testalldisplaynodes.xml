@@ -71,15 +71,15 @@
 
 	<ProjNode>
 		<Type>VROffAxisProjectionNode</Type>
-		<TopLeft type="doublearray">-1,1,5</TopLeft>
-		<BotLeft type="doublearray">-1,-1,5</BotLeft>
-		<TopRight type="doublearray">1,1,5</TopRight>
-		<BotRight type="doublearray">1,-1,5</BotRight>
+		<TopLeft type="floatarray">-1,1,5</TopLeft>
+		<BotLeft type="floatarray">-1,-1,5</BotLeft>
+		<TopRight type="floatarray">1,1,5</TopRight>
+		<BotRight type="floatarray">1,-1,5</BotRight>
 		<NearClip>0.01</NearClip>
 		<FarClip>1000.0</FarClip>
 		<EyeSeparation>0.2</EyeSeparation>
 		<HeadTrackingEvent>User1Head_move</HeadTrackingEvent>
-		<InitialHeadMatrix type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,10,1</InitialHeadMatrix>	
+		<InitialHeadMatrix type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,10,1</InitialHeadMatrix>	
 	</ProjNode>
 
 

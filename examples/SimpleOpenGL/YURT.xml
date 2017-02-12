@@ -132,7 +132,7 @@
   <NearClip>0.001</NearClip>
   <FarClip>500.0</FarClip>
   <HeadTrackingEvent>Head_Move</HeadTrackingEvent>
-  <InitialHeadMatrix type="doublearray">1,0,0,0, 0,1,0,2, 0,0,1,4, 0,0,0,1</InitialHeadMatrix>
+  <InitialHeadMatrix type="floatarray">1,0,0,0, 0,1,0,2, 0,0,1,4, 0,0,0,1</InitialHeadMatrix>
 
   <DefaultNode>
     <Type>VRGraphicsWindowNode</Type>
@@ -168,7 +168,7 @@
   <IgnoreZeroes>1</IgnoreZeroes>
   <WaitForNewReportInPoll>0</WaitForNewReportInPoll>
   <TrackerUnitsToRoomUnitsScale>3.28084</TrackerUnitsToRoomUnitsScale>
-  <DeviceToRoom type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</DeviceToRoom>
+  <DeviceToRoom type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</DeviceToRoom>
 
   <!-- Input Devices -->
     
@@ -177,8 +177,8 @@
     <VRPNDeviceName type="string">head@tcp:134.84.121.68:3884</VRPNDeviceName>
     <EventsToGenerate type="stringarray">Head</EventsToGenerate>
     <Head>
-      <PropToTracker type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</PropToTracker>
-      <FinalOffset type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+      <PropToTracker type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</PropToTracker>
+      <FinalOffset type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
     </Head>
   </Optitrack1>
 
@@ -189,8 +189,8 @@
     <VRPNDeviceName type="string">stylus0@tcp:134.84.121.68:3884</VRPNDeviceName>
     <EventsToGenerate type="stringarray">RedStylus</EventsToGenerate>
     <RedStylus>
-      <PropToTracker type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0.25, 0,0,0,1</PropToTracker>
-      <FinalOffset type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+      <PropToTracker type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0.25, 0,0,0,1</PropToTracker>
+      <FinalOffset type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
     </RedStylus>
   </Optitrack2>
 
@@ -199,8 +199,8 @@
     <VRPNDeviceName type="string">stylus1@tcp:134.84.121.68:3884</VRPNDeviceName>
     <EventsToGenerate type="stringarray">BlueStylus</EventsToGenerate>
     <BlueStylus>
-      <PropToTracker type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0.25, 0,0,0,1</PropToTracker>
-      <FinalOffset type="doublearray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+      <PropToTracker type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0.25, 0,0,0,1</PropToTracker>
+      <FinalOffset type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
     </BlueStylus>
   </Optitrack3>
 

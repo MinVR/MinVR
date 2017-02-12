@@ -16,7 +16,7 @@ namespace MinVR {
 class VRRect : public VRWritable {
 public:
 	VRRect();
-	VRRect(double x, double y, double w, double h, bool usePercent = false);
+	VRRect(float x, float y, float w, float h, bool usePercent = false);
 	virtual ~VRRect();
 
 	VRRect generateChild(const VRRect& rect);
@@ -24,35 +24,35 @@ public:
 	void write(VRDataIndex& index, std::string name) const;
 	bool read(VRDataIndex& index, std::string name, std::string nameSpace);
 
-	double getHeight() const {
+	float getHeight() const {
 		return m_height;
 	}
 
-	void setHeight(double height) {
+	void setHeight(float height) {
 		m_height = height;
 	}
 
-	double getWidth() const {
+	float getWidth() const {
 		return m_width;
 	}
 
-	void setWidth(double width) {
+	void setWidth(float width) {
 		m_width = width;
 	}
 
-	double getX() const {
+	float getX() const {
 		return m_xOffset;
 	}
 
-	void setX(double x) {
+	void setX(float x) {
 		m_xOffset = x;
 	}
 
-	double getY() const {
+	float getY() const {
 		return m_yOffset;
 	}
 
-	void setY(double y) {
+	void setY(float y) {
 		m_yOffset = y;
 	}
 
@@ -65,10 +65,10 @@ public:
 	}
 
 private:
-	double m_xOffset;
-	double m_yOffset;
-	double m_width;
-	double m_height;
+	float m_xOffset;
+	float m_yOffset;
+	float m_width;
+	float m_height;
 	bool m_usePercent;
 };
 

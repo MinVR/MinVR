@@ -101,7 +101,7 @@ public:
       VRMatrix4 M = VRMatrix4::translation(VRVector3(0.0, 0.0, -_radius)) *
       VRMatrix4::rotationX(_vertAngle) *
       VRMatrix4::rotationY(_horizAngle);
-      glMultMatrixd(M.m);
+      glMultMatrixf(M.getArray());
       
       
       glBegin(GL_LINES);
@@ -258,7 +258,7 @@ public:
 
 
 protected:
-    double _horizAngle, _vertAngle, _radius, _incAngle;
+    float _horizAngle, _vertAngle, _radius, _incAngle;
 };
 
 

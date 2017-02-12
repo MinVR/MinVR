@@ -22,7 +22,7 @@
   <AsyncEnabled>1</AsyncEnabled>
   <SharedContextGroupID>-1</SharedContextGroupID>
 
-  <LookAtMatrix type="doublearray">1,0,0,0, 0,1,0,2, 0,0,1,4, 0,0,0,1</LookAtMatrix>
+  <LookAtMatrix type="floatarray">1,0,0,0, 0,1,0,2, 0,0,1,4, 0,0,0,1</LookAtMatrix>
   <HeadTrackingEvent>Head_Move</HeadTrackingEvent>
   <EyeSeparation>0.203</EyeSeparation>
   <NearClip>0.001</NearClip>
@@ -46,10 +46,10 @@
               <Width>150</Width>
               <Height>200</Height>
               <ProjectionNode displaynodeType="VROffAxisProjectionNode">
-                <TopLeft type="doublearray">-4,4,-4</TopLeft>
-                <TopRight type="doublearray">4,4,-4</TopRight>
-                <BottomLeft type="doublearray">-4,-4,-4</BottomLeft>
-                <BottomRight type="doublearray">4,-4,-4</BottomRight>
+                <TopLeft type="floatarray">-4,4,-4</TopLeft>
+                <TopRight type="floatarray">4,4,-4</TopRight>
+                <BottomLeft type="floatarray">-4,-4,-4</BottomLeft>
+                <BottomRight type="floatarray">4,-4,-4</BottomRight>
                 <DUMMY/>
               </ProjectionNode>
             </Viewport1>

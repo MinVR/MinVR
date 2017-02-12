@@ -18,7 +18,7 @@ VRRect::VRRect() {
 	m_usePercent = false;
 }
 
-VRRect::VRRect(double x, double y, double w, double h,
+VRRect::VRRect(float x, float y, float w, float h,
 		bool usePercent) {
 	m_xOffset = x;
 	m_yOffset = y;

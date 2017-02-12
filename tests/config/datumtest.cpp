@@ -7,10 +7,10 @@
 // correct type, test the VRDatumConverter shortcut, and test that the
 // type information is correct.
 int testDatumInt();
-int testDatumDouble();
+int testDatumFloat();
 int testDatumString();
 int testDatumIntArray();
-int testDatumDoubleArray();
+int testDatumFloatArray();
 int testDatumStringArray();
 int testDatumPushPop();
 int testDatumContainer();
@@ -50,7 +50,7 @@ int datumtest(int argc, char* argv[]) {
     break;
 
   case 2:
-    output = testDatumDouble();
+    output = testDatumFloat();
     break;
 
   case 3:
@@ -62,7 +62,7 @@ int datumtest(int argc, char* argv[]) {
     break;
 
   case 5:
-    output = testDatumDoubleArray();
+    output = testDatumFloatArray();
     break;
 
   case 6:
@@ -146,7 +146,7 @@ int testDatumInt() {
   
     out += (37 == b) ? 0 : 1;
 
-    double x = a.getValue();
+    float x = a.getValue();
     out += (x == 37.00) ? 0 : 1;
     
     // Is the type correct?
@@ -178,20 +178,20 @@ int testDatumInt() {
 }
 
 // See testDatumInt() above.
-int testDatumDouble() {
+int testDatumFloat() {
 
   int out = 0;
 
   LOOP {
-    MinVR::VRDatumDouble a = MinVR::VRDatumDouble(37.123);
+    MinVR::VRDatumFloat a = MinVR::VRDatumFloat(37.123);
 
-    out = a.getDescription().compare("double");
+    out = a.getDescription().compare("float");
 
-    double b = a.getValue();
+    float b = a.getValue();
   
     out += (37.123 == b) ? 0 : 1;
   
-    out += (a.getType() == MinVR::VRCORETYPE_DOUBLE) ? 0 : 1;
+    out += (a.getType() == MinVR::VRCORETYPE_FLOAT) ? 0 : 1;
 
     out += a.getValueString().compare("37.123000");
     // std::cout << a.getValueString() << std::endl;
@@ -269,23 +269,23 @@ int testDatumIntArray() {
 }
 
 // See testDatumInt() above.
-int testDatumDoubleArray() {
+int testDatumFloatArray() {
 
   int out;
 
   LOOP {
-    double someDoubles[] = {16.2,2.71828,77.3,29.165};
-    std::vector<double> f (someDoubles, someDoubles + sizeof(someDoubles) / sizeof(double) );
+    float someFloats[] = {16.2,2.71828,77.3,29.165};
+    std::vector<float> f (someFloats, someFloats + sizeof(someFloats) / sizeof(float) );
  
-    MinVR::VRDatumDoubleArray a = MinVR::VRDatumDoubleArray(f);
+    MinVR::VRDatumFloatArray a = MinVR::VRDatumFloatArray(f);
 
-    out = a.getDescription().compare("doublearray");
+    out = a.getDescription().compare("floatarray");
 
-    std::vector<double> b = a.getValue();
+    std::vector<float> b = a.getValue();
     
     out += (b[2] == 77.3) ? 0 : 1;
 
-    out += (a.getType() == MinVR::VRCORETYPE_DOUBLEARRAY) ? 0 : 1;
+    out += (a.getType() == MinVR::VRCORETYPE_FLOATARRAY) ? 0 : 1;
 
     a.setAttributeValue("separator", ";");
   
@@ -367,11 +367,11 @@ int testDatumArrayConversions() {
 
     out += (e[0] == (MinVR::VRInt)d.getValue()) ? 0 : 1;
 
-    MinVR::VRDatumDouble f = MinVR::VRDatumDouble(3.1415926);
+    MinVR::VRDatumFloat f = MinVR::VRDatumFloat(3.1415926);
 
-    MinVR::VRDoubleArray g = f.getValue();
+    MinVR::VRFloatArray g = f.getValue();
 
-    out += (g[0] = (MinVR::VRDouble)f.getValue()) ? 0 : 1;
+    out += (g[0] = (MinVR::VRFloat)f.getValue()) ? 0 : 1;
 
   }
 
@@ -468,22 +468,22 @@ int testDatumPushPopInt() {
   return out;
 }
 
-int testDatumPushPopDouble() {
+int testDatumPushPopFloat() {
 
   int out = 0;
 
   LOOP {
 
-    MinVR::VRDouble f = 3.1415926;
-    MinVR::VRDatumDouble a = MinVR::VRDatumDouble(f);
+    MinVR::VRFloat f = 3.1415926;
+    MinVR::VRDatumFloat a = MinVR::VRDatumFloat(f);
 
     a.push();
     a.setValue(2.71828);
-    MinVR::VRDouble g = a.getValue();
+    MinVR::VRFloat g = a.getValue();
     out += (2.71828 == g) ? 0 : 1;
 
     a.pop();
-    MinVR::VRDouble h = a.getValue();
+    MinVR::VRFloat h = a.getValue();
     out += (3.1415926 == h) ? 0 : 1;
   }
   
@@ -547,24 +547,24 @@ int testDatumPushPopIntArray() {
   return out;
 }
 
-int testDatumPushPopDoubleArray() {
+int testDatumPushPopFloatArray() {
 
   int out = 0;
 
   LOOP {
   
-    double someDoubles[] = {3.14159,2.71828,1.41459,0.142857};
-    MinVR::VRDoubleArray f (someDoubles, someDoubles + sizeof(someDoubles)/sizeof(double) );
+    float someFloats[] = {3.14159,2.71828,1.41459,0.142857};
+    MinVR::VRFloatArray f (someFloats, someFloats + sizeof(someFloats)/sizeof(float) );
   
-    MinVR::VRDatumDoubleArray a = MinVR::VRDatumDoubleArray(f);
+    MinVR::VRDatumFloatArray a = MinVR::VRDatumFloatArray(f);
     
     a.push();
 
-    double moreDoubles[] = {1.234,2.345,3.456,4.567};
-    MinVR::VRDoubleArray g (moreDoubles, moreDoubles + sizeof(moreDoubles)/sizeof(double) );
+    float moreFloats[] = {1.234,2.345,3.456,4.567};
+    MinVR::VRFloatArray g (moreFloats, moreFloats + sizeof(moreFloats)/sizeof(float) );
     a.setValue(g);
 
-    MinVR::VRDoubleArray b = a.getValue();
+    MinVR::VRFloatArray b = a.getValue();
     out += (1.234 == b[0]) ? 0 : 1;
     out += (2.345 == b[1]) ? 0 : 1;
     out += (3.456 == b[2]) ? 0 : 1;
@@ -572,7 +572,7 @@ int testDatumPushPopDoubleArray() {
 
     a.pop();    
 
-    MinVR::VRDoubleArray c = a.getValue();
+    MinVR::VRFloatArray c = a.getValue();
     out += (3.14159 == c[0]) ? 0 : 1;
     out += (2.71828 == c[1]) ? 0 : 1;
     out += (1.41459 == c[2]) ? 0 : 1;
@@ -713,10 +713,10 @@ int testDatumPushPop() {
   int out = 0;
 
   out += testDatumPushPopInt();
-  out += testDatumPushPopDouble();
+  out += testDatumPushPopFloat();
   out += testDatumPushPopString();
   out += testDatumPushPopIntArray();
-  out += testDatumPushPopDoubleArray();
+  out += testDatumPushPopFloatArray();
   out += testDatumPushPopStringArray();
   out += testDatumPushPopContainer();
   

@@ -16,8 +16,8 @@ int main() {
   index->addData("/cora/flora", "gosh and golly");
 
   // Create another container called homer, with two members.
-  index->addData("/homer/bart", 3.4);
-  index->addData("/homer/lisa", 5.2);
+  index->addData("/homer/bart", 3.4f);
+  index->addData("/homer/lisa", 5.2f);
 
   // Show the index structure.
   std::cout << "Index Structure" << std::endl;
@@ -38,7 +38,7 @@ int main() {
   ia.push_back(3);
   index->addData("/cora/ia", ia);
 
-  MinVR::VRDoubleArray da;
+  MinVR::VRFloatArray da;
   da.push_back(1.2);
   da.push_back(3.4);
   da.push_back(5.6);
