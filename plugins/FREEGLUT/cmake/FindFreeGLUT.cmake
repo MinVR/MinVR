@@ -37,6 +37,12 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(
   FREEGLUT_LIBRARY 
   FREEGLUT_INCLUDE_DIR)
 
+set(FREEGLUT_INCLUDE_DIR /usr/local/Cellar/freeglut/2.8.1/include)
+set(FREEGLUT_LIBRARY /usr/local/Cellar/freeglut/2.8.1/lib/libglut.3.dylib)
+
+message("FreeGLUT library: " ${FREEGLUT_LIBRARY})
+message("FreeGLUT include: " ${FREEGLUT_INCLUDE_DIR})
+
 # Copy the results to the output variables.
 IF(FREEGLUT_FOUND)
 	SET(FREEGLUT_LIBRARIES ${FREEGLUT_LIBRARY})

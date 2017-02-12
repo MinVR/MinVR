@@ -582,17 +582,17 @@ std::string VRDataIndex::getNameSpace(const std::string fullName) {
   if (fullName.length() > 0) {
 
     // Start at the end.
-    std::string::const_iterator it = fullName.end();
+    std::string::const_reverse_iterator it = fullName.rbegin();
 
     int charLimit = 0;
     // March backward to the first '/' (if there was one).
-    while (((*(--it)) != '/') && (charLimit < fullName.length())) { charLimit++; };
+    while (((*(++it)) != '/') && (charLimit < fullName.length())) { charLimit++; };
 
     // There was no slash at all.
     if (charLimit >= fullName.length()) return std::string("");
-    
+
     // An obscure feature of the std::string constructor.
-    return std::string(fullName.begin(), it + 1);
+    return std::string(fullName.begin(), it.base());
 
   } else {
 
