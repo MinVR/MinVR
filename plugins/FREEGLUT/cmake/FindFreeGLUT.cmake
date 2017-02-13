@@ -37,8 +37,10 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(
   FREEGLUT_LIBRARY 
   FREEGLUT_INCLUDE_DIR)
 
-set(FREEGLUT_INCLUDE_DIR /usr/local/Cellar/freeglut/2.8.1/include)
-set(FREEGLUT_LIBRARY /usr/local/Cellar/freeglut/2.8.1/lib/libglut.3.dylib)
+# If you're using a Brew version of FreeGLUT, these might work.  Too specific
+# to add into a hint for FIND_LIBRARY or FIND_PATH.
+#set(FREEGLUT_INCLUDE_DIR /usr/local/Cellar/freeglut/2.8.1/include)
+#set(FREEGLUT_LIBRARY /usr/local/Cellar/freeglut/2.8.1/lib/libglut.3.dylib)
 
 message("FreeGLUT library: " ${FREEGLUT_LIBRARY})
 message("FreeGLUT include: " ${FREEGLUT_INCLUDE_DIR})
