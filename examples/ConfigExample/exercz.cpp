@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
 
     index->addSerializedValue("<bob type=\"container\"><flora type=\"int\">3274</flora><morton type=\"float\">34.5</morton><cora type=\"container\"><flora type=\"int\">1234</flora><nora type=\"float\">23.45</nora></cora></bob>");
 
-    index->addSerializedValue("<chester type=\"floatarray\">32.7@44.56@22.3@78.2@99.134@</chester>");
+    index->addSerializedValue("<chester type=\"floatarray\" separator=\"@\">32.7@44.56@22.3@78.2@99.134@</chester>");
 
   } else if (argc == 2) {
 
