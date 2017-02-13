@@ -234,10 +234,20 @@ std::string VRDataIndex::walkXML(element* node, std::string nameSpace) {
       typeId = inferType(std::string(node->get_value()));
     }
 
-  } else { // what does map return if no match?
+  } else { 
 
-    typeId = mVRTypeMap[std::string(node->get_attribute("type")->get_value())];
+    // Check to see if the type is one we can handle.
+    VRTypeMap::iterator it =
+      mVRTypeMap.find(std::string(node->get_attribute("type")->get_value()));
 
+    if (it == mVRTypeMap.end()) {
+      // If not, throw an error.
+      throw std::runtime_error("No known type called " +
+                               std::string(node->get_attribute("type")->get_value()));
+    } else {
+      // Otherwise, pass it along as the typeID.
+      typeId = it->second;
+    }
   }
 
   // Get a value for the node.

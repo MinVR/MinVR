@@ -198,7 +198,8 @@ private:
   VRDatumFactory factory;
 
   // This is just a convenience to map strings to object type numbers.
-  std::map<std::string, VRCORETYPE_ID> mVRTypeMap;
+  typedef std::map<std::string, VRCORETYPE_ID> VRTypeMap;
+  VRTypeMap mVRTypeMap;
 
   typedef std::map<std::string, VRDatumPtr> VRDataMap;
   // Aspirational:
