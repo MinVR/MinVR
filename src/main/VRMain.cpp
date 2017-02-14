@@ -359,7 +359,7 @@ void VRMain::initialize(const VRAppLauncher& launcher) {
 			std::vector<std::string> pluginSearchPaths;
 			if (_config->exists("PluginPath", *it)){
 				std::string path = _config->getValue("PluginPath", *it);
-				pluginSearchPaths.push_back(path);
+				pluginSearchPaths.push_back(_config->dereferenceEnvVars(path));
 			}
 			pluginSearchPaths.push_back(".");
 			pluginSearchPaths.push_back("./plugins");

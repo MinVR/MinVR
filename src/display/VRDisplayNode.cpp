@@ -118,5 +118,38 @@ std::map<std::string,std::string> VRDisplayNode::getValuesAdded() {
   return out;
 }
 
+void VRDisplayNode::auditValues(std::list<std::string> valuesSupplied) {
+  // First check to see if all of the values needed appear in the
+  // input list.
+  bool found;
+  
+  if ((_valuesNeeded.size() > 0) && (valuesSupplied.size() > 0)) {
+    for (std::list<std::string>::iterator it = _valuesNeeded.begin();
+         it != _valuesNeeded.end(); it++) {
+
+      found = false;
+      for (std::list<std::string>::iterator jt = valuesSupplied.begin();
+           jt != valuesSupplied.end(); jt++) {
+        found = found || ((*it).compare(*jt) == 0);
+      }
+      // If we haven't found this needed value, throw an error.
+      if (!found)
+        throw std::runtime_error("Needed " + (*it) + " but didn't get it, in " +
+                                 getName() + ":" + getType());
+    }
+  }
+  // Then add the valuesAdded to the input list and pass along to the
+  // children nodes.
+  valuesSupplied.insert(valuesSupplied.end(),
+                       _valuesAdded.begin(), _valuesAdded.end());
+
+  if (_children.size() > 0) {
+    for (std::vector<VRDisplayNode*>::iterator it =  _children.begin();
+         it != _children.end(); it++) {
+      (*it)->auditValues(valuesSupplied);
+    }
+  }  
+}
+  
 
 } /* namespace MinVR */

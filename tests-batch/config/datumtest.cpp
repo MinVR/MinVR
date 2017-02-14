@@ -189,12 +189,11 @@ int testDatumFloat() {
 
     float b = a.getValue();
   
-    out += (37.123 == b) ? 0 : 1;
-  
+    out += (37.123f == b) ? 0 : 1;
+    
     out += (a.getType() == MinVR::VRCORETYPE_FLOAT) ? 0 : 1;
 
-    out += a.getValueString().compare("37.123000");
-    // std::cout << a.getValueString() << std::endl;
+    out += a.getValueString().compare("37.123001");
 
     int j = a.getValue();
     out += (j == 37) ? 0 : 1;
@@ -202,6 +201,9 @@ int testDatumFloat() {
     std::ostringstream buf;
     buf << a;
     out += a.getValueString().compare(buf.str());
+
+    // std::cout << "a:" << a << ",a.getValueString()=" << a.getValueString() << ",buf=" << buf.str() << ",j:" << j << ",out=" << out << std::endl;
+
   }
     
   return out;
@@ -274,7 +276,7 @@ int testDatumFloatArray() {
   int out;
 
   LOOP {
-    float someFloats[] = {16.2,2.71828,77.3,29.165};
+    float someFloats[] = {16.2f,2.71828f,77.3f,29.165f};
     std::vector<float> f (someFloats, someFloats + sizeof(someFloats) / sizeof(float) );
  
     MinVR::VRDatumFloatArray a = MinVR::VRDatumFloatArray(f);
@@ -283,18 +285,21 @@ int testDatumFloatArray() {
 
     std::vector<float> b = a.getValue();
     
-    out += (b[2] == 77.3) ? 0 : 1;
+    out += (b[2] == 77.3f) ? 0 : 1;
+    //std::cout << "b[2]=" << b[2] << std::endl;
 
     out += (a.getType() == MinVR::VRCORETYPE_FLOATARRAY) ? 0 : 1;
 
     a.setAttributeValue("separator", ";");
   
     //std::cout << a.getValueString() << std::endl;
-    out += a.getValueString().compare("16.200000;2.718280;77.300000;29.165000");
+    out += a.getValueString().compare("16.200001;2.718280;77.300003;29.165001");
+    //std::cout << "a.getValueString()=" << a.getValueString() << std::endl;
     
     std::ostringstream buf;
     buf << a;
     out += a.getValueString().compare(buf.str());
+    //std::cout << "buf=" << buf.str() << std::endl;
   }
   
   return out;
@@ -474,19 +479,19 @@ int testDatumPushPopFloat() {
 
   LOOP {
 
-    MinVR::VRFloat f = 3.1415926;
+    MinVR::VRFloat f = 3.1415926f;
     MinVR::VRDatumFloat a = MinVR::VRDatumFloat(f);
 
     a.push();
-    a.setValue(2.71828);
+    a.setValue(2.71828f);
     MinVR::VRFloat g = a.getValue();
-    out += (2.71828 == g) ? 0 : 1;
+    out += (2.71828f == g) ? 0 : 1;
 
     a.pop();
     MinVR::VRFloat h = a.getValue();
-    out += (3.1415926 == h) ? 0 : 1;
+    out += (3.1415926f == h) ? 0 : 1;
   }
-  
+
   return out;
 }
 
@@ -553,30 +558,30 @@ int testDatumPushPopFloatArray() {
 
   LOOP {
   
-    float someFloats[] = {3.14159,2.71828,1.41459,0.142857};
+    float someFloats[] = {3.14159f,2.71828f,1.41459f,0.142857f};
     MinVR::VRFloatArray f (someFloats, someFloats + sizeof(someFloats)/sizeof(float) );
   
     MinVR::VRDatumFloatArray a = MinVR::VRDatumFloatArray(f);
     
     a.push();
 
-    float moreFloats[] = {1.234,2.345,3.456,4.567};
+    float moreFloats[] = {1.234f,2.345f,3.456f,4.567f};
     MinVR::VRFloatArray g (moreFloats, moreFloats + sizeof(moreFloats)/sizeof(float) );
     a.setValue(g);
 
     MinVR::VRFloatArray b = a.getValue();
-    out += (1.234 == b[0]) ? 0 : 1;
-    out += (2.345 == b[1]) ? 0 : 1;
-    out += (3.456 == b[2]) ? 0 : 1;
-    out += (4.567 == b[3]) ? 0 : 1;
+    out += (1.234f == b[0]) ? 0 : 1;
+    out += (2.345f == b[1]) ? 0 : 1;
+    out += (3.456f == b[2]) ? 0 : 1;
+    out += (4.567f == b[3]) ? 0 : 1;
 
     a.pop();    
 
     MinVR::VRFloatArray c = a.getValue();
-    out += (3.14159 == c[0]) ? 0 : 1;
-    out += (2.71828 == c[1]) ? 0 : 1;
-    out += (1.41459 == c[2]) ? 0 : 1;
-    out += (0.142857 == c[3]) ? 0 : 1;
+    out += (3.14159f == c[0]) ? 0 : 1;
+    out += (2.71828f == c[1]) ? 0 : 1;
+    out += (1.41459f == c[2]) ? 0 : 1;
+    out += (0.142857f == c[3]) ? 0 : 1;
   }
 
   return out;
