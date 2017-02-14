@@ -56,7 +56,7 @@ VRDisplayNode* VRTrackedLookAtNode::create(VRMainInterface *vrMain, VRDataIndex 
 		x.normalize();
 		VRVector3 y = z.cross(x);
 
-        VRMatrix4 M1 = VRMatrix4::fromRowMajorElements(x[0], z[0], x[0], 0,
+        VRMatrix4 M1 = VRMatrix4::fromRowMajorElements(x[0], y[0], z[0], 0,
                                                        x[1], y[1], z[1], 0,
                                                        x[2], y[2], z[2], 0,
                                                        0, 0, 0, 1);

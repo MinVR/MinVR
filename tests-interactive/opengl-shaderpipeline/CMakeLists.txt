@@ -1,5 +1,5 @@
 
-project(MinGraphicsExample)
+project(itest-opengl-shaderpipeline)
 
 find_package(OpenGL REQUIRED)
 
@@ -28,5 +28,5 @@ add_executable(${PROJECT_NAME} ${source_files})
 
 target_link_libraries(${PROJECT_NAME} MinVR ${OPENGL_gl_LIBRARY} ${ALL_LIBS})
 
-set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "examples")
+set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "tests-interactive")
 

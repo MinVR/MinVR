@@ -27,12 +27,12 @@ endforeach()
 # file.
 
 create_test_sourcelist(srclist RunSomeIndexTests.cpp ${dataindextestsrc})
-add_executable(RunSomeIndexTests ${srclist})
-target_link_libraries(RunSomeIndexTests MinVR)
+add_executable(test-dataindex ${srclist})
+target_link_libraries(test-dataindex MinVR)
 
-# When it's compiled you can run the RunSomeIndexTests executable and
+# When it's compiled you can run the test-dataindex executable and
 # specify a particular test and subtest:
-#./RunSomeIndexTests queuetest 1
+#./test-dataindex queuetest 1
 #All that's left is to tell CMake to generate the test cases:
 
 set($ENV{MVRHOME} ${CMAKE_SOURCE_DIR})
@@ -40,7 +40,7 @@ set($ENV{MVRHOME} ${CMAKE_SOURCE_DIR})
 foreach(dataindextest ${dataindextests})
   foreach(part ${${dataindextest}_parts})
     add_test(NAME test_${dataindextest}_${part}
-      COMMAND ${CMAKE_BINARY_DIR}/bin/RunSomeIndexTests ${dataindextest}test ${part}
+      COMMAND ${CMAKE_BINARY_DIR}/bin/test-dataindex ${dataindextest}test ${part}
       WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests/config)
     set_tests_properties(test_${dataindextest}_${part} PROPERTIES
       FAIL_REGULAR_EXPRESSION "ERROR;FAIL;Test failed")
@@ -48,12 +48,12 @@ foreach(dataindextest ${dataindextests})
 endforeach()
 
 
-project (memtest)
+project (test-memory)
 
-add_executable (memtest memtest.cpp)
-target_link_libraries (memtest MinVR)
+add_executable (test-memory memtest.cpp)
+target_link_libraries (test-memory MinVR)
 
-set_property(TARGET memtest PROPERTY FOLDER "tests")
-set_property(TARGET RunSomeIndexTests PROPERTY FOLDER "tests")
+set_property(TARGET test-memory PROPERTY FOLDER "tests-batch")
+set_property(TARGET test-dataindex PROPERTY FOLDER "tests-batch")
 
 
