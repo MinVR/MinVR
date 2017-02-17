@@ -62,6 +62,7 @@ find_path(VRPN_INCLUDE_DIR
 	include/vrpn
 	HINTS
 	"${VRPN_ROOT_DIR}"
+	ENV CPATH # For OSCAR modules at Brown/CCV
 	PATHS
 	"${_progfiles}/VRPN"
 	C:/usr/local
@@ -74,6 +75,7 @@ find_library(VRPN_LIBRARY
 	${_libsuffixes}
 	HINTS
 	"${VRPN_ROOT_DIR}"
+	ENV LIBRARY_PATH # For OSCAR modules at Brown/CCV
 	PATHS
 	"${_progfiles}/VRPN"
 	C:/usr/local
@@ -86,6 +88,7 @@ find_library(VRPN_SERVER_LIBRARY
 	${_libsuffixes}
 	HINTS
 	"${VRPN_ROOT_DIR}"
+	ENV LIBRARY_PATH # For OSCAR modules at Brown/CCV
 	PATHS
 	"${_progfiles}/VRPN"
 	C:/usr/local

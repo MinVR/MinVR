@@ -15,11 +15,13 @@
 #include <display/VRViewportNode.h>
 #include <display/VRLookAtNode.h>
 #include <display/VRTrackedLookAtNode.h>
+#include <input/VRFakeTrackerDevice.h>
 #include <net/VRNetClient.h>
 #include <net/VRNetServer.h>
 #include <plugin/VRPluginManager.h>
 #include <sstream>
 #include <main/impl/VRDefaultAppLauncher.h>
+#include <main/VREventInternal.h>
 #include <cstdlib>
 
 namespace MinVR {
@@ -76,7 +78,7 @@ std::string getCurrentWorkingDir()
 }
 
 
-VRMain::VRMain() : _initialized(false), _config(NULL), _net(NULL), _factory(NULL), _pluginMgr(NULL), _frame(0)
+VRMain::VRMain() : _initialized(false), _config(NULL), _net(NULL), _factory(NULL), _pluginMgr(NULL), _frame(0), _shutdown(false)
 {
 	_factory = new VRFactory();
 	// add sub-factories that are part of the MinVR core library right away
@@ -89,7 +91,8 @@ VRMain::VRMain() : _initialized(false), _config(NULL), _net(NULL), _factory(NULL
 	_factory->registerItemType<VRDisplayNode, VRLookAtNode>("VRLookAtNode");
 	_factory->registerItemType<VRDisplayNode, VRTrackedLookAtNode>("VRTrackedLookAtNode");
 	_factory->registerItemType<VRDisplayNode, VRViewportNode>("VRViewportNode");
-	_pluginMgr = new VRPluginManager(this);
+    _factory->registerItemType<VRInputDevice, VRFakeTrackerDevice>("VRFakeTrackerDevice");
+    _pluginMgr = new VRPluginManager(this);
 }
 
 
@@ -356,7 +359,7 @@ void VRMain::initialize(const VRAppLauncher& launcher) {
 			std::vector<std::string> pluginSearchPaths;
 			if (_config->exists("PluginPath", *it)){
 				std::string path = _config->getValue("PluginPath", *it);
-				pluginSearchPaths.push_back(path);
+				pluginSearchPaths.push_back(_config->dereferenceEnvVars(path));
 			}
 			pluginSearchPaths.push_back(".");
 			pluginSearchPaths.push_back("./plugins");
@@ -536,7 +539,7 @@ void VRMain::initialize(const VRAppLauncher& launcher) {
 	}
 
 	_initialized = true;
-
+    _shutdown = false;
 }
 
 void 
@@ -547,6 +550,7 @@ VRMain::synchronizeAndProcessEvents()
 	}
 
 	VRDataQueue eventsFromDevices;
+  
 	for (int f = 0; f < _inputDevices.size(); f++) {
 		_inputDevices[f]->appendNewInputEventsSinceLastCall(&eventsFromDevices);
 	}
@@ -568,11 +572,13 @@ VRMain::synchronizeAndProcessEvents()
 	VRDataQueue *events = new VRDataQueue(eventData);
 	while (events->notEmpty()) {
 		// Unpack the next item from the queue.
-		std::string event = _config->addSerializedValue( events->getSerializedObject() );
+		std::string eventName = _config->addSerializedValue( events->getSerializedObject() );
 
+        VREventInternal event(eventName, _config);
+      
 		// Invoke the user's callback on the new event
 		for (int f = 0; f < _eventHandlers.size(); f++) {
-			_eventHandlers[f]->onVREvent(event, _config);
+			_eventHandlers[f]->onVREvent(*event.getAPIEvent());
 		}
 
 		// Get the next item from the queue.
@@ -647,6 +653,7 @@ VRMain::shutdown()
 	// TODO
 	_renderHandlers.clear();
 	_eventHandlers.clear();
+    _shutdown = true;
 }
 
 

@@ -45,6 +45,14 @@ VRGLFWInputDevice::~VRGLFWInputDevice() {
 
 void VRGLFWInputDevice::appendNewInputEventsSinceLastCall(VRDataQueue* queue) {
     glfwPollEvents();
+
+    // TODO: This should be moved out of the GLFW plugin and made a standard
+    // event that MinVR creates at the start of each frame.
+    std::string event = "FrameStart";
+    std::string dataField = "/ElapsedSeconds";
+    _dataIndex.addData(event + dataField, (float)glfwGetTime());
+    _events.push_back(_dataIndex.serialize(event));
+
     for (int f = 0; f < _events.size(); f++)
     {
     	queue->push(_events[f]);
@@ -74,10 +82,22 @@ void VRGLFWInputDevice::sizeCallback(GLFWwindow* window, int width, int height) 
 }
 
 
-void VRGLFWInputDevice::cursorPositionCallback(GLFWwindow* window, double xpos, double ypos) {
+void VRGLFWInputDevice::cursorPositionCallback(GLFWwindow* window, float xpos, float ypos) {
   std::string event = "Mouse_Move";
   _dataIndex.addData(event + "/XPos", xpos);
   _dataIndex.addData(event + "/YPos", ypos);
+  std::vector<float> pos;
+  pos.push_back(xpos);
+  pos.push_back(ypos);
+  _dataIndex.addData(event + "/Position", pos);
+    
+  int width, height;
+  glfwGetWindowSize(window, &width, &height);
+  pos[0] /= (float)width;
+  pos[1] /= (float)height;
+  _dataIndex.addData(event + "/NormalizedPosition", pos);
+    
+    
   _events.push_back(_dataIndex.serialize(event));
 }
 

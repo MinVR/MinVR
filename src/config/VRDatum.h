@@ -30,9 +30,9 @@ namespace MinVR {
 //
 // and have the getValue() function return a value of type int.  Or
 //
-//   double p = ptr->getValue();
+//   float p = ptr->getValue();
 //
-// and get a double back in return.  The idea is to absorb as much of
+// and get a float back in return.  The idea is to absorb as much of
 // the pain of casts and type conversions and not force the programmer
 // to deal with it.  I know this isn't the C++ ethos, but hey, call me
 // a dreamer.
@@ -54,10 +54,10 @@ public:
   // appropriate type conversion operator here.  Step 2 in the
   // add-a-data-type instructions.
   operator VRInt() const { return datum->getValueInt(); }
-  operator VRDouble() const { return datum->getValueDouble(); }
+  operator VRFloat() const { return datum->getValueFloat(); }
   operator VRString() const { return datum->getValueString(); }
   operator VRIntArray() const { return datum->getValueIntArray(); }
-  operator VRDoubleArray() const { return datum->getValueDoubleArray(); }
+  operator VRFloatArray() const { return datum->getValueFloatArray(); }
   operator VRStringArray() const { return datum->getValueStringArray(); }
   operator VRContainer() const { return datum->getValueContainer(); }
 };
@@ -90,7 +90,7 @@ public:
 //      it up there with VRContainer.
 //
 //   3. Create a specialization of the VRDatum class, and call it
-//      something like VRDatumInt or VRDatumDouble.  You will
+//      something like VRDatumInt or VRDatumFloat.  You will
 //      have to provide it with a private value member and public
 //      getValue*() and getValue() method members.  (The latter are
 //      all the same, so that's no big deal.)  Add an entry to the list of
@@ -110,13 +110,13 @@ public:
 //      using it anyway, they should use VRDataIndex->addData() instead.
 //
 //   5. Add a method to the VRDatumPtr that will return the new
-//      data type.  See intVal() and doubleVal() for models.
+//      data type.  See intVal() and floatVal() for models.
 //
 //   6. Add a "create" function for the factory to use.  Something
 //      like these:
 //
 //        VRDatumPtr CreateVRDatumInt(void *pData);
-//        VRDatumPtr CreateVRDatumDouble(void *pData);
+//        VRDatumPtr CreateVRDatumFloat(void *pData);
 //
 //   7. Then add this number and the create function to the list of
 //      data types registered in the constructor for the
@@ -228,8 +228,8 @@ public:
   virtual VRInt getValueInt() const {
     throw std::runtime_error("This datum is not a VRInt.");
   }
-  virtual VRDouble getValueDouble() const {
-    throw std::runtime_error("This datum is not a VRDouble.");
+  virtual VRFloat getValueFloat() const {
+    throw std::runtime_error("This datum is not a VRFloat.");
   }
   // There is a getValueString() implemented for each data type to
   // allow easy string conversions.  It is defined as a pure virtual
@@ -237,8 +237,8 @@ public:
   virtual VRIntArray getValueIntArray() const {
     throw std::runtime_error("This datum is not a VRIntArray.");
   }
-  virtual VRDoubleArray getValueDoubleArray() const {
-    throw std::runtime_error("This datum is not a VRDoubleArray.");
+  virtual VRFloatArray getValueFloatArray() const {
+    throw std::runtime_error("This datum is not a VRFloatArray.");
   }
   virtual VRStringArray getValueStringArray() const {
     throw std::runtime_error("This datum is not a VRStringArray.");
@@ -326,19 +326,19 @@ public:
   VRInt getValueInt() const { return value.front(); };
   VRIntArray getValueIntArray() const {
     VRIntArray out;  out.push_back(value.front());  return out; };
-  VRDouble getValueDouble() const { return (int)value.front(); };
+  VRFloat getValueFloat() const { return (int)value.front(); };
 };
 
-// The specialization for a double.
-class VRDatumDouble : public VRDatumSpecialized<VRDouble, VRCORETYPE_DOUBLE> {
+// The specialization for a float.
+class VRDatumFloat : public VRDatumSpecialized<VRFloat, VRCORETYPE_FLOAT> {
 public:
-  VRDatumDouble(const VRDouble inVal) :
-    VRDatumSpecialized<VRDouble, VRCORETYPE_DOUBLE>(inVal) {};
+  VRDatumFloat(const VRFloat inVal) :
+    VRDatumSpecialized<VRFloat, VRCORETYPE_FLOAT>(inVal) {};
   std::string getValueString() const;
-  VRDouble getValueDouble() const { return value.front(); };
-  VRDoubleArray getValueDoubleArray() const {
-    VRDoubleArray out;  out.push_back(value.front());  return out; };
-  VRInt getValueInt() const { return (double)value.front(); };
+  VRFloat getValueFloat() const { return value.front(); };
+  VRFloatArray getValueFloatArray() const {
+    VRFloatArray out;  out.push_back(value.front());  return out; };
+  VRInt getValueInt() const { return (float)value.front(); };
 };
 
 // Specialization for a string
@@ -360,13 +360,13 @@ public:
   VRIntArray getValueIntArray() const { return value.front(); };
 };
 
-// Specialization for a vector of doubles
-class VRDatumDoubleArray : public VRDatumSpecialized<VRDoubleArray, VRCORETYPE_DOUBLEARRAY> {
+// Specialization for a vector of floats
+class VRDatumFloatArray : public VRDatumSpecialized<VRFloatArray, VRCORETYPE_FLOATARRAY> {
 public:
-  VRDatumDoubleArray(const VRDoubleArray inVal) :
-    VRDatumSpecialized<VRDoubleArray, VRCORETYPE_DOUBLEARRAY>(inVal) {};
+  VRDatumFloatArray(const VRFloatArray inVal) :
+    VRDatumSpecialized<VRFloatArray, VRCORETYPE_FLOATARRAY>(inVal) {};
   std::string getValueString() const;
-  VRDoubleArray getValueDoubleArray() const { return value.front(); };
+  VRFloatArray getValueFloatArray() const { return value.front(); };
 };
 
 // Specialization for a vector of strings
@@ -515,12 +515,12 @@ public:
     }
   }
 
-  VRDatumDouble* doubleVal()
+  VRDatumFloat* floatVal()
   {
-    if (pData->getType() == VRCORETYPE_DOUBLE) {
-      return static_cast<VRDatumDouble*>(pData);
+    if (pData->getType() == VRCORETYPE_FLOAT) {
+      return static_cast<VRDatumFloat*>(pData);
     } else {
-      throw std::runtime_error("This datum is not a VRDouble.");
+      throw std::runtime_error("This datum is not a VRFloat.");
     }
   }
 
@@ -542,12 +542,12 @@ public:
     }
   }
 
-  VRDatumDoubleArray* doubleArrayVal()
+  VRDatumFloatArray* floatArrayVal()
   {
-    if (pData->getType() == VRCORETYPE_DOUBLEARRAY) {
-      return static_cast<VRDatumDoubleArray*>(pData);
+    if (pData->getType() == VRCORETYPE_FLOATARRAY) {
+      return static_cast<VRDatumFloatArray*>(pData);
     } else {
-      throw std::runtime_error("This datum is not an array of doubles.");
+      throw std::runtime_error("This datum is not an array of floats.");
     }
   }
 
@@ -575,10 +575,10 @@ public:
 // Each specialization needs a callback of the following form, to be
 // invoked by the factory.  This is step 6 in the instructions above.
 VRDatumPtr CreateVRDatumInt(void *pData);
-VRDatumPtr CreateVRDatumDouble(void *pData);
+VRDatumPtr CreateVRDatumFloat(void *pData);
 VRDatumPtr CreateVRDatumString(void *pData);
 VRDatumPtr CreateVRDatumIntArray(void *pData);
-VRDatumPtr CreateVRDatumDoubleArray(void *pData);
+VRDatumPtr CreateVRDatumFloatArray(void *pData);
 VRDatumPtr CreateVRDatumStringArray(void *pData);
 VRDatumPtr CreateVRDatumContainer(void *pData);
 

@@ -110,26 +110,47 @@ set(vr_display_h
 )
 
 set(vr_input_cpp
+  ${vr_src_dir}/input/VRFakeTrackerDevice.cpp
 )
 
 set(vr_input_h
+  ${vr_src_dir}/input/VRFakeTrackerDevice.h
   ${vr_src_dir}/input/VRInputDevice.h
 )
 
 set(vr_main_cpp
+  ${vr_src_dir}/main/VREventInternal.cpp
   ${vr_src_dir}/main/VRFactory.cpp
+  ${vr_src_dir}/main/VRGraphicsHandler.cpp
+  ${vr_src_dir}/main/VRGraphicsStateInternal.cpp
   ${vr_src_dir}/main/VRMain.cpp
   ${vr_src_dir}/main/impl/VRDefaultAppLauncher.cpp
 )
 
+set(vr_api_cpp
+  ${vr_src_dir}/api/impl/VRApp.cpp
+  ${vr_src_dir}/api/impl/VREvent.cpp
+  ${vr_src_dir}/api/impl/VRGraphicsState.cpp
+)
+
+set(vr_api_h
+  ${vr_src_dir}/api/MinVR.h
+  ${vr_src_dir}/api/VRApp.h
+  ${vr_src_dir}/api/VREvent.h
+  ${vr_src_dir}/api/VRGraphicsState.h
+)
+
 set(vr_main_h_main
+  ${vr_src_dir}/main/VRAppLauncher.h
   ${vr_src_dir}/main/VREventHandler.h
+  ${vr_src_dir}/main/VREventInternal.h
   ${vr_src_dir}/main/VRFactory.h
+  ${vr_src_dir}/main/VRGraphicsHandler.h
+  ${vr_src_dir}/main/VRGraphicsStateInternal.h
   ${vr_src_dir}/main/VRItemFactory.h
   ${vr_src_dir}/main/VRMain.h
   ${vr_src_dir}/main/VRMainInterface.h
   ${vr_src_dir}/main/VRRenderHandler.h
-  ${vr_src_dir}/main/VRAppLauncher.h
 )
 
 set(vr_main_h_impl
@@ -178,7 +199,8 @@ set(vr_plugin_h
 set(vr_sources 
   ${vr_config_cpp} ${vr_config_h}
   ${vr_display_cpp} ${vr_display_h}
-  ${vr_input_h}
+  ${vr_api_cpp} ${vr_api_h}
+  ${vr_input_cpp} ${vr_input_h}
   ${vr_main_cpp} ${vr_main_h}
   ${vr_math_cpp} ${vr_math_h}
   ${vr_net_cpp} ${vr_net_h}
@@ -189,6 +211,8 @@ source_group("config\\Header Files" FILES ${vr_config_h})
 source_group("config\\Source Files" FILES ${vr_config_cpp})
 source_group("display\\Header Files" FILES ${vr_display_h})
 source_group("display\\Source Files" FILES ${vr_display_cpp})
+source_group("api\\Header Files" FILES ${vr_api_h})
+source_group("api\\Source Files" FILES ${vr_api_cpp})
 source_group("input\\Header Files" FILES ${vr_input_h})
 source_group("input\\Source Files" FILES ${vr_input_cpp})
 source_group("main\\Header Files" FILES ${vr_main_h})
@@ -213,15 +237,17 @@ install(FILES ${vr_config_h_cxml}
 install(FILES ${vr_config_h_base}
   DESTINATION ${CMAKE_INSTALL_PREFIX}/include/config/base64)
 install(FILES ${vr_display_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/display)
+install(FILES ${vr_api_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/api)
 install(FILES ${vr_input_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/input)
 install(FILES ${vr_main_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/main)
 install(FILES ${vr_math_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/math)
 install(FILES ${vr_net_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/net)
 install(FILES ${vr_plugin_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/plugin)
 
-add_executable(MVRLookup ${vr_src_dir}/config/MVRLookup.cpp)
-target_link_libraries(MVRLookup MinVR)
 
-install(TARGETS MVRLookup
-	RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+# TODO: move this to a test or examples directory
+#add_executable(MVRLookup ${vr_src_dir}/config/MVRLookup.cpp)
+#target_link_libraries(MVRLookup MinVR)
+#install(TARGETS MVRLookup
+#	RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
