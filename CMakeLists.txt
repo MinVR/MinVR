@@ -125,7 +125,7 @@ include_directories(
 
 add_subdirectory(src)
 add_subdirectory(plugins)
-add_subdirectory(tests-batch/config)
+add_subdirectory(tests-batch)
 add_subdirectory(tests-interactive)
 
 

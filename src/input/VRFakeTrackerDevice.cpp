@@ -25,7 +25,7 @@ VRFakeTrackerDevice::VRFakeTrackerDevice(const std::string &trackerName,
     _rScale = rotScale;
 
     _tracking = true;
-    _state = TrackingState::XYTranslating;
+    _state = VRFakeTrackerDevice::XYTranslating;
     _z = 0.0;
 }
     
@@ -41,20 +41,20 @@ void VRFakeTrackerDevice::onVREvent(const MinVR::VREvent &event)
     if (event.getName() == _toggleEvent) {
         _tracking = !_tracking;
         if (_tracking) {
-            _state = TrackingState::XYTranslating;
+            _state = VRFakeTrackerDevice::XYTranslating;
         }
     }
     else if (event.getName() == "KbdZ_Down") {
-        _state = TrackingState::ZTranslating;
+        _state = VRFakeTrackerDevice::ZTranslating;
     }
     else if (event.getName() == "KbdZ_Up") {
-        _state = TrackingState::XYTranslating;
+        _state = VRFakeTrackerDevice::XYTranslating;
     }
     else if (event.getName() == "KbdR_Down") {
-        _state = TrackingState::Rotating;
+        _state = VRFakeTrackerDevice::Rotating;
     }
     else if (event.getName() == "KbdR_Up") {
-        _state = TrackingState::XYTranslating;
+        _state = VRFakeTrackerDevice::XYTranslating;
     }
     else if (event.getName() == "Mouse_Move") {
         
@@ -67,10 +67,10 @@ void VRFakeTrackerDevice::onVREvent(const MinVR::VREvent &event)
                 float deltaX = mousex - _lastMouseX;
                 float deltaY = mousey - _lastMouseY;
             
-                if (_state == TrackingState::ZTranslating) {
+                if (_state == VRFakeTrackerDevice::ZTranslating) {
                     _z += _zScale * deltaY;
                 }
-                else if (_state == TrackingState::Rotating) {
+                else if (_state == VRFakeTrackerDevice::Rotating) {
                     _R = VRMatrix4::rotationY(_rScale*deltaX) * VRMatrix4::rotationX(-_rScale*deltaY) * _R;
                 }
             
