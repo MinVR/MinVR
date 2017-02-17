@@ -87,9 +87,9 @@ public:
 	/** Returns the data stored in the named data field interpreted as a float.  
 	    If the key is not found then a 0.0 is returned.  Example use:
 
-		double speed = event->getDataAsFloat("Speed");
+		float speed = event->getDataAsFloat("Speed");
 	*/
-	float getDataAsDouble(const std::string &fieldName) const;
+	float getDataAsFloat(const std::string &fieldName) const;
 
 	/** Returns the data stored in the named data field interpreted as a char
 	    array.  If the key is not found then "\0" is returned.  Example use:
@@ -131,14 +131,14 @@ public:
 		Memory is managed by the VREvent object.  The pointer is valid as long 
 		as the VREvent object is valid.
 	*/
-	const double * getDataAsDoubleArray(const std::string &fieldName) const;
+	const float * getDataAsFloatArray(const std::string &fieldName) const;
 
-    /** Returns the size of the array for the named double array data field */
-    int getDoubleArraySize(const std::string &fieldName) const;
+    /** Returns the size of the array for the named float array data field */
+    int getFloatArraySize(const std::string &fieldName) const;
   
 	/** Enumerated type for the builtin data types used in MinVR to store event data
 	*/
-	enum DataType {IntData, DoubleData, CharArrayData, IntArrayData, DoubleArrayData};
+	enum DataType {IntData, FloatData, CharArrayData, IntArrayData, FloatArrayData};
 
 	/** Returns the type for the named data field using an enumerated type.
 	*/

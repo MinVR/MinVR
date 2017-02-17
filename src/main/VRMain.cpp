@@ -15,6 +15,7 @@
 #include <display/VRViewportNode.h>
 #include <display/VRLookAtNode.h>
 #include <display/VRTrackedLookAtNode.h>
+#include <input/VRFakeTrackerDevice.h>
 #include <net/VRNetClient.h>
 #include <net/VRNetServer.h>
 #include <plugin/VRPluginManager.h>
@@ -90,7 +91,8 @@ VRMain::VRMain() : _initialized(false), _config(NULL), _net(NULL), _factory(NULL
 	_factory->registerItemType<VRDisplayNode, VRLookAtNode>("VRLookAtNode");
 	_factory->registerItemType<VRDisplayNode, VRTrackedLookAtNode>("VRTrackedLookAtNode");
 	_factory->registerItemType<VRDisplayNode, VRViewportNode>("VRViewportNode");
-	_pluginMgr = new VRPluginManager(this);
+    _factory->registerItemType<VRInputDevice, VRFakeTrackerDevice>("VRFakeTrackerDevice");
+    _pluginMgr = new VRPluginManager(this);
 }
 
 
@@ -357,7 +359,7 @@ void VRMain::initialize(const VRAppLauncher& launcher) {
 			std::vector<std::string> pluginSearchPaths;
 			if (_config->exists("PluginPath", *it)){
 				std::string path = _config->getValue("PluginPath", *it);
-				pluginSearchPaths.push_back(path);
+				pluginSearchPaths.push_back(_config->dereferenceEnvVars(path));
 			}
 			pluginSearchPaths.push_back(".");
 			pluginSearchPaths.push_back("./plugins");

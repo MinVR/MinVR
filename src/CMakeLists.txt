@@ -110,9 +110,11 @@ set(vr_display_h
 )
 
 set(vr_input_cpp
+  ${vr_src_dir}/input/VRFakeTrackerDevice.cpp
 )
 
 set(vr_input_h
+  ${vr_src_dir}/input/VRFakeTrackerDevice.h
   ${vr_src_dir}/input/VRInputDevice.h
 )
 
@@ -198,7 +200,7 @@ set(vr_sources
   ${vr_config_cpp} ${vr_config_h}
   ${vr_display_cpp} ${vr_display_h}
   ${vr_api_cpp} ${vr_api_h}
-  ${vr_input_h}
+  ${vr_input_cpp} ${vr_input_h}
   ${vr_main_cpp} ${vr_main_h}
   ${vr_math_cpp} ${vr_math_h}
   ${vr_net_cpp} ${vr_net_h}
@@ -242,9 +244,10 @@ install(FILES ${vr_math_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/math)
 install(FILES ${vr_net_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/net)
 install(FILES ${vr_plugin_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/plugin)
 
-add_executable(MVRLookup ${vr_src_dir}/config/MVRLookup.cpp)
-target_link_libraries(MVRLookup MinVR)
 
-install(TARGETS MVRLookup
-	RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+# TODO: move this to a test or examples directory
+#add_executable(MVRLookup ${vr_src_dir}/config/MVRLookup.cpp)
+#target_link_libraries(MVRLookup MinVR)
+#install(TARGETS MVRLookup
+#	RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
