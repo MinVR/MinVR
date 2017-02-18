@@ -650,9 +650,6 @@ VRMain::auditValuesFromAllDisplays()
 void 
 VRMain::shutdown()
 {
-	// TODO
-	_renderHandlers.clear();
-	_eventHandlers.clear();
     _shutdown = true;
 }
 

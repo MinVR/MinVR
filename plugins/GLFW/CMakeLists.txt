@@ -3,6 +3,7 @@ project(MinVR_GLFW)
 set (SOURCEFILES 
   src/glew.c
   src/VRGLFWInputDevice.cpp
+  src/VRGLFWTimer.cpp
   src/VRGLFWPlugin.cpp
   src/VRGLFWWindowToolkit.cpp
 )

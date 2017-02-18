@@ -30,6 +30,7 @@
 	<VRSetups>
 		<Desktop hostType="VRStandAlone">
 	      <GLFWToolkit windowtoolkitType="VRGLFWWindowToolkit"/>
+	      <GLFWTimer inputdeviceType="VRGLFWTimer"/>
 	      <OpenGLToolkit graphicstoolkitType="VROpenGLGraphicsToolkit"/>
 	      <RootNode displaynodeType="VRGraphicsWindowNode">
 				<Border>0</Border>

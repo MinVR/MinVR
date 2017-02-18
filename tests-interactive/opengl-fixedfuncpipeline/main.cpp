@@ -28,17 +28,19 @@ public:
 
 	void onVREvent(const VREvent &event) {
         
-        event.print();
-		
-        // Get the time since application began
-		if (event.getName() == "FrameStart") {
-            time = event.getDataAsFloat("ElapsedSeconds");
-			return;
-		}
+		if (isRunning()) {
+			event.print();
 
-		// Quit if the escape button is pressed
-		if (event.getName() == "KbdEsc_Down") {
-			shutdown();
+			// Get the time since application began
+			if (event.getName() == "FrameStart") {
+				time = event.getDataAsFloat("ElapsedSeconds");
+				return;
+			}
+
+			// Quit if the escape button is pressed
+			if (event.getName() == "KbdEsc_Down") {
+				shutdown();
+			}
 		}
 	}
 
@@ -56,16 +58,18 @@ public:
 	}
 
 	void onVRRenderGraphics(const VRGraphicsState &renderState) {
-		// Get projection an view matrices
-		const float* projectionMatrix = renderState.getProjectionMatrix();
-		const float* viewMatrix = renderState.getViewMatrix();
+		if (isRunning()) {
+			// Get projection an view matrices
+			const float* projectionMatrix = renderState.getProjectionMatrix();
+			const float* viewMatrix = renderState.getViewMatrix();
 
-		// Show gradient of red color over four seconds then restart
-		float red = std::fmod(time/4.0,1.0);
-		glClearColor(red, 0, 0, 1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+			// Show gradient of red color over four seconds then restart
+			float red = std::fmod(time/4.0,1.0);
+			glClearColor(red, 0, 0, 1);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-		// Draw calls here
+			// Draw calls here
+		}
 	}
 
 private:

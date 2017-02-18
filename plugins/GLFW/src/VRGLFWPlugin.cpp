@@ -13,6 +13,7 @@
 #include <plugin/VRPlugin.h>
 #include <display/VRWindowToolkit.h>
 #include "VRGLFWWindowToolkit.h"
+#include "VRGLFWTimer.h"
 
 
 // special: include this only once in one .cpp file per plugin
@@ -37,6 +38,7 @@ public:
 	{
       //std::cout << "Registering VRGLFWPlugin." << std::endl;
 		vrMain->getFactory()->registerItemType<VRWindowToolkit, VRGLFWWindowToolkit>("VRGLFWWindowToolkit");
+		vrMain->getFactory()->registerItemType<VRInputDevice, VRGLFWTimer>("VRGLFWTimer");
 	}
 
 	PLUGIN_API void unregisterWithMinVR(VRMainInterface *vrMain)
