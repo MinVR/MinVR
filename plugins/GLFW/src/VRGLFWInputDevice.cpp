@@ -46,13 +46,6 @@ VRGLFWInputDevice::~VRGLFWInputDevice() {
 void VRGLFWInputDevice::appendNewInputEventsSinceLastCall(VRDataQueue* queue) {
     glfwPollEvents();
 
-    // TODO: This should be moved out of the GLFW plugin and made a standard
-    // event that MinVR creates at the start of each frame.
-    std::string event = "FrameStart";
-    std::string dataField = "/ElapsedSeconds";
-    _dataIndex.addData(event + dataField, (float)glfwGetTime());
-    _events.push_back(_dataIndex.serialize(event));
-
     for (int f = 0; f < _events.size(); f++)
     {
     	queue->push(_events[f]);
