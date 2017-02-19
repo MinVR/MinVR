@@ -124,6 +124,7 @@ set(vr_main_cpp
   ${vr_src_dir}/main/VRGraphicsHandler.cpp
   ${vr_src_dir}/main/VRGraphicsStateInternal.cpp
   ${vr_src_dir}/main/VRMain.cpp
+  ${vr_src_dir}/main/VRSystem.cpp
   ${vr_src_dir}/main/impl/VRDefaultAppLauncher.cpp
 )
 
@@ -151,6 +152,7 @@ set(vr_main_h_main
   ${vr_src_dir}/main/VRMain.h
   ${vr_src_dir}/main/VRMainInterface.h
   ${vr_src_dir}/main/VRRenderHandler.h
+  ${vr_src_dir}/main/VRSystem.h
 )
 
 set(vr_main_h_impl

@@ -1,5 +1,7 @@
 #include <main/VRMain.h>
 
+#include <main/VRSystem.h>
+
 #include <stdio.h>
 #ifdef WIN32
 #include <windows.h>
@@ -160,6 +162,8 @@ void VRMain::initialize(int argc, char **argv, const std::string& configFile, st
 
 
 void VRMain::initialize(const VRAppLauncher& launcher) {
+	VRSystem::initialize();
+
 	std::string data = launcher.getInitString();
 
   //	std::cout << "initializing launcher with: " << data << std::endl;
@@ -550,6 +554,10 @@ VRMain::synchronizeAndProcessEvents()
 	}
 
 	VRDataQueue eventsFromDevices;
+    std::string event = "FrameStart";
+    std::string dataField = "/ElapsedSeconds";
+    _config->addData(event + dataField, (float)VRSystem::getTime());
+    eventsFromDevices.push(_config->serialize(event));
   
 	for (int f = 0; f < _inputDevices.size(); f++) {
 		_inputDevices[f]->appendNewInputEventsSinceLastCall(&eventsFromDevices);
@@ -650,9 +658,6 @@ VRMain::auditValuesFromAllDisplays()
 void 
 VRMain::shutdown()
 {
-	// TODO
-	_renderHandlers.clear();
-	_eventHandlers.clear();
     _shutdown = true;
 }
 
