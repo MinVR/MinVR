@@ -46,14 +46,3 @@ foreach(dataindextest ${dataindextests})
       FAIL_REGULAR_EXPRESSION "ERROR;FAIL;Test failed")
   endforeach()
 endforeach()
-
-
-project (test-memory)
-
-add_executable (test-memory memtest.cpp)
-target_link_libraries (test-memory MinVR)
-
-set_property(TARGET test-memory PROPERTY FOLDER "tests-batch")
-set_property(TARGET test-dataindex PROPERTY FOLDER "tests-batch")
-
-install(FILES test.xml DESTINATION ${CMAKE_INSTALL_PREFIX}/share/memtest)
