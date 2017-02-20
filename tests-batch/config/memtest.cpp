@@ -7,6 +7,49 @@
 #include <malloc.h>
 #endif
 
+
+bool fileGood(const std::string &fileName) {
+    std::ifstream infile(fileName);
+    return infile.good();
+}
+
+std::string findDataFile(const std::string &filename) {
+    std::string fname;
+    std::vector< std::string > checked;
+    
+    // 1. current working directory
+    fname = "./" + filename;
+    checked.push_back(fname);
+    if (fileGood(fname)) {
+        return fname;
+    }
+        
+    // 2. an installed version based on the INSTALL_PREFIX set with cmake
+    fname = std::string(INSTALLPATH) + "/share/memtest/" + filename;
+    checked.push_back(fname);
+    if (fileGood(fname)) {
+        return fname;
+    }
+    
+    // 3. an installed version based on MINVR_ROOT envvar
+    if (std::getenv("MINVR_ROOT")) {
+        fname = std::string(std::getenv("MINVR_ROOT")) + "/share/memtest/" + filename;
+        checked.push_back(fname);
+        if (fileGood(fname)) {
+          return fname;
+        }
+    }
+
+    std::cerr << "memtest Error: Cannot find data file " << filename
+              << " in the following " << checked.size() << " locations:" << std::endl;
+    for (int i=0; i<checked.size(); i++) {
+        std::cerr << i+1 << ": " << checked[i] << std::endl;
+    }
+    throw std::runtime_error("memtest Error: Cannot find data file " + filename);
+}
+
+
+
 int main(int argc, char** argv) {
 
   MinVR::VRDataIndex *n = new MinVR::VRDataIndex;
@@ -59,9 +102,8 @@ int main(int argc, char** argv) {
 
   n->addData("/donna/d0", d);
   
-  // This should be identified by an environment variable, whose value
-  // is decoded at this level. 
-  n->processXMLFile("${MVRHOME}/tests/config/test.xml", "/");
+  std::string filename = findDataFile("test.xml");
+  n->processXMLFile(filename, "/");
   
   n->printStructure();
   

@@ -41,7 +41,7 @@ foreach(dataindextest ${dataindextests})
   foreach(part ${${dataindextest}_parts})
     add_test(NAME test_${dataindextest}_${part}
       COMMAND ${CMAKE_BINARY_DIR}/bin/test-dataindex ${dataindextest}test ${part}
-      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests/config)
+      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests-batch/config)
     set_tests_properties(test_${dataindextest}_${part} PROPERTIES
       FAIL_REGULAR_EXPRESSION "ERROR;FAIL;Test failed")
   endforeach()
@@ -56,4 +56,4 @@ target_link_libraries (test-memory MinVR)
 set_property(TARGET test-memory PROPERTY FOLDER "tests-batch")
 set_property(TARGET test-dataindex PROPERTY FOLDER "tests-batch")
 
-
+install(FILES test.xml DESTINATION ${CMAKE_INSTALL_PREFIX}/share/memtest)
