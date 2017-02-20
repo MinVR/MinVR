@@ -37,7 +37,7 @@ public:
 	}
 
 	virtual ~VRAppInternal() {
-
+		delete _main;
 	}
 
 	void onVREvent(const VREvent &event) {

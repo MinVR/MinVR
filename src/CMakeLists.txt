@@ -45,7 +45,14 @@ project(libMinVR)
 
 
 set(vr_config_files
+  ${vr_src_dir}/../config/3DTV.minvr
+  ${vr_src_dir}/../config/desktop-oldopengl.minvr
   ${vr_src_dir}/../config/desktop.minvr
+  ${vr_src_dir}/../config/HTC_Vive.minvr
+  ${vr_src_dir}/../config/ivlabcave_multithreaded.minvr
+  ${vr_src_dir}/../config/ivlabcave.minvr
+  ${vr_src_dir}/../config/ivlabcavefront.minvr
+  ${vr_src_dir}/../config/YURT.minvr
 )
 
 
@@ -145,6 +152,7 @@ set(vr_main_cpp
   ${vr_src_dir}/main/VRGraphicsStateInternal.cpp
   ${vr_src_dir}/main/VRLocalAppLauncher.cpp
   ${vr_src_dir}/main/VRMain.cpp
+  ${vr_src_dir}/main/VRSystem.cpp
 )
 
 set(vr_main_h
@@ -159,6 +167,7 @@ set(vr_main_h
   ${vr_src_dir}/main/VRMain.h
   ${vr_src_dir}/main/VRMainInterface.h
   ${vr_src_dir}/main/VRRenderHandler.h
+  ${vr_src_dir}/main/VRSystem.h
 )
 
 set(vr_math_cpp
