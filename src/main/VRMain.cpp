@@ -218,11 +218,14 @@ void VRMain::setConfigValue(const std::string &key, const std::string &value) {
 void VRMain::processCommandLineArgs(std::string commandLine)  {
     
     std::stringstream argStream(commandLine);
+    int count = 0;
+    bool gotdata = false;
     
     while (argStream) {
         std::string arg;
         argStream >> arg;
         if (argStream) {
+            count++;
             int posdata = arg.find("MINVR_DATA=");
             int poseql = arg.find("=");
             int posext = arg.find(".minvr");
@@ -231,6 +234,9 @@ void VRMain::processCommandLineArgs(std::string commandLine)  {
             if ((arg == "-h") || (arg == "--help")) {
                 std::cout <<
                 "-h, --help         Display this help message.\n"
+                "\n"
+                "Add any of the following arguments to the command line as many times as\n"
+                "needed in a space separated list.\n"
                 "\n"
                 "<configname>       Search for and load the pre-installed MinVR config file\n"
                 "                   named <configname>.minvr -- the search looks in:\n"
@@ -274,6 +280,7 @@ void VRMain::processCommandLineArgs(std::string commandLine)  {
                 std::string decoded = VRAppLauncher::dataToArgs(data);
                 // recursive call to process arguments encoded in MINVR_DATA
                 processCommandLineArgs(decoded);
+                gotdata = true;
             }
             
             // case 2: a key=value pair
@@ -294,6 +301,13 @@ void VRMain::processCommandLineArgs(std::string commandLine)  {
                 loadInstalledConfiguration(configname);
             }
         }
+    }
+    
+    // If there were no command line arguments or if the only command line
+    // argument was the special MINVR_DATA=xxxx argument, then load the
+    // pre-installed default configuration.
+    if ((count == 0) || ((count == 1) && (gotdata))) {
+        loadInstalledConfiguration("default");
     }
 }
 

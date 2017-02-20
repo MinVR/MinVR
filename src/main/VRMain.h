@@ -67,6 +67,9 @@ public:
      
         -h, --help         Display a help message.
      
+        Add any of the following arguments to the command line as many times as
+        needed in a space separated list.
+     
         <configname>       Search for and load the pre-installed MinVR config file
                            named <configname>.minvr -- the search looks in:
                            1. the current working directory [cwd]
