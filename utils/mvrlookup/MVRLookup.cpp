@@ -3,8 +3,8 @@
 #include <iostream>
 #include <stdexcept>
 #include <sstream>
-#include "config/VRDataIndex.h"
-#include "config/VRDataQueue.h"
+#include <config/VRDataIndex.h>
+#include <config/VRDataQueue.h>
 
 // This program takes a config file, and a data name, and prints out
 // the value corresponding to that name on standard output.  If the
