@@ -257,6 +257,7 @@ install(FILES ${vr_math_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/math)
 install(FILES ${vr_net_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/net)
 install(FILES ${vr_plugin_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/plugin)
 
+install(FILES ${vr_config_files} DESTINATION ${CMAKE_INSTALL_PREFIX}/config)
 
 # TODO: move this to a test or examples directory
 #add_executable(MVRLookup ${vr_src_dir}/config/MVRLookup.cpp)
