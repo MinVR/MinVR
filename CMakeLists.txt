@@ -122,7 +122,6 @@ include_directories(
   ${vr_src_dir}
 )
 
-
 add_subdirectory(src)
 add_subdirectory(plugins)
 add_subdirectory(tests-batch)

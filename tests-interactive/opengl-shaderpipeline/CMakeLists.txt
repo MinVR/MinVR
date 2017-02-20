@@ -9,13 +9,7 @@ set(source_files
   main.cpp
 )
 
-set(config_files
-  desktop.xml
-)
-
 set_source_files_properties(${config_files} PROPERTIES HEADER_FILE_ONLY TRUE)
-
-source_group("Config Files" FILES ${config_files})
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	find_package(Threads)
@@ -24,7 +18,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 endif()
 
 
-add_executable(${PROJECT_NAME} ${source_files} ${config_files})
+add_executable(${PROJECT_NAME} ${source_files})
 
 target_link_libraries(${PROJECT_NAME} MinVR ${OPENGL_gl_LIBRARY} ${ALL_LIBS})
 

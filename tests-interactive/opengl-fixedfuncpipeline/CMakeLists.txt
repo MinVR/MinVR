@@ -10,7 +10,7 @@ set(source_files
 )
 
 set(config_files
-  desktop.xml
+  desktop-oldopengl.minvr
 )
 
 set_source_files_properties(${config_files} PROPERTIES HEADER_FILE_ONLY TRUE)
