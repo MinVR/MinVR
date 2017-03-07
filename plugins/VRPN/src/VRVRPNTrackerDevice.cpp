@@ -70,12 +70,14 @@ void VRPN_CALLBACK trackerHandler(void *thisPtr, const vrpn_TRACKERCB info)
 {
     double rotraw[16];
     q_to_ogl_matrix(rotraw, info.quat);
-    VRMatrix4 vrpnEvent(rotraw);
-  
-   // VRMatrix4 vrpnEvent;
-    vrpnEvent[3][0] = info.pos[0];
-    vrpnEvent[3][1] = info.pos[1];
-    vrpnEvent[3][2] = info.pos[2];
+    float rotrawf[16];
+    for (int i=0; i<16; i++) {
+        rotrawf[i] = (float)rotraw[i];
+    }
+    VRMatrix4 vrpnEvent(rotrawf);
+    vrpnEvent(0,3) = info.pos[0];
+    vrpnEvent(1,3) = info.pos[1];
+    vrpnEvent(2,3) = info.pos[2];
   
 	VRVRPNTrackerDevice* device = ((VRVRPNTrackerDevice*)thisPtr);
 	device->processEvent(vrpnEvent, info.sensor);
@@ -159,17 +161,17 @@ void VRVRPNTrackerDevice::processEvent(const VRMatrix4 &vrpnEvent, int sensorNum
 		// Coordinates to Right-Handed Coordinates" by David Eberly,
 		// available online:
 		// http://www.geometrictools.com/Documentation/LeftHandedToRightHanded.pdf
-		trackerToDevice[3][2] = -trackerToDevice[3][2];
+		trackerToDevice(2,3) = -trackerToDevice(2,3);
 
-		trackerToDevice[2][0] = -trackerToDevice[2][0];
-		trackerToDevice[2][1] = -trackerToDevice[2][1];
-		trackerToDevice[0][2] = -trackerToDevice[0][2];
-		trackerToDevice[1][2] = -trackerToDevice[1][2];
+		trackerToDevice(0,2) = -trackerToDevice(0,2);
+		trackerToDevice(1,2) = -trackerToDevice(1,2);
+        trackerToDevice(2,0) = -trackerToDevice(2,0);
+		trackerToDevice(2,1) = -trackerToDevice(2,1);
 	}
 
-	trackerToDevice[3][0] *= _trackerUnitsToRoomUnitsScale;
-	trackerToDevice[3][1] *= _trackerUnitsToRoomUnitsScale;
-	trackerToDevice[3][2] *= _trackerUnitsToRoomUnitsScale;
+	trackerToDevice(0,3) *= _trackerUnitsToRoomUnitsScale;
+	trackerToDevice(1,3) *= _trackerUnitsToRoomUnitsScale;
+	trackerToDevice(2,3) *= _trackerUnitsToRoomUnitsScale;
 
 	VRMatrix4 eventRoom = _finalOffset[sensorNum] * _deviceToRoom * trackerToDevice * _propToTracker[sensorNum];
 

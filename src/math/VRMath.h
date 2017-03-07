@@ -178,7 +178,7 @@ public:
   float* getArray() { return m; }
     
   /// Access an individual element of the array using the syntax:
-  /// VRMatrix4 mat; dobule row1col2 = mat(1,2);
+  /// VRMatrix4 mat; float row1col2 = mat(1,2);
   float operator()(const int row, const int col) const;
 
   /// Access an individual element of the array using the syntax:
