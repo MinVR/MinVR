@@ -72,8 +72,8 @@ void VRTUIODevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents)
 		if (_cursorsDown.find(tcur->getCursorID()) == _cursorsDown.end()) {
 			std::string event = "Touch_Cursor_Down";
 			_dataIndex.addData(event + "/Id", tcur->getCursorID());
-			_dataIndex.addData(event + "/XPos", _xScale*tcur->getX());
-			_dataIndex.addData(event + "/YPos", _yScale*tcur->getY());
+			_dataIndex.addData(event + "/XPos", (float)_xScale*tcur->getX());
+			_dataIndex.addData(event + "/YPos", (float)_yScale*tcur->getY());
 			inputEvents->push(_dataIndex.serialize(event));
 			_cursorsDown.insert(tcur->getCursorID());
 		}
@@ -81,8 +81,8 @@ void VRTUIODevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents)
 		if (tcur->getMotionSpeed() > 0.0) {
 			std::string event = "Touch_Cursor_Move";
 			_dataIndex.addData(event + "/Id", tcur->getCursorID());
-			_dataIndex.addData(event + "/XPos", _xScale*tcur->getX());
-			_dataIndex.addData(event + "/YPos", _yScale*tcur->getY());
+			_dataIndex.addData(event + "/XPos", (float)_xScale*tcur->getX());
+			_dataIndex.addData(event + "/YPos", (float)_yScale*tcur->getY());
 			inputEvents->push(_dataIndex.serialize(event));
 		}
 
