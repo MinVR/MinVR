@@ -54,43 +54,43 @@ typedef enum
 // Convert to a VRInt
 class VRIntConvertible {
 public:
-  virtual VRInt toVRInt() = 0;
+  virtual VRInt toVRInt() const = 0;
 };
 
 // Convert to a VRFloat
 class VRFloatConvertible {
 public:
-  virtual VRFloat toVRFloat() = 0;
+  virtual VRFloat toVRFloat() const = 0;
 };
 
 // Convert to a VRString
 class VRStringConvertible {
 public:
-  virtual VRString toVRString() = 0;
+  virtual VRString toVRString() const = 0;
 };
 
 // Convert to a VRIntArray
 class VRIntArrayConvertible {
 public:
-  virtual VRIntArray toVRIntArray() = 0;
+  virtual VRIntArray toVRIntArray() const = 0;
 };
 
 // Convert to a VRFloatArray
 class VRFloatArrayConvertible {
 public:
-  virtual VRFloatArray toVRFloatArray() = 0;
+  virtual VRFloatArray toVRFloatArray() const = 0;
 };
 
 // Convert to a VRStringArray
 class VRStringArrayConvertible {
 public:
-  virtual VRStringArray toVRStringArray() = 0;
+  virtual VRStringArray toVRStringArray() const = 0;
 };
 
 // Convert to a VRContainer
 class VRContainerConvertible {
 public:
-  virtual VRContainer toVRContainer() = 0;
+  virtual VRContainer toVRContainer() const = 0;
 };
 
 } // end namespace MinVR

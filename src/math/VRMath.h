@@ -62,7 +62,7 @@ public:
   float& operator[](const int i);
   
   /// Converts the point to a VRFloatArray for data in a VRDataIndex
-  VRFloatArray toVRFloatArray();
+  VRFloatArray toVRFloatArray() const;
 
 public:
   float x,y,z; 
@@ -129,7 +129,7 @@ public:
   VRVector3 normalize();
   
   /// Converts the point to a VRFloatArray for data in a VRDataIndex
-  VRFloatArray toVRFloatArray();
+  VRFloatArray toVRFloatArray() const;
 
 public:
   float x,y,z; 
@@ -252,7 +252,7 @@ public:
   
     
   /// Converts the point to a VRFloatArray for storage in a VRDataIndex
-  VRFloatArray toVRFloatArray();
+  VRFloatArray toVRFloatArray() const;
     
     
 private:

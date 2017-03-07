@@ -45,6 +45,8 @@ void VROpenVRInputDevice::updatePoses(){
 	for( vr::TrackedDeviceIndex_t unDevice = 0; unDevice < devices.size(); unDevice++ )
 	{
 		std::string event_name = devices[unDevice];
+        _dataIndex.addData(event_name + "/Pose", poseToMatrix4( &m_rTrackedDevicePose[unDevice]));
+        
 		_dataIndex.addData(event_name + "/Pose", poseToMatrix4( &m_rTrackedDevicePose[unDevice]));
 		_events.push_back(_dataIndex.serialize(event_name));
 	}
@@ -79,7 +81,7 @@ void VROpenVRInputDevice::reportStates(){
 		vr::VRControllerState_t state;
 		vr::TrackedDevicePose_t pose;
 		if(m_pHMD->GetTrackedDeviceClass(unDevice) == vr::TrackedDeviceClass_Controller &&
-			m_pHMD->GetControllerStateWithPose( vr::VRCompositor()->GetTrackingSpace(), unDevice, &state ,&pose)){
+			m_pHMD->GetControllerStateWithPose( vr::VRCompositor()->GetTrackingSpace(), unDevice, &state, &pose)){
 			std::string event_name = devices[unDevice];
 			_dataIndex.addData(event_name + "/State/Pose", poseToMatrix4(&pose));
 
