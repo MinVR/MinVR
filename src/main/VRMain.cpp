@@ -139,7 +139,7 @@ VRMain::~VRMain()
 
 
 bool fileGood(const std::string &fileName) {
-    std::ifstream infile(fileName);
+    std::ifstream infile(fileName.c_str());
     return infile.good();
 }
     
