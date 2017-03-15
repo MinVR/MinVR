@@ -70,37 +70,41 @@ public:
         Add any of the following arguments to the command line as many times as
         needed in a space separated list.
      
-        <configname>       Search for and load the pre-installed MinVR config file
+        -c <configname>, --load-config <configname>
+                           Search for and load the pre-installed MinVR config file
                            named <configname>.minvr -- the search looks in:
                            1. the current working directory [cwd]
                            2. [cwd]/config
                            3. ../../config (for developers running build tree
-                             executables from build/bin or tests/testname
+                              executables from build/bin or tests/testname
                            4. MINVR_ROOT/config if the MINVR_ROOT envvar is defined
                            5. the install_prefix specified when libMinVR was built.
+        
+        -f <path/file.minvr>, --load-file <path/file.minvr>
+                           Load the exact MinVR config file specified as a complete
+                           relative or absolute path and filename.
      
-        <path/file.minvr>  Load the exact MinVR config file specified as a complete
-                           relative or absolute path and filename.  The filename
-                           must include a .minvr extension to distinguish this
-                           option from loading a pre-installed configuration.
-     
-        <key>=<value>      Add an entry to the MinVR configuration directly from
+        -s <key>=<value>, --set-value <key>=<value>
+                           Add an entry to the MinVR configuration directly from
                            the command line rather than by specifying it in a
                            config file. This can be used to override one specific
                            option in a pre-installed configuration or config file
-                           specified earlier on the command line.  For example,
-                           "myprogram desktop WindowHeight=500 WindowWidth=500"
+                           specified earlier on the command line.  For example,\n"
+                           'myprogram -c desktop -s WindowHeight=500 -s WindowWidth=500'
                            would start myprogram, load the installed desktop MinVR
                            config and then override the WindowHeight and
-                           WindowWidth values specified in the pre-installed
-                           desktop configuration with the new values specified.
+                           WindowWidth values in the pre-installed desktop
+                           configuration with the new values specified.
      
         [nothing]          If no command line arguments are provided, then MinVR
                            will try to load the pre-installed default
                            configuration, whis is the same as running the command
-                           "myprogram default".
+                           'myprogram --load-config default'.
      
-        MINVR_DATA=xxxxx   A special command line argument reserved for internal
+        [anything else]    MinVR will silently ignore anything else provided as
+                           a command line option.
+     
+        --MINVR_DATA=xxxx  A special command line argument reserved for internal
                            use by MinVR.
      */
     void initializeWithMinVRCommandLineParsing(int argc, char **argv);
@@ -142,7 +146,7 @@ public:
          vrmain->loadInstalledConfiguration("WinToolkit_GLFW");
          vrmain->loadInstalledConfiguration("GfxToolkit_OpenGL");
          vrmain->loadConfigFile("/users/dan/myprogram/my-overrides.minvr");
-         vrmain->setConfigValue("StereoFormat", "Side-by-Side");
+         vrmain->setConfigValueByString("StereoFormat", "Side-by-Side");
          vrmain->initialize(argc, argv);
          
          while (vrmain->mainloop()) {}
@@ -172,8 +176,10 @@ public:
     /** For use before calling initializeWIthUserCommandLineParsing(..).
         This can be used to set a specific config key=value setting for MinVR
         directly from code rather than reading the setting in from a file.
+        The type is inferred automatically using the VRDataIndex.
+        @param keyAndValStr A string of the form "key=value".
      */
-    void setConfigValue(const std::string &key, const std::string &value);
+    void setConfigValueByString(const std::string &keyAndValStr);
     
     
 
@@ -242,6 +248,8 @@ public:
     void addPluginSearchPath(const std::string& path) {}
 
     std::list<std::string> auditValuesFromAllDisplays();
+    
+    void displayCommandLineHelp();
   
 private:
 

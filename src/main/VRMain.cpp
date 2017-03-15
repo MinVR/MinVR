@@ -207,106 +207,177 @@ void VRMain::loadConfigFile(const std::string &pathAndFilename) {
 }
 
     
-void VRMain::setConfigValue(const std::string &key, const std::string &value) {
+    
+void VRMain::setConfigValueByString(const std::string &keyAndValStr) {
+    int poseql = keyAndValStr.find("=");
+    if (poseql == std::string::npos) {
+        throw std::runtime_error("MinVR Error: Expected a key=value format for the string: " + keyAndValStr);
+    }
+    std::string key = keyAndValStr.substr(0,poseql);
+    std::string value = keyAndValStr.substr(poseql+1);
+    
     std::cout << "MinVR: Setting config value: " << key << "=" << value << std::endl;
-    _config->addData(key,value);
+
+    // if the key already exists, then match the existing type, otherwise infer
+    // the type as usual
+    VRCORETYPE_ID type;
+    if (_config->exists(key, "/")) {
+        type = _config->getType(key);
+    }
+    else {
+        type = _config->inferType(value);
+    }
+    
+    
+    if (type == VRCORETYPE_INT) {
+        _config->addData(key, _config->deserializeInt(value.c_str()));
+    }
+    else if (type == VRCORETYPE_FLOAT) {
+        _config->addData(key, _config->deserializeFloat(value.c_str()));
+    }
+    else if (type == VRCORETYPE_STRING) {
+        _config->addData(key, value);
+    }
+    else if (type == VRCORETYPE_INTARRAY) {
+        _config->addData(key, _config->deserializeIntArray(value.c_str(), MINVRSEPARATOR));
+    }
+    else if (type == VRCORETYPE_FLOATARRAY) {
+        _config->addData(key, _config->deserializeFloatArray(value.c_str(), MINVRSEPARATOR));
+    }
+    else if (type == VRCORETYPE_STRINGARRAY) {
+        _config->addData(key, _config->deserializeStringArray(value.c_str(), MINVRSEPARATOR));
+    }
     //std::cout << _config->printStructure() << std::endl;
 }
 
+    
+void VRMain::displayCommandLineHelp() {
+    std::cout <<
+    "-h, --help         Display this help message.\n"
+    "\n"
+    "Add any of the following arguments to the command line as many times as\n"
+    "needed in a space separated list.\n"
+    "\n"
+    "-c <configname>, --load-config <configname>\n"
+    "                   Search for and load the pre-installed MinVR config file\n"
+    "                   named <configname>.minvr -- the search looks in:\n"
+    "                   1. the current working directory [cwd]\n"
+    "                   2. [cwd]/config\n"
+    "                   3. ../../config (for developers running build tree\n"
+    "                      executables from build/bin or tests/testname\n"
+    "                   4. MINVR_ROOT/config if the MINVR_ROOT envvar is defined\n"
+    "                   5. the install_prefix specified when libMinVR was built.\n"
+    "\n"
+    "-f <path/file.minvr>, --load-file <path/file.minvr>\n"
+    "                   Load the exact MinVR config file specified as a complete\n"
+    "                   relative or absolute path and filename.\n"
+    "\n"
+    "-s <key>=<value>, --set-value <key>=<value>\n"
+    "                   Add an entry to the MinVR configuration directly from\n"
+    "                   the command line rather than by specifying it in a\n"
+    "                   config file. This can be used to override one specific\n"
+    "                   option in a pre-installed configuration or config file\n"
+    "                   specified earlier on the command line.  For example,\n"
+    "                   'myprogram -c desktop -s WindowHeight=500 -s WindowWidth=500'\n"
+    "                   would start myprogram, load the installed desktop MinVR\n"
+    "                   config and then override the WindowHeight and\n"
+    "                   WindowWidth values in the pre-installed desktop\n"
+    "                   configuration with the new values specified.\n"
+    "\n"
+    "[nothing]          If no command line arguments are provided, then MinVR\n"
+    "                   will try to load the pre-installed default\n"
+    "                   configuration, whis is the same as running the command\n"
+    "                   'myprogram --load-config default'.\n"
+    "\n"
+    "[anything else]    MinVR will silently ignore anything else provided as\n"
+    "                   a command line option.\n"
+    "\n"
+    "--MINVR_DATA=xxxx  A special command line argument reserved for internal\n"
+    "                   use by MinVR.\n"
+    << std::endl;
+}
     
 
 void VRMain::processCommandLineArgs(std::string commandLine)  {
     
     std::stringstream argStream(commandLine);
     int count = 0;
-    bool gotdata = false;
+    bool processeddata = false;
     
     while (argStream) {
         std::string arg;
         argStream >> arg;
         if (argStream) {
             count++;
-            int posdata = arg.find("MINVR_DATA=");
-            int poseql = arg.find("=");
-            int posext = arg.find(".minvr");
+            
+            bool got_help   = ((arg == "-h") || (arg == "--help"));
+            
+            bool got_config = ((arg == "-c") || (arg == "--load-config"));
+            
+            bool got_file   = ((arg == "-f") || (arg == "--load-file"));
+            
+            bool got_keyval = ((arg == "-s") || (arg == "--set-value"));
+            
+            //bool got_envvar = ((arg == "-e") || (arg == "--set-envvar"));
+            
+            bool got_data   = (arg.find("--MINVR_DATA=") == 0);
+            
+            
             
             // case 0: display help and exit
-            if ((arg == "-h") || (arg == "--help")) {
-                std::cout <<
-                "-h, --help         Display this help message.\n"
-                "\n"
-                "Add any of the following arguments to the command line as many times as\n"
-                "needed in a space separated list.\n"
-                "\n"
-                "<configname>       Search for and load the pre-installed MinVR config file\n"
-                "                   named <configname>.minvr -- the search looks in:\n"
-                "                   1. the current working directory [cwd]\n"
-                "                   2. [cwd]/config\n"
-                "                   3. ../../config (for developers running build tree\n"
-                "                      executables from build/bin or tests/testname\n"
-                "                   4. MINVR_ROOT/config if the MINVR_ROOT envvar is defined\n"
-                "                   5. the install_prefix specified when libMinVR was built.\n"
-                "\n"
-                "<path/file.minvr>  Load the exact MinVR config file specified as a complete\n"
-                "                   relative or absolute path and filename.  The filename\n"
-                "                   must include a .minvr extension to distinguish this\n"
-                "                   option from loading a pre-installed configuration.\n"
-                "\n"
-                "<key>=<value>      Add an entry to the MinVR configuration directly from\n"
-                "                   the command line rather than by specifying it in a\n"
-                "                   config file. This can be used to override one specific\n"
-                "                   option in a pre-installed configuration or config file\n"
-                "                   specified earlier on the command line.  For example,\n"
-                "                   'myprogram desktop WindowHeight=500 WindowWidth=500'\n"
-                "                   would start myprogram, load the installed desktop MinVR\n"
-                "                   config and then override the WindowHeight and\n"
-                "                   WindowWidth values specified in the pre-installed\n"
-                "                   desktop configuration with the new values specified.\n"
-                "\n"
-                "[nothing]          If no command line arguments are provided, then MinVR\n"
-                "                   will try to load the pre-installed default\n"
-                "                   configuration, whis is the same as running the command\n"
-                "                   'myprogram default'.\n"
-                "\n"
-                "MINVR_DATA=xxxxx   A special command line argument reserved for internal\n"
-                "                   use by MinVR.\n"
-                << std::endl;
+            if (got_help) {
+                displayCommandLineHelp();
                 exit(0);
             }
             
-            // case 1: the special MINVR_DATA=xxxx flag
-            else if (posdata != std::string::npos) {
-                std::string data = arg.substr(posdata+11);
+            // case 1: a pre-installed MinVR configuration <configname>.minvr
+            else if (got_config) {
+                argStream >> arg;
+                loadInstalledConfiguration(arg);
+            }
+            
+            // case 2: a specific path/filename.minvr config file to load
+            else if (got_file) {
+                argStream >> arg;
+                loadConfigFile(arg);
+            }
+
+            // case 3: a key=value pair to add to the config
+            else if (got_keyval) {
+                argStream >> arg;
+                setConfigValueByString(arg);
+            }
+            
+            /*
+            // case 4: a varname=value to set as an environment variable
+            else if (got_envvar) {
+                argStream >> arg;
+                int poseql = arg.find("=");
+                if (poseql == std::string::npos) {
+                    throw std::runtime_error("MinVR Error: Cannot set value, expected to find an = sign on the command line.");
+                }
+                std::string key = arg.substr(0,poseql);
+                std::string value = arg.substr(poseql+1);
+                // TODO: ????  setenv(key.c_str(), value.c_str(), ??);
+            }
+            */
+
+            // case 5: the special --MINVR_DATA=xxxx flag
+            else if (got_data) {
+                int posdata = arg.find("--MINVR_DATA=");
+                std::string data = arg.substr(posdata+13);
                 std::string decoded = VRAppLauncher::dataToArgs(data);
                 // recursive call to process arguments encoded in MINVR_DATA
                 processCommandLineArgs(decoded);
-                gotdata = true;
-            }
-            
-            // case 2: a key=value pair
-            else if (poseql != std::string::npos) {
-                std::string key = arg.substr(0,poseql);
-                std::string value = arg.substr(poseql+1);
-                setConfigValue(key, value);
-            }
-            
-            // case 3: a specific path/filename.minvr config file to load
-            else if (posext != std::string::npos) {
-                loadConfigFile(arg);
-            }
-            
-            // case 4: a pre-installed MinVR configuration <configname>.minvr
-            else {
-                std::string configname = arg.substr(0,posext);
-                loadInstalledConfiguration(configname);
+                processeddata = true;
             }
         }
     }
     
     // If there were no command line arguments or if the only command line
-    // argument was the special MINVR_DATA=xxxx argument, then load the
+    // argument was the special --MINVR_DATA=xxxx argument, then load the
     // pre-installed default configuration.
-    if ((count == 0) || ((count == 1) && (gotdata))) {
+    if ((count == 0) || ((count == 1) && (processeddata))) {
         loadInstalledConfiguration("default");
     }
 }
@@ -332,14 +403,14 @@ void VRMain::initializeWithMinVRCommandLineParsing(int argc, char **argv) {
     
 void VRMain::initializeWithUserCommandLineParsing(int argc, char **argv) {
     // In this case, ignore all the command line arguments except for
-    // one of the format MINVR_DATA=xxxx.  If present, this must be a child
+    // one of the format --MINVR_DATA=xxxx.  If present, this must be a child
     // process and the parent is passing its config data to us.
     std::string minvrData;
     for (int i=1; i<argc; i++) {
         std::string argstr(argv[i]);
-        int posdata = argstr.find("MINVR_DATA=");
+        int posdata = argstr.find("--MINVR_DATA=");
         if (posdata != std::string::npos) {
-            // process just this one MINVR_DATA=xxxx argument
+            // process just this one --MINVR_DATA=xxxx argument
             processCommandLineArgs(argstr);
         }
     }
