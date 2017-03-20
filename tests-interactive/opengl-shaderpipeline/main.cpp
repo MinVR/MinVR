@@ -65,7 +65,9 @@ public:
 	void onVRRenderGraphicsContext(const VRGraphicsState &renderState) {
 		// If this is the inital call, initialize context variables
 		if (renderState.isInitialRenderCall()) {
+#if defined(WIN32)
 			glewInit();
+#endif
 			// Init GL
 			glEnable(GL_DEPTH_TEST);
 			glClearDepth(1.0f);
