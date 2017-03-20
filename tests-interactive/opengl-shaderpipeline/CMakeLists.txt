@@ -13,6 +13,12 @@ set(config_files
   desktop.xml
 )
 
+if (MSVC)
+	find_package(GLEW REQUIRED)
+	include_directories(${GLEW_INCLUDE_DIRS})
+	set(ALL_LIBS ${ALL_LIBS} ${GLEW_LIBRARIES})
+endif()
+
 set_source_files_properties(${config_files} PROPERTIES HEADER_FILE_ONLY TRUE)
 
 source_group("Config Files" FILES ${config_files})

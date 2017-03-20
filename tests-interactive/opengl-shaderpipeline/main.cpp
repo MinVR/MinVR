@@ -4,6 +4,7 @@
 #if defined(WIN32)
 #define NOMINMAX
 #include <windows.h>
+#include "GL/glew.h"
 #include <GL/gl.h>
 #elif defined(__APPLE__)
 #define GL_GLEXT_PROTOTYPES
@@ -64,6 +65,7 @@ public:
 	void onVRRenderGraphicsContext(const VRGraphicsState &renderState) {
 		// If this is the inital call, initialize context variables
 		if (renderState.isInitialRenderCall()) {
+			glewInit();
 			// Init GL
 			glEnable(GL_DEPTH_TEST);
 			glClearDepth(1.0f);
