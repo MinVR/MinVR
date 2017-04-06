@@ -16,7 +16,7 @@ source_group("Header Files" FILES ${HEADERFILES})
 #set_property(TARGET FreeGLUT PROPERTY FOLDER "Dependencies")
 SET(CMAKE_MODULE_PATH  ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH} )
 find_package(FreeGLUT REQUIRED)
-include_directories(${FREEFreeGLUT_INCLUDE_DIR})
+include_directories(${FREEGLUT_INCLUDE_DIR})
 
 # OpenGL
 find_package(OpenGL REQUIRED)
