@@ -45,6 +45,8 @@ void VROpenVRInputDevice::updatePoses(){
 	for( vr::TrackedDeviceIndex_t unDevice = 0; unDevice < devices.size(); unDevice++ )
 	{
 		std::string event_name = devices[unDevice];
+        _dataIndex.addData(event_name + "/Pose", poseToMatrix4( &m_rTrackedDevicePose[unDevice]));
+        
 		_dataIndex.addData(event_name + "/Pose", poseToMatrix4( &m_rTrackedDevicePose[unDevice]));
 		_events.push_back(_dataIndex.serialize(event_name));
 	}
@@ -79,7 +81,7 @@ void VROpenVRInputDevice::reportStates(){
 		vr::VRControllerState_t state;
 		vr::TrackedDevicePose_t pose;
 		if(m_pHMD->GetTrackedDeviceClass(unDevice) == vr::TrackedDeviceClass_Controller &&
-			m_pHMD->GetControllerStateWithPose( vr::VRCompositor()->GetTrackingSpace(), unDevice, &state ,&pose)){
+			m_pHMD->GetControllerStateWithPose( vr::VRCompositor()->GetTrackingSpace(), unDevice, &state, &pose)){
 			std::string event_name = devices[unDevice];
 			_dataIndex.addData(event_name + "/State/Pose", poseToMatrix4(&pose));
 
@@ -259,7 +261,7 @@ VRMatrix4 VROpenVRInputDevice::poseToMatrix4(vr::TrackedDevicePose_t *pose)
 		return VRMatrix4();
 
 	
-	VRMatrix4 mat(
+	VRMatrix4 mat = VRMatrix4::fromRowMajorElements(
 		pose->mDeviceToAbsoluteTracking.m[0][0], pose->mDeviceToAbsoluteTracking.m[1][0], pose->mDeviceToAbsoluteTracking.m[2][0], 0.0, 
 		pose->mDeviceToAbsoluteTracking.m[0][1], pose->mDeviceToAbsoluteTracking.m[1][1], pose->mDeviceToAbsoluteTracking.m[2][1], 0.0,
 		pose->mDeviceToAbsoluteTracking.m[0][2], pose->mDeviceToAbsoluteTracking.m[1][2], pose->mDeviceToAbsoluteTracking.m[2][2], 0.0,

@@ -246,9 +246,9 @@ void VRMain::initialize(const VRAppLauncher& launcher) {
 				if(_config->exists("LogToFile",*it)){
 					std::string logFile = _config->getValue("LogToFile",*it);
 
-					sshcmd = "ssh " + nodeIP + " '" + command + launcher.generateCommandLine(sshData) + " > " + logFile + " " +  "2>&1 &'";
+					sshcmd = "ssh " + nodeIP + " '" + command + launcher.generateCommandLine(sshData) + " > " + logFile + " " +  "2>&1 &' &";
 				}else{
-					sshcmd = "ssh " + nodeIP + " '" + command + launcher.generateCommandLine(sshData) + " > /dev/null 2>&1 &'";
+					sshcmd = "ssh " + nodeIP + " '" + command + launcher.generateCommandLine(sshData) + " > /dev/null 2>&1 &' &";
 					//sshcmd = "ssh " + nodeIP + " '" + command + launcher.generateCommandLine(sshData) + "'";
 				}
 

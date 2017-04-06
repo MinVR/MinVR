@@ -63,7 +63,7 @@ float& VRPoint3::operator[](const int i) {
   else return z;
 }
 
-VRFloatArray VRPoint3::toVRFloatArray() {
+VRFloatArray VRPoint3::toVRFloatArray() const {
   VRFloatArray a;
   a.push_back(x);
   a.push_back(y);
@@ -156,7 +156,7 @@ VRVector3 VRVector3::normalize() {
   return VRVector3(xx, yy, zz);
 }
 
-VRFloatArray VRVector3::toVRFloatArray() {
+VRFloatArray VRVector3::toVRFloatArray() const {
   VRFloatArray a;
   a.push_back(x);
   a.push_back(y);
@@ -426,7 +426,7 @@ VRVector3 VRMatrix4::getColumn(int c) const {
 }
 
 
-VRFloatArray VRMatrix4::toVRFloatArray() {
+VRFloatArray VRMatrix4::toVRFloatArray() const {
   VRFloatArray a;
   a.push_back(m[0]);
   a.push_back(m[1]);
