@@ -8,10 +8,10 @@ std::string VRDataIndex::rootNameSpace = "/";
 // add an entry here to register the new data type.
 VRDataIndex::VRDataIndex()  : overwrite(1) {
   factory.RegisterVRDatum(VRCORETYPE_INT, CreateVRDatumInt);
-  factory.RegisterVRDatum(VRCORETYPE_DOUBLE, CreateVRDatumDouble);
+  factory.RegisterVRDatum(VRCORETYPE_FLOAT, CreateVRDatumFloat);
   factory.RegisterVRDatum(VRCORETYPE_STRING, CreateVRDatumString);
   factory.RegisterVRDatum(VRCORETYPE_INTARRAY, CreateVRDatumIntArray);
-  factory.RegisterVRDatum(VRCORETYPE_DOUBLEARRAY, CreateVRDatumDoubleArray);
+  factory.RegisterVRDatum(VRCORETYPE_FLOATARRAY, CreateVRDatumFloatArray);
   factory.RegisterVRDatum(VRCORETYPE_STRINGARRAY, CreateVRDatumStringArray);
   factory.RegisterVRDatum(VRCORETYPE_CONTAINER, CreateVRDatumContainer);
 
@@ -80,9 +80,9 @@ VRInt VRDataIndex::deserializeInt(const char* valueString) {
   return iVal;
 }
 
-VRDouble VRDataIndex::deserializeDouble(const char* valueString) {
-  double fVal;
-  sscanf(valueString, "%lf", &fVal);
+VRFloat VRDataIndex::deserializeFloat(const char* valueString) {
+  float fVal;
+  sscanf(valueString, "%f", &fVal);
 
   return fVal;
 }
@@ -109,18 +109,18 @@ VRIntArray VRDataIndex::deserializeIntArray(const char* valueString,
   return vVal;
 }
 
-VRDoubleArray VRDataIndex::deserializeDoubleArray(const char* valueString,
+VRFloatArray VRDataIndex::deserializeFloatArray(const char* valueString,
                                                   const char separator) {
 
-  VRDoubleArray vVal;
+  VRFloatArray vVal;
 
   // Separate the name space into its constituent elements.
   std::string elem;
-  VRDouble fVal;
+  VRFloat fVal;
   std::stringstream ss(valueString);
   while (std::getline(ss, elem, separator)) {
 
-    sscanf(elem.c_str(), "%lf", &fVal);
+    sscanf(elem.c_str(), "%f", &fVal);
     vVal.push_back(fVal);
   }
 
@@ -175,8 +175,8 @@ std::string VRDataIndex::processValue(const std::string name,
     out = addData(name, (VRInt)deserializeInt(valueString));
     break;
 
-  case VRCORETYPE_DOUBLE:
-    out = addData(name, (VRDouble)deserializeDouble(valueString));
+  case VRCORETYPE_FLOAT:
+    out = addData(name, (VRFloat)deserializeFloat(valueString));
     break;
 
   case VRCORETYPE_STRING:
@@ -187,8 +187,8 @@ std::string VRDataIndex::processValue(const std::string name,
     out = addData(name, (VRIntArray)deserializeIntArray(valueString, separator));
     break;
 
-  case VRCORETYPE_DOUBLEARRAY:
-    out = addData(name, (VRDoubleArray)deserializeDoubleArray(valueString, separator));
+  case VRCORETYPE_FLOATARRAY:
+    out = addData(name, (VRFloatArray)deserializeFloatArray(valueString, separator));
     break;
 
   case VRCORETYPE_STRINGARRAY:
@@ -234,10 +234,20 @@ std::string VRDataIndex::walkXML(element* node, std::string nameSpace) {
       typeId = inferType(std::string(node->get_value()));
     }
 
-  } else { // what does map return if no match?
+  } else { 
 
-    typeId = mVRTypeMap[std::string(node->get_attribute("type")->get_value())];
+    // Check to see if the type is one we can handle.
+    VRTypeMap::iterator it =
+      mVRTypeMap.find(std::string(node->get_attribute("type")->get_value()));
 
+    if (it == mVRTypeMap.end()) {
+      // If not, throw an error.
+      throw std::runtime_error("No known type called " +
+                               std::string(node->get_attribute("type")->get_value()));
+    } else {
+      // Otherwise, pass it along as the typeID.
+      typeId = it->second;
+    }
   }
 
   // Get a value for the node.
@@ -323,8 +333,8 @@ VRCORETYPE_ID VRDataIndex::inferType(const std::string valueString) {
   int conInt = strtol(valueString.c_str(), &p, 10);
   if (!*p) return VRCORETYPE_INT;
 
-  double conDouble = strtod(valueString.c_str(), &p);
-  if (!*p) return VRCORETYPE_DOUBLE;
+  float conFloat = strtod(valueString.c_str(), &p);
+  if (!*p) return VRCORETYPE_FLOAT;
 
   // Is it a container?
   std::size_t firstChar = valueString.find_first_not_of(" \t\r\n");
@@ -340,8 +350,8 @@ VRCORETYPE_ID VRDataIndex::inferType(const std::string valueString) {
     conInt = strtol(valueString.substr(0, firstChar).c_str(), &p, 10);
     if (!*p) return VRCORETYPE_INTARRAY;
 
-    conDouble = strtod(valueString.substr(0, firstChar).c_str(), &p);
-    if (!*p) return VRCORETYPE_DOUBLEARRAY;
+    conFloat = strtod(valueString.substr(0, firstChar).c_str(), &p);
+    if (!*p) return VRCORETYPE_FLOATARRAY;
   }    
   
   // Not any of the above?  Probably a string.
@@ -582,17 +592,17 @@ std::string VRDataIndex::getNameSpace(const std::string fullName) {
   if (fullName.length() > 0) {
 
     // Start at the end.
-    std::string::const_iterator it = fullName.end();
+    std::string::const_reverse_iterator it = fullName.rbegin();
 
     int charLimit = 0;
     // March backward to the first '/' (if there was one).
-    while (((*(--it)) != '/') && (charLimit < fullName.length())) { charLimit++; };
+    while (((*(++it)) != '/') && (charLimit < fullName.length())) { charLimit++; };
 
     // There was no slash at all.
     if (charLimit >= fullName.length()) return std::string("");
-    
+
     // An obscure feature of the std::string constructor.
-    return std::string(fullName.begin(), it + 1);
+    return std::string(fullName.begin(), it.base());
 
   } else {
 
@@ -946,9 +956,9 @@ std::string VRDataIndex::addData(const std::string valName, VRInt value) {
   return addDataSpecialized<VRInt, VRCORETYPE_INT>(valName, value);
 }
 
-std::string VRDataIndex::addData(const std::string valName, VRDouble value) {
+std::string VRDataIndex::addData(const std::string valName, VRFloat value) {
 
-  return addDataSpecialized<VRDouble, VRCORETYPE_DOUBLE>(valName, value);
+  return addDataSpecialized<VRFloat, VRCORETYPE_FLOAT>(valName, value);
 }
 
 std::string VRDataIndex::addData(const std::string valName, VRString value) {
@@ -961,9 +971,9 @@ std::string VRDataIndex::addData(const std::string valName, VRIntArray value) {
   return addDataSpecialized<VRIntArray, VRCORETYPE_INTARRAY>(valName, value);
 }
 
-std::string VRDataIndex::addData(const std::string valName, VRDoubleArray value) {
+std::string VRDataIndex::addData(const std::string valName, VRFloatArray value) {
 
-  return addDataSpecialized<VRDoubleArray, VRCORETYPE_DOUBLEARRAY>(valName, value);
+  return addDataSpecialized<VRFloatArray, VRCORETYPE_FLOATARRAY>(valName, value);
 }
 
 std::string VRDataIndex::addData(const std::string valName, VRStringArray value) {
@@ -1036,6 +1046,7 @@ std::string VRDataIndex::printStructure(const std::string itemName, const int li
 
     // Get the pieces of the current name.
     std::vector<std::string> elems = explodeName( it->first );
+    if (elems.size() == 0) continue;
 
     // Is it the same as the itemName?
     for (i = 1; i < min(itemElems.size(), elems.size()); i++) {

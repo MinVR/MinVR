@@ -58,7 +58,7 @@ VRScalableNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 	if (renderState->exists("LookAtMatrix","/")){
 		VRMatrix4 lookAtMatrix = renderState->getValue("LookAtMatrix","/");
 		VRMatrix4 head_frame = lookAtMatrix.inverse();
-		pe = VRPoint3(head_frame[3][0],head_frame[3][1], head_frame[3][2]);
+		pe = VRPoint3(head_frame(0,3),head_frame(1,3), head_frame(2,3));
 	}
 
 	EasyBlendSDK_SetEyepoint(gMSDK,pe[0],-pe[1],-pe[2]);

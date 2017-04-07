@@ -1,5 +1,7 @@
 #include <main/VRMain.h>
 
+#include <main/VRSystem.h>
+
 #include <stdio.h>
 #ifdef WIN32
 #include <windows.h>
@@ -15,11 +17,13 @@
 #include <display/VRViewportNode.h>
 #include <display/VRLookAtNode.h>
 #include <display/VRTrackedLookAtNode.h>
+#include <input/VRFakeTrackerDevice.h>
 #include <net/VRNetClient.h>
 #include <net/VRNetServer.h>
 #include <plugin/VRPluginManager.h>
 #include <sstream>
 #include <main/impl/VRDefaultAppLauncher.h>
+#include <main/VREventInternal.h>
 #include <cstdlib>
 
 namespace MinVR {
@@ -76,7 +80,7 @@ std::string getCurrentWorkingDir()
 }
 
 
-VRMain::VRMain() : _initialized(false), _config(NULL), _net(NULL), _factory(NULL), _pluginMgr(NULL), _frame(0)
+VRMain::VRMain() : _initialized(false), _config(NULL), _net(NULL), _factory(NULL), _pluginMgr(NULL), _frame(0), _shutdown(false)
 {
 	_factory = new VRFactory();
 	// add sub-factories that are part of the MinVR core library right away
@@ -89,7 +93,8 @@ VRMain::VRMain() : _initialized(false), _config(NULL), _net(NULL), _factory(NULL
 	_factory->registerItemType<VRDisplayNode, VRLookAtNode>("VRLookAtNode");
 	_factory->registerItemType<VRDisplayNode, VRTrackedLookAtNode>("VRTrackedLookAtNode");
 	_factory->registerItemType<VRDisplayNode, VRViewportNode>("VRViewportNode");
-	_pluginMgr = new VRPluginManager(this);
+    _factory->registerItemType<VRInputDevice, VRFakeTrackerDevice>("VRFakeTrackerDevice");
+    _pluginMgr = new VRPluginManager(this);
 }
 
 
@@ -157,6 +162,8 @@ void VRMain::initialize(int argc, char **argv, const std::string& configFile, st
 
 
 void VRMain::initialize(const VRAppLauncher& launcher) {
+	VRSystem::initialize();
+
 	std::string data = launcher.getInitString();
 
   //	std::cout << "initializing launcher with: " << data << std::endl;
@@ -239,9 +246,9 @@ void VRMain::initialize(const VRAppLauncher& launcher) {
 				if(_config->exists("LogToFile",*it)){
 					std::string logFile = _config->getValue("LogToFile",*it);
 
-					sshcmd = "ssh " + nodeIP + " '" + command + launcher.generateCommandLine(sshData) + " > " + logFile + " " +  "2>&1 &'";
+					sshcmd = "ssh " + nodeIP + " '" + command + launcher.generateCommandLine(sshData) + " > " + logFile + " " +  "2>&1 &' &";
 				}else{
-					sshcmd = "ssh " + nodeIP + " '" + command + launcher.generateCommandLine(sshData) + " > /dev/null 2>&1 &'";
+					sshcmd = "ssh " + nodeIP + " '" + command + launcher.generateCommandLine(sshData) + " > /dev/null 2>&1 &' &";
 					//sshcmd = "ssh " + nodeIP + " '" + command + launcher.generateCommandLine(sshData) + "'";
 				}
 
@@ -356,7 +363,7 @@ void VRMain::initialize(const VRAppLauncher& launcher) {
 			std::vector<std::string> pluginSearchPaths;
 			if (_config->exists("PluginPath", *it)){
 				std::string path = _config->getValue("PluginPath", *it);
-				pluginSearchPaths.push_back(path);
+				pluginSearchPaths.push_back(_config->dereferenceEnvVars(path));
 			}
 			pluginSearchPaths.push_back(".");
 			pluginSearchPaths.push_back("./plugins");
@@ -536,7 +543,7 @@ void VRMain::initialize(const VRAppLauncher& launcher) {
 	}
 
 	_initialized = true;
-
+    _shutdown = false;
 }
 
 void 
@@ -547,6 +554,11 @@ VRMain::synchronizeAndProcessEvents()
 	}
 
 	VRDataQueue eventsFromDevices;
+    std::string event = "FrameStart";
+    std::string dataField = "/ElapsedSeconds";
+    _config->addData(event + dataField, (float)VRSystem::getTime());
+    eventsFromDevices.push(_config->serialize(event));
+  
 	for (int f = 0; f < _inputDevices.size(); f++) {
 		_inputDevices[f]->appendNewInputEventsSinceLastCall(&eventsFromDevices);
 	}
@@ -568,11 +580,13 @@ VRMain::synchronizeAndProcessEvents()
 	VRDataQueue *events = new VRDataQueue(eventData);
 	while (events->notEmpty()) {
 		// Unpack the next item from the queue.
-		std::string event = _config->addSerializedValue( events->getSerializedObject() );
+		std::string eventName = _config->addSerializedValue( events->getSerializedObject() );
 
+        VREventInternal event(eventName, _config);
+      
 		// Invoke the user's callback on the new event
 		for (int f = 0; f < _eventHandlers.size(); f++) {
-			_eventHandlers[f]->onVREvent(event, _config);
+			_eventHandlers[f]->onVREvent(*event.getAPIEvent());
 		}
 
 		// Get the next item from the queue.
@@ -644,9 +658,7 @@ VRMain::auditValuesFromAllDisplays()
 void 
 VRMain::shutdown()
 {
-	// TODO
-	_renderHandlers.clear();
-	_eventHandlers.clear();
+    _shutdown = true;
 }
 
 

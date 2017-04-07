@@ -75,7 +75,7 @@ public:
 	PLUGIN_API virtual ~VRVRPNAnalogDevice();
 
 	PLUGIN_API void        appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents);
-	PLUGIN_API void        sendEventIfChanged(int channelNumber, double data);
+	PLUGIN_API void        sendEventIfChanged(int channelNumber, float data);
 	PLUGIN_API std::string getEventName(int channelNumber);
 	PLUGIN_API size_t      numChannels() { return _eventNames.size(); }
 	PLUGIN_API static VRInputDevice* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
@@ -83,7 +83,7 @@ public:
 private:
 	vrpn_Analog_Remote        *_vrpnDevice;
 	std::vector<std::string>   _eventNames;
-	std::vector<double>        _channelValues;
+	std::vector<float>        _channelValues;
 	VRDataQueue                _pendingEvents;
 };
 

@@ -100,7 +100,7 @@ Author(s) of Significant Updates/Modifications to the File:
 ///
 ///     <bob type="container">
 ///        <flora type="int">42</flora>
-///        <pi type="double">3.1415926</pi>
+///        <pi type="float">3.1415926</pi>
 ///     </bob>
 ///
 ///     The type attributes are usually superfluous, since the code can
@@ -140,8 +140,8 @@ Author(s) of Significant Updates/Modifications to the File:
 ///  hate remembering how to spell the static_cast<>() options, so
 ///  these are provided as a convenience via a helper class methods to
 ///  the pointer objects.  So (int)p->getValue() gets you an integer
-///  and (double)p->getValue() gets you a double. (So long as the
-///  relevant objects actually contain an integer and double, otherwise
+///  and (float)p->getValue() gets you a float. (So long as the
+///  relevant objects actually contain an integer and float, otherwise
 ///  you get an error.)
 ///
 ///  To use, do this:
@@ -198,9 +198,12 @@ private:
   VRDatumFactory factory;
 
   // This is just a convenience to map strings to object type numbers.
-  std::map<std::string, VRCORETYPE_ID> mVRTypeMap;
+  typedef std::map<std::string, VRCORETYPE_ID> VRTypeMap;
+  VRTypeMap mVRTypeMap;
 
   typedef std::map<std::string, VRDatumPtr> VRDataMap;
+  // Aspirational:
+  //typedef std::map<std::string, std::vector<VRDatumPtr> > VRDataMap;
   VRDataMap mindex;
 
   // If this is 1, new values will overwrite old ones.  For -1, new
@@ -258,10 +261,10 @@ private:
   // implied.  There is no deserializeContainer, since that's what
   // walkXML does.
   VRInt deserializeInt(const char* valueString);
-  VRDouble deserializeDouble(const char* valueString);
+  VRFloat deserializeFloat(const char* valueString);
   VRString deserializeString(const char* valueString);
   VRIntArray deserializeIntArray(const char* valueString, const char separator);
-  VRDoubleArray deserializeDoubleArray(const char* valueString,
+  VRFloatArray deserializeFloatArray(const char* valueString,
                                        const char separator);
   VRStringArray deserializeStringArray(const char* valueString,
                                        const char separator);
@@ -278,8 +281,8 @@ private:
     p.intVal()->setValue(value);
   }
   
-  void setValueSpecialized(VRDatumPtr p, VRDouble value) {
-    p.doubleVal()->setValue(value);
+  void setValueSpecialized(VRDatumPtr p, VRFloat value) {
+    p.floatVal()->setValue(value);
   }
   
   void setValueSpecialized(VRDatumPtr p, VRString value) {
@@ -290,8 +293,8 @@ private:
     p.intArrayVal()->setValue(value);
   }
   
-  void setValueSpecialized(VRDatumPtr p, VRDoubleArray value) {
-    p.doubleArrayVal()->setValue(value);
+  void setValueSpecialized(VRDatumPtr p, VRFloatArray value) {
+    p.floatArrayVal()->setValue(value);
   }
   
   void setValueSpecialized(VRDatumPtr p, VRStringArray value) {
@@ -361,7 +364,7 @@ public:
   // common usage examples for this function are:
   //
   //   VRInt i = dataIndex->getValue("MyInteger");
-  //   VRDouble d = dataIndex->getValue("MyDouble");
+  //   VRFloat d = dataIndex->getValue("MyFloat");
   //
   // The same syntax can be used with custom classes that are not VRCoreTypes if
   // they implement a constructor that takes a VRAnyCoreType as an argument.
@@ -480,10 +483,10 @@ public:
   /// add a specialized method here, and to the setValue methods in
   /// the private section.
   std::string addData(const std::string valName, VRInt value);
-  std::string addData(const std::string valName, VRDouble value);
+  std::string addData(const std::string valName, VRFloat value);
   std::string addData(const std::string valName, VRString value);
   std::string addData(const std::string valName, VRIntArray value);
-  std::string addData(const std::string valName, VRDoubleArray value);
+  std::string addData(const std::string valName, VRFloatArray value);
   std::string addData(const std::string valName, VRStringArray value);
 
   // There is a semantic difference between addData() for a primitive
@@ -512,27 +515,27 @@ public:
   // VRDatum types.  If those types include a constructor from the basic
   // type, then this is all they need to be stored into an index and
   // retrieved.
-  std::string addData(const std::string &name, VRIntConvertible &object) {
+  std::string addData(const std::string &name, const VRIntConvertible &object) {
     return addData(name, object.toVRInt());
   }
 
-  std::string addData(const std::string &name, VRDoubleConvertible &object) {
-    return addData(name, object.toVRDouble());
+  std::string addData(const std::string &name, const VRFloatConvertible &object) {
+    return addData(name, object.toVRFloat());
   }
 
-  std::string addData(const std::string &name, VRStringConvertible &object) {
+  std::string addData(const std::string &name, const VRStringConvertible &object) {
     return addData(name, object.toVRString());
   }
 
-  std::string addData(const std::string &name, VRIntArrayConvertible &object) {
+  std::string addData(const std::string &name, const VRIntArrayConvertible &object) {
     return addData(name, object.toVRIntArray());
   }
   
-  std::string addData(const std::string &name, VRDoubleArrayConvertible &object) {
-    return addData(name, object.toVRDoubleArray());
+  std::string addData(const std::string &name, const VRFloatArrayConvertible &object) {
+    return addData(name, object.toVRFloatArray());
   }
   
-  std::string addData(const std::string &name, VRStringArrayConvertible &object) {
+  std::string addData(const std::string &name, const VRStringArrayConvertible &object) {
     return addData(name, object.toVRStringArray());
   }
   
@@ -610,8 +613,8 @@ public:
 //     this point. [DONE]
 //
 //   - Add the vector types, and whatever else.  Boolean?
-//        vector<double> [DONE]
-//        matrix<double> [TBD]
+//        vector<float> [DONE]
+//        matrix<float> [TBD]
 //
 //   - Make the parser infer data types where possible, rather than relying
 //     on the type attribute. [DONE]
@@ -645,7 +648,9 @@ public:
 //   - After those are done, the VRDataIndex::addData() methods can
 //     probably be template-ized, too.
 //
-//
+//   - An audit of all the calls might be good, to look into
+//     reference-izing anything that is actually called by value and
+//     shouldn't be.
 //
 //   - We are adding a "list" of index objects.  These are an ordered
 //     collection of VRDataIndex objects, all with more or less the
@@ -654,14 +659,25 @@ public:
 //     managing them is your problem.  We will refer to this as an
 //     "imaginary" type called VRList.
 //
-//     This is implemented by including the index value with the name,
-//     so an object might be called "nancy[0]" and another called
-//     "nancy[1]".  These are two different objects, linked by a
-//     similarity in their names.  The idea is only that we will leave
-//     this as a similarity, and inform the various sorting and
-//     comparing functions that the index value is an appendix to the
-//     actual name.
+//     This is implemented by redefining the data index typemap to
+//     point to a std::vector of VRDatumPtr objects.  It will require
+//     some extra parsing of an index name, but that's all.  Hardest
+//     part is the semantics of reading stuff in -- overwrite or just
+//     add to list?
 //
+//     Will need:
+//
+//       - Add std::vector<VRDatumPtr> to the typemap instead of
+//         VRDatumPtr.
+//
+//       - Make work for single element sets.
+//
+//       - Provide some parsing aids to look for subscripts on the
+//         ends of names.  Perhaps names are no longer a string, but a
+//         string and a subscript value struct?
+//
+//       - Probably need a couple of management aids, like a size()
+//         method and something like an iterator.
 //
 }  // end namespace MinVR
 #endif
