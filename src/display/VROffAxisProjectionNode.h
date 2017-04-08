@@ -24,7 +24,7 @@ class VROffAxisProjectionNode : public VRDisplayNode {
 public:
 
 	VROffAxisProjectionNode(const std::string &name, VRPoint3 topLeft, VRPoint3 botLeft, VRPoint3 topRight, VRPoint3 botRight,
-		 double nearClip, double farClip);
+		 float nearClip, float farClip);
 	virtual ~VROffAxisProjectionNode();
 
 	virtual std::string getType() { return "VROffAxisProjectionNode"; }
@@ -39,8 +39,8 @@ protected:
 	VRPoint3 _botLeft;
 	VRPoint3 _topRight;
 	VRPoint3 _botRight;
-	double _nearClip;
-	double _farClip;
+	float _nearClip;
+	float _farClip;
 };
 
 } // end namespace

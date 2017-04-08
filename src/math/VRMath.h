@@ -21,23 +21,23 @@ namespace MinVR {
 /** @class VRPoint3 
   * @brief 3D Point with floating point coordinates.
   */
-class VRPoint3 : public VRDoubleArrayConvertible {
+class VRPoint3 : public VRFloatArrayConvertible {
 public:  
   /// Default point at the origin
   VRPoint3();
 
   /// Constructs a point given (x,y,z, 1)
-  VRPoint3(double x, double y, double z);
+  VRPoint3(float x, float y, float z);
 
   /// Constructs a point given a pointer to x,y,z data
-  VRPoint3(double *p);
+  VRPoint3(float *p);
   
-  /// Constructs a point from a VRDoubleArray with the first three elements
+  /// Constructs a point from a VRFloatArray with the first three elements
   /// being [x,y,z]
-  VRPoint3(VRDoubleArray da);
+  VRPoint3(VRFloatArray da);
   
   /// Constructs a point from the VRAnyCoreType wrapper class. The argument
-  /// must be able to be interpreted as a VRDoubleArray core type.
+  /// must be able to be interpreted as a VRFloatArray core type.
   VRPoint3(VRAnyCoreType t);
   
   /// Copy constructor for point
@@ -56,16 +56,16 @@ public:
   VRPoint3& operator=(const VRPoint3& p);
 
   /// Accesses the ith coordinate of the point
-  double operator[](const int i) const;
+  float operator[](const int i) const;
 
   /// Accesses the ith coordinate of the point
-  double& operator[](const int i);
+  float& operator[](const int i);
   
-  /// Converts the point to a VRDoubleArray for data in a VRDataIndex
-  VRDoubleArray toVRDoubleArray();
+  /// Converts the point to a VRFloatArray for data in a VRDataIndex
+  VRFloatArray toVRFloatArray() const;
 
 public:
-  double x,y,z; 
+  float x,y,z; 
 };
 
 
@@ -74,23 +74,23 @@ public:
 /** @class VRVector3 
   * @brief 3D vector (magnitude and direction).
   */
-class VRVector3 : public VRDoubleArrayConvertible {
+class VRVector3 : public VRFloatArrayConvertible {
 public:
   /// Default constructor to create zero vector
   VRVector3();
 
   /// Constructs a vector (x, y, z, 0)
-  VRVector3(double x, double y, double z);
+  VRVector3(float x, float y, float z);
 
   /// Constructs a vector given a pointer to x,y,z data
-  VRVector3(double *v);
+  VRVector3(float *v);
   
-  /// Constructs a vector from a VRDoubleArray with the first three elements
+  /// Constructs a vector from a VRFloatArray with the first three elements
   /// being [x,y,z]
-  VRVector3(VRDoubleArray da);
+  VRVector3(VRFloatArray da);
   
   /// Constructs a vector from the VRAnyCoreType wrapper class. The argument
-  /// must be able to be interpreted as a VRDoubleArray core type.
+  /// must be able to be interpreted as a VRFloatArray core type.
   VRVector3(VRAnyCoreType t);
 
   /// Copy constructor for vector
@@ -109,30 +109,30 @@ public:
   VRVector3& operator=(const VRVector3& v);
 
   /// Returns the ith coordinate of the vector
-  double operator[](const int i) const;
+  float operator[](const int i) const;
 
   /// Returns the ith coordinate of the vector
-  double& operator[](const int i);  
+  float& operator[](const int i);  
 
   // --- Vector operations ---
 
   /// Returns "this dot v"
-  double dot(const VRVector3& v);
+  float dot(const VRVector3& v);
 
   /// Returns "this cross v"
   VRVector3 cross(const VRVector3& v);
 
   /// Returns the length of the vector
-  double length();
+  float length();
 
   /// Returns a normalized (i.e. unit length) version of the vector
   VRVector3 normalize();
   
-  /// Converts the point to a VRDoubleArray for data in a VRDataIndex
-  VRDoubleArray toVRDoubleArray();
+  /// Converts the point to a VRFloatArray for data in a VRDataIndex
+  VRFloatArray toVRFloatArray() const;
 
 public:
-  double x,y,z; 
+  float x,y,z; 
 };
 
 
@@ -140,31 +140,21 @@ public:
 /** @class VRMatrix4
   * @brief A 4x4 transformation matrix
   */
-class VRMatrix4 : public VRDoubleArrayConvertible {
+class VRMatrix4 : public VRFloatArrayConvertible {
 public: 
   /// Default constructor creates an identity matrix:
   VRMatrix4();
 
-  /// Constructs a matrix given the elments.  Be careful, the elements are 
-  /// passed in using row major order, so the matrix looks "correct" on the
-  /// screen if you write this constructor using 4 lines as it is below.  But,
-  /// to stay consistent with OpenGL, the matrix is stored internally in
-  /// column major order!
-  VRMatrix4(const double r1c1, const double r1c2, const double r1c3, const double r1c4, 
-            const double r2c1, const double r2c2, const double r2c3, const double r2c4,
-            const double r3c1, const double r3c2, const double r3c3, const double r3c4, 
-            const double r4c1, const double r4c2, const double r4c3, const double r4c4);
-
-  /// Constructs a matrix given from an array of 16 doubles in OpenGL matrix format
+  /// Constructs a matrix given from an array of 16 floats in OpenGL matrix format
   /// (i.e., column major).
-  VRMatrix4(const double* a);
+  VRMatrix4(const float* a);
   
-  /// Constructs a matrix from a VRDoubleArray, where the convention is to format
-  /// for on-screen readability, so stored in row-major order.
-  VRMatrix4(VRDoubleArray da);
+  /// Constructs a matrix from a VRFloatArray -- an array of 16 floats in OpenGL
+  ///  matrix format (i.e., column major order).
+  VRMatrix4(VRFloatArray da);
   
   /// Constructs a matrix from the VRAnyCoreType wrapper class. The argument
-  /// must be able to be interpreted as a VRDoubleArray core type.
+  /// must be able to be interpreted as a VRFloatArray core type.
   VRMatrix4(VRAnyCoreType t);
 
   /// Copy constructor
@@ -182,19 +172,21 @@ public:
   /// Matrix assignment operator
   VRMatrix4& operator=(const VRMatrix4& m2);
   
-  
-  
-  /// TODO: It's strange that these use row-major indexing when the matrix is
-  /// stored in column-major following the OpenGL convention.  Remove this in
-  /// favor of the [] operator.
-  double operator()(const int r, const int c) const;
-  double& operator()(const int r, const int c);
 
-  /// Returns a pointer to a double array for the c-th column of the matrix so
-  /// that elements of the matrix may be accessed using a syntax like:
-  /// VRMatrix4 mat;  mat[0][0] = 1.0;
-  double* operator[](const int c);
-  
+  /// Returns a pointer to the raw data array used to store the matrix.  This
+  /// is a 1D array of 16-elements stored in column-major order.
+  float* getArray() { return m; }
+    
+  /// Access an individual element of the array using the syntax:
+  /// VRMatrix4 mat; float row1col2 = mat(1,2);
+  float operator()(const int row, const int col) const;
+
+  /// Access an individual element of the array using the syntax:
+  /// VRMatrix4 mat; mat(1,2) = 1.0;
+  float& operator()(const int row, const int col);
+                    
+  /// Returns the c-th column of the matrix as a VRVector type, e.g.,:
+  /// VRVector3 x = mat.getColumn(0);
   VRVector3 getColumn(int c) const;
   
   
@@ -208,20 +200,32 @@ public:
   static VRMatrix4 translation(const VRVector3& v);
 
   /// Returns the rotation matrix about the x axis by the specified angle
-  static VRMatrix4 rotationX(const double radians);
+  static VRMatrix4 rotationX(const float radians);
 
   /// Returns the rotation matrix about the y axis by the specified angle
-  static VRMatrix4 rotationY(const double radians);
+  static VRMatrix4 rotationY(const float radians);
 
   /// Returns the rotation matrix about the z axis by the specified angle
-  static VRMatrix4 rotationZ(const double radians);
+  static VRMatrix4 rotationZ(const float radians);
   
   /// Returns the rotation matrix around the vector v placed at point p, rotate by angle a
-  static VRMatrix4 rotation(const VRPoint3& p, const VRVector3& v, const double a);
+  static VRMatrix4 rotation(const VRPoint3& p, const VRVector3& v, const float a);
 
   /// Returns a projection matrix based on clipping
-  static VRMatrix4 projection(double left, double right, double bottom, double top, double near, double far);
+  static VRMatrix4 projection(float left, float right, float bottom, float top, float near, float far);
 
+  /// Returns a matrix constructed from individual elements passed in row major
+  /// order so that the matrix looks "correct" on the screen as you write this
+  /// constructor on 4 lines of code as below.  Note the that internally the
+  /// matrix constructed will be stored in a 16 element column major array to
+  /// be consistent with OpenGL.
+  static VRMatrix4 fromRowMajorElements(
+      const float r1c1, const float r1c2, const float r1c3, const float r1c4,
+      const float r2c1, const float r2c2, const float r2c3, const float r2c4,
+      const float r3c1, const float r3c2, const float r3c3, const float r3c4,
+      const float r4c1, const float r4c2, const float r4c3, const float r4c4);
+    
+    
   // --- Transpose, Inverse, and Other General Matrix Functions ---
 
   /// Returns an orthonormal version of the matrix, i.e., guarantees that the
@@ -234,25 +238,27 @@ public:
 
   // Returns the determinant of the 3x3 matrix formed by excluding the specified row and column
   // from the 4x4 matrix.
-  double subDeterminant(int excludeRow, int excludeCol) const;
+  float subDeterminant(int excludeRow, int excludeCol) const;
 
   // Returns the cofactor matrix.
   VRMatrix4 cofactor() const;
 
   // Returns the determinant of the 4x4 matrix
-  double determinant() const;
+  float determinant() const;
 
   // Returns the inverse of the 4x4 matrix if it is nonsingular.  If it is singular, then returns the
   // identity matrix. 
   VRMatrix4 inverse() const;
   
-  
-  
-  /// Converts the point to a VRDoubleArray for data in a VRDataIndex
-  VRDoubleArray toVRDoubleArray();
+    
+  /// Converts the point to a VRFloatArray for storage in a VRDataIndex
+  VRFloatArray toVRFloatArray() const;
+    
+    
+private:
 
-public:		
-  double m[16]; // hold a 4 by 4 matrix 
+  float m[16]; // hold a 4 by 4 matrix
+
 };
 
 
@@ -263,13 +269,13 @@ public:
 // --- Scalers ---
 
 /// Divide the vector by the scalar s
-VRVector3 operator/(const VRVector3& v, const double s);
+VRVector3 operator/(const VRVector3& v, const float s);
 
 /// Multiply the vector by the scalar s
-VRVector3 operator*(const double s, const VRVector3& v);
+VRVector3 operator*(const float s, const VRVector3& v);
 
 /// Multiply the vector by the scalar s
-VRVector3 operator*(const VRVector3& v, const double s);
+VRVector3 operator*(const VRVector3& v, const float s);
 
 /// Negate the vector
 VRVector3 operator-(const VRVector3& v);
@@ -305,10 +311,10 @@ VRVector3 operator-(const VRPoint3& p1, const VRPoint3& p2);
 // --- Matrix multiplication for Points, Vectors, & Matrices ---
 
 /// Multiply matrix and scalar, returns the new matrix
-VRMatrix4 operator*(const VRMatrix4& m, const double& s);
+VRMatrix4 operator*(const VRMatrix4& m, const float& s);
 
 /// Multiply matrix and scalar, returns the new matrix
-VRMatrix4 operator*(const double& s, const VRMatrix4& m);
+VRMatrix4 operator*(const float& s, const VRMatrix4& m);
 
 /// Multiply matrix and point, returns the new point
 VRPoint3 operator*(const VRMatrix4& m, const VRPoint3& p);

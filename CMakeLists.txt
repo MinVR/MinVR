@@ -125,8 +125,9 @@ include_directories(
 
 add_subdirectory(src)
 add_subdirectory(plugins)
-add_subdirectory(examples)
-add_subdirectory(tests/config)
+add_subdirectory(tests-batch)
+add_subdirectory(tests-interactive)
+add_subdirectory(utils)
 
 
 # Organize folder structure for Xcode, Visual Studio, etc.

@@ -1,7 +1,7 @@
 find_path(OPENVR_INCLUDE_DIR openvr.h
           HINTS $ENV{OPENVR_INCLUDE_DIR} ${OPENVR_INCLUDE_DIR})
 
-find_library(OPENVR_LIBRARY NAMES openvr_api.lib openvr_api.so
+find_library(OPENVR_LIBRARY NAMES openvr_api.lib openvr_api.so openvr_api
              HINTS $ENV{OPENVR_LIB_DIR} ${OPENVR_LIB_DIR})
 
 set(OPENVR_LIBRARIES ${OPENVR_LIBRARY})

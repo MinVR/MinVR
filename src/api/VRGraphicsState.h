@@ -62,21 +62,21 @@ public:
 	*/
 	const float * getCameraPos() const;
 //
-//	const double const * getLookVec() const;
+//	const float const * getLookVec() const;
 //
 //	/** Returns the near clipping plane value for the current display.  This is
 //	    typically set via a config file when defining the display geometry.  If
 //	    the MinVR DisplayGraph does not contain a node that sets the near clipping
 //	  	value, then the default value of 0.0 is returned.
 //	*/
-//	double getNearClip() const;
+//	float getNearClip() const;
 //
 //	/** Returns the far clipping plane value for the current display.  This is
 //	    typically set via a config file when defining the display geometry.  If
 //	    the MinVR DisplayGraph does not contain a node that sets the near clipping
 //	  	value, then the default value of 1.0 is returned.
 //	*/
-//	double getFarClip() const;
+//	float getFarClip() const;
 //
 //	enum EyeType {Left, Right, Center};
 //	EyeType currentEye() const;

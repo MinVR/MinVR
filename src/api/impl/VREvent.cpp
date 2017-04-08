@@ -43,8 +43,8 @@ int VREvent::getDataAsInt(const std::string &fieldName) const {
   return _internal->getDataAsInt(fieldName);
 }
 
-float VREvent::getDataAsDouble(const std::string &fieldName) const {
-  return _internal->getDataAsDouble(fieldName);
+float VREvent::getDataAsFloat(const std::string &fieldName) const {
+  return _internal->getDataAsFloat(fieldName);
 }
 
 const char * VREvent::getDataAsCharArray(const std::string &fieldName) const {
@@ -63,12 +63,12 @@ int VREvent::getIntArraySize(const std::string &fieldName) const {
   return _internal->getIntArraySize(fieldName);
 }
 
-const double * VREvent::getDataAsDoubleArray(const std::string &fieldName) const {
-  return _internal->getDataAsDoubleArray(fieldName);
+const float * VREvent::getDataAsFloatArray(const std::string &fieldName) const {
+  return _internal->getDataAsFloatArray(fieldName);
 }
 
-int VREvent::getDoubleArraySize(const std::string &fieldName) const {
-  return _internal->getDoubleArraySize(fieldName);
+int VREvent::getFloatArraySize(const std::string &fieldName) const {
+  return _internal->getFloatArraySize(fieldName);
 }
   
 VREvent::DataType VREvent::getDataType(const std::string &fieldName) const {
@@ -89,8 +89,8 @@ void VREvent::print() const {
       if (t == IntData) {
         std::cout << "  " << *field << " (int)           = " << getDataAsInt(*field) << std::endl;
       }
-      else if (t == DoubleData) {
-        std::cout << "  " << *field << " (double)        = " << getDataAsDouble(*field) << std::endl;
+      else if (t == FloatData) {
+        std::cout << "  " << *field << " (float)        = " << getDataAsFloat(*field) << std::endl;
       }
       else if (t == CharArrayData) {
         std::cout << "  " << *field << " (char array)    = " << getDataAsCharArray(*field) << std::endl;
@@ -105,13 +105,13 @@ void VREvent::print() const {
         }
         std::cout << "]" << endl;
       }
-      else if (t == DoubleArrayData) {
-        std::cout << "  " << *field << " (double array)  = [";
-        for (int i=0;i<getDoubleArraySize(*field);i++) {
+      else if (t == FloatArrayData) {
+        std::cout << "  " << *field << " (float array)  = [";
+        for (int i=0;i<getFloatArraySize(*field);i++) {
           if (i>0) {
             std::cout << ", ";
           }
-          std::cout << getDataAsDoubleArray(*field)[i];
+          std::cout << getDataAsFloatArray(*field)[i];
         }
         std::cout << "]" << endl;
       }

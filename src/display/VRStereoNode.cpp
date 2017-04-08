@@ -13,7 +13,7 @@
 namespace MinVR {
 
 VRStereoNode::VRStereoNode(const std::string &name, float interOcularDist, VRGraphicsToolkit *gfxToolkit, VRStereoFormat format) :
-  VRDisplayNode(name), _iod(interOcularDist), _gfxToolkit(gfxToolkit), _format(format) {
+  VRDisplayNode(name), _gfxToolkit(gfxToolkit), _format(format), _iod(interOcularDist) {
   _valuesAdded.push_back("/StereoFormat");
   _valuesAdded.push_back("/LookAtMatrix");
   _valuesAdded.push_back("/Eye");
@@ -233,15 +233,15 @@ VRDisplayNode* VRStereoNode::create(VRMainInterface *vrMain, VRDataIndex *config
 	VRStereoNode::VRStereoFormat format = VRStereoNode::VRSTEREOFORMAT_MONO;
 	if (formatStr == "QuadBuffered") {
 		format = VRStereoNode::VRSTEREOFORMAT_QUADBUFFERED;
-		iod = (double)config->getValue("EyeSeparation", nameSpace);
+		iod = (float)config->getValue("EyeSeparation", nameSpace);
 	}
 	else if (formatStr == "SideBySide") {
 		format = VRStereoNode::VRSTEREOFORMAT_SIDEBYSIDE;
-		iod = (double)config->getValue("EyeSeparation", nameSpace);
+		iod = (float)config->getValue("EyeSeparation", nameSpace);
 	}
 	else if (formatStr == "ColumnInterlaced") {
 		format = VRStereoNode::VRSTEREOFORMAT_COLUMNINTERLACED;
-		iod = (double)config->getValue("EyeSeparation", nameSpace);
+		iod = (float)config->getValue("EyeSeparation", nameSpace);
 	}
 
 	VRDisplayNode *node = new VRStereoNode(nameSpace, iod, gfxToolkit, format);

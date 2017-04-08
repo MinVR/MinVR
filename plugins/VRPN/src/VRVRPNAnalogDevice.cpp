@@ -99,7 +99,7 @@ std::string	VRVRPNAnalogDevice::getEventName(int channelNumber)
 	}
 }
 
-void VRVRPNAnalogDevice::sendEventIfChanged(int channelNumber, double data)
+void VRVRPNAnalogDevice::sendEventIfChanged(int channelNumber, float data)
 {
 	if (_channelValues[channelNumber] != data) {
 		//_pendingEvents.push_back(EventRef(new Event(_eventNames[channelNumber], data, nullptr, channelNumber, msg_time)));

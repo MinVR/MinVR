@@ -30,8 +30,8 @@ VRTrackedLookAtNode::render(VRDataIndex *renderState, VRRenderHandler *renderHan
 void
 VRTrackedLookAtNode::onVREvent(const VREvent &e)
 {
-	if (e.getName() == "/" + _trackingEvent) {
-		VRMatrix4 head_frame(e.getDataAsDoubleArray("Transform"));
+	if (e.getName() == _trackingEvent) {
+		VRMatrix4 head_frame(e.getDataAsFloatArray("Transform"));
 		_lookAtMatrix = head_frame.inverse();
 	}
 }
@@ -56,15 +56,15 @@ VRDisplayNode* VRTrackedLookAtNode::create(VRMainInterface *vrMain, VRDataIndex 
 		x.normalize();
 		VRVector3 y = z.cross(x);
 
-		VRMatrix4 M1(	x[0], z[0], x[0], 0,
-						x[1], y[1], z[1], 0,
-						x[2], y[2], z[2], 0,
-						0, 0, 0, 1);
+        VRMatrix4 M1 = VRMatrix4::fromRowMajorElements(x[0], y[0], z[0], 0,
+                                                       x[1], y[1], z[1], 0,
+                                                       x[2], y[2], z[2], 0,
+                                                       0, 0, 0, 1);
 
-		VRMatrix4 M2(	1, 0, 0, -eye[0],
-						0, 1, 0, -eye[1],
-						0, 0, 1, -eye[2],
-						0, 0, 0, 1);
+        VRMatrix4 M2 = VRMatrix4::fromRowMajorElements(1, 0, 0, -eye[0],
+                                                       0, 1, 0, -eye[1],
+                                                       0, 0, 1, -eye[2],
+                                                       0, 0, 0, 1);
 
 		lookAtMatrix = M1 * M2;
 	}
