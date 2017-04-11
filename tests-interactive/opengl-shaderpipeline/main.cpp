@@ -1,5 +1,12 @@
 #include <iostream>
 
+#include "GL/glew.h"
+#ifdef _WIN32
+#include "GL/wglew.h"
+#elif (!defined(__APPLE__))
+#include "GL/glxew.h"
+#endif
+
 // OpenGL Headers
 #if defined(WIN32)
 #define NOMINMAX
@@ -64,6 +71,13 @@ public:
 	void onVRRenderGraphicsContext(const VRGraphicsState &renderState) {
 		// If this is the inital call, initialize context variables
 		if (renderState.isInitialRenderCall()) {
+			glewExperimental = GL_TRUE;
+			GLenum err = glewInit();
+			if (GLEW_OK != err)
+			{
+				std::cout << "Error initializing GLEW." << std::endl;
+			}
+
 			// Init GL
 			glEnable(GL_DEPTH_TEST);
 			glClearDepth(1.0f);
