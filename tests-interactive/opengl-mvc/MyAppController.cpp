@@ -52,7 +52,7 @@ void MyAppController::onVRRenderGraphicsContext(const VRGraphicsState &renderSta
 	}
 
 	// Destroy context items if the program is no longer running
-	if (isRunning()) {
+	if (!isRunning()) {
 		delete view;
 		return;
 	}
