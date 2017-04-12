@@ -13,6 +13,8 @@
 	#include <winsock2.h> // must be included before windows.h
 	#include <windows.h>
 	#include <ctime>
+	#include <time.h>  
+	#include <sys/timeb.h>  
 #else
 	#include <sys/time.h>
 #endif

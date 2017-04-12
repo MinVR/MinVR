@@ -31,7 +31,7 @@ VRSystem::~VRSystem() {
 void VRSystem::initTime() {
 #if defined(WIN32)
         if (QueryPerformanceFrequency(&counterFrequency)) {
-            QueryPerformanceCounter(&start);
+			QueryPerformanceCounter(&timeStart);
         }
 
         struct _timeb t;
@@ -73,7 +73,7 @@ double VRSystem::time(bool absolute) {
         LARGE_INTEGER now;
         QueryPerformanceCounter(&now);
 
-        return ((RealTime)(now.QuadPart - start.QuadPart) /
+		return ((now.QuadPart - timeStart.QuadPart) /
                 counterFrequency.QuadPart) + timeOffset;
 #else
         // Linux resolution defaults to 100Hz.
