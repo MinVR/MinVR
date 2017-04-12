@@ -15,6 +15,7 @@ using namespace MinVR;
 
 #include "MyAppModel.h"
 #include "MyAppView.h"
+#include <map>
 
 class MyAppController : public VRApp {
 public:
@@ -27,7 +28,7 @@ public:
 
 private:
 	MyAppModel model;
-	MyAppView* view;
+	std::map<int, MyAppView*> views;
 };
 
 #endif

@@ -86,7 +86,11 @@ VRGraphicsState* VRGraphicsStateInternal::getAPIState() {
 VRDataIndex* VRGraphicsStateInternal::getDataIndex() {
     return dataIndex;
   }
-  
+ 
+const int VRGraphicsStateInternal::getWindowId() const {
+	return (int)dataIndex->getValue("WindowID", "/");
+}
+
 bool VRGraphicsStateInternal::isInitialRenderCall() {
 	bool initRender = (int)dataIndex->getValue("InitRender","/") == 1;
 	return initRender;

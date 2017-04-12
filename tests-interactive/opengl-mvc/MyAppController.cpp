@@ -43,17 +43,21 @@ void MyAppController::onVREvent(const VREvent &event) {
 /// onVRRenderContext is the override which allows users to setup context specific
 /// variables like VBO's, VAO's, textures, framebuffers, and shader programs.
 void MyAppController::onVRRenderGraphicsContext(const VRGraphicsState &renderState) {
+	int windowId = renderState.getWindowId();
+
 	// If this is the inital call, initialize context variables
 	if (renderState.isInitialRenderCall()) {
-		view = new MyAppView(model, renderState);
+		views[windowId] = new MyAppView(model, renderState);
 	}
 	else {
-		view->update(renderState);
+		views[windowId]->update(renderState);
 	}
 
 	// Destroy context items if the program is no longer running
 	if (!isRunning()) {
-		delete view;
+		std::map<int, MyAppView*>::iterator it = views.find(windowId);
+		delete it->second;
+		views.erase(it);
 		return;
 	}
 }
@@ -62,7 +66,8 @@ void MyAppController::onVRRenderGraphicsContext(const VRGraphicsState &renderSta
 void MyAppController::onVRRenderGraphics(const VRGraphicsState &renderState) {
 	// Only draw if the application is still running.
 	if (isRunning()) {
-		// clear screen
-		view->render(renderState);
+		int windowId = renderState.getWindowId();
+
+		views[windowId]->render(renderState);
 	}
 }
