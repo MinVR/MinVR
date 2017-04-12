@@ -2,6 +2,7 @@
   <PluginPath>../../../MinVR2/build/Release/plugins</PluginPath>
   <GLFWPlugin pluginType="MinVR_GLFW"/>
   <OpenGLPlugin pluginType="MinVR_OpenGL"/>
+  <ThreadingPlugin pluginType="MinVR_Threading"/>
 
   <RGBBits>8</RGBBits>
   <AlphaBits>8</AlphaBits>
@@ -29,7 +30,9 @@
     <Desktop hostType="VRStandAlone">
       <GLFWToolkit windowtoolkitType="VRGLFWWindowToolkit"/>
       <OpenGLToolkit graphicstoolkitType="VROpenGLGraphicsToolkit"/>
-      <GroupNode displaynodeType="VRGroupNode">
+      <!--GroupNode displaynodeType="VRGroupNode"-->
+      <GroupNode displaynodeType="VRThreadGroupNode">
+        <AsyncEnabled>1</AsyncEnabled>
         <Node1 displaynodeType="VRGraphicsWindowNode">
           <Border>0</Border>
           <Caption>Desktop</Caption>

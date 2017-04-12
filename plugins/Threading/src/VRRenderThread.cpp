@@ -47,8 +47,13 @@ void VRRenderThread::render() {
 			VRDataIndex index = *threadGroup->getRenderState();
 
 			// Various render actions for the display nodes
-			if (action == THREADACTION_Render) {
-				//std::cout << "Thread " << threadId << std::endl;
+			if (action == THREADACTION_Init) {
+				// If the thread node is being initialized, synchronize rendering calls
+				threadGroup->syncMutex.lock();
+				displayNode->render(&index, threadGroup->getRenderHandler());
+				threadGroup->syncMutex.unlock();
+			}
+			else if (action == THREADACTION_Render) {
 				displayNode->render(&index, threadGroup->getRenderHandler());
 			}
 			else if (action == THREADACTION_WaitForRenderToComplete) {

@@ -20,6 +20,7 @@ namespace MinVR {
  */
 enum VRRenderThreadAction {
 	THREADACTION_None,
+	THREADACTION_Init,
 	THREADACTION_Render,
 	THREADACTION_WaitForRenderToComplete,
 	THREADACTION_DisplayFinishedRendering,
@@ -66,6 +67,8 @@ public:
 	void setRenderState(VRDataIndex* renderState) {
 		this->renderState = renderState;
 	}
+
+	Mutex syncMutex;
 
 private:
 	VRRenderThreadAction threadAction;

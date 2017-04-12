@@ -11,7 +11,7 @@
 
 namespace MinVR {
 
-VRThreadGroupNode::VRThreadGroupNode(const std::string& name, bool asyncEnabled) : VRDisplayNode(name), threadGroup(NULL), async(true), asyncEnabled(asyncEnabled) {
+VRThreadGroupNode::VRThreadGroupNode(const std::string& name, bool asyncEnabled) : VRDisplayNode(name), threadGroup(NULL), async(false), asyncEnabled(asyncEnabled) {
 }
 
 VRThreadGroupNode::~VRThreadGroupNode() {
@@ -32,23 +32,28 @@ VRThreadGroupNode::~VRThreadGroupNode() {
 void VRThreadGroupNode::render(VRDataIndex* renderState,
 		VRRenderHandler* renderHandler) {
 
-	// If the threadGroup has not been created, create the render threads
-	if (!threadGroup) {
-		async = asyncEnabled;
-		int numThreads = getChildren().size();
-		threadGroup = new VRThreadGroup(numThreads);
-
-		for (int f = 0; f < numThreads; f++) {
-			renderThreads.push_back(new VRRenderThread(getChildren()[f], threadGroup));
-			renderThreads[f]->threadId = f;
-		}
-	}
+	async = asyncEnabled;
 
 	if (async) {
+		VRRenderThreadAction action = THREADACTION_Render;
+
+		// If the threadGroup has not been created, create the render threads
+		if (!threadGroup) {
+			int numThreads = getChildren().size();
+			threadGroup = new VRThreadGroup(numThreads);
+
+			for (int f = 0; f < numThreads; f++) {
+				renderThreads.push_back(new VRRenderThread(getChildren()[f], threadGroup));
+				renderThreads[f]->threadId = f;
+			}
+
+			action = THREADACTION_Init;
+		}
+
 		// Let threads know they are ready for rendering
-			VRDataIndex rstate;
-			threadGroup->startThreadAction(THREADACTION_Render, &rstate, renderHandler);
-			threadGroup->waitForComplete();
+		VRDataIndex rstate = *renderState;
+		threadGroup->startThreadAction(action, &rstate, renderHandler);
+		threadGroup->waitForComplete();
 	}
 	else {
 		VRDisplayNode::render(renderState, renderHandler);
@@ -78,8 +83,6 @@ void VRThreadGroupNode::displayFinishedRendering(VRDataIndex* renderState) {
 	else {
 		VRDisplayNode::displayFinishedRendering(renderState);
 	}
-
-	async = asyncEnabled;
 }
 
 VRDisplayNode* VRThreadGroupNode::create(VRMainInterface* vrMain,
