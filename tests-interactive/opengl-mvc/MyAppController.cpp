@@ -7,10 +7,10 @@
  */
 
 #include "MyAppController.h"
+#include <cmath>
 
 // Just included for some simple Matrix math used below
 // This is not required for use of MinVR in general
-#include <math/VRMath.h>
 
 MyAppController::MyAppController(int argc, char** argv, const std::string& configFile) : VRApp(argc, argv, configFile) {
 }
@@ -26,11 +26,14 @@ void MyAppController::onVREvent(const VREvent &event) {
 	if (event.getName() == "FrameStart") {
 		float time = event.getDataAsFloat("ElapsedSeconds");
 		// Calculate model matrix based on time
-		VRMatrix4 modelM = VRMatrix4::rotationX(0.5*time);
-		modelM = modelM * VRMatrix4::rotationY(0.5*time);
-		for (int f = 0; f < 16; f++) {
-			model.modelMatrix[f] = modelM.getArray()[f];
-		}
+		float* m = &model.modelMatrix[0];
+
+		const float cosTheta = std::cos(time);
+		const float sinTheta = std::sin(time);
+		m[0]=1.0; m[4]=0.0;  m[8]=0.0; m[12]=0.0;
+		m[1]=0.0; m[5]=cosTheta;  m[9]=-sinTheta; m[13]=0.0;
+		m[2]=0.0; m[6]=sinTheta; m[10]=cosTheta; m[14]=0.0;
+		m[3]=0.0; m[7]=0.0; m[11]=0.0; m[15]=1.0;
 		return;
 	}
 
