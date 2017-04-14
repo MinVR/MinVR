@@ -6,6 +6,7 @@ find_package(OpenGL REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIR})
 
 set(source_files
+  glew.c
   main.cpp
 )
 
@@ -16,6 +17,7 @@ set(config_files
 set_source_files_properties(${config_files} PROPERTIES HEADER_FILE_ONLY TRUE)
 
 source_group("Config Files" FILES ${config_files})
+
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	find_package(Threads)
