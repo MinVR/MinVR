@@ -1,5 +1,5 @@
 
-project(itest-opengl-mvc)
+project(itest-opengl-multithreaded)
 
 find_package(OpenGL REQUIRED)
 
@@ -19,7 +19,6 @@ set(header_files
 )
 
 set(config_files
-  multithreaded.xml
 )
 
 set_source_files_properties(${header_files} PROPERTIES HEADER_FILE_ONLY TRUE)
