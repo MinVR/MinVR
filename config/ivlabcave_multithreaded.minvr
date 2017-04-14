@@ -1,0 +1,142 @@
+<MinVR>
+
+  <PluginPath>../../build/plugins</PluginPath>
+  <GLFWPlugin pluginType="MinVR_GLFW"/>
+  <OpenGLPlugin pluginType="MinVR_OpenGL"/>
+  <ThreadingPlugin pluginType="MinVR_Threading"/>
+
+  <Cave hostType="VRStandAlone">
+
+    <VRPNPlugin pluginType="MinVR_VRPN"/>
+    <!-- Common to all three Optitrack virtual devices -->
+    <ConvertLHtoRH>0</ConvertLHtoRH>
+    <IgnoreZeroes>1</IgnoreZeroes>
+    <WaitForNewReportInPoll>0</WaitForNewReportInPoll>
+    <TrackerUnitsToRoomUnitsScale>3.28084</TrackerUnitsToRoomUnitsScale>
+    <DeviceToRoom type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</DeviceToRoom>
+    <!-- Input Devices -->
+    <Optitrack1 inputdeviceType="VRVRPNTrackerDevice">
+      <VRPNDeviceName type="string">head@tcp:134.84.121.68:3884</VRPNDeviceName>
+      <EventsToGenerate type="stringarray">Head</EventsToGenerate>
+      <Head>
+        <PropToTracker type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</PropToTracker>
+        <FinalOffset type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+      </Head>
+    </Optitrack1>
+
+    <Optitrack2 inputdeviceType="VRVRPNTrackerDevice">
+      <VRPNDeviceName type="string">stylus0@tcp:134.84.121.68:3884</VRPNDeviceName>
+      <EventsToGenerate type="stringarray">RedStylus</EventsToGenerate>
+      <RedStylus>
+        <PropToTracker type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0.25, 0,0,0,1</PropToTracker>
+        <FinalOffset type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+      </RedStylus>
+    </Optitrack2>
+
+    <Optitrack3 inputdeviceType="VRVRPNTrackerDevice">
+      <VRPNDeviceName type="string">stylus1@tcp:134.84.121.68:3884</VRPNDeviceName>
+      <EventsToGenerate type="stringarray">BlueStylus</EventsToGenerate>
+      <BlueStylus>
+        <PropToTracker type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0.25, 0,0,0,1</PropToTracker>
+        <FinalOffset type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+      </BlueStylus>
+    </Optitrack3>
+
+    <RedStylusBtns inputdeviceType="VRVRPNButtonDevice">
+      <VRPNDeviceName type="string">Wixel0@tcp:127.0.0.1:3883</VRPNDeviceName>
+      <EventsToGenerate type="stringarray">RedStylusFrontBtn,RedStylusBackBtn</EventsToGenerate>
+    </RedStylusBtns>
+
+    <BlueStylusBtns inputdeviceType="VRVRPNButtonDevice">
+      <VRPNDeviceName type="string">Wixel1@tcp:127.0.0.1:3883</VRPNDeviceName>
+      <EventsToGenerate type="stringarray">BlueStylusFrontBtn,BlueStylusBackBtn</EventsToGenerate>
+    </BlueStylusBtns>
+
+    <RGBBits>8</RGBBits>
+    <AlphaBits>8</AlphaBits>
+    <DepthBits>24</DepthBits>
+    <StencilBits>8</StencilBits>
+    <FullScreen>0</FullScreen>
+    <Resizable>1</Resizable>
+    <AllowMaximize>1</AllowMaximize>
+    <Visible>1</Visible>
+    <ContextVersionMajor>3</ContextVersionMajor>
+    <ContextVersionMinor>0</ContextVersionMinor>
+    <UseGPUAffinity>1</UseGPUAffinity>
+    <UseDebugContext>0</UseDebugContext>
+    <MSAASamples>1</MSAASamples>
+    <QuadBuffered>1</QuadBuffered>
+    <AsyncEnabled>1</AsyncEnabled>
+    <SharedContextGroupID>-1</SharedContextGroupID>
+    
+    <!-- Common to all clients -->
+    <GLFWToolkit windowtoolkitType="VRGLFWWindowToolkit"/>
+    <OpenGLToolkit graphicstoolkitType="VROpenGLGraphicsToolkit"/>
+
+    <!-- Common display graph configuration -->
+    <Border>0</Border>
+    <Caption>Desktop</Caption>
+    <StereoFormat>QuadBuffered</StereoFormat>
+    <EyeSeparation>0.203</EyeSeparation>
+    <NearClip>0.001</NearClip>
+    <FarClip>500.0</FarClip>
+    <HeadTrackingEvent>Head_Move</HeadTrackingEvent>
+    <LookAtMatrix type="floatarray">1,0,0,0, 0,1,0,2, 0,0,1,4, 0,0,0,1</LookAtMatrix>
+
+    <YPos>0</YPos>
+    <Width>1280</Width>
+    <Height>1300</Height>
+
+    <ThreadGroupNode displaynodeType="VRThreadGroupNode">
+      <FrontWall displaynodeType="VRGraphicsWindowNode">
+        <XPos>4240</XPos>
+        <TopLeft type="floatarray">-4,4,-4</TopLeft>
+        <TopRight type="floatarray">4,4,-4</TopRight>
+        <BottomLeft type="floatarray">-4,-4,-4</BottomLeft>
+        <BottomRight type="floatarray">4,-4,-4</BottomRight>
+        <DisplayGraph linkNode="/MinVR/Cave/MyDisplayGraph/HeadTracker"/>
+      </FrontWall>
+      <Floor displaynodeType="VRGraphicsWindowNode">
+        <XPos>5520</XPos>
+        <TopLeft type="floatarray">-4,-4,-4</TopLeft>
+        <TopRight type="floatarray">4,-4,-4</TopRight>
+        <BottomLeft type="floatarray">-4,-4,4</BottomLeft>
+        <BottomRight type="floatarray">4,-4,4</BottomRight>
+        <DisplayGraph linkNode="/MinVR/Cave/MyDisplayGraph/HeadTracker"/>
+      </Floor>
+      <Sides displaynodeType="VRGraphicsWindowNode">
+        <XPos>1680</XPos>
+        <Width>2560</Width>
+        <LeftWall displaynodeType="VRViewportNode">
+          <XPos>0</XPos>
+          <TopLeft type="floatarray">-4,4,4</TopLeft>
+          <TopRight type="floatarray">-4,4,-4</TopRight>
+          <BottomLeft type="floatarray">-4,-4,4</BottomLeft>
+          <BottomRight type="floatarray">-4,-4,-4</BottomRight>
+          <Width>1280</Width>
+          <DisplayGraph linkNode="/MinVR/Cave/MyDisplayGraph/HeadTracker"/>
+        </LeftWall>
+        <RightWall displaynodeType="VRViewportNode">
+          <XPos>1280</XPos>
+          <Width>1280</Width>
+          <TopLeft type="floatarray">4,4,-4</TopLeft>
+          <TopRight type="floatarray">4,4,4</TopRight>
+          <BottomLeft type="floatarray">4,-4,-4</BottomLeft>
+          <BottomRight type="floatarray">4,-4,4</BottomRight>
+          <DisplayGraph linkNode="/MinVR/Cave/MyDisplayGraph/HeadTracker"/>
+        </RightWall>
+      </Sides>
+    </ThreadGroupNode>
+    
+    <!-- ********************** Display Graph ********************** -->
+    <MyDisplayGraph>
+        <HeadTracker displaynodeType="VRTrackedLookAtNode">
+          <StereoNode displaynodeType="VRStereoNode">
+            <ProjectionNode displaynodeType="VROffAxisProjectionNode">
+				      <DUMMY/>
+            </ProjectionNode>
+          </StereoNode>
+        </HeadTracker>
+    </MyDisplayGraph>
+  </Cave> 
+</MinVR>

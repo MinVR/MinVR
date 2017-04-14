@@ -38,8 +38,7 @@ using namespace MinVR;
  */
 class MyVRApp : public VRApp {
 public:
-	/// The application expects the user to specify the command line arguments and a path to the vr config file.
-	MyVRApp(int argc, char** argv, const std::string& configFile) : VRApp(argc, argv, configFile) {}
+	MyVRApp(int argc, char** argv) : VRApp(argc, argv) {}
 
     
 	/// onVREvent is called when a new intput event happens.
@@ -277,7 +276,7 @@ private:
 
 /// Main method which creates and calls application
 int main(int argc, char **argv) {
-	MyVRApp app(argc, argv, argv[1]);
+	MyVRApp app(argc, argv);
 	app.run();
 	return 0;
 }

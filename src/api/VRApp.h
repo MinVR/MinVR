@@ -51,9 +51,9 @@ class VRAppInternal; // forward declaration for implementation details
 class VRApp {
 public:
 	/**
-	 * VRApp expects the command line parameters and a config file path.
+	 * VRApp expects command line parameters using the MinVR command line convention.
 	 */
-	VRApp(int argc, char** argv, const std::string& configFile);
+	VRApp(int argc, char** argv);
 
 	/**
 	 * Default destructor shuts down the application and the interface with MinVR
@@ -62,7 +62,7 @@ public:
 
 	/**
 	 * onVREvent is called when MinVR issues an event callback.  Since event data is extremely diverse,
-	 * developers can get the specific event data from the VRDataIndex.
+	 * developers can get the specific event data by named fields using the VREvent interface.
 	 */
 	virtual void onVREvent(const VREvent &event) {}
 

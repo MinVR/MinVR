@@ -1,0 +1,141 @@
+<MinVR>
+
+  <PluginPath>../../build/plugins</PluginPath>
+  <GLFWPlugin pluginType="MinVR_GLFW"/>
+  <OpenGLPlugin pluginType="MinVR_OpenGL"/>
+
+  <!-- Common to both server and clients -->
+  <Port type="string">3456</Port>
+  <ServerIP>localhost</ServerIP>
+
+  <CaveServer hostType="VRServer">
+    <NumClients>4</NumClients>
+    <VRPNPlugin pluginType="MinVR_VRPN"/>
+    <!-- Common to all three Optitrack virtual devices -->
+    <ConvertLHtoRH>0</ConvertLHtoRH>
+    <IgnoreZeroes>1</IgnoreZeroes>
+    <WaitForNewReportInPoll>0</WaitForNewReportInPoll>
+    <TrackerUnitsToRoomUnitsScale>3.28084</TrackerUnitsToRoomUnitsScale>
+    <DeviceToRoom type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</DeviceToRoom>
+    <!-- Input Devices -->
+    <Optitrack1 inputdeviceType="VRVRPNTrackerDevice">
+      <VRPNDeviceName type="string">head@tcp:134.84.121.68:3884</VRPNDeviceName>
+      <EventsToGenerate type="stringarray">Head</EventsToGenerate>
+      <Head>
+        <PropToTracker type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</PropToTracker>
+        <FinalOffset type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+      </Head>
+    </Optitrack1>
+
+    <Optitrack2 inputdeviceType="VRVRPNTrackerDevice">
+      <VRPNDeviceName type="string">stylus0@tcp:134.84.121.68:3884</VRPNDeviceName>
+      <EventsToGenerate type="stringarray">RedStylus</EventsToGenerate>
+      <RedStylus>
+        <PropToTracker type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0.25, 0,0,0,1</PropToTracker>
+        <FinalOffset type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+      </RedStylus>
+    </Optitrack2>
+
+    <Optitrack3 inputdeviceType="VRVRPNTrackerDevice">
+      <VRPNDeviceName type="string">stylus1@tcp:134.84.121.68:3884</VRPNDeviceName>
+      <EventsToGenerate type="stringarray">BlueStylus</EventsToGenerate>
+      <BlueStylus>
+        <PropToTracker type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0.25, 0,0,0,1</PropToTracker>
+        <FinalOffset type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+      </BlueStylus>
+    </Optitrack3>
+
+    <RedStylusBtns inputdeviceType="VRVRPNButtonDevice">
+      <VRPNDeviceName type="string">Wixel0@tcp:127.0.0.1:3883</VRPNDeviceName>
+      <EventsToGenerate type="stringarray">RedStylusFrontBtn,RedStylusBackBtn</EventsToGenerate>
+    </RedStylusBtns>
+
+    <BlueStylusBtns inputdeviceType="VRVRPNButtonDevice">
+      <VRPNDeviceName type="string">Wixel1@tcp:127.0.0.1:3883</VRPNDeviceName>
+      <EventsToGenerate type="stringarray">BlueStylusFrontBtn,BlueStylusBackBtn</EventsToGenerate>
+    </BlueStylusBtns>
+  </CaveServer>
+  
+  <MyClients>
+
+    <RGBBits>8</RGBBits>
+    <AlphaBits>8</AlphaBits>
+    <DepthBits>24</DepthBits>
+    <StencilBits>8</StencilBits>
+    <FullScreen>0</FullScreen>
+    <Resizable>1</Resizable>
+    <AllowMaximize>1</AllowMaximize>
+    <Visible>1</Visible>
+    <SharedContextGroupID>-1</SharedContextGroupID>
+    <ContextVersionMajor>3</ContextVersionMajor>
+    <ContextVersionMinor>0</ContextVersionMinor>
+    <UseGPUAffinity>1</UseGPUAffinity>
+    <UseDebugContext>0</UseDebugContext>
+    <MSAASamples>1</MSAASamples>
+    <QuadBuffered>1</QuadBuffered>
+    
+    <!-- Common to all clients -->
+    <GLFWToolkit windowtoolkitType="VRGLFWWindowToolkit"/>
+    <OpenGLToolkit graphicstoolkitType="VROpenGLGraphicsToolkit"/>
+
+    <!-- Common display graph configuration -->
+    <Border>0</Border>
+    <Caption>Desktop</Caption>
+    <StereoFormat>QuadBuffered</StereoFormat>
+    <EyeSeparation>0.203</EyeSeparation>
+    <NearClip>0.001</NearClip>
+    <FarClip>500.0</FarClip>
+    <HeadTrackingEvent>Head_Move</HeadTrackingEvent>
+    <LookAtMatrix type="floatarray">1,0,0,0, 0,1,0,2, 0,0,1,4, 0,0,0,1</LookAtMatrix>
+
+    <YPos>0</YPos>
+    <Width>1280</Width>
+    <Height>1300</Height>
+
+    <FrontWall hostType="VRClient">
+      <XPos>4240</XPos>
+      <TopLeft type="floatarray">-4,4,-4</TopLeft>
+      <TopRight type="floatarray">4,4,-4</TopRight>
+      <BottomLeft type="floatarray">-4,-4,-4</BottomLeft>
+      <BottomRight type="floatarray">4,-4,-4</BottomRight>
+      <DisplayGraph linkNode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
+    </FrontWall>
+    <Floor hostType="VRClient">
+      <XPos>5520</XPos>
+      <TopLeft type="floatarray">-4,-4,-4</TopLeft>
+      <TopRight type="floatarray">4,-4,-4</TopRight>
+      <BottomLeft type="floatarray">-4,-4,4</BottomLeft>
+      <BottomRight type="floatarray">4,-4,4</BottomRight>
+      <DisplayGraph linkNode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
+    </Floor>
+    <LeftWall hostType="VRClient">
+      <XPos>1680</XPos>
+      <TopLeft type="floatarray">-4,4,4</TopLeft>
+      <TopRight type="floatarray">-4,4,-4</TopRight>
+      <BottomLeft type="floatarray">-4,-4,4</BottomLeft>
+      <BottomRight type="floatarray">-4,-4,-4</BottomRight>
+      <DisplayGraph linkNode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
+    </LeftWall>
+    <RightWall hostType="VRClient">
+      <XPos>2960</XPos>
+      <TopLeft type="floatarray">4,4,-4</TopLeft>
+      <TopRight type="floatarray">4,4,4</TopRight>
+      <BottomLeft type="floatarray">4,-4,-4</BottomLeft>
+      <BottomRight type="floatarray">4,-4,4</BottomRight>
+      <DisplayGraph linkNode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
+    </RightWall>
+
+    <!-- ********************** Display Graph ********************** -->
+    <MyDisplayGraph>
+      <WindowNode displaynodeType="VRGraphicsWindowNode">
+        <HeadTracker displaynodeType="VRTrackedLookAtNode">
+          <StereoNode displaynodeType="VRStereoNode">
+            <ProjectionNode displaynodeType="VROffAxisProjectionNode">
+				<DUMMY/>
+            </ProjectionNode>
+          </StereoNode>
+        </HeadTracker>
+      </WindowNode>
+    </MyDisplayGraph>
+  </MyClients> 
+</MinVR>

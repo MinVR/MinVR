@@ -55,7 +55,7 @@ extern "C" {
 		VRMain* vrmain = new VRMain();
 		char** input = new char*[2];
 		input[1] = config;
-		vrmain->initialize(2, input);
+		vrmain->initializeWithMinVRCommandLineParsing(2, input);
 		delete[] input;
 		return vrmain;
 	}
