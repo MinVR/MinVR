@@ -49,6 +49,7 @@ private:
 	void reportStates();
 	VRMatrix4 poseToMatrix4(vr::TrackedDevicePose_t *pose);
 	std::string getDeviceName(int idx);
+	void updateDeviceNames();
 	std::string getButtonName(vr::EVRButtonId id);
 	std::string getAxisType(int device, int axis);
 };
