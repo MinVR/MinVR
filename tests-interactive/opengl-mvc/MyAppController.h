@@ -19,7 +19,7 @@ using namespace MinVR;
 
 class MyAppController : public VRApp {
 public:
-	MyAppController(int argc, char** argv, const std::string& configFile);
+	MyAppController(int argc, char** argv);
 	virtual ~MyAppController();
 
 	void onVREvent(const VREvent &event);

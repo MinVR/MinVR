@@ -12,7 +12,7 @@
 // Just included for some simple Matrix math used below
 // This is not required for use of MinVR in general
 
-MyAppController::MyAppController(int argc, char** argv, const std::string& configFile) : VRApp(argc, argv, configFile) {
+MyAppController::MyAppController(int argc, char** argv) : VRApp(argc, argv) {
 }
 
 MyAppController::~MyAppController() {
