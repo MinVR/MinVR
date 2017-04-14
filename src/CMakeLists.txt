@@ -43,6 +43,20 @@
 
 project(libMinVR)
 
+
+set(vr_config_files
+  ${vr_src_dir}/../config/3DTV.minvr
+  ${vr_src_dir}/../config/default.minvr
+  ${vr_src_dir}/../config/desktop-oldopengl.minvr
+  ${vr_src_dir}/../config/desktop.minvr
+  ${vr_src_dir}/../config/HTC_Vive.minvr
+  ${vr_src_dir}/../config/ivlabcave_multithreaded.minvr
+  ${vr_src_dir}/../config/ivlabcave.minvr
+  ${vr_src_dir}/../config/ivlabcavefront.minvr
+  ${vr_src_dir}/../config/YURT.minvr
+)
+
+
 set(vr_config_cpp
   ${vr_src_dir}/config/VRDataIndex.cpp
   ${vr_src_dir}/config/VRDataQueue.cpp
@@ -118,16 +132,6 @@ set(vr_input_h
   ${vr_src_dir}/input/VRInputDevice.h
 )
 
-set(vr_main_cpp
-  ${vr_src_dir}/main/VREventInternal.cpp
-  ${vr_src_dir}/main/VRFactory.cpp
-  ${vr_src_dir}/main/VRGraphicsHandler.cpp
-  ${vr_src_dir}/main/VRGraphicsStateInternal.cpp
-  ${vr_src_dir}/main/VRMain.cpp
-  ${vr_src_dir}/main/VRSystem.cpp
-  ${vr_src_dir}/main/impl/VRDefaultAppLauncher.cpp
-)
-
 set(vr_api_cpp
   ${vr_src_dir}/api/impl/VRApp.cpp
   ${vr_src_dir}/api/impl/VREvent.cpp
@@ -141,7 +145,18 @@ set(vr_api_h
   ${vr_src_dir}/api/VRGraphicsState.h
 )
 
-set(vr_main_h_main
+set(vr_main_cpp
+  ${vr_src_dir}/main/VRAppLauncher.cpp
+  ${vr_src_dir}/main/VREventInternal.cpp
+  ${vr_src_dir}/main/VRFactory.cpp
+  ${vr_src_dir}/main/VRGraphicsHandler.cpp
+  ${vr_src_dir}/main/VRGraphicsStateInternal.cpp
+  ${vr_src_dir}/main/VRLocalAppLauncher.cpp
+  ${vr_src_dir}/main/VRMain.cpp
+  ${vr_src_dir}/main/VRSystem.cpp
+)
+
+set(vr_main_h
   ${vr_src_dir}/main/VRAppLauncher.h
   ${vr_src_dir}/main/VREventHandler.h
   ${vr_src_dir}/main/VREventInternal.h
@@ -149,19 +164,11 @@ set(vr_main_h_main
   ${vr_src_dir}/main/VRGraphicsHandler.h
   ${vr_src_dir}/main/VRGraphicsStateInternal.h
   ${vr_src_dir}/main/VRItemFactory.h
+  ${vr_src_dir}/main/VRLocalAppLauncher.h
   ${vr_src_dir}/main/VRMain.h
   ${vr_src_dir}/main/VRMainInterface.h
   ${vr_src_dir}/main/VRRenderHandler.h
   ${vr_src_dir}/main/VRSystem.h
-)
-
-set(vr_main_h_impl
-  ${vr_src_dir}/main/impl/VRDefaultAppLauncher.h
-)
-
-set(vr_main_h
-  ${vr_main_h_main}
-  ${vr_main_h_impl}
 )
 
 set(vr_math_cpp
@@ -198,7 +205,8 @@ set(vr_plugin_h
   ${vr_src_dir}/plugin/VRSharedLibrary.h
 )
 
-set(vr_sources 
+set(vr_sources
+  ${vr_config_files}
   ${vr_config_cpp} ${vr_config_h}
   ${vr_display_cpp} ${vr_display_h}
   ${vr_api_cpp} ${vr_api_h}
@@ -226,6 +234,10 @@ source_group("net\\Source Files" FILES ${vr_net_cpp})
 source_group("plugin\\Header Files" FILES ${vr_plugin_h})
 source_group("plugin\\Source Files" FILES ${vr_plugin_cpp})
 
+set_source_files_properties(${vr_config_files} PROPERTIES HEADER_FILE_ONLY TRUE)
+source_group("Config Files" FILES ${vr_config_files})
+
+
 add_library(MinVR ${vr_sources})
 
 install(TARGETS MinVR
@@ -246,6 +258,7 @@ install(FILES ${vr_math_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/math)
 install(FILES ${vr_net_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/net)
 install(FILES ${vr_plugin_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/plugin)
 
+install(FILES ${vr_config_files} DESTINATION ${CMAKE_INSTALL_PREFIX}/config)
 
 # TODO: move this to a test or examples directory
 #add_executable(MVRLookup ${vr_src_dir}/config/MVRLookup.cpp)

@@ -1,0 +1,59 @@
+<MinVR>
+  <PluginPath>../../../MinVR2/build/Release/plugins</PluginPath>
+	<GLFWPlugin pluginType="MinVR_GLFW"/>
+	<OpenGLPlugin pluginType="MinVR_OpenGL"/>
+
+	  <RGBBits>8</RGBBits>
+	  <AlphaBits>8</AlphaBits>
+	  <DepthBits>24</DepthBits>
+	  <StencilBits>8</StencilBits>
+	  <FullScreen>0</FullScreen>
+	  <Resizable>1</Resizable>
+	  <AllowMaximize>1</AllowMaximize>
+	  <Visible>1</Visible>
+	  <SharedContextGroupID>-1</SharedContextGroupID>
+	  <ContextVersionMajor>3</ContextVersionMajor>
+	  <ContextVersionMinor>3</ContextVersionMinor>
+	  <UseGPUAffinity>1</UseGPUAffinity>
+	  <UseDebugContext>0</UseDebugContext>
+	  <MSAASamples>1</MSAASamples>
+	  <QuadBuffered>0</QuadBuffered>
+	  
+	  <StereoFormat>Mono</StereoFormat>
+
+ <LookAtUp type="floatarray">0,1,0</LookAtUp>
+ <LookAtEye type="floatarray">0,0,8</LookAtEye>
+ <LookAtCenter type="floatarray">0,0,0</LookAtCenter>
+ 
+  <HeadTrackingEvent>Head_Move</HeadTrackingEvent>
+  <EyeSeparation>0.203</EyeSeparation>
+  <NearClip>0.001</NearClip>
+  <FarClip>500.0</FarClip>
+  
+	<VRSetups>
+		<Desktop hostType="VRStandAlone">
+	      <GLFWToolkit windowtoolkitType="VRGLFWWindowToolkit"/>
+	      <OpenGLToolkit graphicstoolkitType="VROpenGLGraphicsToolkit"/>
+	      <RootNode displaynodeType="VRGraphicsWindowNode">
+				<Border>0</Border>
+				<Caption>Desktop</Caption>
+				<GPUAffinity>0</GPUAffinity>	
+				<XPos>100</XPos>
+				<YPos>100</YPos>
+				<Width>640</Width>
+				<Height>640</Height>
+				<LookAtNode displaynodeType="VRTrackedLookAtNode">
+					<StereoNode displaynodeType="VRStereoNode">
+						<ProjectionNode displaynodeType="VROffAxisProjectionNode">
+							 <TopLeft type="floatarray">-2,2,0</TopLeft>
+				             <TopRight type="floatarray">-2,2,0</TopRight>
+				             <BottomLeft type="floatarray">-2,-2,0</BottomLeft>
+				             <BottomRight type="floatarray">2,-2,0</BottomRight>
+				             <DUMMY/>
+			            </ProjectionNode>
+		            </StereoNode>
+                </LookAtNode>
+			</RootNode>
+		</Desktop>
+	</VRSetups>
+</MinVR>
