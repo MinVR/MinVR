@@ -80,15 +80,6 @@ VRGLFWWindowToolkit::createWindow(VRWindowSettings settings) {
     	}
     }
 
-	GLFWwindow* window = glfwCreateWindow(settings.width, settings.height, settings.caption.c_str(), NULL, sharedContext);
-	if (!window) {
-		std::cout << "Error creating window." << std::endl;
-	}
-
-	if (settings.sharedContextGroupID >= 0 || !foundSharedContextGroup) {
-		_sharedContextGroups[settings.sharedContextGroupID] = window;
-	}
-
 #ifdef _MSC_VER
 
 #define MAX_AFFINITY_GPUS 16
@@ -150,6 +141,15 @@ VRGLFWWindowToolkit::createWindow(VRWindowSettings settings) {
 		}
 	}
 #endif
+
+	GLFWwindow* window = glfwCreateWindow(settings.width, settings.height, settings.caption.c_str(), NULL, sharedContext);
+	if (!window) {
+		std::cout << "Error creating window." << std::endl;
+	}
+
+	if (settings.sharedContextGroupID >= 0 || !foundSharedContextGroup) {
+		_sharedContextGroups[settings.sharedContextGroupID] = window;
+	}
 
     glfwSetWindowPos(window, settings.xpos, settings.ypos);
 
