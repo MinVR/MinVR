@@ -6,20 +6,12 @@ find_package(OpenGL REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIR})
 
 set(source_files
+  glew.c
   main.cpp
 )
 
-set(config_files
-  desktop.xml
-)
-
-if (MSVC)
-	find_package(GLEW REQUIRED)
-	include_directories(${GLEW_INCLUDE_DIRS})
-	set(ALL_LIBS ${ALL_LIBS} ${GLEW_LIBRARIES})
-endif()
-
 set_source_files_properties(${config_files} PROPERTIES HEADER_FILE_ONLY TRUE)
+
 
 source_group("Config Files" FILES ${config_files})
 
@@ -30,7 +22,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 endif()
 
 
-add_executable(${PROJECT_NAME} ${source_files} ${config_files})
+add_executable(${PROJECT_NAME} ${source_files})
 
 target_link_libraries(${PROJECT_NAME} MinVR ${OPENGL_gl_LIBRARY} ${ALL_LIBS})
 

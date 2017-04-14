@@ -226,9 +226,6 @@ private:
   // Returns the namespace, derived from a long, fully-qualified, name.
   std::string getNameSpace(const std::string fullName);
 
-  // Tries to guess a data type from the ASCII representation.
-  VRCORETYPE_ID inferType(const std::string valueString);
-
   // Start from the root node of an XML document and process the
   // results into entries in the data index.
   std::string walkXML(element* node, std::string nameSpace);
@@ -257,17 +254,6 @@ private:
                                      const std::string nameSpace);
   VRDataMap::iterator getEntry(const std::string valName);
 
-  // These functions read an XML-encoded string and produce the value
-  // implied.  There is no deserializeContainer, since that's what
-  // walkXML does.
-  VRInt deserializeInt(const char* valueString);
-  VRFloat deserializeFloat(const char* valueString);
-  VRString deserializeString(const char* valueString);
-  VRIntArray deserializeIntArray(const char* valueString, const char separator);
-  VRFloatArray deserializeFloatArray(const char* valueString,
-                                       const char separator);
-  VRStringArray deserializeStringArray(const char* valueString,
-                                       const char separator);
 
   // This method creates a link from one node to another.  It has a
   // depth limit to guard against recursive definitions.
@@ -345,6 +331,23 @@ private:
 public:
   VRDataIndex();
 
+    
+  // Tries to guess a data type from the ASCII representation.
+  VRCORETYPE_ID inferType(const std::string valueString);
+
+  // These functions read an XML-encoded string and produce the value
+  // implied.  There is no deserializeContainer, since that's what
+  // walkXML does.
+  VRInt deserializeInt(const char* valueString);
+  VRFloat deserializeFloat(const char* valueString);
+  VRString deserializeString(const char* valueString);
+  VRIntArray deserializeIntArray(const char* valueString, const char separator);
+  VRFloatArray deserializeFloatArray(const char* valueString,
+                                     const char separator);
+  VRStringArray deserializeStringArray(const char* valueString,
+                                       const char separator);
+
+    
   // Some constants that may be useful to users of this API.
   static std::string rootNameSpace;
   

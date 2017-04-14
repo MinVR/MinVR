@@ -29,9 +29,9 @@ namespace MinVR {
                       public VRGraphicsHandler { //,
                       //public VRHapticsHandler {
 public:
-	VRAppInternal(int argc, char** argv, const std::string& configFile, VRApp *app) : _app(app), _running(false) {
+	VRAppInternal(int argc, char** argv, VRApp *app) : _app(app), _running(false) {
 		_main = new VRMain();
-		_main->initialize(argc, argv, configFile);
+		_main->initializeWithMinVRCommandLineParsing(argc, argv);
 		_main->addEventHandler(this);
 		_main->addRenderHandler(this);
 	}
@@ -83,8 +83,8 @@ private:
 
 
 
-VRApp::VRApp(int argc, char** argv, const std::string& configFile) {
-	_internal = new VRAppInternal(argc, argv, configFile, this);
+VRApp::VRApp(int argc, char** argv) {
+	_internal = new VRAppInternal(argc, argv, this);
 }
 
 VRApp::~VRApp()  {

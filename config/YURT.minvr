@@ -1,0 +1,221 @@
+<MinVR>
+
+  <!-- ********************** VRSetups ********************** -->
+  
+  <!-- This file defines the different processes involved. -->
+  <VRSetups type="stringarray">CaveServer,Projectors/P44,Projectors/P45,Projectors/P46,Projectors/P47,Projectors/P48,Projectors/P49</VRSetups>
+    
+  <!-- Plugins -->
+
+  <VRPNPlugin>
+    <Path>../../build/plugins/MinVR_VRPN</Path>
+    <File>MinVR_VRPN</File>
+  </VRPNPlugin>
+
+  <GLFWPlugin>
+    <Path>../../build/plugins/MinVR_GLFW</Path>
+    <File>MinVR_GLFW</File>
+  </GLFWPlugin>
+
+  <OpenGLPlugin>
+    <Path>../../build/plugins/MinVR_OpenGL</Path>
+    <File>MinVR_OpenGL</File>
+  </OpenGLPlugin>
+
+  <ScalablePlugin>
+    <Path> </Path>
+    <File> </File>
+  </ScalablePlugin>
+
+  
+  <!-- ********************** Servers and Clients ********************** -->
+  
+  <!-- Common to both server and clients -->
+  <Port type="string">3456</Port>
+
+  <CaveServer>
+    <Type>VRServer</Type>
+    <NumClients>3</NumClients>
+    <VRPlugins type="stringarray">VRPNPlugin</VRPlugins>
+    <VRInputDevices type="stringarray">Optitrack1,Optitrack2,Optitrack3,RedStylusBtns,BlueStylusBtns</VRInputDevices>
+  </CaveServer>
+  
+  <!-- Common to all clients -->
+  
+  <ServerIP>cave001</ServerIP>
+  <VRWindowToolkits type="stringarray">GLFWToolkit</VRWindowToolkits>
+  <VRGraphicsToolkits type="stringarray">OpenGLToolkit</VRGraphicsToolkits>
+  <VRPlugins type="stringarray">GLFWPlugin,OpenGLPlugin</VRPlugins>
+
+  <Projectors>
+    <Type>VRClient</Type>
+
+    <P44>
+      <Node>cave012</Node>
+      <Screen>:0.0</Screen>
+      <copynode source="DefaultNode"/>
+      <WarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_44</WarpFile>
+      <TopLeft>0.0000889,4.00002,-2.99980</TopLeft>
+      <TopRight>2.96936,-1.46520,-2.60672</TopRight>
+      <BottomLeft>0.0000391,-1.49046,-2.99985</BottomLeft>
+      <BottomRight>2.88634,4.00002,-2.62965</BottomRight>
+    </P44>
+
+    <P45>
+      <Node>cave012</Node>
+      <Screen>:0.1</Screen>
+      <copynode source="DefaultNode"/>
+      <WarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_45</WarpFile>
+      <TopLeft>0.0000136,-4.65431,-2.99988</TopLeft>
+      <TopRight>3.142970,0.801803,-2.558690</TopRight>
+      <BottomLeft>3.14698,-4.75329,-2.55761</BottomLeft>
+      <BottomRight>0.0000390,0.898120,-2.99985</BottomRight>
+    </P45>
+
+    <P46>
+      <Node>cave013</Node>
+      <Screen>:0.0</Screen>
+      <copynode source="DefaultNode"/>
+      <WarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_46</WarpFile>
+      <TopLeft>2.67029,-4.79165,-2.68304</TopLeft>
+      <TopRight>5.830190,0.886407,-1.410160</TopRight>
+      <BottomLeft>2.59690,0.83713,-2.69949</BottomLeft>
+      <BottomRight>5.83339,-4.79165,-1.40836</BottomRight>
+    </P46>
+
+    <P47>
+      <Node>cave013</Node>
+      <Screen>:0.1</Screen>
+      <copynode source="DefaultNode"/>
+      <WarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_47</WarpFile>
+      <TopLeft>5.46998,4.00002,-1.61422</TopLeft>
+      <TopRight>2.54640,-1.50849,-2.71083</TopRight>
+      <BottomLeft>5.58747,-1.56195,-1.54768</BottomLeft>
+      <BottomRight>2.50571,4.00002,-2.71993</BottomRight>
+    </P47>
+
+    <P48>
+      <Node>cave013</Node>
+      <Screen>:0.3</Screen>
+      <copynode source="DefaultNode"/>
+      <WarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_48</WarpFile>
+      <TopLeft>7.72289,-4.79165,-0.02080</TopLeft>
+      <TopRight>4.90491,0.86799,-1.90097</TopRight>
+      <BottomLeft>7.72294,1.10848,-0.02075</BottomLeft>
+      <BottomRight>4.95914,-4.79165,-1.87443</BottomRight>
+    </P48>
+
+    <P49>
+      <Node>cave013</Node>
+      <Screen>:0.2</Screen>
+      <copynode source="DefaultNode"/>
+      <WarpFile>/users/cavedemo/scalable/cave/ScalableData.pol_49</WarpFile>
+      <TopLeft>7.72299,4.00002,-0.02070</TopLeft>
+      <TopRight>4.94336,-1.49479,-1.88234</TopRight>
+      <BottomLeft>7.72294,-1.70757,-0.02075</BottomLeft>
+      <BottomRight>5.03962,3.93359,-1.83388</BottomRight>
+    </P49>
+  </Projectors>
+
+
+  <!-- ********************** Display Graph ********************** -->
+
+  <!-- Common display graph configuration -->
+  <WindowToolkit>VRGLFWWindowToolkit</WindowToolkit>
+  <GraphicsToolkit>VROpenGLGraphicsToolkit</GraphicsToolkit>
+  <Border>0</Border>
+  <Caption>Desktop</Caption>
+  <QuadBuffered>1</QuadBuffered>
+  <GPUAffinity>None</GPUAffinity>
+  <StereoFormat>QuadBuffered</StereoFormat>
+  <EyeSeparation>0.203</EyeSeparation>
+  <NearClip>0.001</NearClip>
+  <FarClip>500.0</FarClip>
+  <HeadTrackingEvent>Head_Move</HeadTrackingEvent>
+  <InitialHeadMatrix type="floatarray">1,0,0,0, 0,1,0,2, 0,0,1,4, 0,0,0,1</InitialHeadMatrix>
+
+  <DefaultNode>
+    <Type>VRGraphicsWindowNode</Type>
+    <Children type="stringarray">DefaultStereoNode</Children>
+    <XPos>0</XPos>
+    <YPos>0</YPos>
+    <Width>1920</Width>
+    <Height>1080</Height>
+  </DefaultNode>
+
+  <DefaultStereoNode>
+    <Type>VRStereoNode</Type>
+    <Children type="stringarray">ScalableProjectionNode</Children>
+  </DefaultStereoNode>
+
+  <ScalableProjectionNode>
+    <Type>ScalableDisplayNode</Type>
+  </ScalableProjectionNode>
+
+  <GLFWToolkit>
+    <Type>VRGLFWWindowToolkit</Type>
+  </GLFWToolkit>
+
+  <OpenGLToolkit>
+    <Type>VROpenGLGraphicsToolkit</Type>
+  </OpenGLToolkit>
+
+
+  <!-- ********************** Input devices ********************** -->
+
+  <!-- Common to all three Optitrack virtual devices -->
+  <ConvertLHtoRH>0</ConvertLHtoRH>
+  <IgnoreZeroes>1</IgnoreZeroes>
+  <WaitForNewReportInPoll>0</WaitForNewReportInPoll>
+  <TrackerUnitsToRoomUnitsScale>3.28084</TrackerUnitsToRoomUnitsScale>
+  <DeviceToRoom type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</DeviceToRoom>
+
+  <!-- Input Devices -->
+    
+  <Optitrack1>
+    <Type>VRVRPNTrackerDevice</Type>
+    <VRPNDeviceName type="string">head@tcp:134.84.121.68:3884</VRPNDeviceName>
+    <EventsToGenerate type="stringarray">Head</EventsToGenerate>
+    <Head>
+      <PropToTracker type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</PropToTracker>
+      <FinalOffset type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+    </Head>
+  </Optitrack1>
+
+  <!-- Another comment -->
+  
+  <Optitrack2>
+    <Type>VRVRPNTrackerDevice</Type>
+    <VRPNDeviceName type="string">stylus0@tcp:134.84.121.68:3884</VRPNDeviceName>
+    <EventsToGenerate type="stringarray">RedStylus</EventsToGenerate>
+    <RedStylus>
+      <PropToTracker type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0.25, 0,0,0,1</PropToTracker>
+      <FinalOffset type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+    </RedStylus>
+  </Optitrack2>
+
+  <Optitrack3>
+    <Type>VRVRPNTrackerDevice</Type>
+    <VRPNDeviceName type="string">stylus1@tcp:134.84.121.68:3884</VRPNDeviceName>
+    <EventsToGenerate type="stringarray">BlueStylus</EventsToGenerate>
+    <BlueStylus>
+      <PropToTracker type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0.25, 0,0,0,1</PropToTracker>
+      <FinalOffset type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+    </BlueStylus>
+  </Optitrack3>
+
+  <RedStylusBtns>
+    <Type>VRVRPNButtonDevice</Type>
+    <VRPNDeviceName type="string">Wixel0@tcp:127.0.0.1:3883</VRPNDeviceName>
+    <EventsToGenerate type="stringarray">RedStylusFrontBtn,RedStylusBackBtn</EventsToGenerate>
+  </RedStylusBtns>
+
+  <BlueStylusBtns>
+    <Type>VRVRPNButtonDevice</Type>
+    <VRPNDeviceName type="string">Wixel1@tcp:127.0.0.1:3883</VRPNDeviceName>
+    <EventsToGenerate type="stringarray">BlueStylusFrontBtn,BlueStylusBackBtn</EventsToGenerate>
+  </BlueStylusBtns>
+
+<!-- Last comment -->
+
+</MinVR>

@@ -34,11 +34,7 @@ void VRSystem::initTime() {
 			QueryPerformanceCounter(&timeStart);
         }
 
-        struct _timeb t;
-        _ftime(&t);
-
-        initialTime = (double)t.time - t.timezone * 60 + (t.dstflag ? 60*60 : 0);
-
+		initialTime = ((double)(timeStart.QuadPart) / counterFrequency.QuadPart);
 #else
         gettimeofday(&start, NULL);
         // "sse" = "seconds since epoch".  The time
@@ -73,7 +69,7 @@ double VRSystem::time(bool absolute) {
         LARGE_INTEGER now;
         QueryPerformanceCounter(&now);
 
-		return ((now.QuadPart - timeStart.QuadPart) /
+		return ((double)(now.QuadPart - timeStart.QuadPart) /
                 counterFrequency.QuadPart) + timeOffset;
 #else
         // Linux resolution defaults to 100Hz.
