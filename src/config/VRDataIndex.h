@@ -518,27 +518,27 @@ public:
   // VRDatum types.  If those types include a constructor from the basic
   // type, then this is all they need to be stored into an index and
   // retrieved.
-  std::string addData(const std::string &name, VRIntConvertible &object) {
+  std::string addData(const std::string &name, const VRIntConvertible &object) {
     return addData(name, object.toVRInt());
   }
 
-  std::string addData(const std::string &name, VRFloatConvertible &object) {
+  std::string addData(const std::string &name, const VRFloatConvertible &object) {
     return addData(name, object.toVRFloat());
   }
 
-  std::string addData(const std::string &name, VRStringConvertible &object) {
+  std::string addData(const std::string &name, const VRStringConvertible &object) {
     return addData(name, object.toVRString());
   }
 
-  std::string addData(const std::string &name, VRIntArrayConvertible &object) {
+  std::string addData(const std::string &name, const VRIntArrayConvertible &object) {
     return addData(name, object.toVRIntArray());
   }
   
-  std::string addData(const std::string &name, VRFloatArrayConvertible &object) {
+  std::string addData(const std::string &name, const VRFloatArrayConvertible &object) {
     return addData(name, object.toVRFloatArray());
   }
   
-  std::string addData(const std::string &name, VRStringArrayConvertible &object) {
+  std::string addData(const std::string &name, const VRStringArrayConvertible &object) {
     return addData(name, object.toVRStringArray());
   }
   

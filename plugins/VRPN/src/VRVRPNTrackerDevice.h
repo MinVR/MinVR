@@ -128,7 +128,6 @@ public:
 	PLUGIN_API static VRInputDevice* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 
 private:
-	vrpn_Connection          *_vrpnConnection;
 	vrpn_Tracker_Remote      *_vrpnDevice;
 	std::vector<std::string>  _eventNames;
 	double                    _trackerUnitsToRoomUnitsScale;

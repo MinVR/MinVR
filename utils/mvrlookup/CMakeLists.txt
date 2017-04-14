@@ -1,19 +1,13 @@
 
-project(itest-opengl-shaderpipeline)
+project(MVRLookup)
 
 find_package(OpenGL REQUIRED)
 
 include_directories(${OPENGL_INCLUDE_DIR})
 
 set(source_files
-  glew.c
-  main.cpp
+  MVRLookup.cpp
 )
-
-set_source_files_properties(${config_files} PROPERTIES HEADER_FILE_ONLY TRUE)
-
-
-source_group("Config Files" FILES ${config_files})
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	find_package(Threads)
@@ -22,9 +16,10 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 endif()
 
 
-add_executable(${PROJECT_NAME} ${source_files})
+add_executable(${PROJECT_NAME} ${source_files} ${config_files})
 
 target_link_libraries(${PROJECT_NAME} MinVR ${OPENGL_gl_LIBRARY} ${ALL_LIBS})
 
-set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "tests-interactive")
+set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "utils")
 
+install(TARGETS MVRLookup RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)

@@ -40,21 +40,24 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
     exit(1);
   }
 
-  // loop through all the results and connect to the first we can
-  for (p = servinfo; p != NULL; p = p->ai_next) {
-    if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == INVALID_SOCKET) {
-	  std::cerr << "socket() failed with error: " << WSAGetLastError() << std::endl;
-      continue;
-    }
+  //This is a temporary fix to ensure the client can connect and that the connection is not refused
+  while(p == NULL){
+    // loop through all the results and connect to the first we can
+    for (p = servinfo; p != NULL; p = p->ai_next) {
+      if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == INVALID_SOCKET) {
+	    std::cerr << "socket() failed with error: " << WSAGetLastError() << std::endl;
+        continue;
+      }
     
-    if (connect(sockfd, p->ai_addr, (int)p->ai_addrlen) == SOCKET_ERROR) {
-      closesocket(sockfd);
-      sockfd = INVALID_SOCKET;
-	  std::cerr << "connect() to server socket failed" << std::endl;
-      continue;
-    }
+      if (connect(sockfd, p->ai_addr, (int)p->ai_addrlen) == SOCKET_ERROR) {
+        closesocket(sockfd);
+        sockfd = INVALID_SOCKET;
+	    std::cerr << "connect() to server socket failed" << std::endl;
+        continue;
+      }
     
-    break;
+      break;
+    }
   }
 
   if (p == NULL) {
@@ -94,22 +97,24 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
     exit(1);
   }
   
-  // loop through all the results and connect to the first we can
-  for (p = servinfo; p != NULL; p = p->ai_next) {
-    if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
-      perror("client: socket");
-      continue;
-    }
+  //This is a temporary fix to ensure the client can connect and that the connection is not refused
+  while(p == NULL){
+    // loop through all the results and connect to the first we can
+    for (p = servinfo; p != NULL; p = p->ai_next) {
+      if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
+        perror("client: socket");
+        continue;
+      }
     
-    if (connect(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
-      close(sockfd);
-      perror("client: connect");
-      continue;
-    }
+      if (connect(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
+        close(sockfd);
+        perror("client: connect");
+        continue;
+      }
     
-    break;
+      break;
+    }
   }
-
   if (p == NULL) {
     fprintf(stderr, "client: failed to connect\n");
     //return 2;
