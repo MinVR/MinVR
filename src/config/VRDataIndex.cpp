@@ -6,7 +6,7 @@ std::string VRDataIndex::rootNameSpace = "/";
 
 // Step 7 of the specialization instructions (in VRDatum.h) is to
 // add an entry here to register the new data type.
-VRDataIndex::VRDataIndex()  : overwrite(1) {
+VRDataIndex::VRDataIndex()  : overwrite(1), name("MVR") {
   factory.RegisterVRDatum(VRCORETYPE_INT, CreateVRDatumInt);
   factory.RegisterVRDatum(VRCORETYPE_FLOAT, CreateVRDatumFloat);
   factory.RegisterVRDatum(VRCORETYPE_STRING, CreateVRDatumString);
@@ -25,6 +25,174 @@ VRDataIndex::VRDataIndex()  : overwrite(1) {
   delete m;
 }
 
+VRDataIndex::VRDataIndex(const std::string serializedData)  :
+  overwrite(1), name("MVR") {
+
+  //  To Dan: Can the constructor for the alternate data index have
+  //  access somehow to an existing data index?
+  //VRDataIndex::VRDataIndex(std::string serializedData, VRDataIndex* bigDataIndex)
+  //
+  // This would be how the short-quick needs of the events can be
+  // handled without all this factory and setup junk.
+  
+  factory.RegisterVRDatum(VRCORETYPE_INT, CreateVRDatumInt);
+  factory.RegisterVRDatum(VRCORETYPE_FLOAT, CreateVRDatumFloat);
+  factory.RegisterVRDatum(VRCORETYPE_STRING, CreateVRDatumString);
+  factory.RegisterVRDatum(VRCORETYPE_INTARRAY, CreateVRDatumIntArray);
+  factory.RegisterVRDatum(VRCORETYPE_FLOATARRAY, CreateVRDatumFloatArray);
+  factory.RegisterVRDatum(VRCORETYPE_STRINGARRAY, CreateVRDatumStringArray);
+  factory.RegisterVRDatum(VRCORETYPE_CONTAINER, CreateVRDatumContainer);
+
+  // We create a VRDatum object here just to have access to the
+  // typemap that is a static member of that class.  Copy it into a
+  // map<> for use over here in reading serialized data strings.
+  VRDatumInt *m = new VRDatumInt(0);
+  for (int i = 0; i < VRCORETYPE_NTYPES; i++) {
+    mVRTypeMap[std::string(m->VRTypeMap[i].first)] = m->VRTypeMap[i].second;
+  }
+  delete m;
+
+  Cxml *xml = new Cxml();
+  xml->parse_string((char*)serializedData.c_str());
+  element *xml_node = xml->get_root_element();
+  element* child = xml_node->get_next_child();
+  element* grandChild = child->get_next_child();
+  std::string out;
+  
+  // If we have been given data from a valid XML file (which has only
+  // one root element), the 'child' points to the root node, which we
+  // don't want to keep.  So we'll work our way through the
+  // grandchildren in this loop.
+  while (child != NULL) {
+
+    name = child->get_name();
+    
+    while (grandChild != NULL) {
+    
+      //printXML(child, validateNameSpace(nameSpace));
+      out = walkXML(grandChild, "/");
+
+      grandChild = child->get_next_child();
+    }
+
+    child = xml_node->get_next_child();
+  }
+
+  delete xml;
+
+  // If there are nodes in the tree with a 'linknode' attribute,
+  // resolve them.
+  linkNodes();
+  linkContent();
+
+}
+
+
+std::string VRDataIndex::getTrimName(const std::string valName,
+                                     const std::string nameSpace) {
+
+  return getTrimName(validateNameSpace(nameSpace) + valName);
+}
+
+std::string VRDataIndex::getTrimName(const std::string valName) {
+
+  std::string trimName;
+  if (valName.find('/') == std::string::npos) {
+    trimName = valName;
+
+  } else {
+ 
+    // This separates the valName on the slashes and puts the last
+    // part of it into trimName.
+    std::stringstream ss(valName);
+    while (std::getline(ss, trimName, '/')) {};
+  }
+    
+  return trimName;
+}
+
+
+std::string VRDataIndex::serialize() {
+
+    std::string serialized;
+
+    serialized = "<" + getName() + " type=\"container\"" ;
+
+    // This makes a list of *all* the names in the data index.
+    // Unfortunately, we only want the first-level names, and want
+    // none of the children of those first-level names.  So we have to
+    // weed the second- and third-level names out.
+    VRContainer nameList = getNames();
+    if (nameList.empty()) {
+
+      serialized += "/>";
+
+    } else {
+
+      serialized += ">";
+
+      // ... loop through the children (recursively) ...
+      for (VRContainer::iterator lt = nameList.begin();
+           lt != nameList.end(); lt++) {
+
+        // Search for a slash, not including the leading one.
+        int slashPos = lt->find_first_of("/", 1);
+
+        // If we didn't find it, this is a root-level name.
+        if (slashPos == std::string::npos) {
+
+          // ... recurse, and get the serialization of the member data value.
+          serialized += serialize(*lt);
+        };
+      }
+      serialized += "</" + getName() + ">";
+    }
+
+    return serialized;
+}
+  
+// Returns the string representation of a name/value pair in the data index.
+// If the argument is '/' you are probably trying to serialize the whole index,
+// in which case, the index name will be used as the root name.
+std::string VRDataIndex::serialize(const std::string valName) {
+
+  if (valName == "/") {
+
+    return serialize();
+
+  } else {
+    VRDataMap::iterator it = getEntry(valName, "");
+
+    if (it != mindex.end()) {
+
+      return serialize(it->first, it->second);
+
+    } else {
+
+      throw std::runtime_error(std::string("Never heard of ") + valName);
+
+    }
+  }
+}
+
+std::string VRDataIndex::serialize(const std::string valName,
+                                   const std::string nameSpace) {
+
+  VRDataMap::iterator it = getEntry(valName, nameSpace);
+
+  if (it != mindex.end()) {
+
+    return serialize(it->first, it->second);
+
+  } else {
+
+    throw std::runtime_error("Never heard of " + valName + " in the namespace: " + nameSpace);
+
+  }
+}
+
+
+  
 std::string VRDataIndex::serialize(const std::string name,
                                    VRDatumPtr pdata ) {
 
@@ -755,68 +923,6 @@ VRDatumPtr VRDataIndex::getDatum(const std::string valName,
   }
 }
 
-std::string VRDataIndex::getTrimName(const std::string valName,
-                                     const std::string nameSpace) {
-
-  return getTrimName(validateNameSpace(nameSpace) + valName);
-}
-
-std::string VRDataIndex::getTrimName(const std::string valName) {
-
-  std::string trimName;
-  if (valName.find('/') == std::string::npos) {
-    trimName = valName;
-
-  } else {
- 
-    // This separates the valName on the slashes and puts the last
-    // part of it into trimName.
-    std::stringstream ss(valName);
-    while (std::getline(ss, trimName, '/')) {};
-  }
-    
-  return trimName;
-}
-
-// Returns the string representation of a name/value pair in the data index.
-// Notice that you can't serialize the whole index.  That is, you need
-// to specify an object or container to serialize, and "/" is not such
-// a thing. To see why not, imagine what the serialization would look
-// like: what would be inside the first XML tag?
-std::string VRDataIndex::serialize(const std::string valName) {
-
-  if (valName == "/")
-    throw std::runtime_error("Can't serialize the whole index -- pick an object in it.");
-  
-  VRDataMap::iterator it = getEntry(valName, "");
-
-  if (it != mindex.end()) {
-
-    return serialize(it->first, it->second);
-
-  } else {
-
-    throw std::runtime_error(std::string("Never heard of ") + valName);
-
-  }
-}
-
-std::string VRDataIndex::serialize(const std::string valName,
-                                   const std::string nameSpace) {
-
-  VRDataMap::iterator it = getEntry(valName, nameSpace);
-
-  if (it != mindex.end()) {
-
-    return serialize(it->first, it->second);
-
-  } else {
-
-    throw std::runtime_error("Never heard of " + valName + " in the namespace: " + nameSpace);
-
-  }
-}
-
 // an int should be <nWindows type="int">6</nWindows>
 std::string VRDataIndex::addSerializedValue(const std::string serializedData) {
 
@@ -870,7 +976,7 @@ std::string VRDataIndex::dereferenceEnvVars(const std::string fileName) {
   int dollarPos = 0;
 
   dollarPos = pathName.find_first_of("$", dollarPos);
-  while (dollarPos != string::npos) {
+  while (dollarPos != std::string::npos) {
 
     int bracketPos = pathName.find_first_of("}", dollarPos);
 

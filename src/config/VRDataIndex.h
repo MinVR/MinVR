@@ -206,6 +206,9 @@ private:
   //typedef std::map<std::string, std::vector<VRDatumPtr> > VRDataMap;
   VRDataMap mindex;
 
+  // This is the name of the data index itself.
+  std::string name; 
+  
   // If this is 1, new values will overwrite old ones.  For -1, new
   // values will just bounce off.  And zero will cause an exception if
   // an overwrite is attempted.  Except containers, who are always
@@ -344,13 +347,18 @@ private:
 
 public:
   VRDataIndex();
+  VRDataIndex(const std::string serializedData);
 
   // Some constants that may be useful to users of this API.
   static std::string rootNameSpace;
   
   void setOverwrite(const int inVal) { overwrite = inVal; }
 
-  // Returns the fully qualified name of the value.
+  // Returns the name of the whole data index.
+  std::string getName() { return name; };
+  void setName(const std::string inName) { name = inName; };
+  
+  // Returns the fully qualified name of the specified value.
   std::string getName(const std::string valName,
                       const std::string nameSpace);
 
@@ -412,6 +420,7 @@ public:
   }
 
   // This is the name, type, value, expressed as an XML fragment.
+  std::string serialize();
   std::string serialize(const std::string valName);
   std::string serialize(const std::string valName,
                         const std::string nameSpace);
