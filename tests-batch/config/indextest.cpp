@@ -1,6 +1,7 @@
 #include "config/VRDataIndex.h"
 
 int testIndexSerialize();
+int testIndexSerializeEntire();
 int testIndexSerializeIntArray();
 int testIndexSerializeIntArraySep();
 int testIndexPrintFloatArray();
@@ -12,7 +13,7 @@ int testLinkNode();
 int testLinkContent();
 
 // Make this a large number to get decent timing data.
-#define LOOP for (int loopctr = 0; loopctr < 100; loopctr++)
+#define LOOP for (int loopctr = 0; loopctr < 10; loopctr++)
 
 int indextest(int argc, char* argv[]) {
   
@@ -68,6 +69,10 @@ int indextest(int argc, char* argv[]) {
 
   case 10:
     output = testLinkContent();
+    break;
+
+  case 11:
+    output = testIndexSerializeEntire();
     break;
     
   default:
@@ -459,6 +464,39 @@ int testIndexSerialize() {
   return out;
   
 }
+
+int testIndexSerializeEntire() {
+
+  std::string testString = "<MVR type=\"container\"><Server type=\"container\"><Port type=\"string\">3490</Port><Host type=\"string\">localhost</Host><NumClients type=\"int\">1</NumClients></Server><VRPlugins type=\"container\"><MinVRDefaultPlugins type=\"container\"><Names type=\"stringarray\" separator=\"@\">MinVR_GLFW@MinVR_OpenGL@MinVR_Threading</Names><Data type=\"floatarray\">1.200000,2.300000,3.400000,4.500000,5.600000</Data></MinVRDefaultPlugins></VRPlugins><VRDisplayDevices type=\"container\"><ThreadedDisplay type=\"container\"><displayType type=\"string\">thread_group</displayType><Display1 type=\"container\"><allowThreading type=\"int\">1</allowThreading><displayType type=\"string\" val=\"heavy\">glfw_display</displayType><xOffset type=\"int\">600</xOffset><yOffset type=\"int\">0</yOffset><width type=\"int\">200</width><height type=\"int\">200</height></Display1><Display2 type=\"container\"><displayType type=\"string\">glfw_display</displayType><allowThreading type=\"int\">1</allowThreading><xOffset type=\"int\">600</xOffset><yOffset type=\"int\">250</yOffset><width type=\"int\">200</width><height type=\"int\">200</height><stereoFormatter type=\"container\"><displayType type=\"string\">sideBySideStereo</displayType></stereoFormatter></Display2><Display3 type=\"container\"><displayType type=\"string\">glfw_display</displayType><allowThreading type=\"int\">1</allowThreading><xOffset type=\"int\">600</xOffset><yOffset type=\"int\">450</yOffset><width type=\"int\">200</width><height type=\"int\">200</height><stereoFormatter type=\"container\"><displayType type=\"string\">sideBySideStereo</displayType></stereoFormatter></Display3></ThreadedDisplay><MainDisplay type=\"container\"><displayType type=\"string\">glfw_display</displayType><xOffset type=\"int\">800</xOffset><yOffset type=\"int\">0</yOffset><width type=\"int\">300</width><height type=\"int\">600</height></MainDisplay><OtherDisplay type=\"container\"><displayType type=\"string\">glfw_display</displayType><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">0</yOffset><width type=\"int\">600</width><height type=\"int\">600</height><stereoFormatter type=\"container\"><displayType type=\"string\">sideBySideStereo</displayType><topViewport type=\"container\"><displayType type=\"string\">viewport</displayType><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">300</yOffset><width type=\"int\">600</width><height type=\"int\">300</height></topViewport><bottomViewport type=\"container\"><displayType type=\"string\">viewport</displayType><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">0</yOffset><width type=\"int\">600</width><height type=\"int\">300</height></bottomViewport></stereoFormatter></OtherDisplay><radius type=\"float\">20.000000</radius><Display1 type=\"container\"><radius type=\"float\">7.000000</radius><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">300</yOffset></Display1><Display2 type=\"container\"><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">300</yOffset></Display2></VRDisplayDevices></MVR>";
+
+  int out = 0;
+
+  LOOP {
+  
+    MinVR::VRDataIndex* n = new MinVR::VRDataIndex(testString);
+
+    std::string output = n->serialize();
+
+
+    // This uses the constructor, so the "MVR" gets absorbed as the
+    // name of the index, not the root name in the index.
+    std::string test1 = n->getValue("/VRDisplayDevices/ThreadedDisplay/Display1/displayType");
+
+    std::string test2 = n->getDatum("/VRDisplayDevices/ThreadedDisplay/Display1/displayType")->getAttributeValue("val");
+
+    out += test1.compare("glfw_display");
+    out += test2.compare("heavy");
+    out += 2871 - output.size();
+    out += n->getName().compare("MVR");
+    
+    delete n;
+  }
+
+  return out;
+  
+}
+
+
 
 int testIndexPrintFloatArray() {
 
