@@ -52,7 +52,59 @@ include_directories (
 )
 
 SET(CMAKE_MODULE_PATH  ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH} )
-find_package(OpenVR REQUIRED)
+find_package(OpenVR QUIET)
+if(NOT OPENVR_FOUND)
+	set(DepName OpenVR) 
+
+	set(${DepName}_checkout_Dir ${PROJECT_SOURCE_DIR}/lib/${DepName}/src)
+	make_directory(${${DepName}_checkout_Dir})
+	include(ExternalProject)
+	
+	set(${DepName}_build_dir ${CMAKE_BINARY_DIR}/deps/${DepName})
+	set(${DepName}_stamp_dir ${${DepName}_build_dir}/stamp)
+	set(${DepName}_tmp_dir ${${DepName}_build_dir}/tmp)
+	
+	set(${DepName}_PREFIX "${${DepName}_checkout_Dir}")
+	set(${DepName}_INSTALL_DIR "${CMAKE_BINARY_DIR}/deps/${DepName}")
+	
+	set(${DepName}_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${${DepName}_INSTALL_DIR} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_C_FLAGS=-fPIC -DQNANHIBIT=1)
+	set(${DepName}_DIR "${${DepName}_INSTALL_DIR}")
+	
+	if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+		set(${DepName}_CMAKE_ARGS ${${DepName}_CMAKE_ARGS})
+	endif()
+	
+	set(${DepName}_PATCH "")
+	   
+	ExternalProject_add(${DepName}
+		PREFIX ${${DepName}_PREFIX}
+		GIT_REPOSITORY https://github.com/ivlab/openvr
+		GIT_TAG master
+		INSTALL_DIR ${${DepName}_INSTALL_DIR}
+		CMAKE_ARGS ${${DepName}_CMAKE_ARGS}
+		UPDATE_COMMAND ""
+		DOWNLOAD_DIR ${${DepName}_checkout_Dir}
+		SOURCE_DIR ${${DepName}_checkout_Dir}
+		TMP_DIR ${${DepName}_tmp_dir}
+		STAMP_DIR ${${DepName}_stamp_dir}
+		BINARY_DIR ${${DepName}_build_dir}
+	)
+	
+	set(OPENVR_INCLUDE_DIRS ${${DepName}_checkout_Dir}/headers)
+	
+	find_library(OPENVR_LIBRARY NAMES openvr_api.lib openvr_api.so openvr_api
+             HINTS $ENV{OPENVR_LIB_DIR} ${OPENVR_LIB_DIR})
+             
+    if(MSVC)
+		set(OPENVR_LIBRARY ${${DepName}_INSTALL_DIR}/lib/openvr_api.lib)
+	else()
+		set(OPENVR_LIBRARY ${${DepName}_INSTALL_DIR}/lib/libopenvr_api.a)
+	endif()
+
+	set(OPENVR_LIBRARIES ${OPENVR_LIBRARY})
+
+endif()
+
 #add_definitions(-D_EASYBLENDSDK_LINUX)
 include_directories(${OPENVR_INCLUDE_DIRS})
 
@@ -68,6 +120,7 @@ if (MSVC)
 endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 	find_package(X11)
 	set(LIBS_ALL ${LIBS_ALL} ${CMAKE_THREAD_LIBS_INIT} rt Xrandr Xxf86vm Xi m dl ${X11_LIBRARIES})
 endif()
@@ -117,6 +170,10 @@ SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 add_library ( ${PROJECT_NAME} SHARED ${HEADERFILES} ${SOURCEFILES} )
 target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${OPENVR_LIBRARIES} ${GLEW_LIBRARIES} MinVR ${LIBS_ALL})
+
+if(NOT OPENVR_FOUND)
+	add_dependencies(${PROJECT_NAME} OpenVR)
+endif()
 
 #------------------------------------------
 # Install Target
