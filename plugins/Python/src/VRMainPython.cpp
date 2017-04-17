@@ -51,15 +51,11 @@ private:
 extern "C" {
 
 	// Create VRMain
-	PLUGIN_API VRMain* VRMain_init(char* searchPath) {
+	PLUGIN_API VRMain* VRMain_init(char* searchPath, int argc, char** argv) {
+		std::cout << argc << std::endl;
 		VRMain* vrmain = new VRMain();
 		vrmain->addPluginSearchPath(std::string(searchPath));
-		char** input = new char*[3];
-		input[0] = "python";
-		input[1] = "-c";
-		input[2] = "desktop-oldopengl";
-		vrmain->initializeWithMinVRCommandLineParsing(3, input);
-		delete[] input;
+		vrmain->initializeWithMinVRCommandLineParsing(argc, argv);
 		std::cout << "Plugin directory: " << std::string(searchPath) << std::endl;
 		return vrmain;
 	}

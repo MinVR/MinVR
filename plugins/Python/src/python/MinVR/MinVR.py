@@ -29,7 +29,9 @@ rendercallback_type = ctypes.CFUNCTYPE(None, ctypes.c_void_p)
 class VRMain(object):
 	def __init__(self, minvr_dir, argv):
 		openLibrary(minvr_dir)
-		self.obj = lib.VRMain_init(minvr_dir + '/plugins')
+		arr = (ctypes.c_char_p * len(argv))()
+		arr[:] = argv;
+		self.obj = lib.VRMain_init(minvr_dir + '/plugins', len(argv), arr)
 		self.eventHandlers = []
 		self.renderHandlers = []
 		self.eventCB = self.getEventCallbackFunc()
