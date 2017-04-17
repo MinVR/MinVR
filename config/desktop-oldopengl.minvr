@@ -13,7 +13,7 @@
 	  <Visible>1</Visible>
 	  <SharedContextGroupID>-1</SharedContextGroupID>
 	  <ContextVersionMajor>3</ContextVersionMajor>
-	  <ContextVersionMinor>3</ContextVersionMinor>
+	  <ContextVersionMinor>0</ContextVersionMinor>
 	  <UseGPUAffinity>1</UseGPUAffinity>
 	  <UseDebugContext>0</UseDebugContext>
 	  <MSAASamples>1</MSAASamples>

@@ -16,21 +16,20 @@ elif _platform == "win32":
 
 lib = None
 
-def openLibrary(config):
-	e = xml.etree.ElementTree.parse(config).getroot()
-	pluginpath = e.findall('PluginPath')[0].text
+def openLibrary(minvr_dir):
+	#e = xml.etree.ElementTree.parse(config).getroot()
+	#pluginpath = e.findall('PluginPath')[0].text
 	global lib
-	lib = cdll.LoadLibrary(pluginpath + '/' + libName + '/' + libFilePath)
-
-
+	lib = cdll.LoadLibrary(minvr_dir + '/plugins/' + libName + '/' + libFilePath)
+	print(minvr_dir + '/plugins/' + libName + '/' + libFilePath)
 
 eventcallback_type = ctypes.CFUNCTYPE(None, ctypes.c_char_p)
 rendercallback_type = ctypes.CFUNCTYPE(None, ctypes.c_void_p)
 
 class VRMain(object):
-	def __init__(self, config):
-		openLibrary(config)
-		self.obj = lib.VRMain_init(config)
+	def __init__(self, minvr_dir, argv):
+		openLibrary(minvr_dir)
+		self.obj = lib.VRMain_init(minvr_dir + '/plugins')
 		self.eventHandlers = []
 		self.renderHandlers = []
 		self.eventCB = self.getEventCallbackFunc()

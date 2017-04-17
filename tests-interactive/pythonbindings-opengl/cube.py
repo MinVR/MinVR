@@ -2,9 +2,23 @@
 
 # Use file's current directory and append path to MinVR Module
 import sys, os, inspect
-fileDir = os.path.dirname(os.path.abspath(inspect.getsourcefile(lambda:0)))
-os.chdir(fileDir)
-sys.path.append("../../plugins/Python/src/python")
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("-d", help="MinVR Directory")
+parser.add_argument("-c", help="MinVR Config")
+parser.add_argument("-f", help="Config File")
+parser.add_argument("-s", help="Config Values")
+args = parser.parse_args()
+
+minvr_dir = os.environ.get('MinVR_DIR')
+if (args.d):
+	minvr_dir = args.d
+
+if (minvr_dir):
+	sys.path.append(minvr_dir + "/plugins/MinVR_Python/python")
+else:
+	print("Please supply MinVR_DIR with environment variable 'MinVR_DIR' or -d")
+	exit(0)
 
 # --------- MinVR Implementation -----------------
 
@@ -58,7 +72,7 @@ class App(VREventHandler, VRRenderHandler):
 	# Called when an event is passed from MinVR
 	def onVREvent(self, eventName):
 		print eventName
-		if eventName == "/KbdEsc_Down":
+		if eventName == "KbdEsc_Down":
 			self.loop = False
 
 	# Renders the scene
@@ -80,12 +94,12 @@ class App(VREventHandler, VRRenderHandler):
 		glColor3f(0.0, 0.0, 1.0);
 		glVertex3f(0.0, 0.60, 0.0);
 		glEnd();
-                glMatrixMode(GL_MODELVIEW);
-                glLoadIdentity();
-                glMatrixMode(GL_MODELVIEW);
-                glTranslatef(0.0,0.0, -5)
-                glRotatef(self.a/3, self.a, self.a/3, self.a/3)
-                Cube()
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		glMatrixMode(GL_MODELVIEW);
+		glTranslatef(0.0,0.0, -5)
+		glRotatef(self.a/3, self.a, self.a/3, self.a/3)
+		Cube()
 
 # ----------- Main program ------------------
 
@@ -93,8 +107,7 @@ class App(VREventHandler, VRRenderHandler):
 app = App()
 
 # Create VRMain instance passing in vrsetup configuration
-config = sys.argv[1]
-vrmain = VRMain(config)
+vrmain = VRMain(minvr_dir, sys.argv)
 
 # Add event handler and render handler
 vrmain.addEventHandler(app)
@@ -102,7 +115,7 @@ vrmain.addRenderHandler(app)
 
 # Main loop
 while app.loop:
-        app.a += 3
+	app.a += 3
 	vrmain.mainloop()
 
 # Shutdown MinVR
