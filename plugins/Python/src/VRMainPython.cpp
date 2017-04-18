@@ -9,13 +9,14 @@
 #include "main/VRMain.h"
 #include <main/VREventHandler.h>
 #include <main/VRGraphicsHandler.h>
+#include <main/VREventInternal.h>
 #include <plugin/VRPlugin.h>
 
 using namespace MinVR;
 
 // Event and Render python callback functions
 extern "C" {
-	PLUGIN_API typedef int (*eventcallback_type)(const char* eventName);
+	PLUGIN_API typedef int (*eventcallback_type)(const char* eventName, void* renderState);
 	PLUGIN_API typedef int (*rendercallback_type)(void* renderState);
 }
 
@@ -26,7 +27,7 @@ public:
 	PLUGIN_API virtual ~VRPythonEventCallbackHandler() {}
 
 	PLUGIN_API void onVREvent(const VREvent &event) {
-		eventCallback(event.getName().c_str());
+		eventCallback(event.getName().c_str(), event.getInternal()->getDataIndex());
 	}
 
 private:
@@ -52,7 +53,6 @@ extern "C" {
 
 	// Create VRMain
 	PLUGIN_API VRMain* VRMain_init(char* searchPath, int argc, char** argv) {
-		std::cout << argc << std::endl;
 		VRMain* vrmain = new VRMain();
 		vrmain->addPluginSearchPath(std::string(searchPath));
 		vrmain->initializeWithMinVRCommandLineParsing(argc, argv);

@@ -17,13 +17,11 @@ elif _platform == "win32":
 lib = None
 
 def openLibrary(minvr_dir):
-	#e = xml.etree.ElementTree.parse(config).getroot()
-	#pluginpath = e.findall('PluginPath')[0].text
 	global lib
 	lib = cdll.LoadLibrary(minvr_dir + '/plugins/' + libName + '/' + libFilePath)
 	print(minvr_dir + '/plugins/' + libName + '/' + libFilePath)
 
-eventcallback_type = ctypes.CFUNCTYPE(None, ctypes.c_char_p)
+eventcallback_type = ctypes.CFUNCTYPE(None, ctypes.c_char_p, ctypes.c_void_p)
 rendercallback_type = ctypes.CFUNCTYPE(None, ctypes.c_void_p)
 
 class VRMain(object):
@@ -53,13 +51,13 @@ class VRMain(object):
 	def addRenderHandler(self, handler):
 		self.renderHandlers.append(handler)
 	def getEventCallbackFunc(self):
-		def func(eventName):
-			self.handleEvent(eventName)
+		def func(eventName, event):
+			self.handleEvent(eventName, event)
 		return eventcallback_type(func)
-	def handleEvent(self, eventName):
+	def handleEvent(self, eventName, event):
 		eName = eventName
 		for handler in self.eventHandlers:
-			handler.onVREvent(eName)
+			handler.onVREvent(eName, VRDataIndex(event))
 	def getRenderCallbackFunc(self):
 		def func(renderState):
 			self.handleRender(renderState)
@@ -73,7 +71,7 @@ class VRMain(object):
 class VREventHandler(object):
 	def __init__(self):
 		pass
-	def onVREvent(self, eventName):
+	def onVREvent(self, eventName, event):
 		print "Event"
 
 class VRRenderHandler(object):
@@ -90,11 +88,17 @@ class VRDataIndex(object):
 		self.getDatumType.argtypes = (ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p)
 		self.getIntValue = lib.VRDataIndex_getIntValue
 		self.getIntValue.argtypes = (ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p)
+		self.getIntValue.restype = ctypes.c_int
+		self.getFloatValue = lib.VRDataIndex_getFloatValue
+		self.getFloatValue.argtypes = (ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p)
+		self.getFloatValue.restype = ctypes.c_float
 		self.index = index
 	def getValue(self, valName, nameSpace):
 		datumType = self.getDatumType(self.index, valName, nameSpace)
 		if datumType == 1:
 			return self.getIntValue(self.index, valName, nameSpace)
+		if datumType == 2:
+			return self.getFloatValue(self.index, valName, nameSpace)
 		return None
 
 

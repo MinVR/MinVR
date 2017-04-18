@@ -68,12 +68,15 @@ class App(VREventHandler, VRRenderHandler):
 	def __init__(self):
 		self.loop = True
 		self.a = 3
+		self.time = 0.0
 
 	# Called when an event is passed from MinVR
-	def onVREvent(self, eventName):
+	def onVREvent(self, eventName, event):
 		print eventName
 		if eventName == "KbdEsc_Down":
 			self.loop = False
+		elif eventName == "FrameStart":
+			self.time = event.getValue("ElapsedSeconds", eventName)
 
 	# Renders the scene
 	def onVRRenderScene(self, renderState):
@@ -98,7 +101,7 @@ class App(VREventHandler, VRRenderHandler):
 		glLoadIdentity();
 		glMatrixMode(GL_MODELVIEW);
 		glTranslatef(0.0,0.0, -5)
-		glRotatef(self.a/3, self.a, self.a/3, self.a/3)
+		glRotatef(self.time*30, self.time*10, self.time*30, self.time*30)
 		Cube()
 
 # ----------- Main program ------------------
