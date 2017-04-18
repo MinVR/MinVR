@@ -16,7 +16,7 @@ using namespace MinVR;
 
 // Event and Render python callback functions
 extern "C" {
-	PLUGIN_API typedef int (*eventcallback_type)(const char* eventName, void* renderState);
+	PLUGIN_API typedef int (*eventcallback_type)(const char* eventName, void* eventData);
 	PLUGIN_API typedef int (*rendercallback_type)(void* renderState);
 }
 

@@ -86,19 +86,45 @@ class VRDataIndex(object):
 	def __init__(self, index):
 		self.getDatumType = lib.VRDataIndex_getType
 		self.getDatumType.argtypes = (ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p)
+		self.freeValue = lib.VRDataIndex_freeValue
+		self.freeValue.argtypes = (ctypes.c_int, ctypes.c_void_p)
 		self.getIntValue = lib.VRDataIndex_getIntValue
 		self.getIntValue.argtypes = (ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p)
 		self.getIntValue.restype = ctypes.c_int
 		self.getFloatValue = lib.VRDataIndex_getFloatValue
 		self.getFloatValue.argtypes = (ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p)
 		self.getFloatValue.restype = ctypes.c_float
+		self.getStringValue = lib.VRDataIndex_getStringValue
+		self.getStringValue.argtypes = (ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p)
+		self.getStringValue.restype = ctypes.c_char_p
+		self.getIntArrayValue = lib.VRDataIndex_getIntArrayValue
+		self.getIntArrayValue.argtypes = (ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p)
+		self.getIntArrayValue.restype = ctypes.POINTER(ctypes.c_int)
+		self.getFloatArrayValue = lib.VRDataIndex_getFloatArrayValue
+		self.getFloatArrayValue.argtypes = (ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p)
+		self.getFloatArrayValue.restype = ctypes.POINTER(ctypes.c_float)
 		self.index = index
+		self.toBeDeleted = []
+	def __del__(self):
+		for i in self.toBeDeleted:
+			self.freeValue(i[0],i[1])
 	def getValue(self, valName, nameSpace):
 		datumType = self.getDatumType(self.index, valName, nameSpace)
 		if datumType == 1:
 			return self.getIntValue(self.index, valName, nameSpace)
 		if datumType == 2:
 			return self.getFloatValue(self.index, valName, nameSpace)
+		if datumType == 3:
+			self.toBeDeleted.append([datumType, valName]);
+			return self.getStringValue(self.index, valName, nameSpace)
+		if datumType == 4:
+			a = self.getIntArrayValue(self.index, valName, nameSpace)
+			self.toBeDeleted.append([datumType, a])
+			return a
+		if datumType == 5:
+			a = self.getFloatArrayValue(self.index, valName, nameSpace)
+			self.toBeDeleted.append([datumType, a])
+			return a
 		return None
 
 

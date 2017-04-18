@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-# Use file's current directory and append path to MinVR Module
 import sys, os, inspect
 import argparse
 parser = argparse.ArgumentParser()
@@ -67,12 +66,11 @@ def Cube():
 class App(VREventHandler, VRRenderHandler):
 	def __init__(self):
 		self.loop = True
-		self.a = 3
 		self.time = 0.0
 
 	# Called when an event is passed from MinVR
 	def onVREvent(self, eventName, event):
-		print eventName
+		#print eventName
 		if eventName == "KbdEsc_Down":
 			self.loop = False
 		elif eventName == "FrameStart":
@@ -80,28 +78,28 @@ class App(VREventHandler, VRRenderHandler):
 
 	# Renders the scene
 	def onVRRenderScene(self, renderState):
-		glClear(GL_COLOR_BUFFER_BIT)
 		width = renderState.getValue("WindowWidth","/")
 		height = renderState.getValue("WindowHeight","/")
+		ProjectionMatrix = list(renderState.getValue("ProjectionMatrix","/")[0:16])
+		ViewMatrix = list(renderState.getValue("ViewMatrix","/")[0:16])
 		ratio = width / height;
-		glViewport(0, 0, width, height);
-		glClear(GL_COLOR_BUFFER_BIT);
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		gluPerspective(45, ((1.0*width)/(1.0*height)), 0.1, 50.0)
-		glBegin(GL_TRIANGLES);
-		glColor3f(1, 0, 0);
-		glVertex3f(-0.6, -0.4, 0.0);
-		glColor3f(0.0, 1.0, 0.0);
-		glVertex3f(0.6, -0.4, 0.0);
-		glColor3f(0.0, 0.0, 1.0);
-		glVertex3f(0.0, 0.60, 0.0);
-		glEnd();
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		glMatrixMode(GL_MODELVIEW);
-		glTranslatef(0.0,0.0, -5)
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glEnable(GL_DEPTH_TEST)
+		glMatrixMode(GL_PROJECTION)
+		glLoadMatrixf(ProjectionMatrix)
+		glMatrixMode(GL_MODELVIEW)
+		glLoadIdentity()
+		glMatrixMode(GL_MODELVIEW)
+		glLoadMatrixf(ViewMatrix)
 		glRotatef(self.time*30, self.time*10, self.time*30, self.time*30)
+		glBegin(GL_TRIANGLES)
+		glColor3f(1, 0, 0)
+		glVertex3f(-0.6, -0.4, 0.0)
+		glColor3f(0.0, 1.0, 0.0)
+		glVertex3f(0.6, -0.4, 0.0)
+		glColor3f(0.0, 0.0, 1.0)
+		glVertex3f(0.0, 0.60, 0.0)
+		glEnd();
 		Cube()
 
 # ----------- Main program ------------------
@@ -118,7 +116,6 @@ vrmain.addRenderHandler(app)
 
 # Main loop
 while app.loop:
-	app.a += 3
 	vrmain.mainloop()
 
 # Shutdown MinVR
