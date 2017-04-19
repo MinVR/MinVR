@@ -42,7 +42,8 @@ public:
 	PLUGIN_API virtual void onVRRenderScene(VRDataIndex *renderState, VRDisplayNode *callingNode) {
 		renderCallback(renderState);
 	}
-	PLUGIN_API virtual void onVRRenderContext(VRDataIndex *renderState, VRDisplayNode *callingNode) {}
+	PLUGIN_API virtual void onVRRenderContext(VRDataIndex *renderState, VRDisplayNode *callingNode) {
+	}
 
 private:
 	rendercallback_type renderCallback;

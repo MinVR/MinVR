@@ -3,10 +3,10 @@
 import sys, os, inspect
 import argparse
 parser = argparse.ArgumentParser()
-parser.add_argument("-d", help="MinVR Directory")
-parser.add_argument("-c", help="MinVR Config")
-parser.add_argument("-f", help="Config File")
-parser.add_argument("-s", help="Config Values")
+parser.add_argument("-d", help="MinVR Directory (i.e. /path/to/MinVR)")
+parser.add_argument("-c", help="Optional: MinVR Config")
+parser.add_argument("-f", help="Optional: Config File")
+parser.add_argument("-s", help="Optional: Config Values")
 args = parser.parse_args()
 
 minvr_dir = os.environ.get('MinVR_DIR')

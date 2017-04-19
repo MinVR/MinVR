@@ -3,23 +3,30 @@ import sys
 from ctypes import cdll
 import ctypes
 import xml.etree.ElementTree
+import os.path
 
 libName = 'MinVR_Python'
 
 from sys import platform as _platform
 if _platform == "linux" or _platform == "linux2":
-    libFilePath = 'lib/lib' + libName + '.so'
+    libFilePath = 'lib/lib' + libName
+    libExtension = '.so'
 elif _platform == "darwin":
-    libFilePath = 'lib/lib' + libName + '.dylib'
+    libFilePath = 'lib/lib' + libName
+    libExtension = '.dylib'
 elif _platform == "win32":
-    libFilePath = 'bin/' + libName + '.dll'
+    libFilePath = 'bin/' + libName
+    libExtension = '.dll'
 
 lib = None
 
 def openLibrary(minvr_dir):
 	global lib
-	lib = cdll.LoadLibrary(minvr_dir + '/plugins/' + libName + '/' + libFilePath)
-	print(minvr_dir + '/plugins/' + libName + '/' + libFilePath)
+	pluginPath = minvr_dir + '/plugins/' + libName + '/' + libFilePath + libExtension
+	if (not os.path.exists(pluginPath)):
+		pluginPath = minvr_dir + '/plugins/' + libName + '/' + libFilePath + 'd' + libExtension
+	print(pluginPath)
+	lib = cdll.LoadLibrary(pluginPath)
 
 eventcallback_type = ctypes.CFUNCTYPE(None, ctypes.c_char_p, ctypes.c_void_p)
 rendercallback_type = ctypes.CFUNCTYPE(None, ctypes.c_void_p)
