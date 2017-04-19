@@ -44,7 +44,7 @@ public:
 	/// onVREvent is called when a new intput event happens.
 	void onVREvent(const VREvent &event) {
         
-        event.print();
+        //event.print();
         
 		// Set time since application began
 		if (event.getName() == "FrameStart") {

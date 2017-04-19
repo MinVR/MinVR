@@ -21,6 +21,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	set(ALL_LIBS ${ALL_LIBS} ${CMAKE_THREAD_LIBS_INIT} rt Xrandr Xxf86vm Xi m dl ${X11_LIBRARIES})
 endif()
 
+include_directories(${PROJECT_SOURCE_DIR})
 
 add_executable(${PROJECT_NAME} ${source_files})
 
