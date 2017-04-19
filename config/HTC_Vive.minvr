@@ -21,26 +21,20 @@
 	  <QuadBuffered>0</QuadBuffered>
 	  
 	  <StereoFormat>Mono</StereoFormat>
-
-  
-  <HeadTrackingEvent>Head_Move</HeadTrackingEvent>
-
-  <NearClip>0.001</NearClip>
-  <FarClip>500.0</FarClip>
   
 	<VRSetups>
 		<Desktop hostType="VRStandAlone">
 	      <GLFWToolkit windowtoolkitType="VRGLFWWindowToolkit"/>
 	      <OpenGLToolkit graphicstoolkitType="VROpenGLGraphicsToolkit"/>
 	      <RootNode displaynodeType="VRGraphicsWindowNode">
-				<Border>0</Border>
-				<Caption>Desktop</Caption>
-				<GPUAffinity>0</GPUAffinity>	
-				<XPos>100</XPos>
-				<YPos>100</YPos>
-				<Width>640</Width>
-				<Height>400</Height>
-				<HTC displaynodeType="VROpenVRNode"/>
+				  <Border>1</Border>
+				  <Caption>Desktop</Caption>
+				  <GPUAffinity>0</GPUAffinity>	
+				  <XPos>100</XPos>
+				  <YPos>100</YPos>
+				  <Width>640</Width>
+				  <Height>400</Height>
+          <HTC displaynodeType="VROpenVRNode"/>
 			</RootNode>
 		</Desktop>
 	</VRSetups>

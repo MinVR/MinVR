@@ -1,6 +1,7 @@
 project(MinVR_OpenVR)
 
 set (SOURCEFILES 
+  src/glew.c
   src/VROpenVRNodePlugin.cpp
   src/VROpenVRNode.cpp
   src/VROpenVRInputDevice.cpp
@@ -23,10 +24,6 @@ set(OPENGL_LIBRARIES ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY})
 set(OPENGL_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
 include_directories(${OPENGL_INCLUDE_DIRS})
 
-find_package(GLEW REQUIRED)
-include_directories(${GLEW_INCLUDE_DIRS})
-
-
 #------------------------------------------
 # MinVR Dependencies
 #------------------------------------------
@@ -41,6 +38,7 @@ include_directories(${GLEW_INCLUDE_DIRS})
 #include_directories(${MinVR_INCLUDE_DIRS})
 link_directories(${CMAKE_BINARY_DIR}/lib)
 #link_directories(${MinVR_BINARY_DIRS})
+add_definitions(-DGLEW_STATIC)
 
 #------------------------------------------
 # Include Directories
@@ -91,12 +89,10 @@ if(NOT OPENVR_FOUND)
 	)
 	
 	set(OPENVR_INCLUDE_DIRS ${${DepName}_checkout_Dir}/headers)
-	
-	find_library(OPENVR_LIBRARY NAMES openvr_api.lib openvr_api.so openvr_api
-             HINTS $ENV{OPENVR_LIB_DIR} ${OPENVR_LIB_DIR})
              
     if(MSVC)
-		set(OPENVR_LIBRARY ${${DepName}_INSTALL_DIR}/lib/openvr_api.lib)
+		#set(OPENVR_LIBRARY ${${DepName}_INSTALL_DIR}/lib/openvr_api64.lib)
+		set(OPENVR_LIBRARY ${${DepName}_checkout_Dir}/lib/win64/openvr_api.lib)
 	else()
 		set(OPENVR_LIBRARY ${${DepName}_INSTALL_DIR}/lib/libopenvr_api.a)
 	endif()
@@ -169,7 +165,7 @@ SET(CMAKE_INSTALL_RPATH "${VRPlugins_install_dir}/${PROJECT_NAME}/lib")
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 add_library ( ${PROJECT_NAME} SHARED ${HEADERFILES} ${SOURCEFILES} )
-target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${OPENVR_LIBRARIES} ${GLEW_LIBRARIES} MinVR ${LIBS_ALL})
+target_link_libraries(${PROJECT_NAME} ${OPENVR_LIBRARIES} ${OPENGL_LIBRARIES} MinVR ${LIBS_ALL})
 
 if(NOT OPENVR_FOUND)
 	add_dependencies(${PROJECT_NAME} OpenVR)
