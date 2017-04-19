@@ -1,6 +1,6 @@
 # MinVR Python Tests
 
-This plugin contains Python specific implementations for MinVR
+This set of tests use the Python specific implementations for MinVR
 
 ## Run the tests
 
@@ -13,8 +13,10 @@ To execute the python test programs, run the following from the command line:
   
 ## Output
 
-For the cube.py example, it should show a rotating cube with a colored triangle inside.
+For the cube.py example, it should show a rotating cube with a colored triangle inside:
+
+![Example cube.py Output](out_cube.png)
 
 ## Getting Started
 
-Please review the documentation found at [MinVR Python Documentation](https://github.com/MinVR/MinVR/blob/master/plugins/Python/README.md).
+Please review the documentation found at [MinVR Python Documentation](../../plugins/Python/README.md).
