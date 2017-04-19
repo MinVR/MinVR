@@ -10,6 +10,10 @@ To execute the python test programs, run the following from the command line:
   python cube.py -d /path/to/MinVR/install_or_build_directory -c desktop-oldopengl
   python example2D.py -d /path/to/MinVR/install_or_build_directory -c desktop-oldopengl
   ```
+  
+## Output
+
+For the cube.py example, it should show a rotating cube with a colored triangle inside.
 
 ## Getting Started
 
