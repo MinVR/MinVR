@@ -4,6 +4,7 @@ project(itest-opengl-multithreaded)
 find_package(OpenGL REQUIRED)
 
 include_directories(${OPENGL_INCLUDE_DIR})
+include_directories(${PROJECT_SOURCE_DIR})
 
 set(source_files
   glew.c
