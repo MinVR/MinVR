@@ -2,7 +2,6 @@ import sys
 
 from ctypes import cdll
 import ctypes
-import xml.etree.ElementTree
 import os.path
 
 libName = 'MinVR_Python'
@@ -42,7 +41,8 @@ class VRMain(object):
 		self.eventCB = self.getEventCallbackFunc()
 		self.eventhandler = lib.VRMain_registerEventCallback(self.obj, self.eventCB)
 		self.renderCB = self.getRenderCallbackFunc()
-		self.renderhandler = lib.VRMain_registerRenderCallback(self.obj, self.renderCB)
+		self.renderContextCB = self.getRenderContextCallbackFunc()
+		self.renderhandler = lib.VRMain_registerRenderCallback(self.obj, self.renderCB, self.renderContextCB)
 		pluginList = ctypes.create_string_buffer(500)
 		lib.setPluginList.restype = ctypes.c_bool
 		hasPlugins = lib.setPluginList(self.obj, pluginList)
@@ -69,9 +69,16 @@ class VRMain(object):
 		def func(renderState):
 			self.handleRender(renderState)
 		return rendercallback_type(func)
+	def getRenderContextCallbackFunc(self):
+		def func(renderState):
+			self.handleRenderContext(renderState)
+		return rendercallback_type(func)
 	def handleRender(self, renderState):
 		for handler in self.renderHandlers:
 			handler.onVRRenderScene(VRDataIndex(renderState))
+	def handleRenderContext(self, renderState):
+		for handler in self.renderHandlers:
+			handler.onVRRenderContext(VRDataIndex(renderState))
 	def mainloop(self):
 		lib.VRMain_mainloop(self.obj)
 
@@ -86,7 +93,7 @@ class VRRenderHandler(object):
 		pass
 	def onVRRenderScene(self, renderState):
 		print "Rendering Scene"
-	def onVRRenderContext(self):
+	def onVRRenderContext(self, renderState):
 		print "Rendering Context"
 
 class VRDataIndex(object):

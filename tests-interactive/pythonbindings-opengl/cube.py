@@ -26,7 +26,6 @@ from MinVR import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
-
 verticies = (
     (1, -1, -1),
     (1, 1, -1),
@@ -75,6 +74,12 @@ class App(VREventHandler, VRRenderHandler):
 			self.loop = False
 		elif eventName == "FrameStart":
 			self.time = event.getValue("ElapsedSeconds", eventName)
+
+	# Renders at the context level
+	def onVRRenderContext(self, renderState):
+		initRender = renderState.getValue("InitRender","/")
+		if initRender:
+			print "Initialize context variables"
 
 	# Renders the scene
 	def onVRRenderScene(self, renderState):

@@ -37,16 +37,18 @@ private:
 // Render handler callback wrapper
 class VRPythonRenderCallbackHandler : public VRRenderHandler {
 public:
-	PLUGIN_API VRPythonRenderCallbackHandler(rendercallback_type renderCallback) : renderCallback(renderCallback) {}
+	PLUGIN_API VRPythonRenderCallbackHandler(rendercallback_type renderCallback, rendercallback_type renderContextCallback) : renderCallback(renderCallback), renderContextCallback(renderContextCallback) {}
 	PLUGIN_API virtual ~VRPythonRenderCallbackHandler() {}
 	PLUGIN_API virtual void onVRRenderScene(VRDataIndex *renderState, VRDisplayNode *callingNode) {
 		renderCallback(renderState);
 	}
 	PLUGIN_API virtual void onVRRenderContext(VRDataIndex *renderState, VRDisplayNode *callingNode) {
+		renderContextCallback(renderState);
 	}
 
 private:
 	rendercallback_type renderCallback;
+	rendercallback_type renderContextCallback;
 };
 
 // Python hooks
@@ -77,8 +79,8 @@ extern "C" {
 	}
 
 	// Register render callback
-	PLUGIN_API VRRenderHandler* VRMain_registerRenderCallback(VRMain* vrmain, rendercallback_type renderCallback) {
-		VRRenderHandler* handler = new VRPythonRenderCallbackHandler(renderCallback);
+	PLUGIN_API VRRenderHandler* VRMain_registerRenderCallback(VRMain* vrmain, rendercallback_type renderCallback, rendercallback_type renderContextCallback) {
+		VRRenderHandler* handler = new VRPythonRenderCallbackHandler(renderCallback, renderContextCallback);
 		vrmain->addRenderHandler(handler);
 		return handler;
 	}
