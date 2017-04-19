@@ -80,8 +80,8 @@ class App(VREventHandler, VRRenderHandler):
 	def onVRRenderScene(self, renderState):
 		width = renderState.getValue("WindowWidth","/")
 		height = renderState.getValue("WindowHeight","/")
-		ProjectionMatrix = list(renderState.getValue("ProjectionMatrix","/")[0:16])
-		ViewMatrix = list(renderState.getValue("ViewMatrix","/")[0:16])
+		ProjectionMatrix = renderState.getValue("ProjectionMatrix","/")
+		ViewMatrix = renderState.getValue("ViewMatrix","/")
 		ratio = width / height;
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST)

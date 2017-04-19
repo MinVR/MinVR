@@ -98,10 +98,10 @@ class VRDataIndex(object):
 		self.getStringValue.argtypes = (ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p)
 		self.getStringValue.restype = ctypes.c_char_p
 		self.getIntArrayValue = lib.VRDataIndex_getIntArrayValue
-		self.getIntArrayValue.argtypes = (ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p)
+		self.getIntArrayValue.argtypes = (ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.POINTER(ctypes.c_int))
 		self.getIntArrayValue.restype = ctypes.POINTER(ctypes.c_int)
 		self.getFloatArrayValue = lib.VRDataIndex_getFloatArrayValue
-		self.getFloatArrayValue.argtypes = (ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p)
+		self.getFloatArrayValue.argtypes = (ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.POINTER(ctypes.c_int))
 		self.getFloatArrayValue.restype = ctypes.POINTER(ctypes.c_float)
 		self.index = index
 		self.toBeDeleted = []
@@ -118,13 +118,16 @@ class VRDataIndex(object):
 			self.toBeDeleted.append([datumType, valName]);
 			return self.getStringValue(self.index, valName, nameSpace)
 		if datumType == 4:
-			a = self.getIntArrayValue(self.index, valName, nameSpace)
+			arrSize = ctypes.c_int()
+			a = self.getIntArrayValue(self.index, valName, nameSpace, ctypes.byref(arrSize))
 			self.toBeDeleted.append([datumType, a])
-			return a
+			print arrSize
+			return list(a[0:arrSize.value])
 		if datumType == 5:
-			a = self.getFloatArrayValue(self.index, valName, nameSpace)
+			arrSize = ctypes.c_int()
+			a = self.getFloatArrayValue(self.index, valName, nameSpace, ctypes.byref(arrSize))
 			self.toBeDeleted.append([datumType, a])
-			return a
+			return list(a[0:arrSize.value])
 		return None
 
 

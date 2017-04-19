@@ -49,17 +49,19 @@ extern "C" {
 		return c;
 	}
 
-	PLUGIN_API int* VRDataIndex_getIntArrayValue(void* index, const char* valName, const char* nameSpace) {
+	PLUGIN_API int* VRDataIndex_getIntArrayValue(void* index, const char* valName, const char* nameSpace, int* size) {
         std::vector<int> v = ((VRDataIndex*)index)->getValue(valName, nameSpace);
         int *a = new int[v.size()];
         std::copy(v.begin(), v.end(), a);
+        *size = v.size();
         return a;
 	}
 
-	PLUGIN_API float* VRDataIndex_getFloatArrayValue(void* index, const char* valName, const char* nameSpace) {
+	PLUGIN_API float* VRDataIndex_getFloatArrayValue(void* index, const char* valName, const char* nameSpace, int* size) {
         std::vector<float> v = ((VRDataIndex*)index)->getValue(valName, nameSpace);
         float *a = new float[v.size()];
         std::copy(v.begin(), v.end(), a);
+        *size = v.size();
         return a;
 	}
 }
