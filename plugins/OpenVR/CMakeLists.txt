@@ -1,7 +1,7 @@
 project(MinVR_OpenVR)
 
-set (SOURCEFILES 
-  src/glew.c
+set(SOURCEFILES
+  ${CMAKE_SOURCE_DIR}/third-party/GLEW/glew.c
   src/VROpenVRNodePlugin.cpp
   src/VROpenVRNode.cpp
   src/VROpenVRInputDevice.cpp
@@ -27,6 +27,10 @@ include_directories(${OPENGL_INCLUDE_DIRS})
 #------------------------------------------
 # MinVR Dependencies
 #------------------------------------------
+
+include_directories(
+	${CMAKE_SOURCE_DIR}/third-party/GLEW
+)
 
 #if (NOT MinVR_INCLUDE_DIRS)
 #	message( FATAL_ERROR "MinVR_INCLUDE_DIRS must be set." )
