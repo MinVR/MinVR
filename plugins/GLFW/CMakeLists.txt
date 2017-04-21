@@ -1,7 +1,7 @@
 project(MinVR_GLFW)
 
 set (SOURCEFILES 
-  src/glew.c
+  ${CMAKE_SOURCE_DIR}/third-party/GLEW/glew.c
   src/VRGLFWInputDevice.cpp
   src/VRGLFWPlugin.cpp
   src/VRGLFWWindowToolkit.cpp
@@ -69,6 +69,10 @@ include_directories(${OPENGL_INCLUDE_DIRS})
 #------------------------------------------
 # MinVR Dependencies
 #------------------------------------------
+
+include_directories(
+	${CMAKE_SOURCE_DIR}/third-party/GLEW
+)
 
 link_directories(${CMAKE_BINARY_DIR}/lib)
 
