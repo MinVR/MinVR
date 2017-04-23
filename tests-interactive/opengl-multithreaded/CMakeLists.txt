@@ -9,14 +9,17 @@ include_directories(${PROJECT_SOURCE_DIR})
 set(source_files
   glew.c
   main.cpp
+  MyAppModel.cpp
   MyAppController.cpp
   MyAppView.cpp
+  MyAppSharedContext.cpp
 )
 
 set(header_files
   MyAppModel.h
   MyAppController.h
   MyAppView.h
+  MyAppSharedContext.h
 )
 
 set(config_files

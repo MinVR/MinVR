@@ -6,17 +6,10 @@
  * 		Dan Orban (dtorban)
  */
 
-#ifndef MYAPPVIEW_H_
-#define MYAPPVIEW_H_
+#ifndef MYAPPSHAREDCONTEXT_H_
+#define MYAPPSHAREDCONTEXT_H_
 
 #include <iostream>
-
-#include "GL/glew.h"
-#ifdef _WIN32
-#include "GL/wglew.h"
-#elif (!defined(__APPLE__))
-#include "GL/glxew.h"
-#endif
 
 // OpenGL Headers
 #if defined(WIN32)
@@ -37,22 +30,20 @@
 using namespace MinVR;
 
 #include "MyAppModel.h"
-#include "MyAppSharedContext.h"
 
-class MyAppView {
+class MyAppSharedContext {
 public:
-	MyAppView(const MyAppModel& model, const VRGraphicsState &renderState);
-	virtual ~MyAppView();
+	MyAppSharedContext(const MyAppModel& model, const VRGraphicsState &renderState);
+	virtual ~MyAppSharedContext();
 
 	void update(const VRGraphicsState &renderState);
-	void render(const VRGraphicsState &renderState);
+
+	GLuint getVbo() const {
+		return vbo;
+	}
 
 private:
-	GLuint compileShader(const std::string& shaderText, GLuint shaderType);
-	void linkShaderProgram(GLuint shaderProgram);
-
-	GLuint vbo, vao, vshader, fshader, shaderProgram;
-	MyAppSharedContext context;
+	GLuint vbo;
 	const MyAppModel& model;
 };
 

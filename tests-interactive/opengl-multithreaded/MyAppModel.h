@@ -9,9 +9,17 @@
 #ifndef MYAPPMODEL_H_
 #define MYAPPMODEL_H_
 
+#include <vector>
+
 class MyAppModel {
 public:
+	MyAppModel();
+	~MyAppModel();
+
 	float modelMatrix[16];
+	std::vector<float> vertices;
+	std::vector<float> normals;
+	std::vector<float> colors;
 };
 
 #endif
