@@ -594,7 +594,7 @@ void VRMain::initializeInternal(int argc, char **argv) {
     // a user can set vrmain->addPLuginSearchPath(mypath);
     //
     // Here is the search path order that MinVR searches for plugins:
-    //
+	//
     //    1. Plugin path specified in config ("/PluginPath" in VRDataIndex)
     //    2. Working directory (".")
     //    3. <Working directory>/plugins ("./plugins")

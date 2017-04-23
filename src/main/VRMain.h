@@ -139,7 +139,8 @@ public:
          void VRMain::setConfigValue(const std::string &key, const std::string &value);
      
         First, call any of these three functions in any order and as many times 
-        as you wish, *then* call initialize(argc,argv). For example:
+        as you wish, *then* call initializeWithUserCommandLineParsing(argc,argv). 
+        For example:
      
          VRMain *vrmain = new VRMain();
          vrmain->loadInstalledConfiguration("Display_3DTV");
@@ -147,7 +148,7 @@ public:
          vrmain->loadInstalledConfiguration("GfxToolkit_OpenGL");
          vrmain->loadConfigFile("/users/dan/myprogram/my-overrides.minvr");
          vrmain->setConfigValueByString("StereoFormat", "Side-by-Side");
-         vrmain->initialize(argc, argv);
+         vrmain->initializeWithUserCommandLineParsing(argc, argv);
          
          while (vrmain->mainloop()) {}
          
@@ -245,7 +246,7 @@ public:
  
     VRGraphicsToolkit* getGraphicsToolkit(const std::string &name);
     VRWindowToolkit* getWindowToolkit(const std::string &name);
-    void addPluginSearchPath(const std::string& path) {}
+    void addPluginSearchPath(const std::string& path) { _pluginSearchPaths.push_back(path); }
 
     std::list<std::string> auditValuesFromAllDisplays();
     

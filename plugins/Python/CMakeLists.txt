@@ -120,6 +120,8 @@ add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
 # Install Target
 #------------------------------------------
 
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/src/python  DESTINATION "plugins/${PROJECT_NAME}/" FILES_MATCHING PATTERN "*.*")
+
 install( TARGETS ${PROJECT_NAME}
          LIBRARY DESTINATION ${VRPlugins_install_dir}/${PROJECT_NAME}/lib
          ARCHIVE DESTINATION ${VRPlugins_install_dir}/${PROJECT_NAME}/lib

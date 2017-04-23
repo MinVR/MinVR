@@ -100,6 +100,31 @@ int main(int argc, char** argv) {
 
       index->processXMLFile(elems[1], nameSpace);
 
+    /////// command: new (open file, replace index)
+    } else if (elems[0].compare("new") == 0) {
+
+      if (elems.size() > 1) {
+
+        ifstream file(elems[1].c_str());
+
+        if (file.is_open()) {
+          std::stringstream buffer;
+          buffer << file.rdbuf();
+          index = new MinVR::VRDataIndex(buffer.str());
+
+        } else {
+
+          std::cout << "Couldn't open file: " << elems[1] << std::endl;
+        }
+      } else {
+
+        std::cout << "need a file name." << std::endl;
+      }
+    ////// command: name
+    } else if (elems[0].compare("name") == 0) {
+
+      std::cout << "The name of this index is: '" << index->getName() << "'" << std::endl;
+        
     ////// command: push
     } else if (elems[0].compare("push") == 0) {
 
@@ -171,96 +196,120 @@ int main(int argc, char** argv) {
 
       try {
 
-        // This illustrates one way to get the data out of the index.
-        // You can also do something like this:
-        //
-        //  int ip = index->getValue("henry", "/")
-        MinVR::VRDatumPtr p = index->getDatum(elems[1], nameSpace);
+        if ((elems.size() == 1) || (elems[1].compare("/") == 0)) {
 
-        switch (p->getType()) {
-        case MinVR::VRCORETYPE_INT:
-          std::cout << "an integer containing: " << ((int)p->getValue()) << std::endl;
+          std::cout << "The entire index." << std::endl
+                    << "serialization: " << index->serialize() << std::endl;
 
-          std::cout << "same as: " << (int)index->getValue(elems[1], nameSpace) << std::endl;
-          break;
+        } else {
+        
+          // This illustrates one way to get the data out of the index.
+          // You can also do something like this:
+          //
+          //  int ip = index->getValue("henry", "/")
+          MinVR::VRDatumPtr p = index->getDatum(elems[1], nameSpace);
 
-        case MinVR::VRCORETYPE_FLOAT:
-          std::cout << "a float containing: " << ((float)p->getValue()) << std::endl;
-          break;
+          switch (p->getType()) {
+          case MinVR::VRCORETYPE_INT:
+            std::cout << "an integer containing: " << ((int)p->getValue()) << std::endl;
 
-        case MinVR::VRCORETYPE_STRING:
-          std::cout << "a string containing: " << ((std::string)p->getValue()) << std::endl;
-          break;
-
-        case MinVR::VRCORETYPE_INTARRAY:
-          {
-            MinVR::VRIntArray pdata = p->getValue();
-            for (MinVR::VRIntArray::iterator it = pdata.begin(); it != pdata.end(); ++it) {
-              std::cout << "element: " << *it << std::endl;
-            }
+            std::cout << "same as: " << (int)index->getValue(elems[1], nameSpace) << std::endl;
             break;
+
+          case MinVR::VRCORETYPE_FLOAT:
+            std::cout << "a float containing: " << ((float)p->getValue()) << std::endl;
+            break;
+
+          case MinVR::VRCORETYPE_STRING:
+            std::cout << "a string containing: " << ((std::string)p->getValue()) << std::endl;
+            break;
+
+          case MinVR::VRCORETYPE_INTARRAY:
+            {
+              MinVR::VRIntArray pdata = p->getValue();
+              for (MinVR::VRIntArray::iterator it = pdata.begin(); it != pdata.end(); ++it) {
+                std::cout << "element: " << *it << std::endl;
+              }
+              break;
+            }
+
+          case MinVR::VRCORETYPE_FLOATARRAY:
+            {
+              MinVR::VRFloatArray pdata = p->getValue();
+              for (MinVR::VRFloatArray::iterator it = pdata.begin(); it != pdata.end(); ++it) {
+                std::cout << "element: " << *it << std::endl;
+              }
+              break;
+            }
+
+          case MinVR::VRCORETYPE_STRINGARRAY:
+            {
+              MinVR::VRStringArray pdata = p->getValue();
+              for (MinVR::VRStringArray::iterator it = pdata.begin(); it != pdata.end(); ++it) {
+                std::cout << "element: " << *it << std::endl;
+              }
+              break;
+            }
+
+          case MinVR::VRCORETYPE_CONTAINER:
+
+            {
+              std::cout << "a container containing: " << std::endl;
+
+              MinVR::VRContainer nameList = p->getValue();
+              for (MinVR::VRContainer::iterator nl = nameList.begin();
+                   nl != nameList.end(); nl++) {
+                std::cout << "                        " << *nl << std::endl;
+              }
+              break;
+            }
+
+          case MinVR::VRCORETYPE_NONE:
+            {
+              break;
+            }	     
           }
 
-        case MinVR::VRCORETYPE_FLOATARRAY:
-          {
-            MinVR::VRFloatArray pdata = p->getValue();
-            for (MinVR::VRFloatArray::iterator it = pdata.begin(); it != pdata.end(); ++it) {
-              std::cout << "element: " << *it << std::endl;
-            }
-            break;
-          }
-
-        case MinVR::VRCORETYPE_STRINGARRAY:
-          {
-            MinVR::VRStringArray pdata = p->getValue();
-            for (MinVR::VRStringArray::iterator it = pdata.begin(); it != pdata.end(); ++it) {
-              std::cout << "element: " << *it << std::endl;
-            }
-            break;
-          }
-
-        case MinVR::VRCORETYPE_CONTAINER:
-
-          {
-            std::cout << "a container containing: " << std::endl;
-
-            MinVR::VRContainer nameList = p->getValue();
-            for (MinVR::VRContainer::iterator nl = nameList.begin();
-                 nl != nameList.end(); nl++) {
-              std::cout << "                        " << *nl << std::endl;
-            }
-            break;
-          }
-
-        case MinVR::VRCORETYPE_NONE:
-          {
-            break;
-          }	     
+          std::cout << "serialization: " << index->serialize(elems[1], nameSpace) << std::endl;
         }
-
-        std::cout << "serialization: " << index->serialize(elems[1], nameSpace) << std::endl;
+          
       } catch (const std::exception& e) {
 
         std::cout << "oops: " << e.what() << std::endl;
 
       }
 
-    ////// command: l (list all values)
+    ////// command: ls (list all values)
     } else if (elems[0].compare("ls") == 0) {
 
-      MinVR::VRContainer nameList;
-      if (elems.size() > 1) {
-        nameList = index->getValue(elems[1]);
-      } else {
-        if (nameSpace.compare("/") == 0) {
-          nameList = index->getNames();
+      try {
+        MinVR::VRContainer nameList;
+        if (elems.size() > 1) {
+
+          if (elems[1].compare("/") == 0) {
+
+            // We want the root list of names.
+            nameList = index->getNames();
+          } else {
+
+            // Get the list for the specified container.
+            nameList = index->getValue(elems[1]);
+          }
         } else {
-          nameList = index->getValue(nameSpace.substr(0,nameSpace.size() - 1));
+          if (nameSpace.compare("/") == 0) {
+            nameList = index->getNames();
+          } else {
+            nameList = index->getValue(nameSpace.substr(0,nameSpace.size() - 1));
+          }
         }
-      }
-      for (MinVR::VRContainer::iterator it = nameList.begin();
-           it != nameList.end(); it++) {
-        std::cout << *it << std::endl;
+        for (MinVR::VRContainer::iterator it = nameList.begin();
+             it != nameList.end(); it++) {
+          std::cout << *it << std::endl;
+        }
+      } catch(const std::exception& e) {
+
+        std::cout << "oops: " << e.what() << std::endl;
+
       }
     ////// command: add (add something)
     } else if (elems[0].compare("add") == 0) {
