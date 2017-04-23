@@ -41,7 +41,7 @@ using namespace MinVR;
 
 class MyAppView {
 public:
-	MyAppView(const MyAppModel& model, const VRGraphicsState &renderState);
+	MyAppView(const MyAppModel& model, const MyAppSharedContext& sharedContext, const VRGraphicsState &renderState);
 	virtual ~MyAppView();
 
 	void update(const VRGraphicsState &renderState);
@@ -52,7 +52,7 @@ private:
 	void linkShaderProgram(GLuint shaderProgram);
 
 	GLuint vbo, vao, vshader, fshader, shaderProgram;
-	MyAppSharedContext context;
+	const MyAppSharedContext& sharedContext;
 	const MyAppModel& model;
 };
 

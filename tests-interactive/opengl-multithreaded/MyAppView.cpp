@@ -8,7 +8,7 @@
 
 #include "MyAppView.h"
 
-MyAppView::MyAppView(const MyAppModel& model, const VRGraphicsState &renderState) : model(model), context(model, renderState) {
+MyAppView::MyAppView(const MyAppModel& model, const MyAppSharedContext& sharedContext, const VRGraphicsState &renderState) : model(model), sharedContext(sharedContext) {
 	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
 	if (GLEW_OK != err)
@@ -25,7 +25,7 @@ MyAppView::MyAppView(const MyAppModel& model, const VRGraphicsState &renderState
 	// Create vao
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
-	glBindBuffer(GL_ARRAY_BUFFER, context.getVbo());
+	glBindBuffer(GL_ARRAY_BUFFER, sharedContext.getVbo());
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (char*)0);
 	glEnableVertexAttribArray(1);

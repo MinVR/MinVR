@@ -16,6 +16,13 @@ MyAppController::MyAppController(int argc, char** argv) : VRApp(argc, argv) {
 }
 
 MyAppController::~MyAppController() {
+	for (std::map<int, MyAppView*>::iterator it = views.begin(); it != views.end(); it++) {
+		delete it->second;
+	}
+
+	for (std::map<int, MyAppSharedContext*>::iterator it = sharedContexts.begin(); it != sharedContexts.end(); it++) {
+		delete it->second;
+	}
 }
 
 void MyAppController::onVREvent(const VREvent &event) {
@@ -50,7 +57,8 @@ void MyAppController::onVRRenderGraphicsContext(const VRGraphicsState &renderSta
 
 	// If this is the inital call, initialize context variables
 	if (renderState.isInitialRenderCall()) {
-		views[windowId] = new MyAppView(model, renderState);
+		sharedContexts[windowId] = new MyAppSharedContext(model, renderState);
+		views[windowId] = new MyAppView(model, *sharedContexts[windowId], renderState);
 	}
 	else {
 		views[windowId]->update(renderState);

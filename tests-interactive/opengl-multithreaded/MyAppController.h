@@ -15,6 +15,7 @@ using namespace MinVR;
 
 #include "MyAppModel.h"
 #include "MyAppView.h"
+#include "MyAppSharedContext.h"
 #include <map>
 
 class MyAppController : public VRApp {
@@ -29,6 +30,7 @@ public:
 private:
 	MyAppModel model;
 	std::map<int, MyAppView*> views;
+	std::map<int, MyAppSharedContext*> sharedContexts;
 };
 
 #endif
