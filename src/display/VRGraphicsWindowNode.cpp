@@ -18,7 +18,7 @@ VRGraphicsWindowNode::VRGraphicsWindowNode(const std::string &name, VRGraphicsTo
   _valuesAdded.push_back("/WindowX");
   _valuesAdded.push_back("/WindowWidth");
   _valuesAdded.push_back("/WindowHeight");
-  _valuesAdded.push_back("/SharedContextGroupID");
+  _valuesAdded.push_back("/SharedContextId");
   _valuesAdded.push_back("/WindowID");
 
 }
@@ -35,7 +35,7 @@ void VRGraphicsWindowNode::render(VRDataIndex *renderState, VRRenderHandler *ren
 	renderState->addData("/WindowY", _settings.ypos);
 	renderState->addData("/WindowWidth", _settings.width);
 	renderState->addData("/WindowHeight", _settings.height);
-	renderState->addData("/SharedContextGroupID", _settings.sharedContextGroupID);
+	renderState->addData("/SharedContextId", _settings.sharedContextGroupID);
 	renderState->addData("/WindowID", _windowID);
   
 	_winToolkit->makeWindowCurrent(_windowID);

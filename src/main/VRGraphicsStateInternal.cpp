@@ -91,6 +91,10 @@ const int VRGraphicsStateInternal::getWindowId() const {
 	return (int)dataIndex->getValue("WindowID", "/");
 }
 
+const int VRGraphicsStateInternal::getSharedContextId() const {
+	return (int)dataIndex->getValue("SharedContextId", "/");
+}
+
 bool VRGraphicsStateInternal::isInitialRenderCall() {
 	bool initRender = (int)dataIndex->getValue("InitRender","/") == 1;
 	return initRender;

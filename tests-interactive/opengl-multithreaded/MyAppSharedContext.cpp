@@ -73,6 +73,7 @@ MyAppSharedContext::MyAppSharedContext(const MyAppModel& model, const VRGraphics
 	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GLfloat)*model.vertices.size(), &vertices[0]);
 	glBufferSubData(GL_ARRAY_BUFFER, sizeof(GLfloat)*model.vertices.size(), sizeof(GLfloat)*model.normals.size(), &normals[0]);
 	glBufferSubData(GL_ARRAY_BUFFER, sizeof(GLfloat)*model.vertices.size() + sizeof(GLfloat)*model.normals.size(), sizeof(GLfloat)*model.colors.size(), &colors[0]);
+	std::cout << "Created shared context." << std::endl;
 }
 
 MyAppSharedContext::~MyAppSharedContext() {
@@ -80,5 +81,13 @@ MyAppSharedContext::~MyAppSharedContext() {
 }
 
 void MyAppSharedContext::update(const VRGraphicsState &renderState) {
+	std::cout << "Update" << std::endl;
 }
 
+void MyAppSharedContext::lock() {
+	mutex.lock();
+}
+
+void MyAppSharedContext::unlock() {
+	mutex.unlock();
+}

@@ -31,6 +31,7 @@ private:
 	MyAppModel model;
 	std::map<int, MyAppView*> views;
 	std::map<int, MyAppSharedContext*> sharedContexts;
+	std::map<int, MyAppSharedContext*> normalContexts;
 };
 
 #endif

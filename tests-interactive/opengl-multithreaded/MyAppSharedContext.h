@@ -25,6 +25,8 @@
 #include <GL/gl.h>
 #endif
 
+#include <mutex>
+
 // MinVR header
 #include <api/MinVR.h>
 using namespace MinVR;
@@ -37,6 +39,8 @@ public:
 	virtual ~MyAppSharedContext();
 
 	void update(const VRGraphicsState &renderState);
+	void lock();
+	void unlock();
 
 	GLuint getVbo() const {
 		return vbo;
@@ -45,6 +49,7 @@ public:
 private:
 	GLuint vbo;
 	const MyAppModel& model;
+	std::mutex mutex;
 };
 
 #endif

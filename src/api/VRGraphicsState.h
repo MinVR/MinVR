@@ -62,6 +62,11 @@ public:
 	*/
 	const float * getCameraPos() const;
 
+	/** Resturns the shared context ID.  Windows can share context items like VBO and Textures.
+	 * Returns -1 if the context is not shared.
+		*/
+	const int getSharedContextId() const;
+
 	/** Resturns the window / context ID that can be used for thread synchronization and
 	    window specific rendering.  It is also necessary for allowing users to know which
 		view they are rendering to in a model view controller type application.

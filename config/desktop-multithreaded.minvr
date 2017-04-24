@@ -12,7 +12,7 @@
   <Resizable>1</Resizable>
   <AllowMaximize>1</AllowMaximize>
   <Visible>1</Visible>
-  <SharedContextGroupID>-1</SharedContextGroupID>
+  <SharedContextGroupID>1</SharedContextGroupID>
   <ContextVersionMajor>3</ContextVersionMajor>
   <ContextVersionMinor>3</ContextVersionMinor>
   <UseGPUAffinity>1</UseGPUAffinity>

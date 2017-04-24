@@ -23,15 +23,20 @@ MyAppController::~MyAppController() {
 	for (std::map<int, MyAppSharedContext*>::iterator it = sharedContexts.begin(); it != sharedContexts.end(); it++) {
 		delete it->second;
 	}
+
+	for (std::map<int, MyAppSharedContext*>::iterator it = normalContexts.begin(); it != normalContexts.end(); it++) {
+		delete it->second;
+	}
 }
 
 void MyAppController::onVREvent(const VREvent &event) {
 
-	event.print();
+	//event.print();
 
 	// Set time since application began
 	if (event.getName() == "FrameStart") {
 		float time = event.getDataAsFloat("ElapsedSeconds");
+		std::cout << time << std::endl;
 		// Calculate model matrix based on time
 		float* m = &model.modelMatrix[0];
 
@@ -54,13 +59,35 @@ void MyAppController::onVREvent(const VREvent &event) {
 /// variables like VBO's, VAO's, textures, framebuffers, and shader programs.
 void MyAppController::onVRRenderGraphicsContext(const VRGraphicsState &renderState) {
 	int windowId = renderState.getWindowId();
+	int sharedContextId = renderState.getSharedContextId();
 
 	// If this is the inital call, initialize context variables
 	if (renderState.isInitialRenderCall()) {
-		sharedContexts[windowId] = new MyAppSharedContext(model, renderState);
-		views[windowId] = new MyAppView(model, *sharedContexts[windowId], renderState);
+		MyAppSharedContext* context = NULL;
+		if (sharedContextId < 0) {
+			context = new MyAppSharedContext(model, renderState);
+			normalContexts[windowId] = context;
+		}
+		else {
+			std::map<int, MyAppSharedContext*>::iterator it = sharedContexts.find(sharedContextId);
+			if (it == sharedContexts.end()) {
+				context = new MyAppSharedContext(model, renderState);
+				sharedContexts[sharedContextId] = context;
+			}
+			else {
+				context = it->second;
+			}
+		}
+		views[windowId] = new MyAppView(model, *context, renderState);
 	}
 	else {
+		std::cout << windowId << std::endl;
+		if (sharedContextId < 0) {
+			normalContexts[sharedContextId]->update(renderState);
+		}
+		else {
+			sharedContexts[sharedContextId]->update(renderState);
+		}
 		views[windowId]->update(renderState);
 	}
 
