@@ -207,8 +207,8 @@ private:
   VRDataMap mindex;
 
   // This is the name of the data index itself.
-  std::string name; 
-  
+  std::string name;
+
   // If this is 1, new values will overwrite old ones.  For -1, new
   // values will just bounce off.  And zero will cause an exception if
   // an overwrite is attempted.  Except containers, who are always
@@ -269,27 +269,27 @@ private:
   void setValueSpecialized(VRDatumPtr p, VRInt value) {
     p.intVal()->setValue(value);
   }
-  
+
   void setValueSpecialized(VRDatumPtr p, VRFloat value) {
     p.floatVal()->setValue(value);
   }
-  
+
   void setValueSpecialized(VRDatumPtr p, VRString value) {
     p.stringVal()->setValue(value);
   }
-  
+
   void setValueSpecialized(VRDatumPtr p, VRIntArray value) {
     p.intArrayVal()->setValue(value);
   }
-  
+
   void setValueSpecialized(VRDatumPtr p, VRFloatArray value) {
     p.floatArrayVal()->setValue(value);
   }
-  
+
   void setValueSpecialized(VRDatumPtr p, VRStringArray value) {
     p.stringArrayVal()->setValue(value);
   }
-  
+
   template <typename T, const VRCORETYPE_ID TID>
   std::string addDataSpecialized(const std::string valName, T value) {
 
@@ -297,7 +297,7 @@ private:
     // put this into the root namespace.
     std::string fixedValName = valName;
     if (valName[0] != '/') fixedValName = std::string("/") + valName;
-      
+
     std::pair<VRDataMap::iterator, bool>res =
       mindex.insert(VRDataMap::value_type(fixedValName, NULL));
 
@@ -326,16 +326,41 @@ private:
         throw std::runtime_error(std::string("overwriting values not allowed"));
       }
     }
-        
+
     return fixedValName;
   }
 
+  // We need this to keep track of links so the clone() method can
+  // make a deep copy that includes the links that might exist.
+  std::map<std::string, std::string> linkRegister;
 
 public:
   VRDataIndex();
   VRDataIndex(const std::string serializedData);
 
-    
+
+  // The copy constructor makes a deep copy (all the way down) of all
+  // the data in the data index.
+  VRDataIndex(const VRDataIndex &orig);
+
+  // The assignment operator makes a deep copy, too.  Note that the
+  // argument is not a reference (i.e. it's a copy created by the copy
+  // constructor).
+  VRDataIndex& operator=(const VRDataIndex rhs) {
+
+    factory = rhs.factory;
+    mVRTypeMap = rhs.mVRTypeMap;
+    mindex = rhs.mindex;
+    name = rhs.name;
+    overwrite = rhs.overwrite;
+    linkRegister = rhs.linkRegister;
+
+    return *this;
+  };
+
+  // The default destructor is probably ok.
+  ~VRDataIndex() {};
+
   // Tries to guess a data type from the ASCII representation.
   VRCORETYPE_ID inferType(const std::string valueString);
 
@@ -351,16 +376,15 @@ public:
   VRStringArray deserializeStringArray(const char* valueString,
                                        const char separator);
 
-    
   // Some constants that may be useful to users of this API.
   static std::string rootNameSpace;
-  
+
   void setOverwrite(const int inVal) { overwrite = inVal; }
 
   // Returns the name of the whole data index.
   std::string getName() { return name; };
   void setName(const std::string inName) { name = inName; };
-  
+
   // Returns the fully qualified name of the specified value.
   std::string getName(const std::string valName,
                       const std::string nameSpace);
@@ -448,7 +472,7 @@ public:
   // Use this one at the start of a program.  It reads a file if
   // there's a file, and reads from a pipe if there's a pipe.
   bool processXML(const std::string arg);
-  
+
   // Returns a list of all the names in the map.  Note this really is
   // a list of strings, not a VRContainer.  (No difference, really,
   // but we want to keep them semantically separate.)
@@ -483,7 +507,7 @@ public:
   // nodes with a 'linkContent' attribute and inserts into it links
   // from the specified container.
   bool linkContent();
-  
+
   // The data index has a state that can be pushed and popped.  All
   // the changes to the index made after a pushState() can be rolled
   // back by calling popState().  This works by pushing and popping
@@ -515,14 +539,14 @@ public:
 
     // If the name provided is an absolute name, ignore the nameSpace.
     if (valName[0] == '/') {
-      
+
       return addData(valName, value);
     } else {
-      
+
       return addData(validateNameSpace(nameSpace) + valName, value);
     }
   }
-  
+
   // These versions of addData can be used by subclasses of the basic
   // VRDatum types.  If those types include a constructor from the basic
   // type, then this is all they need to be stored into an index and
@@ -542,15 +566,15 @@ public:
   std::string addData(const std::string &name, const VRIntArrayConvertible &object) {
     return addData(name, object.toVRIntArray());
   }
-  
+
   std::string addData(const std::string &name, const VRFloatArrayConvertible &object) {
     return addData(name, object.toVRFloatArray());
   }
-  
+
   std::string addData(const std::string &name, const VRStringArrayConvertible &object) {
     return addData(name, object.toVRStringArray());
   }
-  
+
   // A utility to make sure a namespace is spelled right, potentially
   // useful to users, so made public.
   std::string validateNameSpace(const std::string nameSpace);
@@ -558,7 +582,7 @@ public:
   // Still another utility, to accommodate the use of environment
   // variables in the file names.  Also potentially useful, so public.
   static std::string dereferenceEnvVars(const std::string fileName);
-  
+
   // Mostly just for debug purposes.
   std::string printStructure();
   std::string printStructure(const std::string itemName);

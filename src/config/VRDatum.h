@@ -188,10 +188,10 @@ public:
   bool hasAttribute(const std::string attributeName) {
     return attrList.front().count(attributeName) > 0;
   }
-  
+
   // Returns the attribute list formatted to include in an XML tag.
   std::string getAttributeListAsString();
-  
+
   // This array is a mapping between VRCORETYPE_ID and the string
   // description of that type that will appear in serialized data.  It
   // is here as a public member as a convenience for other classes
@@ -220,7 +220,7 @@ public:
   // VRDatumSpecialized, below.
   virtual void push() = 0;
   virtual bool pop() = 0;
-  
+
   // Less generic getValue methods.  One of these is to be overridden
   // in each specialization of this class.  The others are here to
   // prevent bad behavior, and throw an error if the programmer
@@ -268,7 +268,7 @@ protected:
 
   bool needPush, pushed;
   int stackFrame;
-  
+
 public:
   VRDatumSpecialized(const T inVal):
     VRDatum(TID), needPush(false), pushed(false), stackFrame(1) {
@@ -287,7 +287,7 @@ public:
     value.front() = inVal;
     return true;
   }
-  
+
   VRDatumConverter<VRDatum> getValue() {
     return VRDatumConverter<VRDatum>(this);
   }
@@ -455,6 +455,51 @@ public:
     reference->addRef();
   }
 
+  /// Create a deep copy of this value, without a link to the same
+  /// reference counter.
+  VRDatumPtr clone() {
+
+    VRDatumPtr out;
+
+    switch (pData->getType()) {
+
+    case VRCORETYPE_INT:
+      out = VRDatumPtr(new VRDatumInt(*intVal()));
+      break;
+
+    case VRCORETYPE_FLOAT:
+      out = VRDatumPtr(new VRDatumFloat(*floatVal()));
+      break;
+
+    case VRCORETYPE_STRING:
+      out = VRDatumPtr(new VRDatumString(*stringVal()));
+      break;
+
+    case VRCORETYPE_INTARRAY:
+      out = VRDatumPtr(new VRDatumIntArray(*intArrayVal()));
+      break;
+
+    case VRCORETYPE_FLOATARRAY:
+      out = VRDatumPtr(new VRDatumFloatArray(*floatArrayVal()));
+      break;
+
+    case VRCORETYPE_STRINGARRAY:
+      out = VRDatumPtr(new VRDatumStringArray(*stringArrayVal()));
+      break;
+
+    case VRCORETYPE_CONTAINER:
+      out = VRDatumPtr(new VRDatumContainer(*containerVal()));
+      break;
+
+    case VRCORETYPE_NONE:
+      throw std::runtime_error("can't copy unknown data type");
+      break;
+
+    }
+
+    return out;
+  }
+
   ~VRDatumPtr()
   {
     // Destructor: Decrement the reference count.  If reference becomes
@@ -462,7 +507,7 @@ public:
     if(reference->release() == 0)
       {
         delete pData;
-		delete reference;
+        delete reference;
       }
   }
 
@@ -486,7 +531,7 @@ public:
         if(reference->release() == 0)
           {
             delete pData;
-			delete reference;
+            delete reference;
           }
 
         // Copy the data and reference pointer and increment the
@@ -555,7 +600,7 @@ public:
   {
     if (pData->getType() == VRCORETYPE_STRINGARRAY) {
       return static_cast<VRDatumStringArray*>(pData);
-      
+
     } else {
       throw std::runtime_error("This datum is not an array of strings.");
     }
