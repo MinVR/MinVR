@@ -8,7 +8,7 @@
 
 #include "MyAppSharedContext.h"
 
-MyAppSharedContext::MyAppSharedContext(const MyAppModel& model, const VRGraphicsState &renderState) : model(model) {
+MyAppSharedContext::MyAppSharedContext(const MyAppModel& model, const VRGraphicsState &renderState) : model(model), version(0) {
 	// Create VBO
 	GLfloat vertices[] = { 1.0f, 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 1.0f,      // v0-v1-v2 (front)
 		-1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 1.0f, 1.0f,      // v2-v3-v0
@@ -80,14 +80,13 @@ MyAppSharedContext::~MyAppSharedContext() {
 	glDeleteBuffers(1, &vbo);
 }
 
-void MyAppSharedContext::update(const VRGraphicsState &renderState) {
-	std::cout << "Update" << std::endl;
+void MyAppSharedContext::update(const VRGraphicsState &renderState, int version) {
+	if (version != this->version) {
+		std::unique_lock<std::mutex> lock(mutex);
+		if (version != this->version) {
+			std::cout << "Update" << std::endl;
+			this->version = version;
+		}
+	}
 }
 
-void MyAppSharedContext::lock() {
-	mutex.lock();
-}
-
-void MyAppSharedContext::unlock() {
-	mutex.unlock();
-}

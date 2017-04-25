@@ -12,7 +12,7 @@
 // Just included for some simple Matrix math used below
 // This is not required for use of MinVR in general
 
-MyAppController::MyAppController(int argc, char** argv) : VRApp(argc, argv) {
+MyAppController::MyAppController(int argc, char** argv) : VRApp(argc, argv), frame(0) {
 }
 
 MyAppController::~MyAppController() {
@@ -35,6 +35,7 @@ void MyAppController::onVREvent(const VREvent &event) {
 
 	// Set time since application began
 	if (event.getName() == "FrameStart") {
+		frame++;
 		float time = event.getDataAsFloat("ElapsedSeconds");
 		std::cout << time << std::endl;
 		// Calculate model matrix based on time
@@ -63,6 +64,8 @@ void MyAppController::onVRRenderGraphicsContext(const VRGraphicsState &renderSta
 
 	// If this is the inital call, initialize context variables
 	if (renderState.isInitialRenderCall()) {
+		// Need to lock here so that we can add the context objects one by one
+		std::unique_lock<std::mutex> lock(mutex);
 		MyAppSharedContext* context = NULL;
 		if (sharedContextId < 0) {
 			context = new MyAppSharedContext(model, renderState);
@@ -78,15 +81,17 @@ void MyAppController::onVRRenderGraphicsContext(const VRGraphicsState &renderSta
 				context = it->second;
 			}
 		}
+
 		views[windowId] = new MyAppView(model, *context, renderState);
+		lock.unlock();
 	}
 	else {
 		std::cout << windowId << std::endl;
 		if (sharedContextId < 0) {
-			normalContexts[sharedContextId]->update(renderState);
+			normalContexts[windowId]->update(renderState, frame);
 		}
 		else {
-			sharedContexts[sharedContextId]->update(renderState);
+			sharedContexts[sharedContextId]->update(renderState, frame);
 		}
 		views[windowId]->update(renderState);
 	}

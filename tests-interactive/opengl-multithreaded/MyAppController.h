@@ -17,6 +17,7 @@ using namespace MinVR;
 #include "MyAppView.h"
 #include "MyAppSharedContext.h"
 #include <map>
+#include <mutex>
 
 class MyAppController : public VRApp {
 public:
@@ -32,6 +33,8 @@ private:
 	std::map<int, MyAppView*> views;
 	std::map<int, MyAppSharedContext*> sharedContexts;
 	std::map<int, MyAppSharedContext*> normalContexts;
+	std::mutex mutex;
+	int frame;
 };
 
 #endif

@@ -48,11 +48,9 @@ void VRRenderThread::render() {
 
 			// Various render actions for the display nodes
 			if (action == THREADACTION_Init) {
-				// If the thread node is being initialized, synchronize rendering calls
-				threadGroup->syncMutex.lock();
+				// If the thread node is being initialized
 				index.addData("/InitRender",1);
 				displayNode->render(&index, threadGroup->getRenderHandler());
-				threadGroup->syncMutex.unlock();
 			}
 			else if (action == THREADACTION_Render) {
 				index.addData("/InitRender",0);

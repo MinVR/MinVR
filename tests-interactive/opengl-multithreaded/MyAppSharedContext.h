@@ -38,9 +38,7 @@ public:
 	MyAppSharedContext(const MyAppModel& model, const VRGraphicsState &renderState);
 	virtual ~MyAppSharedContext();
 
-	void update(const VRGraphicsState &renderState);
-	void lock();
-	void unlock();
+	void update(const VRGraphicsState &renderState, int version);
 
 	GLuint getVbo() const {
 		return vbo;
@@ -50,6 +48,7 @@ private:
 	GLuint vbo;
 	const MyAppModel& model;
 	std::mutex mutex;
+	int version;
 };
 
 #endif
