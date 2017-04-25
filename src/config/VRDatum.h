@@ -197,8 +197,9 @@ public:
   // is here as a public member as a convenience for other classes
   // that will need this mapping (e.g. VRDatumFactory and
   // VRDataIndex).
-  typedef struct { std::string first; VRCORETYPE_ID second; } VRTypePair;
-  static const VRTypePair VRTypeMap[VRCORETYPE_NTYPES];
+  typedef std::map<std::string, VRCORETYPE_ID> VRTypeMap;
+  static VRTypeMap typeMap;
+  static VRTypeMap initializeTypeMap();
 
   // This produces the serialized version of the datum.  When packaged
   // with the description and a name, this will be ready for

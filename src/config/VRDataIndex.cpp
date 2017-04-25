@@ -15,14 +15,6 @@ VRDataIndex::VRDataIndex()  : overwrite(1), name("MVR") {
   factory.RegisterVRDatum(VRCORETYPE_STRINGARRAY, CreateVRDatumStringArray);
   factory.RegisterVRDatum(VRCORETYPE_CONTAINER, CreateVRDatumContainer);
 
-  // We create a VRDatum object here just to have access to the
-  // typemap that is a static member of that class.  Copy it into a
-  // map<> for use over here in reading serialized data strings.
-  VRDatumInt *m = new VRDatumInt(0);
-  for (int i = 0; i < VRCORETYPE_NTYPES; i++) {
-    mVRTypeMap[std::string(m->VRTypeMap[i].first)] = m->VRTypeMap[i].second;
-  }
-  delete m;
 }
 
 VRDataIndex::VRDataIndex(const std::string serializedData)  :
@@ -42,15 +34,6 @@ VRDataIndex::VRDataIndex(const std::string serializedData)  :
   factory.RegisterVRDatum(VRCORETYPE_FLOATARRAY, CreateVRDatumFloatArray);
   factory.RegisterVRDatum(VRCORETYPE_STRINGARRAY, CreateVRDatumStringArray);
   factory.RegisterVRDatum(VRCORETYPE_CONTAINER, CreateVRDatumContainer);
-
-  // We create a VRDatum object here just to have access to the
-  // typemap that is a static member of that class.  Copy it into a
-  // map<> for use over here in reading serialized data strings.
-  VRDatumInt *m = new VRDatumInt(0);
-  for (int i = 0; i < VRCORETYPE_NTYPES; i++) {
-    mVRTypeMap[std::string(m->VRTypeMap[i].first)] = m->VRTypeMap[i].second;
-  }
-  delete m;
 
   Cxml *xml = new Cxml();
   xml->parse_string((char*)serializedData.c_str());
@@ -90,7 +73,6 @@ VRDataIndex::VRDataIndex(const std::string serializedData)  :
 /// The copy constructor makes a deep copy.
 VRDataIndex::VRDataIndex(const VRDataIndex& orig) {
 
-  mVRTypeMap = orig.mVRTypeMap;
   factory = orig.factory;
   name = orig.name;
   overwrite = orig.overwrite;
@@ -428,10 +410,10 @@ std::string VRDataIndex::walkXML(element* node, std::string nameSpace) {
   } else {
 
     // Check to see if the type is one we can handle.
-    VRTypeMap::iterator it =
-      mVRTypeMap.find(std::string(node->get_attribute("type")->get_value()));
+    VRDatum::VRTypeMap::iterator it =
+      VRDatum::typeMap.find(std::string(node->get_attribute("type")->get_value()));
 
-    if (it == mVRTypeMap.end()) {
+    if (it == VRDatum::typeMap.end()) {
       // If not, throw an error.
       throw std::runtime_error("No known type called " +
                                std::string(node->get_attribute("type")->get_value()));

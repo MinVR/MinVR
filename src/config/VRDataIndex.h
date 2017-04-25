@@ -197,10 +197,6 @@ class VRDataIndex {
 private:
   VRDatumFactory factory;
 
-  // This is just a convenience to map strings to object type numbers.
-  typedef std::map<std::string, VRCORETYPE_ID> VRTypeMap;
-  VRTypeMap mVRTypeMap;
-
   typedef std::map<std::string, VRDatumPtr> VRDataMap;
   // Aspirational:
   //typedef std::map<std::string, std::vector<VRDatumPtr> > VRDataMap;
@@ -349,7 +345,6 @@ public:
   VRDataIndex& operator=(const VRDataIndex rhs) {
 
     factory = rhs.factory;
-    mVRTypeMap = rhs.mVRTypeMap;
     mindex = rhs.mindex;
     name = rhs.name;
     overwrite = rhs.overwrite;
