@@ -195,7 +195,8 @@ namespace MinVR {
 
 class VRDataIndex {
 private:
-  VRDatumFactory factory;
+  static VRDatumFactory factory;
+  static VRDatumFactory initializeFactory();
 
   typedef std::map<std::string, VRDatumPtr> VRDataMap;
   // Aspirational:
@@ -331,9 +332,13 @@ private:
   std::map<std::string, std::string> linkRegister;
 
 public:
-  VRDataIndex();
-  VRDataIndex(const std::string serializedData);
+  // Two constructors, one that creates an empty index, named "MVR".
+  VRDataIndex()  : overwrite(1), name("MVR") {}
 
+  // And another that fills an index with some serialized data.  The
+  // root name in the serialized data is adopted as the 'name' field
+  // of the index object.
+  VRDataIndex(const std::string serializedData);
 
   // The copy constructor makes a deep copy (all the way down) of all
   // the data in the data index.
@@ -344,7 +349,6 @@ public:
   // constructor).
   VRDataIndex& operator=(const VRDataIndex rhs) {
 
-    factory = rhs.factory;
     mindex = rhs.mindex;
     name = rhs.name;
     overwrite = rhs.overwrite;

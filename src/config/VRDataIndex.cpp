@@ -4,36 +4,27 @@ namespace MinVR {
 
 std::string VRDataIndex::rootNameSpace = "/";
 
+VRDatumFactory VRDataIndex::factory = VRDataIndex::initializeFactory();
+
 // Step 7 of the specialization instructions (in VRDatum.h) is to
 // add an entry here to register the new data type.
-VRDataIndex::VRDataIndex()  : overwrite(1), name("MVR") {
-  factory.RegisterVRDatum(VRCORETYPE_INT, CreateVRDatumInt);
-  factory.RegisterVRDatum(VRCORETYPE_FLOAT, CreateVRDatumFloat);
-  factory.RegisterVRDatum(VRCORETYPE_STRING, CreateVRDatumString);
-  factory.RegisterVRDatum(VRCORETYPE_INTARRAY, CreateVRDatumIntArray);
-  factory.RegisterVRDatum(VRCORETYPE_FLOATARRAY, CreateVRDatumFloatArray);
-  factory.RegisterVRDatum(VRCORETYPE_STRINGARRAY, CreateVRDatumStringArray);
-  factory.RegisterVRDatum(VRCORETYPE_CONTAINER, CreateVRDatumContainer);
+VRDatumFactory VRDataIndex::initializeFactory() {
 
+  VRDatumFactory newFactory;
+
+  newFactory.RegisterVRDatum(VRCORETYPE_INT, CreateVRDatumInt);
+  newFactory.RegisterVRDatum(VRCORETYPE_FLOAT, CreateVRDatumFloat);
+  newFactory.RegisterVRDatum(VRCORETYPE_STRING, CreateVRDatumString);
+  newFactory.RegisterVRDatum(VRCORETYPE_INTARRAY, CreateVRDatumIntArray);
+  newFactory.RegisterVRDatum(VRCORETYPE_FLOATARRAY, CreateVRDatumFloatArray);
+  newFactory.RegisterVRDatum(VRCORETYPE_STRINGARRAY, CreateVRDatumStringArray);
+  newFactory.RegisterVRDatum(VRCORETYPE_CONTAINER, CreateVRDatumContainer);
+
+  return newFactory;
 }
 
 VRDataIndex::VRDataIndex(const std::string serializedData)  :
   overwrite(1), name("MVR") {
-
-  //  To Dan: Can the constructor for the alternate data index have
-  //  access somehow to an existing data index?
-  //VRDataIndex::VRDataIndex(std::string serializedData, VRDataIndex* bigDataIndex)
-  //
-  // This would be how the short-quick needs of the events can be
-  // handled without all this factory and setup junk.
-
-  factory.RegisterVRDatum(VRCORETYPE_INT, CreateVRDatumInt);
-  factory.RegisterVRDatum(VRCORETYPE_FLOAT, CreateVRDatumFloat);
-  factory.RegisterVRDatum(VRCORETYPE_STRING, CreateVRDatumString);
-  factory.RegisterVRDatum(VRCORETYPE_INTARRAY, CreateVRDatumIntArray);
-  factory.RegisterVRDatum(VRCORETYPE_FLOATARRAY, CreateVRDatumFloatArray);
-  factory.RegisterVRDatum(VRCORETYPE_STRINGARRAY, CreateVRDatumStringArray);
-  factory.RegisterVRDatum(VRCORETYPE_CONTAINER, CreateVRDatumContainer);
 
   Cxml *xml = new Cxml();
   xml->parse_string((char*)serializedData.c_str());
@@ -48,8 +39,11 @@ VRDataIndex::VRDataIndex(const std::string serializedData)  :
   // grandchildren in this loop.
   while (child != NULL) {
 
+    // There should be only one child here, so this should only pick
+    // the root name off the serial data.
     name = child->get_name();
 
+    // Now scan through the child's children for the rest of the data.
     while (grandChild != NULL) {
 
       //printXML(child, validateNameSpace(nameSpace));
@@ -73,7 +67,6 @@ VRDataIndex::VRDataIndex(const std::string serializedData)  :
 /// The copy constructor makes a deep copy.
 VRDataIndex::VRDataIndex(const VRDataIndex& orig) {
 
-  factory = orig.factory;
   name = orig.name;
   overwrite = orig.overwrite;
 
