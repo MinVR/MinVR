@@ -9,9 +9,6 @@
 #include "MyAppController.h"
 #include <cmath>
 
-// Just included for some simple Matrix math used below
-// This is not required for use of MinVR in general
-
 MyAppController::MyAppController(int argc, char** argv) : VRApp(argc, argv), frame(0) {
 }
 
