@@ -9,6 +9,7 @@
 #include "MyAppView.h"
 
 MyAppView::MyAppView(const MyAppModel& model, const MyAppSharedContext& sharedContext, const VRGraphicsState &renderState) : model(model), sharedContext(sharedContext) {
+	// Initialize Graphics Context and variables
 	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
 	if (GLEW_OK != err)
@@ -71,7 +72,7 @@ MyAppView::MyAppView(const MyAppModel& model, const MyAppSharedContext& sharedCo
 }
 
 MyAppView::~MyAppView() {
-	glDeleteBuffers(1, &vbo);
+	// Delete graphics objects
 	glDeleteVertexArrays(1, &vao);
 	glDetachShader(shaderProgram, vshader);
 	glDetachShader(shaderProgram, fshader);
@@ -81,10 +82,12 @@ MyAppView::~MyAppView() {
 }
 
 void MyAppView::update(const VRGraphicsState &renderState) {
+	// Update window specific objects
 }
 
 /// onVRRenderScene will run draw calls on each viewport inside a context.
 void MyAppView::render(const VRGraphicsState &renderState) {
+	// Draw the scene
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	// Set shader parameters

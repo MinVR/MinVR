@@ -16,17 +16,6 @@ MyAppController::MyAppController(int argc, char** argv) : VRApp(argc, argv), fra
 }
 
 MyAppController::~MyAppController() {
-	for (std::map<int, MyAppView*>::iterator it = views.begin(); it != views.end(); it++) {
-		delete it->second;
-	}
-
-	for (std::map<int, MyAppSharedContext*>::iterator it = sharedContexts.begin(); it != sharedContexts.end(); it++) {
-		delete it->second;
-	}
-
-	for (std::map<int, MyAppSharedContext*>::iterator it = normalContexts.begin(); it != normalContexts.end(); it++) {
-		delete it->second;
-	}
 }
 
 void MyAppController::onVREvent(const VREvent &event) {
@@ -37,10 +26,8 @@ void MyAppController::onVREvent(const VREvent &event) {
 	if (event.getName() == "FrameStart") {
 		frame++;
 		float time = event.getDataAsFloat("ElapsedSeconds");
-		std::cout << time << std::endl;
 		// Calculate model matrix based on time
 		float* m = &model.modelMatrix[0];
-
 		const float cosTheta = std::cos(time);
 		const float sinTheta = std::sin(time);
 		m[0]=1.0; m[4]=0.0;  m[8]=0.0; m[12]=0.0;
@@ -66,41 +53,75 @@ void MyAppController::onVRRenderGraphicsContext(const VRGraphicsState &renderSta
 	if (renderState.isInitialRenderCall()) {
 		// Need to lock here so that we can add the context objects one by one
 		std::unique_lock<std::mutex> lock(mutex);
+
+		// If a shared context Id exists, create one per shared context, otherwise one per window
 		MyAppSharedContext* context = NULL;
 		if (sharedContextId < 0) {
+			// Create a shared context per window if this window doesn't have a shared context
 			context = new MyAppSharedContext(model, renderState);
 			normalContexts[windowId] = context;
 		}
 		else {
+			// Use shared context if it already exists, otherwise create one
 			std::map<int, MyAppSharedContext*>::iterator it = sharedContexts.find(sharedContextId);
 			if (it == sharedContexts.end()) {
 				context = new MyAppSharedContext(model, renderState);
 				sharedContexts[sharedContextId] = context;
+				sharedContextCount[sharedContextId] = 1;
 			}
 			else {
 				context = it->second;
+				sharedContextCount[sharedContextId]++;
 			}
 		}
 
+		// Create one view per window and use shared context
 		views[windowId] = new MyAppView(model, *context, renderState);
 		lock.unlock();
 	}
 	else {
-		std::cout << windowId << std::endl;
 		if (sharedContextId < 0) {
+			// Update window shared context if no shared context exists
 			normalContexts[windowId]->update(renderState, frame);
 		}
 		else {
+			// Update shared context if it exists
 			sharedContexts[sharedContextId]->update(renderState, frame);
 		}
+
+		// Update the view for the window
 		views[windowId]->update(renderState);
 	}
 
 	// Destroy context items if the program is no longer running
 	if (!isRunning()) {
-		std::map<int, MyAppView*>::iterator it = views.find(windowId);
-		delete it->second;
-		views.erase(it);
+		// Need to lock for deleting
+		std::unique_lock<std::mutex> lock(mutex);
+
+		// Delete view
+		{
+			std::map<int, MyAppView*>::iterator it = views.find(windowId);
+			delete it->second;
+			views.erase(it);
+		}
+
+		// Delete shared contexts
+		if (sharedContextId < 0) {
+			std::map<int, MyAppSharedContext*>::iterator it = normalContexts.find(windowId);
+			delete it->second;
+			normalContexts.erase(it);
+		}
+		else {
+			sharedContextCount[sharedContextId]--;
+			if (sharedContextCount[sharedContextId] == 0) {
+				std::map<int, MyAppSharedContext*>::iterator it = sharedContexts.find(sharedContextId);
+				delete it->second;
+				sharedContexts.erase(it);
+			}
+		}
+
+		lock.unlock();
+
 		return;
 	}
 }
@@ -111,6 +132,7 @@ void MyAppController::onVRRenderGraphics(const VRGraphicsState &renderState) {
 	if (isRunning()) {
 		int windowId = renderState.getWindowId();
 
+		// Render on view
 		views[windowId]->render(renderState);
 	}
 }

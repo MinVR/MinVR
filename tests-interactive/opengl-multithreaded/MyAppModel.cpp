@@ -1,6 +1,6 @@
 #include "MyAppModel.h"
 
-
+// Creates all the values necessary for drawing a rotating cube
 MyAppModel::MyAppModel() {
 	// Create VBO
 	float verts[] = { 1.0f, 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 1.0f,      // v0-v1-v2 (front)

@@ -22,7 +22,7 @@
     <MSAASamples>1</MSAASamples>
     <QuadBuffered>0</QuadBuffered>
     <AsyncEnabled>1</AsyncEnabled>
-    <SharedContextGroupID>-1</SharedContextGroupID>
+    <SharedContextGroupID>1</SharedContextGroupID>
     
     <!-- Common to all clients -->
     <GLFWToolkit windowtoolkitType="VRGLFWWindowToolkit"/>

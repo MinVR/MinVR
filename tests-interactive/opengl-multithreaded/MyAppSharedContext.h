@@ -33,13 +33,20 @@ using namespace MinVR;
 
 #include "MyAppModel.h"
 
+/**
+ * The MyAppSharedContext class handles graphics objects that are stored across graphics
+ * window contexts.  This allows windows to share data on the same graphics card.
+ */
 class MyAppSharedContext {
 public:
 	MyAppSharedContext(const MyAppModel& model, const VRGraphicsState &renderState);
 	virtual ~MyAppSharedContext();
 
+	/// Updates the context based on a supplied version to enable only one thread is updating
+	/// the new data.
 	void update(const VRGraphicsState &renderState, int version);
 
+	/// Returns shared VBO
 	GLuint getVbo() const {
 		return vbo;
 	}

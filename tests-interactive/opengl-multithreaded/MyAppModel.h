@@ -11,6 +11,11 @@
 
 #include <vector>
 
+/**
+ * The MyAppModel class stores and maintains all the application data.  In this
+ * example of a rotating cube it contains vertices, normals, colors, and a
+ * model matrix.
+ */
 class MyAppModel {
 public:
 	MyAppModel();
