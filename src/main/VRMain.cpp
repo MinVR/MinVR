@@ -33,8 +33,8 @@ namespace MinVR {
     the collection of render handlers act like a single render handler.  VRMain
     holds a list of render handlers.  Technically, we could pass this list into
     the DisplayNode::render(..) method, so the composite render handler is not
-    strictly necessary, but it simplifies the implmentation of display nodes a 
-    bit to be able to write them as if they only need to handle a single 
+    strictly necessary, but it simplifies the implmentation of display nodes a
+    bit to be able to write them as if they only need to handle a single
     render handler object.
     TO DISCUSS: Should we expose this to the application programer?  It could be
     useful, but not sure we want to encourage using this outside of MinVR when
@@ -64,8 +64,8 @@ protected:
 	std::vector<VRRenderHandler*> _handlers;
 };
 
-    
-    
+
+
 std::string getCurrentWorkingDir()
 {
 #ifdef WIN32
@@ -142,11 +142,11 @@ bool fileGood(const std::string &fileName) {
     std::ifstream infile(fileName.c_str());
     return infile.good();
 }
-    
+
 void VRMain::loadInstalledConfiguration(const std::string &configName) {
     std::string fname;
     std::vector< std::string > checked;
-    
+
     // 1. current working directory
     fname = "./" + configName + ".minvr";
     checked.push_back(fname);
@@ -154,7 +154,7 @@ void VRMain::loadInstalledConfiguration(const std::string &configName) {
         loadConfigFile(fname);
         return;
     }
-    
+
     // 2. config subdir within current working directory
     fname = "./config/" + configName + ".minvr";
     checked.push_back(fname);
@@ -162,7 +162,7 @@ void VRMain::loadInstalledConfiguration(const std::string &configName) {
         loadConfigFile(fname);
         return;
     }
-    
+
     // 3. running from within the build tree from build/bin or tests-*/testname
     fname = "../../config/" + configName + ".minvr";
     checked.push_back(fname);
@@ -170,7 +170,7 @@ void VRMain::loadInstalledConfiguration(const std::string &configName) {
         loadConfigFile(fname);
         return;
     }
-    
+
     // 4. an installed version based on MINVR_ROOT envvar
     if (std::getenv("MINVR_ROOT")) {
         fname = std::string(std::getenv("MINVR_ROOT")) + "/config/" + configName + ".minvr";
@@ -180,7 +180,7 @@ void VRMain::loadInstalledConfiguration(const std::string &configName) {
             return;
         }
     }
-    
+
     // 5. an installed version based on the INSTALL_PREFIX set with cmake
     fname = std::string(INSTALLPATH) + "/config/" + configName + ".minvr";
     checked.push_back(fname);
@@ -188,7 +188,7 @@ void VRMain::loadInstalledConfiguration(const std::string &configName) {
         loadConfigFile(fname);
         return;
     }
-    
+
     std::cerr << "MinVR Error: Cannot find a configuration named " << configName
               << " in the following " << checked.size() << " locations:" << std::endl;
     for (int i=0; i<checked.size(); i++) {
@@ -197,7 +197,7 @@ void VRMain::loadInstalledConfiguration(const std::string &configName) {
     throw std::runtime_error("MinVR Error: Cannot find a configuration named " + configName);
 }
 
-    
+
 void VRMain::loadConfigFile(const std::string &pathAndFilename) {
     std::cout << "MinVR: Loading config file: " << pathAndFilename << std::endl;
     bool success = _config->processXMLFile(pathAndFilename,"/");
@@ -206,51 +206,14 @@ void VRMain::loadConfigFile(const std::string &pathAndFilename) {
     }
 }
 
-    
-    
-void VRMain::setConfigValueByString(const std::string &keyAndValStr) {
-    int poseql = keyAndValStr.find("=");
-    if (poseql == std::string::npos) {
-        throw std::runtime_error("MinVR Error: Expected a key=value format for the string: " + keyAndValStr);
-    }
-    std::string key = keyAndValStr.substr(0,poseql);
-    std::string value = keyAndValStr.substr(poseql+1);
-    
-    std::cout << "MinVR: Setting config value: " << key << "=" << value << std::endl;
 
-    // if the key already exists, then match the existing type, otherwise infer
-    // the type as usual
-    VRCORETYPE_ID type;
-    if (_config->exists(key, "/")) {
-        type = _config->getType(key);
-    }
-    else {
-        type = _config->inferType(value);
-    }
-    
-    
-    if (type == VRCORETYPE_INT) {
-        _config->addData(key, _config->deserializeInt(value.c_str()));
-    }
-    else if (type == VRCORETYPE_FLOAT) {
-        _config->addData(key, _config->deserializeFloat(value.c_str()));
-    }
-    else if (type == VRCORETYPE_STRING) {
-        _config->addData(key, value);
-    }
-    else if (type == VRCORETYPE_INTARRAY) {
-        _config->addData(key, _config->deserializeIntArray(value.c_str(), MINVRSEPARATOR));
-    }
-    else if (type == VRCORETYPE_FLOATARRAY) {
-        _config->addData(key, _config->deserializeFloatArray(value.c_str(), MINVRSEPARATOR));
-    }
-    else if (type == VRCORETYPE_STRINGARRAY) {
-        _config->addData(key, _config->deserializeStringArray(value.c_str(), MINVRSEPARATOR));
-    }
-    //std::cout << _config->printStructure() << std::endl;
+// This functionality really should be in the data index.
+void VRMain::setConfigValueByString(const std::string &keyAndValStr) {
+  std::string name = _config->addData(keyAndValStr);
+  std::cout << "MinVR: Setting config value: " << name << std::endl;
 }
 
-    
+
 void VRMain::displayCommandLineHelp() {
     std::cout <<
     "-h, --help         Display this help message.\n"
@@ -296,46 +259,46 @@ void VRMain::displayCommandLineHelp() {
     "                   use by MinVR.\n"
     << std::endl;
 }
-    
+
 
 void VRMain::processCommandLineArgs(std::string commandLine)  {
-    
+
     std::stringstream argStream(commandLine);
     int count = 0;
     bool processeddata = false;
-    
+
     while (argStream) {
         std::string arg;
         argStream >> arg;
         if (argStream) {
             count++;
-            
+
             bool got_help   = ((arg == "-h") || (arg == "--help"));
-            
+
             bool got_config = ((arg == "-c") || (arg == "--load-config"));
-            
+
             bool got_file   = ((arg == "-f") || (arg == "--load-file"));
-            
+
             bool got_keyval = ((arg == "-s") || (arg == "--set-value"));
-            
+
             //bool got_envvar = ((arg == "-e") || (arg == "--set-envvar"));
-            
+
             bool got_data   = (arg.find("--MINVR_DATA=") == 0);
-            
-            
-            
+
+
+
             // case 0: display help and exit
             if (got_help) {
                 displayCommandLineHelp();
                 exit(0);
             }
-            
+
             // case 1: a pre-installed MinVR configuration <configname>.minvr
             else if (got_config) {
                 argStream >> arg;
                 loadInstalledConfiguration(arg);
             }
-            
+
             // case 2: a specific path/filename.minvr config file to load
             else if (got_file) {
                 argStream >> arg;
@@ -347,7 +310,7 @@ void VRMain::processCommandLineArgs(std::string commandLine)  {
                 argStream >> arg;
                 setConfigValueByString(arg);
             }
-            
+
             /*
             // case 4: a varname=value to set as an environment variable
             else if (got_envvar) {
@@ -373,7 +336,7 @@ void VRMain::processCommandLineArgs(std::string commandLine)  {
             }
         }
     }
-    
+
     // If there were no command line arguments or if the only command line
     // argument was the special --MINVR_DATA=xxxx argument, then load the
     // pre-installed default configuration.
@@ -382,9 +345,9 @@ void VRMain::processCommandLineArgs(std::string commandLine)  {
     }
 }
 
-    
-    
-    
+
+
+
 void VRMain::initializeWithMinVRCommandLineParsing(int argc, char **argv) {
     // build a single string with all initialization commands separated by spaces
     std::string cmdline;
@@ -398,9 +361,9 @@ void VRMain::initializeWithMinVRCommandLineParsing(int argc, char **argv) {
 
     initializeInternal(argc, argv);
 }
-    
 
-    
+
+
 void VRMain::initializeWithUserCommandLineParsing(int argc, char **argv) {
     // In this case, ignore all the command line arguments except for
     // one of the format --MINVR_DATA=xxxx.  If present, this must be a child
@@ -417,12 +380,12 @@ void VRMain::initializeWithUserCommandLineParsing(int argc, char **argv) {
 
     initializeInternal(argc, argv);
 }
-    
+
 
 
 
 void VRMain::initializeInternal(int argc, char **argv) {
-    
+
 	VRStringArray vrSetupsToStartArray;
 	if (!_config->exists("VRSetupsToStart","/")) {
 		// no vrSetupsToStart are specified, start all of VRSetups listed in the config file
@@ -448,19 +411,19 @@ void VRMain::initializeInternal(int argc, char **argv) {
 		exit(1);
 	}
 
-    
+
     // STEP 1: IF ANY OF THE VRSETUPS ARE STARTED AS REMOTE PROCESSES ON ANOTHER
     // MACHINE, THEN START THEM NOW AND REMOVE THEM FROM THE LIST OF VRSETUPS TO
     // START ON THIS MACHINE
-    
+
     vector<std::string>::iterator it = vrSetupsToStartArray.begin();
     while (it != vrSetupsToStartArray.end()) {
         if (_config->exists("HostIP",*it) && !_config->exists("StartedSSH","/")) {
-            
+
             // TODO: If we're going to use VRAppLaunchers, then this seems like
             // it should be implemented in a VRSSHAppLauncher class
             VRLocalAppLauncher launcher(argc, argv);
-            
+
             // Setup needs to be started via ssh.
             // First get the path were it has to be started
             std::string workingDirectory = getCurrentWorkingDir();
@@ -472,7 +435,7 @@ void VRMain::initializeInternal(int argc, char **argv) {
             }
 
             std::string processSpecificArgs = "VRSetupsToStart=" + *it + " StartedSSH=1";
-            
+
             std::string sshcmd;
             if (_config->exists("LogToFile",*it)) {
                 std::string logFile = _config->getValue("LogToFile",*it);
@@ -493,23 +456,23 @@ void VRMain::initializeInternal(int argc, char **argv) {
             ++it;
         }
     }
-	
+
 	if (vrSetupsToStartArray.empty()) {
         std::cout << "MinVR: All VRSetups are remote processes. All have been started via SSH - Exiting" << std::endl;
 		exit(1);
 	}
 
-    
+
     // STEP 2: RECORD THE NAME OF THE VRSETUP TO USE FOR THIS PROCESS
-    
+
 	// This process will be the first one listed
 	_name = vrSetupsToStartArray[0];
 
-    
+
     // STEP 3: IF ANY MORE VRSETUPS ARE SUPPOSED TO BE STARTED ON THIS MACHINE
     // THEN DO THAT NOW -- UNFORTUNATELY, THE WAY TO DO THIS ON WINDOWS IS
     // DIFFERENT THAN OTHER ARCHITECTURES.
-    
+
 	// Fork a new process for each remaining vrsetup
 
 #ifdef WIN32
@@ -518,9 +481,9 @@ void VRMain::initializeInternal(int argc, char **argv) {
 	// command line argument and the vrsetup to start as the second command line
 	// argument -- this means we need to enforce this convention for command line
 	// arguments for all MinVR programs that want to support multiple processes.
-    
+
     VRLocalAppLauncher launcher(argc,argv);
-    
+
 	for (int i = 1; i < vrSetupsToStartArray.size(); i++) {
 		// https://msdn.microsoft.com/en-us/library/windows/desktop/ms682512(v=vs.85).aspx
 		STARTUPINFO si;
@@ -568,10 +531,10 @@ void VRMain::initializeInternal(int argc, char **argv) {
 		}
 		_name = vrSetupsToStartArray[i];
 	}
-    
+
 #endif
 
-    
+
     // STEP 4:  Sanity check to make sure the vrSetup we are continuing with is
     // actually defined in the config settings that have been loaded.
 	if (!_config->exists(_name)) {
@@ -587,7 +550,7 @@ void VRMain::initializeInternal(int argc, char **argv) {
     // STEP 5: LOAD PLUGINS:
 
 	// Load plugins from the plugin directory.  This will add their factories to the master VRFactory.
-	
+
 
     // MinVR will try to load plugins based on a search path.  If it doesn't find the plugin
     // in one path, it will look in another supplied path.  To specify custom paths for an application
@@ -740,9 +703,9 @@ void VRMain::initializeInternal(int argc, char **argv) {
 
 			// CONFIGURE GRAPHICS TOOLKIT
 			{
-				int counttk = 0; 
+				int counttk = 0;
 				std::string usedToolkit;
-				std::list<std::string> namestk = _config->selectByAttribute("windowtoolkitType", "*", *it);	
+				std::list<std::string> namestk = _config->selectByAttribute("windowtoolkitType", "*", *it);
 				for (std::list<std::string>::reverse_iterator ittk = namestk.rbegin(); ittk != namestk.rend(); ++ittk) {
 					// create a new graphics toolkit for each one in the list
 					VRWindowToolkit *tk = _factory->create<VRWindowToolkit>(this, _config, *ittk);
@@ -751,7 +714,7 @@ void VRMain::initializeInternal(int argc, char **argv) {
 							_config->addData(_config->validateNameSpace(*it) + "WindowToolkit", tk->getName());
 							usedToolkit = *ittk;
 							counttk++;
-						} 
+						}
 						else
 						{
 							std::cerr << "Warning : Only 1 window toolkit can be defined for: " << *it << " using windowtoolkitType=" << _config->getDatum(_config->validateNameSpace(*it) + "WindowToolkit")->getValueString() << " defined at " << usedToolkit << std::endl;
@@ -792,8 +755,8 @@ void VRMain::initializeInternal(int argc, char **argv) {
     _shutdown = false;
 }
 
-void 
-VRMain::synchronizeAndProcessEvents() 
+void
+VRMain::synchronizeAndProcessEvents()
 {
 	if (!_initialized) {
 		throw std::runtime_error("VRMain not initialized.");
@@ -804,7 +767,7 @@ VRMain::synchronizeAndProcessEvents()
     std::string dataField = "/ElapsedSeconds";
     _config->addData(event + dataField, (float)VRSystem::getTime());
     eventsFromDevices.push(_config->serialize(event));
-  
+
 	for (int f = 0; f < _inputDevices.size(); f++) {
 		_inputDevices[f]->appendNewInputEventsSinceLastCall(&eventsFromDevices);
 	}
@@ -829,7 +792,7 @@ VRMain::synchronizeAndProcessEvents()
 		std::string eventName = _config->addSerializedValue( events->getSerializedObject() );
 
         VREventInternal event(eventName, _config);
-      
+
 		// Invoke the user's callback on the new event
 		for (int f = 0; f < _eventHandlers.size(); f++) {
 			_eventHandlers[f]->onVREvent(*event.getAPIEvent());
@@ -843,10 +806,10 @@ VRMain::synchronizeAndProcessEvents()
 }
 
 void
-VRMain::renderOnAllDisplays() 
+VRMain::renderOnAllDisplays()
 {
   if (!_initialized) throw std::runtime_error("VRMain not initialized.");
-  
+
 	VRDataIndex renderState;
 	renderState.addData("/InitRender", _frame == 0);
 
@@ -878,12 +841,12 @@ VRMain::renderOnAllDisplays()
 }
 
 std::list<std::string>
-VRMain::auditValuesFromAllDisplays() 
+VRMain::auditValuesFromAllDisplays()
 {
   std::list<std::string> out;
 
   if (!_initialized) throw std::runtime_error("VRMain not initialized.");
-  
+
 	if (!_displayGraphs.empty()) {
 
 		for (std::vector<VRDisplayNode*>::iterator it = _displayGraphs.begin();
@@ -901,27 +864,27 @@ VRMain::auditValuesFromAllDisplays()
 }
 
 
-void 
+void
 VRMain::shutdown()
 {
     _shutdown = true;
 }
 
 
-void 
-VRMain::addEventHandler(VREventHandler* eventHandler) 
+void
+VRMain::addEventHandler(VREventHandler* eventHandler)
 {
 	_eventHandlers.push_back(eventHandler);
 }
 
-void 
-VRMain::addRenderHandler(VRRenderHandler* renderHandler) 
+void
+VRMain::addRenderHandler(VRRenderHandler* renderHandler)
 {
 	_renderHandlers.push_back(renderHandler);
 }
 
 
-VRGraphicsToolkit* 
+VRGraphicsToolkit*
 VRMain::getGraphicsToolkit(const std::string &name) {
 	for (std::vector<VRGraphicsToolkit*>::iterator it = _gfxToolkits.begin(); it < _gfxToolkits.end(); ++it) {
 		if ((*it)->getName() == name) {
@@ -932,7 +895,7 @@ VRMain::getGraphicsToolkit(const std::string &name) {
 	return NULL;
 }
 
-VRWindowToolkit* 
+VRWindowToolkit*
 VRMain::getWindowToolkit(const std::string &name) {
 	for (std::vector<VRWindowToolkit*>::iterator it = _winToolkits.begin(); it < _winToolkits.end(); ++it) {
 		if ((*it)->getName() == name) {
@@ -942,7 +905,7 @@ VRMain::getWindowToolkit(const std::string &name) {
 	return NULL;
 }
 
-void 
+void
 VRMain::addInputDevice(VRInputDevice* dev) {
 	_inputDevices.push_back(dev);
 }
