@@ -483,7 +483,7 @@ int testIndexSerialize() {
     out += output.compare(serverTestString);
 
     // There is also a name to the index.
-    out += anotherIndex->getName().compare("MVR");
+    out += anotherIndex->getIndexName().compare("MVR");
 
     // But we can also serialize the whole thing, in which case it
     // gets wrapped up, just like the starting test string.
@@ -520,7 +520,7 @@ int testIndexSerializeEntire() {
     out += test1.compare("glfw_display");
     out += test2.compare("heavy");
     out += 2871 - output.size();
-    out += n->getName().compare("MVR");
+    out += n->getIndexName().compare("MVR");
 
     delete n;
   }
@@ -630,12 +630,9 @@ int testDepthOfCopy() {
 
   LOOP {
     MinVR::VRDataIndex *index = new MinVR::VRDataIndex();
-    index->addSerializedValue(xmlstring, MinVR::VRDataIndex::rootNameSpace, false);
+    index->addSerializedValue(xmlstring, MinVR::VRDataIndex::rootNameSpace);
 
-    std::cout << index->printStructure() << std::endl;
-
-    // Look for all the nodes with 'linkNode' attributes, and evaluate.
-    index->linkNodes();
+    // std::cout << index->printStructure() << std::endl;
 
     // Make a copy of the index.
     MinVR::VRDataIndex copiedIndex(*index);
@@ -663,8 +660,8 @@ int testDepthOfCopy() {
 
     index->addData("/MVR/John/Unknown/atestarray", e);
 
-    std::cout << copiedIndex.printStructure() << std::endl;
-    std::cout << index->printStructure() << std::endl;
+    // std::cout << copiedIndex.printStructure() << std::endl;
+    // std::cout << index->printStructure() << std::endl;
 
     std::string copiedOutputString = copiedIndex.serialize("/MVR");
     std::string assignedOutputString = assignedIndex.serialize("/MVR");
@@ -699,19 +696,13 @@ int testLinkNode() {
 
   LOOP {
     MinVR::VRDataIndex *index = new MinVR::VRDataIndex();
-    index->addSerializedValue(xmlstring, MinVR::VRDataIndex::rootNameSpace, false);
+    index->addSerializedValue(xmlstring, MinVR::VRDataIndex::rootNameSpace);
 
-    std::cout << index->printStructure() << std::endl;
-
-    // Look for all the nodes with 'linkNode' attributes, and evaluate.
-    index->linkNodes();
 
     // To prove that the linked nodes are actually the same node.  We
     // adjust one node's attributes to make sure it appears at the copy,
     // as well.
     index->getDatum("/MVR/John/Unknown/Thomas")->setAttributeValue("letter", "alpha");
-
-    std::cout << index->printStructure() << std::endl;
 
     std::string outputstring = index->serialize("/MVR");
 
@@ -724,27 +715,27 @@ int testLinkNode() {
 
 int testLinkContent() {
 
-  std::string xmlstring =  "<MVR><!-- some of the illegitimate children of John I --><John name=\"Lackland\"><Isabella name=\"Angouleme\"><Henry seq=\"III\" title=\"King\">1</Henry> <Richard title=\"Earl of Cornwall\">2</Richard> <Joan title=\"Queen Consort\">3</Joan> <Isabella title=\"Queen Consort\">4</Isabella> <Eleanor type=\"string\">5</Eleanor> </Isabella><Joan title=\"Lady of Wales\"><Richard name=\"FitzRoy\">6</Richard><Oliver name=\"FitzRoy\">7</Oliver></Joan> <Unknown><Geoffrey name=\"FitzRoy\" type=\"string\">8</Geoffrey><John name=\"FitzRoy\">9</John> <Henry name=\"FitzRoy\">10</Henry> <Osbert name=\"Gifford\">11</Osbert><Thomas linkContent=\"/MVR/John/Joan\"/> <Eudes name=\"FitzRoy\">12</Eudes> <Bartholomew name=\"FitzRoy\">13</Bartholomew> <Maud name=\"FitzRoy\" title=\"Abbess of Barking\">14</Maud><Isabella name=\"FitzRoy\">15</Isabella><Philip name=\"FitzRoy\" type=\"string\">16</Philip></Unknown> </John></MVR>";
+  std::string xmlstring =  "<MVR><!-- some of the illegitimate children of John I --><John name=\"Lackland\"><Isabella name=\"Angouleme\"><Henry seq=\"III\" title=\"King\">1</Henry> <Richard title=\"Earl of Cornwall\">2</Richard> <Joan title=\"Queen Consort\">3</Joan> <Isabella title=\"Queen Consort\">4</Isabella> <Eleanor type=\"string\">5</Eleanor> </Isabella><Joan title=\"Lady of Wales\"><Richard name=\"FitzRoy\">6</Richard><Oliver name=\"FitzRoy\">7</Oliver></Joan> <Unknown><Geoffrey name=\"FitzRoy\" type=\"string\">8</Geoffrey><John name=\"FitzRoy\">9</John> <Henry name=\"FitzRoy\">10</Henry> <Osbert name=\"Gifford\">11</Osbert><Thomas linkContent=\"/John/Joan\"/> <Eudes name=\"FitzRoy\">12</Eudes> <Bartholomew name=\"FitzRoy\">13</Bartholomew> <Maud name=\"FitzRoy\" title=\"Abbess of Barking\">14</Maud><Isabella name=\"FitzRoy\">15</Isabella><Philip name=\"FitzRoy\" type=\"string\">16</Philip></Unknown> </John></MVR>";
 
- std:;string teststring = "<MVR type=\"container\"><John type=\"container\" name=\"Lackland\"><Isabella type=\"container\" name=\"Angouleme\"><Henry type=\"int\" seq=\"III\" title=\"King\">1</Henry><Richard type=\"int\" title=\"Earl of Cornwall\">2</Richard><Joan type=\"int\" title=\"Queen Consort\">3</Joan><Isabella type=\"int\" title=\"Queen Consort\">4</Isabella><Eleanor type=\"string\">5</Eleanor></Isabella><Joan type=\"container\" title=\"Lady of Wales\"><Richard type=\"int\" name=\"FitzRoy\">6</Richard><Oliver type=\"int\" name=\"FitzRoy\">7</Oliver></Joan><Unknown type=\"container\"><Richard type=\"int\" name=\"FitzRoy\">6</Richard><Oliver type=\"int\" name=\"FitzRoy\">7</Oliver><Geoffrey type=\"string\" name=\"FitzRoy\">8</Geoffrey><John type=\"int\" name=\"FitzRoy\">9</John><Henry type=\"int\" name=\"FitzRoy\">10</Henry><Osbert type=\"int\" name=\"Gifford\">11</Osbert><Eudes type=\"int\" name=\"FitzRoy\">12</Eudes><Bartholomew type=\"int\" name=\"FitzRoy\">13</Bartholomew><Maud type=\"int\" name=\"FitzRoy\" title=\"Abbess of Barking\">14</Maud><Isabella type=\"int\" name=\"FitzRoy\">15</Isabella><Philip type=\"string\" name=\"FitzRoy\">16</Philip></Unknown></John></MVR>";
-
+  std::string teststring = "<MVR type=\"container\"><John type=\"container\" name=\"Lackland\"><Isabella type=\"container\" name=\"Angouleme\"><Henry type=\"int\" seq=\"III\" title=\"King\">1</Henry><Richard type=\"int\" title=\"Earl of Cornwall\">2</Richard><Joan type=\"int\" title=\"Queen Consort\">3</Joan><Isabella type=\"int\" title=\"Queen Consort\">4</Isabella><Eleanor type=\"string\">5</Eleanor></Isabella><Joan type=\"container\" title=\"Lady of Wales\"><Richard type=\"int\" letter=\"alpha\" name=\"FitzRoy\">6</Richard><Oliver type=\"int\" name=\"FitzRoy\">7</Oliver></Joan><Unknown type=\"container\"><Richard type=\"int\" letter=\"alpha\" name=\"FitzRoy\">6</Richard><Oliver type=\"int\" name=\"FitzRoy\">7</Oliver><Geoffrey type=\"string\" name=\"FitzRoy\">8</Geoffrey><John type=\"int\" name=\"FitzRoy\">9</John><Henry type=\"int\" name=\"FitzRoy\">10</Henry><Osbert type=\"int\" name=\"Gifford\">11</Osbert><Eudes type=\"int\" name=\"FitzRoy\">12</Eudes><Bartholomew type=\"int\" name=\"FitzRoy\">13</Bartholomew><Maud type=\"int\" name=\"FitzRoy\" title=\"Abbess of Barking\">14</Maud><Isabella type=\"int\" name=\"FitzRoy\">15</Isabella><Philip type=\"string\" name=\"FitzRoy\">16</Philip></Unknown></John></MVR>";
 
   int out = 0;
   LOOP {
-    MinVR::VRDataIndex *index = new MinVR::VRDataIndex();
-    index->addSerializedValue(xmlstring, MinVR::VRDataIndex::rootNameSpace, false);
+    MinVR::VRDataIndex *index = new MinVR::VRDataIndex(xmlstring);
 
-    //  std::cout << index->printStructure() << std::endl;
+    //std::cout << index->printStructure() << std::endl;
 
-    // Look for all the nodes with 'linknode' attributes, and evaluate.
-    index->linkNodes(); index->linkContent();
 
     // To prove that the copied nodes are actually the same node.  We
     // adjust one node's attributes to make sure it appears at the copy,
     // as well.
-    //  index->getDatum("/MVR/John/Unknown/Thomas")->setAttributeValue("letter", "alpha");
+    index->getDatum("/John/Joan/Richard")->setAttributeValue("letter", "alpha");
 
-    out +=  teststring.compare(index->serialize("/MVR"));
+    // std::cout << index->printStructure() << std::endl;
+
+    //std::cout << index->serialize() << std::endl;
+
+    out +=  teststring.compare(index->serialize());
     delete index;
   }
 

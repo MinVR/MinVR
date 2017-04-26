@@ -4,11 +4,9 @@ namespace MinVR {
 
 std::string VRDataIndex::rootNameSpace = "/";
 
-VRDatumFactory VRDataIndex::factory = VRDataIndex::initializeFactory();
-
 // Step 7 of the specialization instructions (in VRDatum.h) is to
 // add an entry here to register the new data type.
-VRDatumFactory VRDataIndex::initializeFactory() {
+VRDatumFactory VRDataIndex::_initializeFactory() {
 
   VRDatumFactory newFactory;
 
@@ -23,8 +21,10 @@ VRDatumFactory VRDataIndex::initializeFactory() {
   return newFactory;
 }
 
+VRDatumFactory VRDataIndex::_factory = VRDataIndex::_initializeFactory();
+
 VRDataIndex::VRDataIndex(const std::string serializedData)  :
-  overwrite(1), name("MVR") {
+  _overwrite(1), _indexName("MVR") {
 
   Cxml *xml = new Cxml();
   xml->parse_string((char*)serializedData.c_str());
@@ -41,7 +41,7 @@ VRDataIndex::VRDataIndex(const std::string serializedData)  :
 
     // There should be only one child here, so this should only pick
     // the root name off the serial data.
-    name = child->get_name();
+    _indexName = child->get_name();
 
     // Now scan through the child's children for the rest of the data.
     while (grandChild != NULL) {
@@ -66,14 +66,14 @@ VRDataIndex::VRDataIndex(const std::string serializedData)  :
 /// The copy constructor makes a deep copy.
 VRDataIndex::VRDataIndex(const VRDataIndex& orig) {
 
-  name = orig.name;
-  overwrite = orig.overwrite;
+  _indexName = orig._indexName;
+  _overwrite = orig._overwrite;
 
   // Here's the shallow copy of the index.
-  mindex = orig.mindex;
+  _theIndex = orig._theIndex;
 
   // Now we have to go through and do a deep copy of the data in the index.
-  for (VRDataMap::iterator it = mindex.begin(); it != mindex.end(); it++) {
+  for (VRDataMap::iterator it = _theIndex.begin(); it != _theIndex.end(); it++) {
     it->second = it->second.clone();
   }
 
@@ -81,7 +81,7 @@ VRDataIndex::VRDataIndex(const VRDataIndex& orig) {
   for (std::map<std::string, std::string>::const_iterator it = orig.linkRegister.begin();
        it != orig.linkRegister.end(); it++) {
 
-    linkNode(it->first, it->second, 0);
+    linkNode(it->first, it->second);
   }
 }
 
@@ -113,7 +113,7 @@ std::string VRDataIndex::serialize() {
 
     std::string serialized;
 
-    serialized = "<" + getName() + " type=\"container\"" ;
+    serialized = "<" + getIndexName() + " type=\"container\"" ;
 
     // This makes a list of *all* the names in the data index.
     // Unfortunately, we only want the first-level names, and want
@@ -142,7 +142,7 @@ std::string VRDataIndex::serialize() {
           serialized += serialize(*lt);
         };
       }
-      serialized += "</" + getName() + ">";
+      serialized += "</" + getIndexName() + ">";
     }
 
     return serialized;
@@ -161,7 +161,7 @@ std::string VRDataIndex::serialize(const std::string valName,
   } else {
     VRDataMap::iterator it = getEntry(valName, nameSpace);
 
-    if (it != mindex.end()) {
+    if (it != _theIndex.end()) {
 
       return serialize(it->first, it->second);
 
@@ -515,50 +515,28 @@ VRCORETYPE_ID VRDataIndex::inferType(const std::string valueString) {
 // just use getValue().
 std::list<std::string> VRDataIndex::getNames() {
   VRContainer outList;
-  for (VRDataMap::iterator it = mindex.begin(); it != mindex.end(); it++) {
+  for (VRDataMap::iterator it = _theIndex.begin(); it != _theIndex.end(); it++) {
     outList.push_back(it->first);
   }
   return outList;
 }
 
-VRContainer VRDataIndex::selectByAttribute(const std::string attrName,
-                                           const std::string attrVal) {
-  std::list<std::string> outList;
-  for (VRDataMap::iterator it = mindex.begin(); it != mindex.end(); it++) {
-    VRDatum::VRAttributeList al = it->second->getAttributeList();
 
-    // Check if attribute list has anything in it.
-    if (!al.empty()) {
+VRContainer VRDataIndex::selectByAttribute(const std::string &attrName,
+                                           const std::string &attrVal,
+                                           const std::string nameSpace) {
 
-      // Yes? Loop through the attributes.
-      for (VRDatum::VRAttributeList::iterator jt = al.begin();
-           jt != al.end(); jt++) {
-
-        // Do we have the correct attribute?
-        if (attrName.compare(jt->first) == 0) {
-
-          // Does it match the desired value, or a wildcard?
-          if ((attrVal == "*") || (attrVal.compare(jt->second) == 0)) {
-
-            // Put the name of the datum on the list.
-            outList.push_back(it->first);
-          }
-        }
-      }
-    }
-  }
-  return outList;
-}
-
-VRContainer VRDataIndex::selectByAttribute(const std::string attrName,
-	const std::string attrVal,
-	const std::string nameSpace)
-{
 	std::string validatedNameSpace = validateNameSpace(nameSpace);
-	std::list<std::string> outList;
-	for (VRDataMap::iterator it = mindex.begin(); it != mindex.end(); it++) {
+  int vnsLength = validatedNameSpace.size();
+
+
+  std::list<std::string> outList;
+	for (VRDataMap::iterator it = _theIndex.begin(); it != _theIndex.end(); it++) {
 		VRDatum::VRAttributeList al = it->second->getAttributeList();
-		if (validatedNameSpace.compare(0, getNameSpace(it->first).size(), getNameSpace(it->first)) == 0) {
+
+    // Use a string comparison to check if this name is within the given scope.
+    if (getNameSpace(it->first).compare(0, vnsLength, validatedNameSpace) == 0) {
+
 			// Check if attribute list has anything in it.
 			if (!al.empty()) {
 
@@ -583,10 +561,10 @@ VRContainer VRDataIndex::selectByAttribute(const std::string attrName,
 	return outList;
 }
 
-VRContainer VRDataIndex::selectByType(const VRCORETYPE_ID typeId) {
+VRContainer VRDataIndex::selectByType(const VRCORETYPE_ID &typeId) {
 
   VRContainer outList;
-  for (VRDataMap::iterator it = mindex.begin(); it != mindex.end(); it++) {
+  for (VRDataMap::iterator it = _theIndex.begin(); it != _theIndex.end(); it++) {
 
     if (typeId == it->second->getType()) {
 
@@ -596,13 +574,13 @@ VRContainer VRDataIndex::selectByType(const VRCORETYPE_ID typeId) {
   return outList;
 }
 
-VRContainer VRDataIndex::selectByName(const std::string inName) {
+VRContainer VRDataIndex::selectByName(const std::string &inName) {
 
   std::vector<std::string> inNameParts = explodeName(inName);
   VRContainer outList;
 
   // Sort through the whole index.
-  for (VRDataMap::iterator it = mindex.begin(); it != mindex.end(); it++) {
+  for (VRDataMap::iterator it = _theIndex.begin(); it != _theIndex.end(); it++) {
 
     // This is our indicator.  If a name gets through all the
     // comparisons with test still equal to zero, it's a match.
@@ -696,7 +674,7 @@ std::string VRDataIndex::validateNameSpace(const std::string nameSpace) {
 
     // Otherwise look for it in the index and throw an error if
     // it isn't there.
-    if (mindex.find(out.substr(0, out.size() - 1)) == mindex.end()) {
+    if (_theIndex.find(out.substr(0, out.size() - 1)) == _theIndex.end()) {
       throw std::runtime_error("Can't find a namespace called " + nameSpace);
     }
   }
@@ -731,19 +709,23 @@ std::string VRDataIndex::getNameSpace(const std::string fullName) {
 
 void VRDataIndex::pushState() {
 
-  for (std::map<std::string, VRDatumPtr>::iterator it = mindex.begin();
-       it != mindex.end(); it++) {
+  for (std::map<std::string, VRDatumPtr>::iterator it = _theIndex.begin();
+       it != _theIndex.end(); it++) {
     it->second->push();
   }
 }
 
+// Values that were added to the index after a push will be deleted on a pop,
+// but the system cannot restore deleted values.  Fortunately, there is no
+// delete method for the index.  When one is added, this will get more
+// complicated.
 void VRDataIndex::popState() {
 
-  std::map<std::string, VRDatumPtr>::iterator it = mindex.begin();
-  while (it != mindex.end()) {
+  std::map<std::string, VRDatumPtr>::iterator it = _theIndex.begin();
+  while (it != _theIndex.end()) {
 
     if (it->second->pop()) {
-      mindex.erase(it++);
+      _theIndex.erase(it++);
 
     } else {
 
@@ -780,7 +762,7 @@ VRDataIndex::getEntry(const std::string &valName,
   // name already.  That is, it already includes the name space.
   if (valName[0] == '/') {
 
-    return mindex.find(valName);
+    return _theIndex.find(valName);
 
   } else {
 
@@ -811,14 +793,14 @@ VRDataIndex::getEntry(const std::string &valName,
         testSpace += *it + "/" ;
       }
 
-      outIt = mindex.find(testSpace + valName);
-      if (outIt != mindex.end()) {
+      outIt = _theIndex.find(testSpace + valName);
+      if (outIt != _theIndex.end()) {
         return outIt;
       }
     }
 
     // If we are here, there is no matching name in the index.
-    return mindex.end();
+    return _theIndex.end();
   }
 }
 
@@ -827,7 +809,7 @@ std::string VRDataIndex::getName(const std::string valName,
 
   VRDataMap::iterator p = getEntry(valName, nameSpace);
 
-  if (p == mindex.end()) {
+  if (p == _theIndex.end()) {
     throw std::runtime_error("Never heard of " + valName + " in namespace " + nameSpace);
   } else {
     return p->first;
@@ -840,7 +822,7 @@ VRDatumPtr VRDataIndex::getDatum(const std::string &valName,
 
   VRDataMap::iterator p = getEntry(valName, nameSpace);
 
-  if (p == mindex.end()) {
+  if (p == _theIndex.end()) {
     throw std::runtime_error("Never heard of " + valName + " in namespace " + nameSpace);
   } else {
     return p->second;
@@ -848,16 +830,6 @@ VRDatumPtr VRDataIndex::getDatum(const std::string &valName,
 }
 
 // an int should be <nWindows type="int">6</nWindows>
-std::string VRDataIndex::addSerializedValue(const std::string serializedData) {
-
-  return addSerializedValue(serializedData, std::string(""));
-}
-
-std::string VRDataIndex::addSerializedValue(const std::string serializedData,
-                                            const std::string nameSpace) {
-  return addSerializedValue(serializedData, nameSpace, true);
-}
-
 std::string VRDataIndex::addSerializedValue(const std::string serializedData,
                                             const std::string nameSpace,
                                             const bool expand) {
@@ -947,11 +919,6 @@ bool VRDataIndex::processXML(const std::string arg) {
 }
 
 
-// The default just loads the file values into the root namespace.
-bool VRDataIndex::processXMLFile(const std::string fileName) {
-  return processXMLFile(fileName, rootNameSpace);
-}
-
 bool VRDataIndex::processXMLFile(const std::string fileName,
                                  const std::string nameSpace) {
 
@@ -1021,13 +988,13 @@ std::string VRDataIndex::addData(const std::string &valName,
   if (valName[0] != '/') fixedValName = std::string("/") + valName;
 
   // Check if the name is already in use.
-  VRDataMap::iterator it = mindex.find(fixedValName);
-  if (it == mindex.end()) {
+  VRDataMap::iterator it = _theIndex.find(fixedValName);
+  if (it == _theIndex.end()) {
 
     // No.  Create a new object.
-    VRDatumPtr obj = factory.CreateVRDatum(VRCORETYPE_CONTAINER, &value);
+    VRDatumPtr obj = _factory.CreateVRDatum(VRCORETYPE_CONTAINER, &value);
     //std::cout << "added " << obj.containerVal()->getDatum() << std::endl;
-    mindex.insert(VRDataMap::value_type(fixedValName, obj));
+    _theIndex.insert(VRDataMap::value_type(fixedValName, obj));
 
     // Add this value to the parent container, if any.
     VRContainer cValue;
@@ -1082,9 +1049,9 @@ std::string VRDataIndex::printStructure(const std::string itemName, const int li
   // Get the pieces of the input name.
   std::vector<std::string> itemElems = explodeName( itemName );
 
-  // We loop through *all* the values in the mindex, and only print
+  // We loop through *all* the values in the _theIndex, and only print
   // the ones that are asked for.
-  for (VRDataMap::iterator it = mindex.begin(); it != mindex.end(); ++it) {
+  for (VRDataMap::iterator it = _theIndex.begin(); it != _theIndex.end(); ++it) {
 
     bool printMe = true;
 
@@ -1148,26 +1115,26 @@ bool VRDataIndex::linkNode(const std::string fullSourceName,
   // This is an easy way to make a disaster, so we have a recursion
   // limit.  It's possible this should be adjustable, but not sure of
   // a use case where the plausible depthLimit would exceed 10.
-  if (depthLimit > 10)
+  if (depthLimit > 7)
     throw std::runtime_error("Too deep a recursion -- did you set up a circular reference?");
 
   // Find source node, fail if it does not exist.
   VRDataMap::iterator sourceEntry = getEntry(fullSourceName);
-  if (sourceEntry == mindex.end())
+  if (sourceEntry == _theIndex.end())
     throw std::runtime_error("Can't find the source node: " + fullSourceName);
 
   VRDatumPtr sourceNode = sourceEntry->second;
   VRDataMap::iterator targetEntry = getEntry(fullTargetName);
 
   // Does this name already exist?
-  if (targetEntry != mindex.end()) {
+  if (targetEntry != _theIndex.end()) {
 
     // Yes.  Make the copy.
     targetEntry->second = sourceNode;
   } else {
 
     // No. Make an entry in the index, linked to the sourceNode.
-    mindex.insert(VRDataMap::value_type(fullTargetName, sourceNode));
+    _theIndex.insert(VRDataMap::value_type(fullTargetName, sourceNode));
 
   }
 
@@ -1229,7 +1196,7 @@ bool VRDataIndex::linkNodes() {
       linkNode(getEntry(nameToCopy, nameSpace)->first, *it);
     }
 
-    // Then just modify the entry in mindex so that mindex[*]->second
+    // Then just modify the entry in _theIndex so that _theIndex[*]->second
     // points to the found node's datum object.
   }
   return true;
@@ -1250,6 +1217,13 @@ bool VRDataIndex::linkContent() {
     std::string targetNameSpace = getNameSpace(target->first);
 
     // Identify the source name (for the namespace) and the node.
+    VRDataMap::iterator linkEntry =
+      getEntry(target->second->getAttributeValue("linkContent"));
+    if (linkEntry == _theIndex.end()) {
+      throw std::runtime_error("Can't find link target: " +
+                               target->second->getAttributeValue("linkContent"));
+    }
+
     std::string sourceName =
       getEntry(target->second->getAttributeValue("linkContent"),
                targetNameSpace)->first;
@@ -1293,7 +1267,7 @@ bool VRDataIndex::linkContent() {
     }
 
     // Delete the entry from the index.
-    mindex.erase(target->first);
+    _theIndex.erase(target->first);
     // Note that you might have done something pathological with
     // linkNode that would result in a corrupted structure after this
     // removal.  That is, there might be another name in the index

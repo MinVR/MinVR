@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
 
     index->addData("/george", f);
     index->addData("/mary", g);
-    
+
     index->addData("/billy", s1);
     index->addData("/johnny", s2);
 
@@ -75,14 +75,14 @@ int main(int argc, char** argv) {
     std::cout << index->printStructure();
     return EXIT_SUCCESS;
   }
-  
+
   std::vector<std::string> elems;
   std::string elem;
   std::string line;
   std::string nameSpace("/");
-    
+
   HELPMESSAGE ;
-  
+
   while ((std::cout << "> ") && std::getline(std::cin, line)) {
 
     elems.clear();
@@ -123,8 +123,8 @@ int main(int argc, char** argv) {
     ////// command: name
     } else if (elems[0].compare("name") == 0) {
 
-      std::cout << "The name of this index is: '" << index->getName() << "'" << std::endl;
-        
+      std::cout << "The name of this index is: '" << index->getIndexName() << "'" << std::endl;
+
     ////// command: push
     } else if (elems[0].compare("push") == 0) {
 
@@ -168,7 +168,7 @@ int main(int argc, char** argv) {
         std::cout << index->printStructure();
       }
 
-      
+
     ////// command: z (undocumented in help; use for testing)
     } else if (elems[0].compare("z") == 0) {
 
@@ -202,7 +202,7 @@ int main(int argc, char** argv) {
                     << "serialization: " << index->serialize() << std::endl;
 
         } else {
-        
+
           // This illustrates one way to get the data out of the index.
           // You can also do something like this:
           //
@@ -267,12 +267,12 @@ int main(int argc, char** argv) {
           case MinVR::VRCORETYPE_NONE:
             {
               break;
-            }	     
+            }
           }
 
           std::cout << "serialization: " << index->serialize(elems[1], nameSpace) << std::endl;
         }
-          
+
       } catch (const std::exception& e) {
 
         std::cout << "oops: " << e.what() << std::endl;
@@ -328,7 +328,7 @@ int main(int argc, char** argv) {
 
           MinVR::VRContainer Empty;
           index->addData(nameSpace + elems[1], Empty);
-          
+
         } else {
 
           if (elems[2].compare("int") == 0) {

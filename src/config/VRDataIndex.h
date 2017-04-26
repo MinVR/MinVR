@@ -387,12 +387,12 @@ public:
   ///
   /// The created index has the default name "MVR", which can be changed with
   /// setName().  The index name is used when the index is serialized.
-  VRDataIndex()  : overwrite(1), name("MVR") {}
+  VRDataIndex()  : _overwrite(1), _indexName("MVR") {}
 
   /// \brief Creates an index containing the given data.
   ///
   /// And another that fills an index with some serialized data.  The
-  /// root name in the serialized data is adopted as the 'name' field
+  /// root name in the serialized data is adopted as the '_indexName' field
   /// of the index object.
   VRDataIndex(const std::string serializedData);
 
@@ -407,9 +407,9 @@ public:
   /// constructor).
   VRDataIndex& operator=(const VRDataIndex rhs) {
 
-    mindex = rhs.mindex;
-    name = rhs.name;
-    overwrite = rhs.overwrite;
+    _theIndex = rhs._theIndex;
+    _indexName = rhs._indexName;
+    _overwrite = rhs._overwrite;
     linkRegister = rhs.linkRegister;
 
     return *this;
@@ -422,8 +422,8 @@ public:
   ~VRDataIndex() {};
 
   /// \brief Returns the name of the whole data index.
-  std::string getName() { return name; };
-  void setName(const std::string inName) { name = inName; };
+  std::string getIndexName() { return _indexName; };
+  void setIndexName(const std::string indexName) { _indexName = indexName; };
 
   /* 1a. Methods for adding VRCoreTypes */
 
@@ -565,7 +565,7 @@ public:
   /// scope.
   bool exists(const std::string &valName,
               const std::string nameSpace = "") {
-	  return getEntry(valName, nameSpace) != mindex.end();
+	  return getEntry(valName, nameSpace) != _theIndex.end();
   }
 
   /// \brief Returns the type of the specified value.
@@ -601,97 +601,205 @@ public:
   /// a list of the names in some container, use getValue().
   std::list<std::string> getNames();
 
-  // \brief Returns a list of names of objects with the given attribute.
-  VRContainer selectByAttribute(const std::string attrName,
-                                const std::string attrVal);
-  VRContainer selectByAttribute(const std::string attrName,
-                                const std::string attrVal,
-                                const std::string nameSpace);
-  VRContainer selectByType(const VRCORETYPE_ID typeId);
-  VRContainer selectByName(const std::string inName);
+  /// \brief Returns objects with the given type.
+  ///
+  /// Returns a list of names of objects with the given type.
+  VRContainer selectByType(const VRCORETYPE_ID &typeId);
+
+
+  /// \brief Returns objects with the given name.
+  ///
+  /// Returns a list of names of objects with the given name.
+  /// \param inName The name can be of any length, and may include
+  ///        namespaces (scopes).
+  VRContainer selectByName(const std::string &inName);
 
 
 
+  /**** SECTION 3: SERIALIZATION FOR FILE AND NETWORK I/O ****/
+
+  /* 3a. Unpack and add serialzed data */
+
+  /// Incorporates a serialized bit of data into the data index within
+  /// the specified container.
+  /// \param serializedData XML-formatted data, such as is output from
+  ///  the serialize() method.
+  /// \param nameSpace Defaults to the root-level container (the global
+  /// scope).
+  /// \param expand Set to false if you don't want linkNode attributes
+  /// to be expanded using linkNodes().  This is a debugging aid.
+  std::string addSerializedValue(const std::string serializedData,
+                                 const std::string nameSpace = "",
+                                 const bool expand = true);
+
+  /// \brief Add the contents of a given XML file into the index.
+  ///
+  /// \param fileName Path and name of xml-formatted file
+  /// \param nameSpace Defaults to the global scope.
+  bool processXMLFile(const std::string fileName,
+                      const std::string nameSpace = rootNameSpace);
+
+  /// \brief Process a command line argument.
+  ///
+  /// Use this one at the start of a program.  It reads a file if
+  /// there's a file, and reads from a pipe if there's a pipe.
+  bool processXML(const std::string arg);
+
+
+  /* 3b. Pack the data into a serialized form */
+
+  /// \brief Returns an XML formatted representation of the named element.
+  /// \param valName The name of the value to be serialized.  This can be
+  /// primitive value or a container.
+  /// \param nameSpace Where to find the value to be serialized.
+  std::string serialize(const std::string valName,
+                        const std::string nameSpace = "");
+
+  /// \brief Returns an XML formatted representation of the entire index.
+  ///
+  /// The root element of the XML output is the name of the index, controlled
+  /// with setName().  There is a special constructor to use this output to
+  /// recreate the index.
+  std::string serialize();
+
+
+  /**** SECTION 4: EXTENSIONS FOR ADVANCED XML ****/
+
+  /* 4a. The most common use for attributes is to tag elements defined in XML
+     files for easy access later.  So, accessing index entries by
+     attribute is the most important thing to support. */
+
+  /// \brief Returns a list of names of objects with the given attribute.
+  ///
+  /// Returns a list of full names for index entries that satisfy
+  /// attrName=attrVal.  Attributes should not be used to store major
+  /// datatypes, as this is the job of the rest of the data index, but they
+  /// can be a useful way to tag data for easy retrieval:
+  ///   ~~~
+  ///   // select all VRDataIndex entries that were tagged in the
+  ///   // windownodes.xml file with an attribute nodeType="WindowNode"
+  ///   VRDataIndex index();
+  ///   index.setName("TagExample");
+  ///   index.processXMLFile("windownodes.xml");
+  ///   std::list<std::string> myNodes;
+  ///   myNodes = index.selectByAttribute("nodeType", "WindowNode");
+  ///   // now, loop through myNodes and do something...
+  ///   ~~~
+  /// \param attrName The name of an attribute to check.
+  /// \param attrVal The value of that attribute.
+  /// \param nameSpace The container to search; defaults to the global scope.
+  VRContainer selectByAttribute(const std::string &attrName,
+                                const std::string &attrVal,
+                                const std::string nameSpace = "");
 
 
 
+  // Currently the attributes are checked and set by requesting a datum object
+  // and setting it there. These operations should be usable at the index
+  // level, and leave getDatum private.
+
+  /// True if the named data index entry has the specified attribute defined.
+  /// @param keyOrScope Can be a full key (scope + data field name) or just a
+  /// scope.
+  /// @param attributeName The name of the attribute to check.
+  // bool hasAttribute(const std::string &keyOrScope,
+  //                   const std::string &attributeName) const;
+
+  /// Returns the value of a specific attribute.
+  /// @param keyOrScope Can be a full key (scope + data field name) or just a
+  /// scope.
+  /// @param attributeName The name of an attribute of that scope or key.
+  // std::string getAttributeValue(const std::string &keyOrScope,
+  //                               const std::string &attributeName) const;
+
+  /// Returns a map of all the attributes and their values that are stored
+  /// with the named data index entry.
+  /// @param keyOrScope Can be a full key (scope + data field name) or just a
+  /// scope.
+  // std::map<std::string, std::string> getAttributes(
+  //                                       const std::string &keyOrScope
+  //                                    ) const;
 
 
+  /* 4b. It is less common, but also possible to set attribues
+     programmatically. */
 
-  // These functions read an XML-encoded string and produce the value
-  // implied.  There is no deserializeContainer, since that's what
-  // walkXML does.
-  VRInt deserializeInt(const char* valueString);
-  VRFloat deserializeFloat(const char* valueString);
-  VRString deserializeString(const char* valueString);
-  VRIntArray deserializeIntArray(const char* valueString, const char separator);
-  VRFloatArray deserializeFloatArray(const char* valueString,
-                                     const char separator);
-  VRStringArray deserializeStringArray(const char* valueString,
-                                       const char separator);
+  /// Sets a specific attribute (tag) for a data index entry.
+  /// @param keyOrScope Can be a full key (scope + data field name) or just a
+  /// scope.
+  /// @param attributeName The name of an attribute of that scope or key.
+  /// @param attributeValue The value to set the attribute to.
+  // void setAttributeValue(const std::string &keyOrScope,
+  //                        const std::string &attributeName,
+  //                        const std::string &attributeValue);
+
+  /// Sets, replacing any existing, attributes and values associated with the
+  /// named data index entry.
+  /// @param keyOrScope Can be a full key (scope + data field name) or just a
+  /// scope.
+  /// @param newAttributes A map of all attribute=value pairs to set.
+  // void setAttributes(const std::string &keyOrScope,
+  //                    const std::map<std::string, std::string> &newAttributes);
+
+
+  /**** SECTION 5: EXTENSIONS FOR TREATING DATA AS STATE ****/
+
+  /// \brief Saves the current index state.
+  ///
+
+  /// The data index has a state that can be pushed and popped.  All the
+  /// changes to the index made after a pushState() can be rolled back by
+  /// calling popState().  This works by pushing and popping values for each of
+  /// the VRDatum objects represented in the index.  Values that were added to
+  /// the index after a push will be deleted on a pop, but the system cannot
+  /// restore deleted values.
+  void pushState();
+
+  /// \brief Restores the index state to the last push.
+  ///
+  /// Replaces the current contents of the data index with the data saved via
+  /// an earlier call to pushState().
+  void popState();
+
+
+  /* 6. Generally useful utility methods. */
+
 
   // Some constants that may be useful to users of this API.
   static std::string rootNameSpace;
 
-  void setOverwrite(const int inVal) { overwrite = inVal; }
+  /// \brief Controls whether new values overwrite old.
+  ///
+  /// \param overwrite If this is 1, new values will overwrite old ones.  For
+  // -1, new values will just bounce off, leaving the index unchanged.  Set
+  // this to zero to cause an exception if an overwrite is attempted.  Except
+  // containers, who are always happy to receive new values and add to their
+  // existing list.  The class constructor default is to allow overwrites.
+  void setOverwrite(const int overwrite) { _overwrite = overwrite; }
 
-  // Returns the fully qualified name of the specified value.
+  /// Returns the fully qualified name of the specified value.
   std::string getName(const std::string valName,
                       const std::string nameSpace = "");
 
-  // This is the name, type, value, expressed as an XML fragment.
-  std::string serialize();
-  std::string serialize(const std::string valName,
-                        const std::string nameSpace = "");
-  std::string serialize(const std::string name, VRDatumPtr pdata);
-
-  // Takes a serialized bit of data and incorporates it into the data
-  // index.
-  std::string addSerializedValue(const std::string serializedData);
-  std::string addSerializedValue(const std::string serializedData,
-                                 const std::string nameSpace);
-  // This one is just for testing and should usually be ignored.  The
-  // boolean variable controls whether linkNode attributes are
-  // expanded by invoking linkNodes().
-  std::string addSerializedValue(const std::string serializedData,
-                                 const std::string nameSpace,
-                                 const bool expand);
-
-  // Process the contents of a given XML file into the index.
-  bool processXMLFile(const std::string fileName, const std::string nameSpace);
-  bool processXMLFile(const std::string fileName);
-
-  // Use this one at the start of a program.  It reads a file if
-  // there's a file, and reads from a pipe if there's a pipe.
-  bool processXML(const std::string arg);
-
-  // Implements a 'linkNode' element in the config file, that copies a node
-  // and all its contents.  Use it like this:
-  //    <targetname linkNode="sourcename"/>
-  // This will create an entry in the resulting data index with the
-  // targetname linked to the *same* VRDatumPtr object as sourcename.
+  /// \brief Links one name to another.
+  ///
+  /// This implements a 'link' operation that makes two names point to the same
+  /// value.
+  ///
+  /// \param fullSourceName The name of the data value to be linked.
+  /// \param fullTargetName The name to link it to.
+  /// \param depthLimit A recursion limit to guard against circular links.
+  ///
+  /// This functionality is available in the XML config files, through a
+  /// 'linkNode' element.  Use it like this:
+  ///    ~~~
+  ///    <targetname linkNode="sourcename"/>
+  ///    ~~~
+  /// This will create an entry in the resulting data index with the
+  /// targetname linked to the *same* data object as sourcename.
   bool linkNode(const std::string fullSourceName,
-                const std::string fullTargetName) {
-    return linkNode(fullSourceName, fullTargetName, 0);
-  }
-
-  // This does a global resolution of all linkNodes definitions.  It
-  // is typically done as part of the process of incorporating some
-  // XML, left public here for experimentation.
-  bool linkNodes();
-
-  // This is a roughly similar concept except that it copies the
-  // contents of one namespace into another.  Looks for container
-  // nodes with a 'linkContent' attribute and inserts into it links
-  // from the specified container.
-  bool linkContent();
-
-  // The data index has a state that can be pushed and popped.  All
-  // the changes to the index made after a pushState() can be rolled
-  // back by calling popState().  This works by pushing and popping
-  // values for each of the VRDatum objects represented in the index.
-  void pushState();
-  void popState();
+                const std::string fullTargetName,
+                int depthLimit = 0);
 
 
   // A utility to make sure a namespace is spelled right, potentially
@@ -716,26 +824,42 @@ public:
                       const std::string nameSpace = "");
 
 private:
-  static VRDatumFactory factory;
-  static VRDatumFactory initializeFactory();
+  static VRDatumFactory _factory;
+  static VRDatumFactory _initializeFactory();
 
   typedef std::map<std::string, VRDatumPtr> VRDataMap;
   // Aspirational:
   //typedef std::map<std::string, std::vector<VRDatumPtr> > VRDataMap;
-  VRDataMap mindex;
+  VRDataMap _theIndex;
 
   // This is the name of the data index itself.
-  std::string name;
+  std::string _indexName;
 
   // If this is 1, new values will overwrite old ones.  For -1, new
   // values will just bounce off.  And zero will cause an exception if
   // an overwrite is attempted.  Except containers, who are always
   // happy to receive new values and add to their existing list.  The
   // default class constructor allows overwrites.
-  int overwrite;
+  int _overwrite;
 
   // Tries to guess a data type from the ASCII representation.
   VRCORETYPE_ID inferType(const std::string valueString);
+
+  // These functions read an XML-encoded string and produce the value
+  // implied.  There is no deserializeContainer, since that's what
+  // walkXML does.
+  VRInt deserializeInt(const char* valueString);
+  VRFloat deserializeFloat(const char* valueString);
+  VRString deserializeString(const char* valueString);
+  VRIntArray deserializeIntArray(const char* valueString, const char separator);
+  VRFloatArray deserializeFloatArray(const char* valueString,
+                                     const char separator);
+  VRStringArray deserializeStringArray(const char* valueString,
+                                       const char separator);
+
+  // Serializes the given VRDatum object, using the given name.
+  std::string serialize(const std::string name, VRDatumPtr pdata);
+
 
   // Just a utility to return the tail end of the fully qualified name.
   // i.e. trimName("cora/flora", "/bob/nora") is "flora".  This does not
@@ -777,11 +901,6 @@ private:
   VRDataMap::iterator getEntry(const std::string &valName,
                                const std::string nameSpace = "");
 
-  // This method creates a link from one node to another.  It has a
-  // depth limit to guard against recursive definitions.
-  bool linkNode(const std::string fullSourceName,
-                const std::string fullTargetName, int depthLimit);
-
   // These are specialized set methods.  They seem a little unhip, but
   // it's because I find this easier than remembering how to spell the
   // pointers and casts.
@@ -818,12 +937,12 @@ private:
     if (valName[0] != '/') fixedValName = std::string("/") + valName;
 
     std::pair<VRDataMap::iterator, bool>res =
-      mindex.insert(VRDataMap::value_type(fixedValName, NULL));
+      _theIndex.insert(VRDataMap::value_type(fixedValName, NULL));
 
     // Was it already used?
     if (res.second) {
 
-      VRDatumPtr obj = factory.CreateVRDatum(TID, &value);
+      VRDatumPtr obj = _factory.CreateVRDatum(TID, &value);
       res.first->second = obj;
 
       // Add this value to the parent container, if any.
@@ -836,11 +955,11 @@ private:
     } else {
 
       // Entry already exists. Decide whether to modify or throw an exception.
-      if (overwrite > 0) {
+      if (_overwrite > 0) {
 
         setValueSpecialized(res.first->second, (T)value);
 
-      } else if (overwrite == 0) {
+      } else if (_overwrite == 0) {
 
         throw std::runtime_error(std::string("overwriting values not allowed"));
       }
@@ -848,6 +967,17 @@ private:
 
     return fixedValName;
   }
+
+  // This does a global resolution of all linkNodes definitions.  It
+  // is typically done as part of the process of incorporating some
+  // XML, left public here for experimentation.
+  bool linkNodes();
+
+  // This is a roughly similar concept except that it copies the
+  // contents of one namespace into another.  Looks for container
+  // nodes with a 'linkContent' attribute and inserts into it links
+  // from the specified container.
+  bool linkContent();
 
   // We need this to keep track of links so the clone() method can
   // make a deep copy that includes the links that might exist.
