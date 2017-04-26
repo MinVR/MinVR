@@ -41,10 +41,10 @@ namespace MinVR {
 ///    - Hierarhical scoping -- One of the data types in the VRDataIndex is a
 ///      "container", comparable to a struct, that contains other data values,
 ///      potentially including other containers.  The containers define a
-///      "namespace" or a "scope" and the same named data field may appear
-///      within multiple scopes.  Inner scopes inherit all of the fields
-///      defined in outer scopes.  When data are accessed from an innner scope,
-///      locally defined data fields override outer fields with the same name.
+///      "namespace" or a "scope" and the same name may appear within multiple
+///      containers.  Inner scopes inherit all of the fields defined in outer
+///      scopes.  When data are accessed from an inner scope, locally defined
+///      data fields override outer fields with the same name.
 ///
 ///    - Serialization -- The entire data index, or some piece of it, can be
 ///      read from and written to an XML file format, for ease of passing over
@@ -75,9 +75,12 @@ namespace MinVR {
 ///
 ///  Unlike standard associative arrays, the key string can include the name of
 ///  a container holding some data, creating a "scope" in addition to the data
-///  field name.  Containers and their associated scopes define an inheritance
-///  hierarchy used for data lookups.  The way the inheritance works is similar
-///  to how global and local variables work in C++:
+///  field name.  Think of it as a data value inside a container.  You name the
+///  container, and then the value inside it, and you can specify the whole
+///  thing by specifying the container name, appended with a slash (/) and the
+///  data field name.  Containers and their associated scopes define an
+///  inheritance hierarchy used for data lookups.  The way the inheritance
+///  works is similar to how global and local variables work in C++:
 ///    ~~~
 ///    // Global scope
 ///    int width = 10;
@@ -115,9 +118,10 @@ namespace MinVR {
 ///
 ///  There are two important guidelines to note in this example:
 ///
-///    - First, to add or get data from within a scope, simply include the
-///      scope within the key passed to the addData() and getValue() functions.
-///      Separate the scope(s) and the data field name with /'s.
+///    - First, to add or get data from within a container, simply include the
+///      container name (the scope) within the key passed to the addData() and
+///      getValue() functions.  Separate the scope(s) and the data field name
+///      with /'s.
 ///
 ///    - Second, notice in the last two lines of the example that *both* lines
 ///      request data from the ExtraWideWindow scope even though Height was
@@ -130,15 +134,17 @@ namespace MinVR {
 ///  When working with a data index that might hold many default values and a
 ///  few special cases, remember to:
 ///
-///   1. Put as much common data as you can within a global scope to avoid
-///      duplicating data,
+///   1. To avoid duplicating data, put as much common data as you can within
+///      the root level -- the global scope,
 ///
 ///   2. Override values in local scope(s) as needed, and
 ///
 ///   3. Access data fields from the local scope(s) taking advantage of the
-///      inheritance.  If you do this, then your code should only need to know
-///      which scope to use, not which specific data fields change from one
-///      special case to the next.
+///      inheritance.
+///
+///  If you do this, then your code should only need to know which scope to
+///  use, not which specific data fields change from one special case to the
+///  next.
 ///
 ///
 ///  ## Storing your own classes in VRDataIndex
@@ -190,16 +196,17 @@ namespace MinVR {
 ///  objects).  Container elements contain child elements, which can be either
 ///  other container elements or data elements.
 ///
-/// The XML parser used here is based on the "Simple C++ XML Parser" from the
-/// CodeProject article by "BratilaRazvan", 2010.
-/// see: http:///www.codeproject.com/Articles/111243/Simple-Cplusplus-XML-Parser
-/// (It does not support entities, or CDATA declarations.)
+///  The XML parser used here is based on the "Simple C++ XML Parser" from the
+///  CodeProject article by "BratilaRazvan", 2010.
+///  see: http:///www.codeproject.com/Articles/111243/Simple-Cplusplus-XML-Parser
+///  It does not currently support entities, or CDATA declarations.
 ///
 ///
 ///  ### Serializing an Entire Index
 ///
 ///  When an entire VRDataIndex is serialized, the index's name is used for the
-///  start and end tags, and a. The extrawide window example from above would
+///  start and end tags, and all the root-level containers and data appear as
+///  children of that top-level. The extrawide window example from above would
 ///  be represented as:
 ///    ~~~
 ///    <MyWindowSettings type="container">
@@ -249,9 +256,9 @@ namespace MinVR {
 ///  ## More about Containers and Scope
 ///
 ///  To use the data index effectively, it is useful to understand the concept
-///  of a namespace.  If you don't want to bother, just remember this: a
-///  namespace is just a container's name, with a '/' after it.  The rest is
-///  just detail.
+///  of a namespace, or scope.  If you don't want to bother, just remember
+///  this: a namespace is just a container's name, with a '/' after it.  The
+///  rest is just detail.
 ///
 ///  Containers define a namespace as well as hold a bunch of objects inside
 ///  them.  The two are very closely related, but are conceptually distinct.
@@ -308,14 +315,12 @@ namespace MinVR {
 ///    ~~~
 ///  You can add values to the index in one of three ways.
 ///
-///   1. You can add data with the specialized addData() functions.  These take
-///      a name and a value and park them in the index.  The addData() with a
-///      single argument adds a container and you can subsequently add items to
-///      it.
+///   1. With the addData() functions.  These take a name and a value and park
+///      them in the index.  The addData() with a single name argument adds a
+///      container of that name and you can subsequently add items to it.
 ///
 ///   2. Feed some serialized data to the addSerializedValue() functions.  This
-///      is just XML-encoded string data.
-///
+///      is just XML-encoded string data, such as is output by serialize().
 ///
 ///   3. Feed a file containing XML into processXMLFile().  There is no
 ///      validation of the XML done, and there are some ways in which this is
@@ -325,15 +330,14 @@ namespace MinVR {
 ///      the XML is left to some other process, hopefully with a schema that
 ///      enforces this limitation.
 ///
-///
 ///  Once an index has entries, they can be retrieved at your pleasure with
-///  getValue() and serialize().  The getValue() method returns a pointer an
-///  object that can be used directly in your program.  I hate remembering how
-///  to spell the static_cast<>() options, so these are provided as a
-///  convenience via a helper class methods to the pointer objects.  So
-///  (int)p->getValue() gets you an integer and (float)p->getValue() gets you a
-///  float. (So long as the relevant objects actually contain an integer and
-///  float, otherwise you get an error.)
+///  getValue() and serialize().  The getValue() method returns an object that
+///  can be used directly in your program.  The casts are built into the
+///  function via a helper class, so long as the compiler can figure out the
+///  appropriate type to convert to.  So (int)p->getValue() gets you an integer
+///  and (float)p->getValue() gets you a float. (So long as the relevant
+///  objects actually contain an integer and float, otherwise you get an
+///  error.)
 ///
 ///  To use, do this:
 ///    ~~~
@@ -346,7 +350,7 @@ namespace MinVR {
 ///
 ///  When you want to refer to the value you put in, do this:
 ///    ~~~
-///    int p = index->getValue("/george");
+///    int p = index->getValue("george");
 ///    ~~~
 ///  or
 ///    ~~~
@@ -410,7 +414,7 @@ public:
     _theIndex = rhs._theIndex;
     _indexName = rhs._indexName;
     _overwrite = rhs._overwrite;
-    linkRegister = rhs.linkRegister;
+    _linkRegister = rhs._linkRegister;
 
     return *this;
   };
@@ -434,26 +438,26 @@ public:
   /// index.addData("ExtraWide/Width", 20);   // adds to ExtraWide/ scope
   /// index.addData("ExtraWide/2/Width", 20); // adds to ExtraWide/2/ scope
   /// ~~~
-  /// \param valName The key to store this data value under.  This must include
+  /// \param key The key to store this data value under.  This must include
   /// the name of the data field.  Optionally, one or more namespaces may be
   /// prepended to the name separated by /'s.
   /// \param value The VR core type data value to store under the given key.
-  std::string addData(const std::string &valName, VRInt value);
+  std::string addData(const std::string &key, VRInt value);
 
   /// \copydoc VRDataIndex::addData(const std::string,VRInt)
-  std::string addData(const std::string &valName, VRFloat value);
+  std::string addData(const std::string &key, VRFloat value);
 
   /// \copydoc VRDataIndex::addData(const std::string,VRInt)
-  std::string addData(const std::string &valName, VRString value);
+  std::string addData(const std::string &key, VRString value);
 
   /// \copydoc VRDataIndex::addData(const std::string,VRInt)
-  std::string addData(const std::string &valName, VRIntArray value);
+  std::string addData(const std::string &key, VRIntArray value);
 
   /// \copydoc VRDataIndex::addData(const std::string,VRInt)
-  std::string addData(const std::string &valName, VRFloatArray value);
+  std::string addData(const std::string &key, VRFloatArray value);
 
   /// \copydoc VRDataIndex::addData(const std::string,VRInt)
-  std::string addData(const std::string &valName, VRStringArray value);
+  std::string addData(const std::string &key, VRStringArray value);
 
 
   /// \copydoc VRDataIndex::addData(const std::string,VRInt)
@@ -463,7 +467,7 @@ public:
   /// the name and value given.  The second (for containers) adds the
   /// contents of the given container value to the container of the
   /// given name.
-  std::string addData(const std::string &valName, VRContainer value);
+  std::string addData(const std::string &key, VRContainer value);
 
   /// \brief Add a key=value pair to the index.
   ///
@@ -478,16 +482,16 @@ public:
   /// This exists for those who want to let the compiler guess the data type of
   /// the argument.  Works fairly well.  Most of the time.  You are warned.
   template<typename T>
-  std::string addData(const std::string &valName,
+  std::string addData(const std::string &key,
                       const std::string nameSpace, T value) {
 
     // If the name provided is an absolute name, ignore the nameSpace.
-    if (valName[0] == '/') {
+    if (key[0] == '/') {
 
-      return addData(valName, value);
+      return addData(key, value);
     } else {
 
-      return addData(validateNameSpace(nameSpace) + valName, value);
+      return addData(validateNameSpace(nameSpace) + key, value);
     }
   }
 
@@ -551,11 +555,11 @@ public:
   /// All of the classes in VRMath do this, so you can look there for examples.
   ///
   /// A std::error is thrown if key does not exist in the index.
-  /// \param valName The name of the data field to retrieve.  Optionally, one
+  /// \param key The name of the data field to retrieve.  Optionally, one
   /// or more scopes may be prepended to the name separated by /'s.
-  VRAnyCoreType getValue(const std::string &valName,
+  VRAnyCoreType getValue(const std::string &key,
                          const std::string nameSpace = "") {
-    return getDatum(valName, nameSpace)->getValue();
+    return getDatum(key, nameSpace)->getValue();
   }
 
   /* 2b. Check existence and type for a specific name. */
@@ -563,9 +567,9 @@ public:
   /// \brief Returns true if the specified name exists in the index.
   /// \param keyOrScope Can be a full name (scope + data field name) or just a
   /// scope.
-  bool exists(const std::string &valName,
+  bool exists(const std::string &key,
               const std::string nameSpace = "") {
-	  return getEntry(valName, nameSpace) != _theIndex.end();
+	  return _getEntry(key, nameSpace) != _theIndex.end();
   }
 
   /// \brief Returns the type of the specified value.
@@ -574,22 +578,22 @@ public:
   /// returned might indicate that the name represents a container
   /// (VRCORETYPE_CONTAINER).
   ///
-  /// \param valName Can be a full key (scope + data field name) or just a
+  /// \param key Can be a full key (scope + data field name) or just a
   /// scope.
-  /// \param nameSpace The (optional) scope in which to look for valName.
-  VRCORETYPE_ID getType(const std::string &valName,
+  /// \param nameSpace The (optional) scope in which to look for key.
+  VRCORETYPE_ID getType(const std::string &key,
                         const std::string nameSpace = "") {
-    return getDatum(valName, nameSpace)->getType();
+    return getDatum(key, nameSpace)->getType();
   }
 
   /// \brief Returns the type of the specified name, formatted as a string.
   ///
-  /// \param valName Can be a full name (scope + data field name) or just a
+  /// \param key Can be a full name (scope + data field name) or just a
   /// scope.
-  /// \param nameSpace The (optional) container in which to look for valName.
-  std::string getTypeString(const std::string valName,
+  /// \param nameSpace The (optional) container in which to look for key.
+  std::string getTypeString(const std::string key,
                             const std::string nameSpace = "") {
-    return getDatum(valName, nameSpace)->getDescription();
+    return getDatum(key, nameSpace)->getDescription();
   }
 
 
@@ -649,10 +653,10 @@ public:
   /* 3b. Pack the data into a serialized form */
 
   /// \brief Returns an XML formatted representation of the named element.
-  /// \param valName The name of the value to be serialized.  This can be
+  /// \param key The name of the value to be serialized.  This can be
   /// primitive value or a container.
   /// \param nameSpace Where to find the value to be serialized.
-  std::string serialize(const std::string valName,
+  std::string serialize(const std::string key,
                         const std::string nameSpace = "");
 
   /// \brief Returns an XML formatted representation of the entire index.
@@ -753,6 +757,11 @@ public:
   /// the VRDatum objects represented in the index.  Values that were added to
   /// the index after a push will be deleted on a pop, but the system cannot
   /// restore deleted values.
+  ///
+  /// The stack is recorded in many different places, so there is currently no
+  /// way to record a name of a stack entry, or even to count them.  Too many
+  /// pops will delete entries from your data index, so it's up to you to be
+  /// careful about keeping it symmetric.
   void pushState();
 
   /// \brief Restores the index state to the last push.
@@ -778,7 +787,7 @@ public:
   void setOverwrite(const int overwrite) { _overwrite = overwrite; }
 
   /// Returns the fully qualified name of the specified value.
-  std::string getName(const std::string valName,
+  std::string getName(const std::string key,
                       const std::string nameSpace = "");
 
   /// \brief Links one name to another.
@@ -820,7 +829,7 @@ public:
 
 
   // Returns a pointer to the value with a given name (and namespace)
-  VRDatumPtr getDatum(const std::string &valName,
+  VRDatumPtr getDatum(const std::string &key,
                       const std::string nameSpace = "");
 
 private:
@@ -843,98 +852,99 @@ private:
   int _overwrite;
 
   // Tries to guess a data type from the ASCII representation.
-  VRCORETYPE_ID inferType(const std::string valueString);
+  VRCORETYPE_ID _inferType(const std::string &valueString);
 
   // These functions read an XML-encoded string and produce the value
   // implied.  There is no deserializeContainer, since that's what
-  // walkXML does.
-  VRInt deserializeInt(const char* valueString);
-  VRFloat deserializeFloat(const char* valueString);
-  VRString deserializeString(const char* valueString);
-  VRIntArray deserializeIntArray(const char* valueString, const char separator);
-  VRFloatArray deserializeFloatArray(const char* valueString,
-                                     const char separator);
-  VRStringArray deserializeStringArray(const char* valueString,
-                                       const char separator);
+  // _walkXML does.
+  VRInt _deserializeInt(const char* valueString);
+  VRFloat _deserializeFloat(const char* valueString);
+  VRString _deserializeString(const char* valueString);
+  VRIntArray _deserializeIntArray(const char* valueString, const char separator);
+  VRFloatArray _deserializeFloatArray(const char* valueString,
+                                      const char separator);
+  VRStringArray _deserializeStringArray(const char* valueString,
+                                        const char separator);
 
   // Serializes the given VRDatum object, using the given name.
-  std::string serialize(const std::string name, VRDatumPtr pdata);
+  std::string _serialize(const std::string &name, VRDatumPtr &pdata);
 
 
   // Just a utility to return the tail end of the fully qualified name.
   // i.e. trimName("cora/flora", "/bob/nora") is "flora".  This does not
   // look in the index at all, just manipulates strings.
-  std::string getTrimName(const std::string valName,
-                          const std::string nameSpace);
-  std::string getTrimName(const std::string valName);
+  static std::string _getTrimName(const std::string &key,
+                                 const std::string nameSpace = "");
 
   // Another utility, meant to pull a name apart on the slashes.
-  std::vector<std::string> explodeName(const std::string fullName) const;
+  static std::vector<std::string> _explodeName(const std::string &fullName);
 
   // Returns the namespace, derived from a long, fully-qualified, name.
-  std::string getNameSpace(const std::string fullName);
+  static std::string _getNameSpace(const std::string &fullName);
 
   // Start from the root node of an XML document and process the
   // results into entries in the data index.
-  std::string walkXML(element* node, std::string nameSpace);
+  std::string _walkXML(element* node, std::string nameSpace);
   // A functional part of the walkXML apparatus.
-  std::string processValue(const std::string name,
-                           VRCORETYPE_ID type,
+  std::string _processValue(const std::string &name,
+                           VRCORETYPE_ID &type,
                            const char* valueString,
                            const char separator);
 
-  // Finds an entry in the data index, given a name and
-  // namespace. Note that the name might be in a senior namespace to
-  // the one specified.  That is, if you have a value called flora,
-  // that exists inside a container called cora, but also in a
-  // subsidiary container called nora, then, well, here's the example:
-  //
-  // /cora/flora = 6
-  // /cora/nora/flora = 7
-  //
-  // If the namespace is /cora, the value of flora is 6, but if the
-  // namespace is /cora/nora, flora is 7.
-
-  // Returns an iterator pointing to an entry in the DataMap.  The
-  // return value is a pair<string, VRDatumPtr>, so it->first is the
-  // name and it->second is the datum object.
-  VRDataMap::iterator getEntry(const std::string &valName,
-                               const std::string nameSpace = "");
+  /// \brief Finds an entry in the data index.
+  ///
+  /// Uses a name and namespace to find an entry in the data index.  Note that
+  /// the name might be in a senior namespace to the one specified.  That is, if
+  /// you have a value called flora, that exists inside a container called a,
+  /// but also in a subsidiary container called b, then, well, here's the
+  /// example:
+  ///   ~~~
+  ///   /a/flora = 6
+  ///   /a/b/flora = 7
+  ///   ~~~
+  /// If the namespace is /a, the value of flora is 6, but if the
+  /// namespace is /a/b, flora is 7.
+  ///
+  /// Returns an iterator pointing to an entry in the DataMap.  The
+  /// return value is a pair<string, VRDatumPtr>, so it->first is the
+  /// name and it->second is the datum object.
+  VRDataMap::iterator _getEntry(const std::string &key,
+                                const std::string nameSpace = "");
 
   // These are specialized set methods.  They seem a little unhip, but
   // it's because I find this easier than remembering how to spell the
   // pointers and casts.
-  void setValueSpecialized(VRDatumPtr p, VRInt value) {
+  void _setValueSpecialized(VRDatumPtr p, VRInt value) {
     p.intVal()->setValue(value);
   }
 
-  void setValueSpecialized(VRDatumPtr p, VRFloat value) {
+  void _setValueSpecialized(VRDatumPtr p, VRFloat value) {
     p.floatVal()->setValue(value);
   }
 
-  void setValueSpecialized(VRDatumPtr p, VRString value) {
+  void _setValueSpecialized(VRDatumPtr p, VRString value) {
     p.stringVal()->setValue(value);
   }
 
-  void setValueSpecialized(VRDatumPtr p, VRIntArray value) {
+  void _setValueSpecialized(VRDatumPtr p, VRIntArray value) {
     p.intArrayVal()->setValue(value);
   }
 
-  void setValueSpecialized(VRDatumPtr p, VRFloatArray value) {
+  void _setValueSpecialized(VRDatumPtr p, VRFloatArray value) {
     p.floatArrayVal()->setValue(value);
   }
 
-  void setValueSpecialized(VRDatumPtr p, VRStringArray value) {
+  void _setValueSpecialized(VRDatumPtr p, VRStringArray value) {
     p.stringArrayVal()->setValue(value);
   }
 
   template <typename T, const VRCORETYPE_ID TID>
-  std::string addDataSpecialized(const std::string valName, T value) {
+  std::string addDataSpecialized(const std::string key, T value) {
 
     // All names must be in some namespace. If there is no namespace,
     // put this into the root namespace.
-    std::string fixedValName = valName;
-    if (valName[0] != '/') fixedValName = std::string("/") + valName;
+    std::string fixedValName = key;
+    if (key[0] != '/') fixedValName = std::string("/") + key;
 
     std::pair<VRDataMap::iterator, bool>res =
       _theIndex.insert(VRDataMap::value_type(fixedValName, NULL));
@@ -947,8 +957,8 @@ private:
 
       // Add this value to the parent container, if any.
       VRContainer cValue;
-      cValue.push_back(explodeName(fixedValName).back());
-      std::string ns = getNameSpace(fixedValName);
+      cValue.push_back(_explodeName(fixedValName).back());
+      std::string ns = _getNameSpace(fixedValName);
       // The parent container is the namespace minus the trailing /.
       if (ns.compare("/") != 0) addData(ns.substr(0, ns.size() - 1), cValue);
 
@@ -957,7 +967,7 @@ private:
       // Entry already exists. Decide whether to modify or throw an exception.
       if (_overwrite > 0) {
 
-        setValueSpecialized(res.first->second, (T)value);
+        _setValueSpecialized(res.first->second, (T)value);
 
       } else if (_overwrite == 0) {
 
@@ -970,18 +980,18 @@ private:
 
   // This does a global resolution of all linkNodes definitions.  It
   // is typically done as part of the process of incorporating some
-  // XML, left public here for experimentation.
-  bool linkNodes();
+  // XML.
+  bool _linkNodes();
 
   // This is a roughly similar concept except that it copies the
   // contents of one namespace into another.  Looks for container
   // nodes with a 'linkContent' attribute and inserts into it links
   // from the specified container.
-  bool linkContent();
+  bool _linkContent();
 
-  // We need this to keep track of links so the clone() method can
-  // make a deep copy that includes the links that might exist.
-  std::map<std::string, std::string> linkRegister;
+  // We need this to keep track of links so we can make a deep copy that
+  // includes any links that might exist.
+  std::map<std::string, std::string> _linkRegister;
 };
 
 
@@ -1027,7 +1037,7 @@ private:
 //   - Support nested names in the index, with "default directory"
 //     functionality.
 //
-//        - Need a getName(valName, nameSpace) [DONE]
+//        - Need a getName(key, nameSpace) [DONE]
 //        - Leave getValue, getDescription, and serialize as they were,
 //          needing a fully-qualified name as input. [DONE]
 //        - They can all have second forms that have a nameSpace, but
