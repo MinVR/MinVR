@@ -84,6 +84,10 @@ public:
 		std::cerr << "swapBuffers() not enabled in this VRWindowToolkit." << std::endl;
 	}
 
+	virtual void getFramebufferSize(int windowID, int& width, int height) {
+		std::cerr << "getFramebufferSize() not enabled in this VRWindowToolkit." << std::endl;
+	}
+
 	static std::string getAttributeName(){ return "windowtoolkitType"; };
 };
 
