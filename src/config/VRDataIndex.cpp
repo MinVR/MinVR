@@ -151,14 +151,15 @@ std::string VRDataIndex::serialize() {
 // Returns the string representation of a name/value pair in the data index.
 // If the argument is '/' you are probably trying to serialize the whole index,
 // in which case, the index name will be used as the root name.
-std::string VRDataIndex::serialize(const std::string valName) {
+std::string VRDataIndex::serialize(const std::string valName,
+                                   const std::string nameSpace) {
 
   if (valName == "/") {
 
     return serialize();
 
   } else {
-    VRDataMap::iterator it = getEntry(valName, "");
+    VRDataMap::iterator it = getEntry(valName, nameSpace);
 
     if (it != mindex.end()) {
 
@@ -166,25 +167,9 @@ std::string VRDataIndex::serialize(const std::string valName) {
 
     } else {
 
-      throw std::runtime_error(std::string("Never heard of ") + valName);
+      throw std::runtime_error("Never heard of " + valName + " in the namespace: " + nameSpace);
 
     }
-  }
-}
-
-std::string VRDataIndex::serialize(const std::string valName,
-                                   const std::string nameSpace) {
-
-  VRDataMap::iterator it = getEntry(valName, nameSpace);
-
-  if (it != mindex.end()) {
-
-    return serialize(it->first, it->second);
-
-  } else {
-
-    throw std::runtime_error("Never heard of " + valName + " in the namespace: " + nameSpace);
-
   }
 }
 
@@ -850,25 +835,7 @@ std::string VRDataIndex::getName(const std::string valName,
 }
 
 // Returns the data object for this name.
-VRDatumPtr VRDataIndex::getDatum(const std::string valName) {
-  // If there is no namespace specified, assume the root space.  Note that this is
-  // seldom what is really wanted, so it's better to try to use namespaces well.
-  std::string testName;
-  if (valName[0] != '/')
-    testName = "/" + valName;
-  else
-    testName = valName;
-
-  VRDataMap::const_iterator p = mindex.find(testName);
-
-  if (p == mindex.end()) {
-    throw std::runtime_error("Never heard of " + valName);
-  } else {
-    return p->second;
-  }
-}
-
-VRDatumPtr VRDataIndex::getDatum(const std::string valName,
+VRDatumPtr VRDataIndex::getDatum(const std::string &valName,
                                  const std::string nameSpace) {
 
   VRDataMap::iterator p = getEntry(valName, nameSpace);

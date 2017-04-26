@@ -1,6 +1,6 @@
 // -*-c++-*-
 ///
-/// @file
+/// \file
 /// This file is part of the MinVR Open Source Project, which is
 /// developed and maintained collaboratively by the University of
 /// Minnesota and Brown University.
@@ -434,29 +434,29 @@ public:
   /// index.addData("ExtraWide/Width", 20);   // adds to ExtraWide/ scope
   /// index.addData("ExtraWide/2/Width", 20); // adds to ExtraWide/2/ scope
   /// ~~~
-  /// @param valName The key to store this data value under.  This must include
+  /// \param valName The key to store this data value under.  This must include
   /// the name of the data field.  Optionally, one or more namespaces may be
   /// prepended to the name separated by /'s.
-  /// @param value The VR core type data value to store under the given key.
+  /// \param value The VR core type data value to store under the given key.
   std::string addData(const std::string &valName, VRInt value);
 
-  /// @copydoc VRDataIndex::addData(const std::string,VRInt)
+  /// \copydoc VRDataIndex::addData(const std::string,VRInt)
   std::string addData(const std::string &valName, VRFloat value);
 
-  /// @copydoc VRDataIndex::addData(const std::string,VRInt)
+  /// \copydoc VRDataIndex::addData(const std::string,VRInt)
   std::string addData(const std::string &valName, VRString value);
 
-  /// @copydoc VRDataIndex::addData(const std::string,VRInt)
+  /// \copydoc VRDataIndex::addData(const std::string,VRInt)
   std::string addData(const std::string &valName, VRIntArray value);
 
-  /// @copydoc VRDataIndex::addData(const std::string,VRInt)
+  /// \copydoc VRDataIndex::addData(const std::string,VRInt)
   std::string addData(const std::string &valName, VRFloatArray value);
 
-  /// @copydoc VRDataIndex::addData(const std::string,VRInt)
+  /// \copydoc VRDataIndex::addData(const std::string,VRInt)
   std::string addData(const std::string &valName, VRStringArray value);
 
 
-  /// @copydoc VRDataIndex::addData(const std::string,VRInt)
+  /// \copydoc VRDataIndex::addData(const std::string,VRInt)
   ///
   /// There is a semantic difference between addData() for a primitive
   /// value and addData() for a container.  One creates an object of
@@ -551,23 +551,66 @@ public:
   /// All of the classes in VRMath do this, so you can look there for examples.
   ///
   /// A std::error is thrown if key does not exist in the index.
-  /// @param valName The name of the data field to retrieve.  Optionally, one
+  /// \param valName The name of the data field to retrieve.  Optionally, one
   /// or more scopes may be prepended to the name separated by /'s.
-  VRAnyCoreType getValue(const std::string valName) {
-    return getDatum(valName)->getValue();
-  }
-  VRAnyCoreType getValue(const std::string valName,
-                         const std::string nameSpace) {
+  VRAnyCoreType getValue(const std::string &valName,
+                         const std::string nameSpace = "") {
     return getDatum(valName, nameSpace)->getValue();
   }
 
-  bool exists(const std::string valName, const std::string nameSpace) {
+  /* 2b. Check existence and type for a specific name. */
+
+  /// \brief Returns true if the specified name exists in the index.
+  /// \param keyOrScope Can be a full name (scope + data field name) or just a
+  /// scope.
+  bool exists(const std::string &valName,
+              const std::string nameSpace = "") {
 	  return getEntry(valName, nameSpace) != mindex.end();
   }
 
-  bool exists(const std::string valName) {
-	  return getEntry(valName) != mindex.end();
+  /// \brief Returns the type of the specified value.
+  ///
+  /// The name might point to a data value, or a container, so the type
+  /// returned might indicate that the name represents a container
+  /// (VRCORETYPE_CONTAINER).
+  ///
+  /// \param valName Can be a full key (scope + data field name) or just a
+  /// scope.
+  /// \param nameSpace The (optional) scope in which to look for valName.
+  VRCORETYPE_ID getType(const std::string &valName,
+                        const std::string nameSpace = "") {
+    return getDatum(valName, nameSpace)->getType();
   }
+
+  /// \brief Returns the type of the specified name, formatted as a string.
+  ///
+  /// \param valName Can be a full name (scope + data field name) or just a
+  /// scope.
+  /// \param nameSpace The (optional) container in which to look for valName.
+  std::string getTypeString(const std::string valName,
+                            const std::string nameSpace = "") {
+    return getDatum(valName, nameSpace)->getDescription();
+  }
+
+
+  /* 2c. Find names within the index. */
+
+  /// \brief Returns a list of all the fully-qualified names in the index.
+  ///
+  /// Note this really is a list of strings, not a VRContainer.  If you want
+  /// a list of the names in some container, use getValue().
+  std::list<std::string> getNames();
+
+  // \brief Returns a list of names of objects with the given attribute.
+  VRContainer selectByAttribute(const std::string attrName,
+                                const std::string attrVal);
+  VRContainer selectByAttribute(const std::string attrName,
+                                const std::string attrVal,
+                                const std::string nameSpace);
+  VRContainer selectByType(const VRCORETYPE_ID typeId);
+  VRContainer selectByName(const std::string inName);
+
+
 
 
 
@@ -594,34 +637,12 @@ public:
 
   // Returns the fully qualified name of the specified value.
   std::string getName(const std::string valName,
-                      const std::string nameSpace);
-
-  // Returns a pointer to the value with a given name (and namespace)
-  VRDatumPtr getDatum(const std::string valName);
-  VRDatumPtr getDatum(const std::string valName,
-                      const std::string nameSpace);
-
-  VRCORETYPE_ID getType(const std::string valName) {
-    return getDatum(valName)->getType();
-  }
-  VRCORETYPE_ID getType(const std::string valName,
-                        const std::string nameSpace) {
-    return getDatum(valName, nameSpace)->getType();
-  }
-
-  std::string getTypeString(const std::string valName) {
-    return getDatum(valName)->getDescription();
-  }
-  std::string getTypeString(const std::string valName,
-                            const std::string nameSpace) {
-    return getDatum(valName, nameSpace)->getDescription();
-  }
+                      const std::string nameSpace = "");
 
   // This is the name, type, value, expressed as an XML fragment.
   std::string serialize();
-  std::string serialize(const std::string valName);
   std::string serialize(const std::string valName,
-                        const std::string nameSpace);
+                        const std::string nameSpace = "");
   std::string serialize(const std::string name, VRDatumPtr pdata);
 
   // Takes a serialized bit of data and incorporates it into the data
@@ -643,20 +664,6 @@ public:
   // Use this one at the start of a program.  It reads a file if
   // there's a file, and reads from a pipe if there's a pipe.
   bool processXML(const std::string arg);
-
-  // Returns a list of all the names in the map.  Note this really is
-  // a list of strings, not a VRContainer.  (No difference, really,
-  // but we want to keep them semantically separate.)
-  std::list<std::string> getNames();
-
-  // Returns a list of names of objects with the given attribute.
-  VRContainer selectByAttribute(const std::string attrName,
-                                const std::string attrVal);
-  VRContainer selectByAttribute(const std::string attrName,
-								const std::string attrVal,
-								const std::string nameSpace);
-  VRContainer selectByType(const VRCORETYPE_ID typeId);
-  VRContainer selectByName(const std::string inName);
 
   // Implements a 'linkNode' element in the config file, that copies a node
   // and all its contents.  Use it like this:
@@ -697,11 +704,16 @@ public:
 
   /// Returns a string nicely formatted to print the hierarchical structure of
   /// the index.
-  /// @param scope Defaults to the global scope to print the entire index.
-  /// @param lim The maximum number of characters to output on each line, if
+  /// \param scope Defaults to the global scope to print the entire index.
+  /// \param lim The maximum number of characters to output on each line, if
   /// exceeded, the text will wrap to the next line.
   std::string printStructure(const std::string itemName = "/",
                              const int lim = 80);
+
+
+  // Returns a pointer to the value with a given name (and namespace)
+  VRDatumPtr getDatum(const std::string &valName,
+                      const std::string nameSpace = "");
 
 private:
   static VRDatumFactory factory;
@@ -936,6 +948,9 @@ private:
 //   - An audit of all the calls might be good, to look into
 //     reference-izing anything that is actually called by value and
 //     shouldn't be.
+//
+//   - getDatum() should be private.  Add attribute handling methods to the
+//     data index, and the VRDatum type can be completely hidden.
 //
 //   - We are adding a "list" of index objects.  These are an ordered
 //     collection of VRDataIndex objects, all with more or less the
