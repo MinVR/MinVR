@@ -54,6 +54,7 @@ set(vr_config_files
   ${vr_src_dir}/../config/ivlabcave_multithreaded.minvr
   ${vr_src_dir}/../config/ivlabcave.minvr
   ${vr_src_dir}/../config/ivlabcavefront.minvr
+  ${vr_src_dir}/../config/ivlabcave-desktop.minvr
   ${vr_src_dir}/../config/YURT.minvr
 )
 
