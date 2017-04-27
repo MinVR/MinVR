@@ -11,6 +11,13 @@
 
 #include <iostream>
 
+#include "GL/glew.h"
+#ifdef _WIN32
+#include "GL/wglew.h"
+#elif (!defined(__APPLE__))
+#include "GL/glxew.h"
+#endif
+
 // OpenGL Headers
 #if defined(WIN32)
 #define NOMINMAX
