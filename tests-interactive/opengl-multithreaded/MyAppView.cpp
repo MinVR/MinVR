@@ -9,14 +9,6 @@
 #include "MyAppView.h"
 
 MyAppView::MyAppView(const MyAppModel& model, const MyAppSharedContext& sharedContext, const VRGraphicsState &renderState) : model(model), sharedContext(sharedContext) {
-	// Initialize Graphics Context and variables
-	glewExperimental = GL_TRUE;
-	GLenum err = glewInit();
-	if (GLEW_OK != err)
-	{
-		std::cout << "Error initializing GLEW." << std::endl;
-	}
-
 	// Init GL
 	glEnable(GL_DEPTH_TEST);
 	glClearDepth(1.0f);
