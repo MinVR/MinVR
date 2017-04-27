@@ -7,6 +7,12 @@ finished rendering.
 
 ## Run the tests
 
+Note: It is necessary to configure the Threading Plugin for building with the following command:
+
+```bash
+cmake <src_dir> -DMINVR_THREADING_PLUGIN=ON
+```
+
 To execute the multithreaded test program, run the following from the command line:
 
   ```bash
