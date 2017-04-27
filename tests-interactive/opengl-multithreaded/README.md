@@ -18,6 +18,12 @@ To execute the multithreaded test program, run the following from the command li
   build/bin/itest-opengl-multithreaded -c ivlabcave-desktop
   ```
 
+### Test Validation
+
+* Normal (desktop) - A user should see a rotating cube in a single window.
+* Multithreaded (desktop-multithreaded) - A user should see the same view of a rotating cube in two windows.
+* Multithreaded + Shared Context (ivlabcave-desktop) - A user should see four windows each with a different perspective view of a rotating cube.  This test shows an unwrapped cave environment with the left wall, front wall, and right wall on one row.  The floor of the cave is a window under the front wall (in the middle).
+
 ## Overview
 
 The following describes how the test works in more detail.  Below is an overview of how the
