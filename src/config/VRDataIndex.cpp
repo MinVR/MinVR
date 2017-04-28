@@ -442,7 +442,7 @@ std::string VRDataIndex::_walkXML(element* node, std::string nameSpace) {
   if (al.find("type") != al.end()) al.erase(al.find("type"));
   if (al.size() > 0) {
 
-    getDatum(out)->setAttributeList(al);
+    _getDatum(out)->setAttributeList(al);
   }
 
   // This loops through the node children, if there are any.
@@ -463,6 +463,22 @@ std::string VRDataIndex::_walkXML(element* node, std::string nameSpace) {
     _walkXML(child, qualifiedName + "/");
   }
 }
+
+  bool VRDataIndex::hasAttribute(const std::string &fullKey,
+                                 const std::string &attributeName) {
+    return (_getDatum(fullKey)->getAttributeValue(attributeName).size() > 0);
+  }
+
+  std::string VRDataIndex::getAttributeValue(const std::string &fullKey,
+                                             const std::string &attributeName) {
+    return _getDatum(fullKey)->getAttributeValue(attributeName);
+  }
+
+  void VRDataIndex::setAttributeValue(const std::string &fullKey,
+                                      const std::string &attributeName,
+                                      const std::string &attributeValue) {
+    _getDatum(fullKey)->setAttributeValue(attributeName, attributeValue);
+  }
 
 // This function examines a value string and tries to determine what
 // type it encodes.  It is used when the 'type=' attribute is missing.
@@ -523,7 +539,6 @@ VRContainer VRDataIndex::selectByAttribute(const std::string &attrName,
 
 	std::string validatedNameSpace = validateNameSpace(nameSpace);
   int vnsLength = validatedNameSpace.size();
-
 
   std::list<std::string> outList;
 	for (VRDataMap::iterator it = _theIndex.begin(); it != _theIndex.end(); it++) {
@@ -749,7 +764,7 @@ void VRDataIndex::popState() {
 //  namespace.
 VRDataIndex::VRDataMap::iterator
 VRDataIndex::_getEntry(const std::string &key,
-                      const std::string nameSpace) {
+                       const std::string nameSpace) {
 
   VRDataMap::iterator outIt;
 
@@ -799,7 +814,7 @@ VRDataIndex::_getEntry(const std::string &key,
   }
 }
 
-std::string VRDataIndex::getName(const std::string key,
+std::string VRDataIndex::getName(const std::string &key,
                                  const std::string nameSpace) {
 
   VRDataMap::iterator p = _getEntry(key, nameSpace);
@@ -812,8 +827,8 @@ std::string VRDataIndex::getName(const std::string key,
 }
 
 // Returns the data object for this name.
-VRDatumPtr VRDataIndex::getDatum(const std::string &key,
-                                 const std::string nameSpace) {
+VRDatumPtr VRDataIndex::_getDatum(const std::string &key,
+                                  const std::string nameSpace) {
 
   VRDataMap::iterator p = _getEntry(key, nameSpace);
 
@@ -988,7 +1003,7 @@ std::string VRDataIndex::addData(const std::string &key,
 
     // No.  Create a new object.
     VRDatumPtr obj = _factory.CreateVRDatum(VRCORETYPE_CONTAINER, &value);
-    //std::cout << "added " << obj.containerVal()->getDatum() << std::endl;
+    //std::cout << "added " << obj.containerVal()->_getDatum() << std::endl;
     _theIndex.insert(VRDataMap::value_type(fixedValName, obj));
 
     // Add this value to the parent container, if any.
@@ -1258,7 +1273,7 @@ bool VRDataIndex::_linkContent() {
       }
 
       // Replace the parent name list.
-      getDatum(targetParentName).containerVal()->setValue(newList);
+      _getDatum(targetParentName).containerVal()->setValue(newList);
     }
 
     // Delete the entry from the index.

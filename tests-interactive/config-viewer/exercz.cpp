@@ -207,26 +207,25 @@ int main(int argc, char** argv) {
           // You can also do something like this:
           //
           //  int ip = index->getValue("henry", "/")
-          MinVR::VRDatumPtr p = index->getDatum(elems[1], nameSpace);
 
-          switch (p->getType()) {
+          switch (index->getType(elems[1], nameSpace)) {
           case MinVR::VRCORETYPE_INT:
-            std::cout << "an integer containing: " << ((int)p->getValue()) << std::endl;
+            std::cout << "an integer containing: " << ((int)index->getValue(elems[1], nameSpace)) << std::endl;
 
             std::cout << "same as: " << (int)index->getValue(elems[1], nameSpace) << std::endl;
             break;
 
           case MinVR::VRCORETYPE_FLOAT:
-            std::cout << "a float containing: " << ((float)p->getValue()) << std::endl;
+            std::cout << "a float containing: " << ((float)index->getValue(elems[1], nameSpace)) << std::endl;
             break;
 
           case MinVR::VRCORETYPE_STRING:
-            std::cout << "a string containing: " << ((std::string)p->getValue()) << std::endl;
+            std::cout << "a string containing: " << ((std::string)index->getValue(elems[1], nameSpace)) << std::endl;
             break;
 
           case MinVR::VRCORETYPE_INTARRAY:
             {
-              MinVR::VRIntArray pdata = p->getValue();
+              MinVR::VRIntArray pdata = index->getValue(elems[1], nameSpace);
               for (MinVR::VRIntArray::iterator it = pdata.begin(); it != pdata.end(); ++it) {
                 std::cout << "element: " << *it << std::endl;
               }
@@ -235,7 +234,7 @@ int main(int argc, char** argv) {
 
           case MinVR::VRCORETYPE_FLOATARRAY:
             {
-              MinVR::VRFloatArray pdata = p->getValue();
+              MinVR::VRFloatArray pdata = index->getValue(elems[1], nameSpace);
               for (MinVR::VRFloatArray::iterator it = pdata.begin(); it != pdata.end(); ++it) {
                 std::cout << "element: " << *it << std::endl;
               }
@@ -244,7 +243,7 @@ int main(int argc, char** argv) {
 
           case MinVR::VRCORETYPE_STRINGARRAY:
             {
-              MinVR::VRStringArray pdata = p->getValue();
+              MinVR::VRStringArray pdata = index->getValue(elems[1], nameSpace);
               for (MinVR::VRStringArray::iterator it = pdata.begin(); it != pdata.end(); ++it) {
                 std::cout << "element: " << *it << std::endl;
               }
@@ -256,7 +255,7 @@ int main(int argc, char** argv) {
             {
               std::cout << "a container containing: " << std::endl;
 
-              MinVR::VRContainer nameList = p->getValue();
+              MinVR::VRContainer nameList = index->getValue(elems[1], nameSpace);
               for (MinVR::VRContainer::iterator nl = nameList.begin();
                    nl != nameList.end(); nl++) {
                 std::cout << "                        " << *nl << std::endl;

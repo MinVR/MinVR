@@ -212,6 +212,11 @@ int testSelections() {
   sixthTestList.push_back("/MVR/John/Isabella/Isabella");
   sixthTestList.push_back("/MVR/John/Unknown/Isabella");
 
+  MinVR::VRContainer seventhTestList;
+
+  seventhTestList.push_back("/MVR/John/Joan/Oliver");
+  seventhTestList.push_back("/MVR/John/Joan/Richard");
+
 
   int out = 0;
 
@@ -296,6 +301,23 @@ int testSelections() {
     jt = sixthTestList.begin();
     for (MinVR::VRContainer::iterator it = sixthList.begin();
          it != sixthList.end(); it++) {
+
+      if ((*it).compare(*jt++) != 0) out++;
+    }
+
+    // Test selection by attribute, specific value, specific namespace.
+    MinVR::VRContainer seventhList =
+      index->selectByAttribute("name", "FitzRoy", "/MVR/John/Joan");
+
+    jt = seventhTestList.begin();
+    for (MinVR::VRContainer::iterator it = seventhList.begin();
+         it != seventhList.end(); it++) {
+
+      if (jt == seventhTestList.end()) {
+
+        std::cout << "mismatch:" << *it << std::endl;
+        return 1;
+      }
 
       if ((*it).compare(*jt++) != 0) out++;
     }
@@ -445,7 +467,7 @@ int testIndexSerializeIntArraySep() {
     }
 
     n->addData("/george/atestarray", e);
-    n->getDatum("/george/atestarray")->setAttributeValue("separator", "@");
+    n->setAttributeValue("/george/atestarray", "separator", "@");
 
     std::string output = n->serialize("atestarray", "/george");
 
@@ -515,7 +537,7 @@ int testIndexSerializeEntire() {
     // name of the index, not the root name in the index.
     std::string test1 = n->getValue("/VRDisplayDevices/ThreadedDisplay/Display1/displayType");
 
-    std::string test2 = n->getDatum("/VRDisplayDevices/ThreadedDisplay/Display1/displayType")->getAttributeValue("val");
+    std::string test2 = n->getAttributeValue("/VRDisplayDevices/ThreadedDisplay/Display1/displayType", "val");
 
     out += test1.compare("glfw_display");
     out += test2.compare("heavy");
@@ -641,16 +663,16 @@ int testDepthOfCopy() {
     // nodes are actually the same node.  We adjust one node's
     // attributes to make sure it appears at the copy, as well. (Which
     // appears twice in the testString.)
-    copiedIndex.getDatum("/MVR/John/Unknown/Thomas")->setAttributeValue("letter", "alpha");
+    copiedIndex.setAttributeValue("/MVR/John/Unknown/Thomas","letter", "alpha");
 
     // Make another copy of the index, but with an assignment.
     MinVR::VRDataIndex assignedIndex;
     assignedIndex = *index;
 
-    assignedIndex.getDatum("/MVR/John/Unknown/Thomas")->setAttributeValue("letter", "alpha");
+    assignedIndex.setAttributeValue("/MVR/John/Unknown/Thomas", "letter", "alpha");
 
     // Change the old index, to prove these are different.
-    index->getDatum("/MVR/John/Unknown/Thomas")->setAttributeValue("letter", "beta");
+    index->setAttributeValue("/MVR/John/Unknown/Thomas", "letter", "beta");
 
     std::vector<int> e;
 
@@ -702,7 +724,7 @@ int testLinkNode() {
     // To prove that the linked nodes are actually the same node.  We
     // adjust one node's attributes to make sure it appears at the copy,
     // as well.
-    index->getDatum("/MVR/John/Unknown/Thomas")->setAttributeValue("letter", "alpha");
+    index->setAttributeValue("/MVR/John/Unknown/Thomas", "letter", "alpha");
 
     std::string outputstring = index->serialize("/MVR");
 
@@ -729,7 +751,7 @@ int testLinkContent() {
     // To prove that the copied nodes are actually the same node.  We
     // adjust one node's attributes to make sure it appears at the copy,
     // as well.
-    index->getDatum("/John/Joan/Richard")->setAttributeValue("letter", "alpha");
+    index->setAttributeValue("/John/Joan/Richard", "letter", "alpha");
 
     // std::cout << index->printStructure() << std::endl;
 

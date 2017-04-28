@@ -227,7 +227,7 @@ namespace MinVR {
 ///  WindowNodes stored in your index, then you can easily retrieve a list of
 ///  all entries that represent WindowNodes by calling
 ///    ~~~
-///    index->getKeysByAttribute("nodeType", "WindowNode");
+///    index->selectByAttribute("nodeType", "WindowNode");
 ///    ~~~
 ///  Aside from this "tagging for ease of later retrieval" feature, which is
 ///  most often used as a way to write cleaner XML config files, attributes are
@@ -559,7 +559,7 @@ public:
   /// or more scopes may be prepended to the name separated by /'s.
   VRAnyCoreType getValue(const std::string &key,
                          const std::string nameSpace = "") {
-    return getDatum(key, nameSpace)->getValue();
+    return _getDatum(key, nameSpace)->getValue();
   }
 
   /* 2b. Check existence and type for a specific name. */
@@ -583,7 +583,7 @@ public:
   /// \param nameSpace The (optional) scope in which to look for key.
   VRCORETYPE_ID getType(const std::string &key,
                         const std::string nameSpace = "") {
-    return getDatum(key, nameSpace)->getType();
+    return _getDatum(key, nameSpace)->getType();
   }
 
   /// \brief Returns the type of the specified name, formatted as a string.
@@ -593,7 +593,7 @@ public:
   /// \param nameSpace The (optional) container in which to look for key.
   std::string getTypeString(const std::string key,
                             const std::string nameSpace = "") {
-    return getDatum(key, nameSpace)->getDescription();
+    return _getDatum(key, nameSpace)->getDescription();
   }
 
 
@@ -697,53 +697,47 @@ public:
                                 const std::string nameSpace = "");
 
 
-
-  // Currently the attributes are checked and set by requesting a datum object
-  // and setting it there. These operations should be usable at the index
-  // level, and leave getDatum private.
-
-  /// True if the named data index entry has the specified attribute defined.
-  /// @param keyOrScope Can be a full key (scope + data field name) or just a
-  /// scope.
-  /// @param attributeName The name of the attribute to check.
-  // bool hasAttribute(const std::string &keyOrScope,
-  //                   const std::string &attributeName) const;
+  /// \brief Check if a data value has an attribute.
+  ///
+  /// Returns true if the named data index entry has the specified attribute defined.
+  ///
+  /// \param fullKey A fully-qualified key name.  If the key is at the root
+  /// level, the leading slash can be omitted.  A key at any other scope must
+  /// contain the whole thing.  See getName() if you need to specify the
+  /// container name, too.
+  ///
+  /// \param attributeName The name of the attribute to check.
+  ///
+  bool hasAttribute(const std::string &fullKey,
+                    const std::string &attributeName);
 
   /// Returns the value of a specific attribute.
-  /// @param keyOrScope Can be a full key (scope + data field name) or just a
-  /// scope.
-  /// @param attributeName The name of an attribute of that scope or key.
-  // std::string getAttributeValue(const std::string &keyOrScope,
-  //                               const std::string &attributeName) const;
-
-  /// Returns a map of all the attributes and their values that are stored
-  /// with the named data index entry.
-  /// @param keyOrScope Can be a full key (scope + data field name) or just a
-  /// scope.
-  // std::map<std::string, std::string> getAttributes(
-  //                                       const std::string &keyOrScope
-  //                                    ) const;
-
+  ///
+  /// \param fullKey A fully-qualified key name.  If the key is at the root
+  /// level, the leading slash can be omitted.  A key at any other scope must
+  /// contain the whole thing.  See getName() if you need to specify the
+  /// container name, too.
+  ///
+  /// \param attributeName The name of an attribute of that value.
+  std::string getAttributeValue(const std::string &fullKey,
+                                const std::string &attributeName);
 
   /* 4b. It is less common, but also possible to set attribues
      programmatically. */
 
   /// Sets a specific attribute (tag) for a data index entry.
-  /// @param keyOrScope Can be a full key (scope + data field name) or just a
-  /// scope.
-  /// @param attributeName The name of an attribute of that scope or key.
-  /// @param attributeValue The value to set the attribute to.
-  // void setAttributeValue(const std::string &keyOrScope,
-  //                        const std::string &attributeName,
-  //                        const std::string &attributeValue);
-
-  /// Sets, replacing any existing, attributes and values associated with the
-  /// named data index entry.
-  /// @param keyOrScope Can be a full key (scope + data field name) or just a
-  /// scope.
-  /// @param newAttributes A map of all attribute=value pairs to set.
-  // void setAttributes(const std::string &keyOrScope,
-  //                    const std::map<std::string, std::string> &newAttributes);
+  ///
+  /// \param fullKey A fully-qualified key name.  If the key is at the root
+  /// level, the leading slash can be omitted.  A key at any other scope must
+  /// contain the whole thing.  See getName() if you need to specify the
+  /// container name, too.
+  ///
+  /// \param attributeName The name of an attribute of that value.
+  ///
+  /// \param attributeValue The value to set the attribute to.
+  void setAttributeValue(const std::string &fullKey,
+                         const std::string &attributeName,
+                         const std::string &attributeValue);
 
 
   /**** SECTION 5: EXTENSIONS FOR TREATING DATA AS STATE ****/
@@ -787,7 +781,7 @@ public:
   void setOverwrite(const int overwrite) { _overwrite = overwrite; }
 
   /// Returns the fully qualified name of the specified value.
-  std::string getName(const std::string key,
+  std::string getName(const std::string &key,
                       const std::string nameSpace = "");
 
   /// \brief Links one name to another.
@@ -827,10 +821,6 @@ public:
   std::string printStructure(const std::string itemName = "/",
                              const int lim = 80);
 
-
-  // Returns a pointer to the value with a given name (and namespace)
-  VRDatumPtr getDatum(const std::string &key,
-                      const std::string nameSpace = "");
 
 private:
   static VRDatumFactory _factory;
@@ -910,6 +900,12 @@ private:
   /// name and it->second is the datum object.
   VRDataMap::iterator _getEntry(const std::string &key,
                                 const std::string nameSpace = "");
+
+  // Returns a pointer to the value with a given name (and namespace)
+  VRDatumPtr _getDatum(const std::string &key,
+                       const std::string nameSpace = "");
+
+
 
   // These are specialized set methods.  They seem a little unhip, but
   // it's because I find this easier than remembering how to spell the
