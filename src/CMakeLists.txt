@@ -49,10 +49,12 @@ set(vr_config_files
   ${vr_src_dir}/../config/default.minvr
   ${vr_src_dir}/../config/desktop-oldopengl.minvr
   ${vr_src_dir}/../config/desktop.minvr
+  ${vr_src_dir}/../config/desktop-multithreaded.minvr
   ${vr_src_dir}/../config/HTC_Vive.minvr
   ${vr_src_dir}/../config/ivlabcave_multithreaded.minvr
   ${vr_src_dir}/../config/ivlabcave.minvr
   ${vr_src_dir}/../config/ivlabcavefront.minvr
+  ${vr_src_dir}/../config/ivlabcave-desktop.minvr
   ${vr_src_dir}/../config/YURT.minvr
 )
 
