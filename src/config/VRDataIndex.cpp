@@ -571,6 +571,57 @@ VRContainer VRDataIndex::selectByAttribute(const std::string &attrName,
 	return outList;
 }
 
+std::string VRDataIndex::selectFirstByAttribute(const std::string &attrName,
+                                                const std::string &attrVal,
+                                                const std::string nameSpace) {
+
+  std::string out = "";
+	std::string validatedNameSpace = validateNameSpace(nameSpace);
+  int vnsLength = validatedNameSpace.size();
+  int matchedLength = 0;
+
+  // We are going to loop through all the names in the index to find the
+  // longest string match to the input name space.  That *is* the match at the
+  // lowest nested level.
+	for (VRDataMap::iterator it = _theIndex.begin(); it != _theIndex.end(); it++) {
+
+    // Use a string comparison to check if this name is within the given scope.
+    std::string ns = _getNameSpace(it->first);
+    if (ns.compare(0, ns.size(), validatedNameSpace, 0, ns.size()) == 0) {
+
+      // If we're here, we have found a name that could contain the given
+      // namespace.  If this one is not longer than the last, then skip it.
+      if (ns.size() > matchedLength) {
+
+        VRDatum::VRAttributeList al = it->second->getAttributeList();
+
+        // Check if attribute list has anything in it.
+        if (!al.empty()) {
+
+          // Yes? Loop through the attributes.
+          for (VRDatum::VRAttributeList::iterator jt = al.begin();
+               jt != al.end(); jt++) {
+
+            // Do we have the correct attribute?
+            if (attrName.compare(jt->first) == 0) {
+
+              // Does it match the desired value, or a wildcard?
+              if ((attrVal == "*") || (attrVal.compare(jt->second) == 0)) {
+
+                // Put the name of the datum into the proposed output and
+                // record the length of the match.
+                out = it->first;
+                matchedLength = ns.size();
+              }
+            }
+					}
+				}
+			}
+		}
+	}
+	return out;
+}
+
 VRContainer VRDataIndex::selectByType(const VRCORETYPE_ID &typeId) {
 
   VRContainer outList;

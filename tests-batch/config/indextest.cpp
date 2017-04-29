@@ -17,6 +17,7 @@ int testIndexLotsaEntries();
 int testPushPopIndex();
 int testEscapedChars();
 int testSelections();
+int testSelectionFirst();
 int testLinkNode();
 int testLinkContent();
 int testDepthOfCopy();
@@ -86,6 +87,10 @@ int indextest(int argc, char* argv[]) {
 
   case 12:
     output = testDepthOfCopy();
+    break;
+
+  case 13:
+    output = testSelectionFirst();
     break;
 
   default:
@@ -324,6 +329,41 @@ int testSelections() {
 
     delete index;
   }
+
+  return out;
+}
+
+int testSelectionFirst() {
+
+  std::string in = "<example><A><B weapon=\"BlueMace\"><C title=\"Duke\">1</C><D>2</D><E><F title=\"Duke\">3</F><G weapon=\"GreenGun\">4</G><H>5</H></E><J><K>6</K><L>7</L></J><M><N>8</N><P>9</P></M></B><Q title=\"Duke\" weapon=\"RedSword\">10</Q></A></example>";
+
+  int out = 0;
+  MinVR::VRDataIndex n = MinVR::VRDataIndex(in);
+
+  // This test is a lot easier to understand when you look at the text
+  // output.  Try running the tests with 'ctest -VV'.
+  std::cout << n.printStructure() << std::endl;
+
+  std::cout << "1:" << n.selectFirstByAttribute("title", "Duke", "/A/B/E") << std::endl;
+  out += n.selectFirstByAttribute("title", "Duke", "/A/B/E").compare("/A/B/E/F");
+
+  std::cout << "2:" << n.selectFirstByAttribute("title", "Duke", "/A/B") << std::endl;
+  out += n.selectFirstByAttribute("title", "Duke", "/A/B").compare("/A/B/C");
+
+  std::cout << "3:" << n.selectFirstByAttribute("title", "Duke", "/A") << std::endl;
+  out += n.selectFirstByAttribute("title", "Duke", "/A").compare("/A/Q");
+
+  std::cout << "4:" << n.selectFirstByAttribute("title", "Duke", "/A/B/J") << std::endl;
+  out += n.selectFirstByAttribute("title", "Duke", "/A/B/J").compare("/A/B/C");
+
+  std::cout << "5:" << n.selectFirstByAttribute("weapon", "*", "/A/B/J") << std::endl;
+  out += n.selectFirstByAttribute("weapon", "*", "/A/B/J").compare("/A/B");
+
+  std::cout << "6:" << n.selectFirstByAttribute("title", "Earl", "/A") << std::endl;
+  out += n.selectFirstByAttribute("title", "Earl", "/A").empty()? 0 : 1 ;
+
+  std::cout << n.getIndexName() << std::endl;
+  out += n.getIndexName().compare("example");
 
   return out;
 }

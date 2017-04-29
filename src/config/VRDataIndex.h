@@ -697,6 +697,20 @@ public:
                                 const std::string nameSpace = "");
 
 
+  /// \brief Selects the first value found with the given attribute.
+  ///
+  /// Searches the current nameSpace/scope, then tries all the scopes
+  /// containing that current one, in order, going up.  Returns the first
+  /// object found, or NULL if not found.
+  ///
+  /// \param attrName The name of an attribute to check.
+  /// \param attrVal The value of that attribute.
+  /// \param nameSpace The container to search; defaults to the global scope.
+  std::string selectFirstByAttribute(const std::string &attrName,
+                                     const std::string &attrVal,
+                                     const std::string nameSpace = "");
+
+
   /// \brief Check if a data value has an attribute.
   ///
   /// Returns true if the named data index entry has the specified attribute defined.
