@@ -177,7 +177,12 @@ public:
   VRAttributeList getAttributeList() { return attrList.front(); };
   void setAttributeList(VRAttributeList newList) { attrList.front() = newList; };
   std::string getAttributeValue(const std::string attributeName) {
-    return attrList.front()[attributeName];
+    VRAttributeList::iterator attr = attrList.front().find(attributeName);
+    if (attr != attrList.front().end()) {
+      return attr->second;
+    } else {
+      return "";
+    }
   }
   void setAttributeValue(const std::string attributeName,
                          const std::string attributeValue) {
