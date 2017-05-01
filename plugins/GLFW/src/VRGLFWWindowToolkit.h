@@ -42,7 +42,7 @@ public:
   
 	PLUGIN_API void swapBuffers(int windowID);
 
-	PLUGIN_API void getFramebufferSize(int windowID, int& width, int height);
+	PLUGIN_API void getFramebufferSize(int windowID, int& width, int& height);
 
 	PLUGIN_API GLFWwindow* getWindow(int windowID) {
 		return _windows[windowID];
