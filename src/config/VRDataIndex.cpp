@@ -722,7 +722,7 @@ std::vector<std::string> VRDataIndex::_explodeName(const std::string &fullName) 
 //   1. Namespace begins with a "/"
 //   2. Namespace references an actually existing container.
 //   3. Namespace ends with a "/" so keys can just be appended.
-std::string VRDataIndex::validateNameSpace(const std::string nameSpace) {
+std::string VRDataIndex::validateNameSpace(const std::string &nameSpace) {
 
   std::string out = nameSpace;
 
@@ -742,6 +742,33 @@ std::string VRDataIndex::validateNameSpace(const std::string nameSpace) {
 
   return out;
 }
+
+int VRDataIndex::isChild(const std::string &parentName,
+                         const std::string &childName) {
+
+
+
+  // First check that the childName contains the parentName, and is longer.
+  int out = childName.compare(parentName) > 0;
+  if (out > 0) {
+
+    if (childName.compare(0, parentName.size(), parentName) != 0) return -1;
+
+    // Count the slashes in what remains.
+    std::string s = childName.substr(parentName.size());
+    return std::count(s.begin(), s.end(), '/');
+
+  } else if (out == 0) {
+
+    return 0;
+
+  } else {
+
+    return -1;
+  }
+}
+
+
 
 // Returns the container name, derived from a long, fully-qualified, name.
 std::string VRDataIndex::_getNameSpace(const std::string &fullName) {
@@ -920,7 +947,7 @@ std::string VRDataIndex::addSerializedValue(const std::string serializedData,
   return out;
 }
 
-std::string VRDataIndex::dereferenceEnvVars(const std::string fileName) {
+std::string VRDataIndex::dereferenceEnvVars(const std::string &fileName) {
 
   // A little loop to accommodate environment variables in the
   // fileName specification. The variables are assumed to be packaged
@@ -1168,9 +1195,11 @@ std::string VRDataIndex::printStructure(const std::string itemName, const int li
   return outBuffer;
 }
 
+
+
 // A recursive function that will copy a node as well as its children.
-bool VRDataIndex::linkNode(const std::string fullSourceName,
-                           const std::string fullTargetName,
+bool VRDataIndex::linkNode(const std::string &fullSourceName,
+                           const std::string &fullTargetName,
                            int depthLimit) {
 
   // This is an easy way to make a disaster, so we have a recursion

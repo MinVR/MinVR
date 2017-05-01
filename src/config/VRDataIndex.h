@@ -798,6 +798,7 @@ public:
   std::string getName(const std::string &key,
                       const std::string nameSpace = "");
 
+
   /// \brief Links one name to another.
   ///
   /// This implements a 'link' operation that makes two names point to the same
@@ -814,18 +815,27 @@ public:
   ///    ~~~
   /// This will create an entry in the resulting data index with the
   /// targetname linked to the *same* data object as sourcename.
-  bool linkNode(const std::string fullSourceName,
-                const std::string fullTargetName,
+  bool linkNode(const std::string &fullSourceName,
+                const std::string &fullTargetName,
                 int depthLimit = 0);
 
 
   // A utility to make sure a namespace is spelled right, potentially
   // useful to users, so made public.
-  std::string validateNameSpace(const std::string nameSpace);
+  std::string validateNameSpace(const std::string &nameSpace);
 
   // Still another utility, to accommodate the use of environment
   // variables in the file names.  Also potentially useful, so public.
-  static std::string dereferenceEnvVars(const std::string fileName);
+  static std::string dereferenceEnvVars(const std::string &fileName);
+
+  /// \brief Uses names to determine if one value is the child of another.
+  ///
+  /// Compares names to see if the second is the child of the first.
+  ///
+  /// \return If they are not related, returns -1.  If they are equal, returns
+  /// 0.  If childName is the direct child of parentName, returns 1.  If the
+  /// grandchild, returns 2, great-grandchild, 3, etc.
+  static int isChild(const std::string &parentName, const std::string &childName);
 
   /// Returns a string nicely formatted to print the hierarchical structure of
   /// the index.
