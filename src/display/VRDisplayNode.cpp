@@ -65,6 +65,9 @@ void VRDisplayNode::createChildren(VRMainInterface *vrMain,
                                    VRDataIndex *config,
                                    const std::string &nameSpace) {
 
+  // n.b. This seems to run create on *all* the members of the given
+  // nameSpace.  I doubt that is the optimal behavior.  Is that what
+  // was intended?
   std::list<std::string> names = config->getValue(nameSpace);
   std::string validatedNameSpace = config->validateNameSpace(nameSpace);
 
@@ -72,6 +75,9 @@ void VRDisplayNode::createChildren(VRMainInterface *vrMain,
        it != names.end(); ++it) {
 
 	  if (config->exists(*it, validatedNameSpace)){
+
+      std::cout << "why are we creating..." << validatedNameSpace + *it << std::endl;
+
 		  VRDisplayNode *child =
         vrMain->getFactory()->create<VRDisplayNode>(vrMain,
                                                     config,
@@ -80,10 +86,10 @@ void VRDisplayNode::createChildren(VRMainInterface *vrMain,
         addChild(child);
       }
     }
-  }	
+  }
 }
 
-  
+
 /// Returns a list of the values added to the render state by this
 /// node, and its children nodes.
 std::map<std::string,std::string> VRDisplayNode::getValuesAdded() {
@@ -113,7 +119,7 @@ std::map<std::string,std::string> VRDisplayNode::getValuesAdded() {
         }
       }
 		}
-	} 
+	}
 
   return out;
 }
@@ -122,7 +128,7 @@ void VRDisplayNode::auditValues(std::list<std::string> valuesSupplied) {
   // First check to see if all of the values needed appear in the
   // input list.
   bool found;
-  
+
   if ((_valuesNeeded.size() > 0) && (valuesSupplied.size() > 0)) {
     for (std::list<std::string>::iterator it = _valuesNeeded.begin();
          it != _valuesNeeded.end(); it++) {
@@ -148,8 +154,8 @@ void VRDisplayNode::auditValues(std::list<std::string> valuesSupplied) {
          it != _children.end(); it++) {
       (*it)->auditValues(valuesSupplied);
     }
-  }  
+  }
 }
-  
+
 
 } /* namespace MinVR */
