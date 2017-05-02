@@ -1,17 +1,38 @@
 #ifndef MINVR_VRERROR_H
 #define MINVR_VRERROR_H
 
-/// We can get the file, line, and function name from the pre-processor.
+/// This class is meant to provide an easy way to systematize error
+/// handling in MinVR, and also encourage people to add a line or two
+/// of advice about what a user might do to address the error or
+/// warning issued.
+///
+/// If you use them with the handy-dandy #defines here, you'll also
+/// get the file and where the error is issued (which is not the same
+/// as where it happened, of course), and maybe even the function
+/// name, depending on your compiler.
+///
+/// Usage:
+///
+///   VRERROR("Syntax error.", "You might have spelled the name wrong.");
+///
+/// If you don't like providing advice, or if it's not at all clear
+/// what advice would be relevant, you can also do this:
+///
+///   VRERROR("Syntax error.");
+///
+
+
+// We can get the file, line, and function name from the pre-processor.
 #ifdef WIN32
-#define VRERROR(what) throw VRError(what, "", __FILE__, __LINE__, "");
-#define VRERRORADV(what,advice) throw VRError(what, advice, __FILE__, __LINE__, "");
-#define VRWARNING(what) VRError::VRWarning(what, "", __FILE__, __LINE__, "");
-#define VRWARNINGADV(what, advice) VRError::VRWarning(what, advice, __FILE__, __LINE__, "");
+#define VRERRORNOADV(what) throw VRError(what, "", __FILE__, __LINE__, "");
+#define VRERROR(what,advice) throw VRError(what, advice, __FILE__, __LINE__, "");
+#define VRWARNINGNOADV(what) VRError::VRWarning(what, "", __FILE__, __LINE__, "");
+#define VRWARNING(what, advice) VRError::VRWarning(what, advice, __FILE__, __LINE__, "");
 #else
-#define VRERROR(what) throw VRError(what, "", __FILE__, __LINE__, __PRETTY_FUNCTION__);
-#define VRERRORADV(what,advice) throw VRError(what, advice, __FILE__, __LINE__, __PRETTY_FUNCTION__);
-#define VRWARNING(what) VRError::VRWarning(what, "", __FILE__, __LINE__, __PRETTY_FUNCTION__);
-#define VRWARNINGADV(what, advice) VRError::VRWarning(what, advice, __FILE__, __LINE__, __PRETTY_FUNCTION__);
+#define VRERRORNOADV(what) throw VRError(what, "", __FILE__, __LINE__, __PRETTY_FUNCTION__);
+#define VRERROR(what,advice) throw VRError(what, advice, __FILE__, __LINE__, __PRETTY_FUNCTION__);
+#define VRWARNINGNOADV(what) VRError::VRWarning(what, "", __FILE__, __LINE__, __PRETTY_FUNCTION__);
+#define VRWARNING(what, advice) VRError::VRWarning(what, advice, __FILE__, __LINE__, __PRETTY_FUNCTION__);
 #endif
 
 /// A class to systematize the error handling in MinVR.
@@ -47,7 +68,7 @@ public:
 #ifdef MinVR_DEBUG
       // There is no need to burden the ultimate user with
       // implementation details, so this is inside a DEBUG condition.
-      + "\n(Error reported at " + _whereFile + ":" + _whereLine
+      + "\n(MinVR Error reported at " + _whereFile + ":" + _whereLine
       + ", while executing " + _whereFunc + ".)"
 #endif
       ;
@@ -88,7 +109,7 @@ public:
 #ifdef MinVR_DEBUG
       // There is no need to burden the ultimate user with
       // implementation details, so this is inside a DEBUG condition.
-      + "\n(Warning reported at " + whereFile + ":" + wLine
+      + "\n(MinVR Warning reported at " + whereFile + ":" + wLine
       + ", while executing " + whereFunc + ".)"
 #endif
       ;
