@@ -66,8 +66,9 @@ void VRDisplayNode::createChildren(VRMainInterface *vrMain,
                                    const std::string &nameSpace) {
 
   std::string validatedNameSpace = config->validateNameSpace(nameSpace);
+
   std::list<std::string> names =
-    config->selectByAttribute("displaynodeType", "*", validatedNameSpace);
+    config->selectByAttribute("displaynodeType", "*", validatedNameSpace, true);
 
   for (std::list<std::string>::const_iterator it = names.begin();
        it != names.end(); ++it) {
@@ -155,33 +156,38 @@ void VRDisplayNode::auditValues(std::list<std::string> valuesSupplied) {
 
 std::string VRDisplayNode::printNode(const std::string &prefix) const {
 
-  std::string out = prefix + "<displayNode:" + _name + ">";
+  std::string name;
+  if (_name.size() > 48) {
+    name = _name.substr(0,15) + "..." +
+      _name.substr(_name.size() - 33, std::string::npos);
+
+  } else {
+    name = _name;
+  }
+
+  std::string out = prefix + "<displayNode:" + name + ">";
 
   out += "\n" + prefix + "   Values Added";
   for (std::list<std::string>::const_iterator it = _valuesAdded.begin();
        it != _valuesAdded.end(); it++) {
-    out += "\n" + prefix + "   " + *it;
+    out += "\n" + prefix + "     " + *it;
   }
+  if (_valuesAdded.empty()) out += "\n" + prefix + "     <none>";
 
   out += "\n" + prefix + "   Values Needed";
   for (std::list<std::string>::const_iterator it = _valuesNeeded.begin();
        it != _valuesNeeded.end(); it++) {
-    out += "\n" + prefix + "   " + *it;
+    out += "\n" + prefix + "     " + *it;
   }
+  if (_valuesNeeded.empty()) out += "\n" + prefix + "     <none>";
 
   for (std::vector<VRDisplayNode*>::const_iterator it = _children.begin();
        it != _children.end(); it++) {
-    out += "\n" + prefix + (*it)->printNode(prefix + "| ");
+    out += "\n" + (*it)->printNode(prefix + "| ");
   }
-
-  out += "\n";
 
   return out;
 }
-
-
-
-
 
 
 } /* namespace MinVR */

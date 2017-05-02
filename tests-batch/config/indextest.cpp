@@ -811,28 +811,30 @@ int testLinkContent() {
 }
 
 // Just testing a dumb little string test for seeing who is descended from whom.
+// Notice that some of the parentName values have a trailing slash.  This is on
+// purpose and should not matter to the test.
 int testIsChild() {
 
   int out = 0;
 
   LOOP {
-    out += (MinVR::VRDataIndex::isChild("/Norman/Bird/Sanctuary",
+    out += (MinVR::VRDataIndex::isChild("/Norman/Bird/Sanctuary/",
                                         "/Norman/Bird/Sanctuary") == 0) ? 0 : 1;
     std::cout << "/Norman/Bird/Sanctuary"
               << " to "
               << "/Norman/Bird/Sanctuary"
               << " result="
-              << MinVR::VRDataIndex::isChild("/Norman/Bird/Sanctuary",
+              << MinVR::VRDataIndex::isChild("/Norman/Bird/Sanctuary/",
                                              "/Norman/Bird/Sanctuary")
               << std::endl;
 
-    out += (MinVR::VRDataIndex::isChild("/Norman/Bird/Sanctuary",
+    out += (MinVR::VRDataIndex::isChild("/Norman/Bird/Sanctuary/",
                                         "/Norman/Bird/Sanctuary/Egret") == 1) ? 0 : 1;
     std::cout << "/Norman/Bird/Sanctuary"
               << " to "
               << "/Norman/Bird/Sanctuary/Egret"
               << " result="
-              << MinVR::VRDataIndex::isChild("/Norman/Bird/Sanctuary",
+              << MinVR::VRDataIndex::isChild("/Norman/Bird/Sanctuary/",
                                              "/Norman/Bird/Sanctuary/Egret")
               << std::endl;
 

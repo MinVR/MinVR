@@ -1101,6 +1101,9 @@ private:
 //
 //   - Improve (and test) adding values to containers. [DONE]
 //
+//   - The walkXML should look out for linkNode attributes, so we can skip
+//     the linkNodes() and linkContent() steps of deserialization.
+//
 //   Need to simplify the process of adding data types.
 //
 //   - Make CreateVRDatum functions into templates?

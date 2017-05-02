@@ -766,6 +766,13 @@ void VRMain::initializeInternal(int argc, char **argv) {
 		}
 	}
 
+
+  // std::cerr << "DISPLAY NODES:" << std::endl;
+  // for (std::vector<VRDisplayNode*>::iterator it = _displayGraphs.begin();
+  //      it != _displayGraphs.end(); it++) {
+  //   std::cerr << *(*it) << std::endl;
+  // }
+
 	_initialized = true;
     _shutdown = false;
 }
