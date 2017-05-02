@@ -153,5 +153,35 @@ void VRDisplayNode::auditValues(std::list<std::string> valuesSupplied) {
   }
 }
 
+std::string VRDisplayNode::printNode(const std::string &prefix) const {
+
+  std::string out = prefix + "<displayNode:" + _name + ">";
+
+  out += "\n" + prefix + "   Values Added";
+  for (std::list<std::string>::const_iterator it = _valuesAdded.begin();
+       it != _valuesAdded.end(); it++) {
+    out += "\n" + prefix + "   " + *it;
+  }
+
+  out += "\n" + prefix + "   Values Needed";
+  for (std::list<std::string>::const_iterator it = _valuesNeeded.begin();
+       it != _valuesNeeded.end(); it++) {
+    out += "\n" + prefix + "   " + *it;
+  }
+
+  for (std::vector<VRDisplayNode*>::const_iterator it = _children.begin();
+       it != _children.end(); it++) {
+    out += "\n" + prefix + (*it)->printNode(prefix + "| ");
+  }
+
+  out += "\n";
+
+  return out;
+}
+
+
+
+
+
 
 } /* namespace MinVR */
