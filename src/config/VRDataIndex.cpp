@@ -535,7 +535,8 @@ std::list<std::string> VRDataIndex::getNames() {
 
 VRContainer VRDataIndex::selectByAttribute(const std::string &attrName,
                                            const std::string &attrVal,
-                                           const std::string nameSpace) {
+                                           const std::string nameSpace,
+                                           const bool childOnly) {
 
 	std::string validatedNameSpace = validateNameSpace(nameSpace);
   int vnsLength = validatedNameSpace.size();
@@ -545,7 +546,8 @@ VRContainer VRDataIndex::selectByAttribute(const std::string &attrName,
 		VRDatum::VRAttributeList al = it->second->getAttributeList();
 
     // Use a string comparison to check if this name is within the given scope.
-    if (_getNameSpace(it->first).compare(0, vnsLength, validatedNameSpace) == 0) {
+    int child = isChild(nameSpace, it->first);
+    if ((childOnly && (child == 1)) || ((!childOnly) && (child >= 1))) {
 
 			// Check if attribute list has anything in it.
 			if (!al.empty()) {

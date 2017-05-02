@@ -662,16 +662,12 @@ void VRMain::initializeInternal(int argc, char **argv) {
 
     // Find all the display nodes.
     std::list<std::string> displayNodeNames =
-      _config->selectByAttribute("displaynodeType", "*", _name);
+      _config->selectByAttribute("displaynodeType", "*", _name, true);
 
     // Loop through the display nodes, creating graphics toolkits where necessary.
 		for (std::list<std::string>::const_iterator it = displayNodeNames.begin();
          it != displayNodeNames.end(); ++it) {
 			// CONFIGURE GRAPHICS TOOLKIT
-
-      // If this is not the direct child of _name, then skip it for
-      // now.  We will get to it when building the next generations.
-      if (VRDataIndex::isChild(_name, *it) > 1) continue;
 
       std::string graphicsToolkitName =
         _config->selectFirstByAttribute("graphicstoolkitType", "*", *it);

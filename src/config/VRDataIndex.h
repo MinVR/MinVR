@@ -692,9 +692,14 @@ public:
   /// \param attrName The name of an attribute to check.
   /// \param attrVal The value of that attribute.
   /// \param nameSpace The container to search; defaults to the global scope.
+  /// \param childOnly When true, selects only values that are the direct children
+  ///        of the given nameSpace, ignores grandchildren, great-grandchildren, etc.
+  ///        If false, collects everything with the attribute, at whatever level
+  ///        inside the given nameSpace.
   VRContainer selectByAttribute(const std::string &attrName,
                                 const std::string &attrVal,
-                                const std::string nameSpace = "");
+                                const std::string nameSpace = "",
+                                const bool childOnly = false);
 
 
   /// \brief Selects the first value found with the given attribute.
