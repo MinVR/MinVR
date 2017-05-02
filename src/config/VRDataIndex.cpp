@@ -746,10 +746,8 @@ std::string VRDataIndex::validateNameSpace(const std::string &nameSpace) {
 int VRDataIndex::isChild(const std::string &parentName,
                          const std::string &childName) {
 
-
-
   // First check that the childName contains the parentName, and is longer.
-  int out = childName.compare(parentName) > 0;
+  int out = childName.compare(0, std::string::npos, parentName) > 0;
   if (out > 0) {
 
     if (childName.compare(0, parentName.size(), parentName) != 0) return -1;
@@ -760,6 +758,8 @@ int VRDataIndex::isChild(const std::string &parentName,
 
   } else if (out == 0) {
 
+    // This seems redundant but is necessary to deal with compare() inconsistency.
+    if (childName.size() != parentName.size()) return -1;
     return 0;
 
   } else {
