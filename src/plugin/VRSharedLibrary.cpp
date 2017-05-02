@@ -69,8 +69,11 @@ void VRSharedLibrary::load() {
 #endif
 
 		if (!_lib) {
+#ifdef MinVR_DEBUG
 			//MinVR::Logger::getInstance().assertMessage(false, "Could not load library: " + _filePath + " - " + error);
-			std::cerr << "Could not load library: " + _filePath + " - " + error << std::endl;
+			VRWARNING("Could not load library: " + _filePath + " - " + error,
+                "This is a harmless warning, unless the library can't be found anywhere else.");
+#endif
 			return;
 		} else {
       std::cerr << "Loaded library: " + _filePath << std::endl;

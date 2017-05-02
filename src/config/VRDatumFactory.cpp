@@ -8,7 +8,7 @@ VRDatumPtr VRDatumFactory::CreateVRDatum(int VRDatumId,
   // if no id found, throw exception
   CallbackMap::const_iterator it = m_callbacks.find(VRDatumId);
   if (it == m_callbacks.end()) {
-    throw std::runtime_error("unknown VR type id");
+    VRERRORNOADV("Unknown VR type ID.");
   } else {
     // create the instance using the creator callback
     return VRDatumPtr((it->second)(static_cast<void *>(pData)));

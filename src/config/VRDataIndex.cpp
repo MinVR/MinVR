@@ -162,7 +162,7 @@ std::string VRDataIndex::serialize(const std::string key,
 
     } else {
 
-      throw std::runtime_error("Never heard of " + key + " in the namespace: " + nameSpace);
+      VRERRORNOADV("Never heard of " + key + " in the namespace: " + nameSpace);
 
     }
   }
@@ -387,8 +387,8 @@ std::string VRDataIndex::_walkXML(element* node, std::string nameSpace) {
 
     if (it == VRDatum::typeMap.end()) {
       // If not, throw an error.
-      throw std::runtime_error("No known type called " +
-                               std::string(node->get_attribute("type")->get_value()));
+      VRERRORNOADV("No known type called " +
+                   std::string(node->get_attribute("type")->get_value()));
     } else {
       // Otherwise, pass it along as the typeID.
       typeId = it->second;
@@ -736,7 +736,7 @@ std::string VRDataIndex::validateNameSpace(const std::string &nameSpace) {
     // Otherwise look for it in the index and throw an error if
     // it isn't there.
     if (_theIndex.find(out.substr(0, out.size() - 1)) == _theIndex.end()) {
-      throw std::runtime_error("Can't find a namespace called " + nameSpace);
+      VRERRORNOADV("Can't find a namespace called " + nameSpace);
     }
   }
 
@@ -898,7 +898,7 @@ std::string VRDataIndex::getName(const std::string &key,
   VRDataMap::iterator p = _getEntry(key, nameSpace);
 
   if (p == _theIndex.end()) {
-    throw std::runtime_error("Never heard of " + key + " in namespace " + nameSpace);
+    VRERRORNOADV("Never heard of " + key + " in namespace " + nameSpace);
   } else {
     return p->first;
   }
@@ -911,7 +911,7 @@ VRDatumPtr VRDataIndex::_getDatum(const std::string &key,
   VRDataMap::iterator p = _getEntry(key, nameSpace);
 
   if (p == _theIndex.end()) {
-    throw std::runtime_error("Never heard of " + key + " in namespace " + nameSpace);
+    VRERRORNOADV("Never heard of " + key + " in namespace " + nameSpace);
   } else {
     return p->second;
   }
@@ -962,15 +962,15 @@ std::string VRDataIndex::dereferenceEnvVars(const std::string &fileName) {
     int bracketPos = pathName.find_first_of("}", dollarPos);
 
     if (bracketPos == string::npos) {
-      throw std::runtime_error(std::string("bad environment variable syntax"));
+      VRERROR("Bad environment variable syntax.",
+              "Environment variables must be enclosed like ${THIS}.");
     }
 
     int bracketLen = 1 + bracketPos - dollarPos;
     std::string envVariable = pathName.substr(dollarPos + 2, bracketLen - 3);
 
     if (getenv(envVariable.c_str()) == NULL) {
-      throw std::runtime_error(std::string("no such environment variable:") +
-                               envVariable);
+      VRERRORNOADV(std::string("No such environment variable: ") + envVariable);
     }
 
     pathName.replace(dollarPos, bracketLen, getenv(envVariable.c_str()));
@@ -1027,7 +1027,7 @@ bool VRDataIndex::processXMLFile(const std::string fileName,
 
   } else {
 
-    throw std::runtime_error("Error opening file " + fileName);
+    VRERRORNOADV("Error opening file " + fileName + ".");
 
   }
   return true;
@@ -1068,7 +1068,7 @@ std::string VRDataIndex::addData(const std::string &key,
 
   // If the container to add to is the root, ignore.
   if (key.compare("/") == 0)
-    throw std::runtime_error(std::string("cannot replace the root namespace"));
+    VRERRORNOADV("Cannot replace the root namespace");
 
   // All names must be in some namespace. If there is no namespace, put this
   // into the root namespace.
@@ -1102,7 +1102,8 @@ std::string VRDataIndex::addData(const std::string &keyAndValue) {
 
   int poseql = keyAndValue.find("=");
   if (poseql == std::string::npos) {
-    throw std::runtime_error("MinVR Error: Expected a key=value format for the string: " + keyAndValue);
+    VRERRORNOADV("MinVR Error: Expected a key=value format for the string: " +
+                 keyAndValue);
   }
   std::string key = keyAndValue.substr(0,poseql);
   std::string value = keyAndValue.substr(poseql+1);
@@ -1206,12 +1207,12 @@ bool VRDataIndex::linkNode(const std::string &fullSourceName,
   // limit.  It's possible this should be adjustable, but not sure of
   // a use case where the plausible depthLimit would exceed 10.
   if (depthLimit > 7)
-    throw std::runtime_error("Too deep a recursion -- did you set up a circular reference?");
+    VRERROR("Too deep a recursion.", "Did you set up a circular reference?");
 
   // Find source node, fail if it does not exist.
   VRDataMap::iterator sourceEntry = _getEntry(fullSourceName);
   if (sourceEntry == _theIndex.end())
-    throw std::runtime_error("Can't find the source node: " + fullSourceName);
+    VRERRORNOADV("Can't find the source node: " + fullSourceName);
 
   VRDatumPtr sourceNode = sourceEntry->second;
   VRDataMap::iterator targetEntry = _getEntry(fullTargetName);
@@ -1229,7 +1230,9 @@ bool VRDataIndex::linkNode(const std::string &fullSourceName,
   }
 
   if (sourceNode->hasAttribute("linkContent"))
-    throw std::runtime_error("You really don't want to mix linkContent and linkNode, as in linking " + fullSourceName + " and " + fullTargetName + ".");
+    VRERROR("Linking content and nodes not allowed.",
+            "You really don't want to mix linkContent and linkNode, as in linking " +
+            fullSourceName + " and " + fullTargetName + ".");
 
   // Record the link we made.  This is for use by the copy constructor.
   _linkRegister[fullSourceName] = fullTargetName;
@@ -1310,8 +1313,9 @@ bool VRDataIndex::_linkContent() {
     VRDataMap::iterator linkEntry =
       _getEntry(target->second->getAttributeValue("linkContent"));
     if (linkEntry == _theIndex.end()) {
-      throw std::runtime_error("Can't find link target: " +
-                               target->second->getAttributeValue("linkContent"));
+      VRERROR("Can't find link target: " +
+              target->second->getAttributeValue("linkContent"),
+              "Check the spelling?");
     }
 
     std::string sourceName =
@@ -1319,7 +1323,9 @@ bool VRDataIndex::_linkContent() {
                targetNameSpace)->first;
     VRDatumPtr sourceNode = _getEntry(sourceName)->second;
     if (sourceNode->getType() != VRCORETYPE_CONTAINER)
-      throw std::runtime_error("Can only link from contents of containers, and " + sourceName + " is not a container.");
+      VRERROR("Link disallowed.",
+              "Can only link from contents of containers, and " +
+              sourceName + " is not a container.");
 
     // Read the contents of the sourceNode and create a new link for
     // each one, in the target name space.

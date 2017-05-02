@@ -1,5 +1,8 @@
 #ifndef MINVR_VRERROR_H
 #define MINVR_VRERROR_H
+#include <string>
+#include <sstream>
+#include <iostream>
 
 /// This class is meant to provide an easy way to systematize error
 /// handling in MinVR, and also encourage people to add a line or two
@@ -57,7 +60,7 @@ public:
     _whereFile(whereFile), _whereFunc(whereFunc) {
 
     // Convert the line number to a string.
-    stringstream ss; ss << whereLine; _whereLine = ss.str();
+    std::stringstream ss; ss << whereLine; _whereLine = ss.str();
   };
 
   std::string _errorMessage() const {
@@ -103,7 +106,7 @@ public:
     std::string wLine;
 
     // Convert the line number to a string.
-    stringstream ss; ss << whereLine; wLine = ss.str();
+    std::stringstream ss; ss << whereLine; wLine = ss.str();
 
     out = "Warning: " + whatMsg
 #ifdef MinVR_DEBUG

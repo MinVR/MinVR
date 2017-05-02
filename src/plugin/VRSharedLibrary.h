@@ -44,6 +44,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define VRSHAREDLIBRARY_H_
 
 #include <string>
+#include <main/VRError.h>
 
 namespace MinVR {
 
