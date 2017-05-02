@@ -65,23 +65,19 @@ void VRDisplayNode::createChildren(VRMainInterface *vrMain,
                                    VRDataIndex *config,
                                    const std::string &nameSpace) {
 
-  // n.b. This seems to run create on *all* the members of the given
-  // nameSpace.  I doubt that is the optimal behavior.  Is that what
-  // was intended?
-  std::list<std::string> names = config->getValue(nameSpace);
   std::string validatedNameSpace = config->validateNameSpace(nameSpace);
+  std::list<std::string> names =
+    config->selectByAttribute("displaynodeType", "*", validatedNameSpace);
 
   for (std::list<std::string>::const_iterator it = names.begin();
        it != names.end(); ++it) {
 
-	  if (config->exists(*it, validatedNameSpace)){
+    // We only want to do this for direct children. The grandchildren
+    // and their progeny will be addressed in turn.
+    if (VRDataIndex::isChild(nameSpace, *it) == 1) {
 
-      std::cout << "why are we creating..." << validatedNameSpace + *it << std::endl;
-
-		  VRDisplayNode *child =
-        vrMain->getFactory()->create<VRDisplayNode>(vrMain,
-                                                    config,
-                                                    validatedNameSpace + *it);
+      VRDisplayNode *child =
+        vrMain->getFactory()->create<VRDisplayNode>(vrMain, config, *it);
       if (child != NULL) {
         addChild(child);
       }

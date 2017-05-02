@@ -29,13 +29,14 @@ public:
 
 	/// Generic create item method which determines the type of the factory and uses it to create items if it is the correct type.
 	template <typename T>
-	T* createItem(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
+	T* createItem(VRMainInterface *vrMain, VRDataIndex *config, const std::string &dataContainer) {
 
     if (getType() == typeid(T)) {
 
       VRSpecificItemFactory<T>* factory = static_cast<VRSpecificItemFactory<T>*>(this);
 			if(factory) {
-				return factory->create(vrMain, config, nameSpace);
+
+				return factory->create(vrMain, config, dataContainer);
 			}
 		}
 
@@ -56,25 +57,21 @@ class VRSpecificItemFactory : public VRItemFactory {
 public:
 	/// Allows subclasses to specify the type name in the VRDataIndex
 	VRSpecificItemFactory(const std::string& typeName) : _typeName(typeName) {
-    std::cerr << "specific item factory creating:" << typeName << std::endl;
   }
 	virtual ~VRSpecificItemFactory() {}
 
 	/// First checks that the typeName maches the VRDataIndex and then passes the type to the concrete implementation
-	virtual T* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
+	virtual T* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &dataContainer) {
 		std::string attributeName = T::getAttributeName();
 
-    std::cerr << "creating (in specific item factory): " << nameSpace << " -- " << attributeName << std::endl;
-
-
-		std::string type = config->getAttributeValue(nameSpace, attributeName);
+		std::string type = config->getAttributeValue(dataContainer, attributeName);
 
 		if (type != _typeName) {
 			// This factory cannot create the type specified
 			return NULL;
 		}
 
-		return createConcrete(vrMain, config, nameSpace);
+		return createConcrete(vrMain, config, dataContainer);
 	}
 
 protected:

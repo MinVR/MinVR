@@ -84,7 +84,7 @@ std::string getCurrentWorkingDir()
 
 VRMain::VRMain() : _initialized(false), _config(NULL), _net(NULL), _factory(NULL), _pluginMgr(NULL), _frame(0), _shutdown(false)
 {
-    _config = new VRDataIndex();
+  _config = new VRDataIndex();
 	_factory = new VRFactory();
 	// add sub-factories that are part of the MinVR core library right away
 	_factory->registerItemType<VRDisplayNode, VRConsoleNode>("VRConsoleNode");
@@ -95,8 +95,7 @@ VRMain::VRMain() : _initialized(false), _config(NULL), _net(NULL), _factory(NULL
 	_factory->registerItemType<VRDisplayNode, VRViewportNode>("VRViewportNode");
 	_factory->registerItemType<VRDisplayNode, VRLookAtNode>("VRLookAtNode");
 	_factory->registerItemType<VRDisplayNode, VRTrackedLookAtNode>("VRTrackedLookAtNode");
-	_factory->registerItemType<VRDisplayNode, VRViewportNode>("VRViewportNode");
-    _factory->registerItemType<VRInputDevice, VRFakeTrackerDevice>("VRFakeTrackerDevice");
+  _factory->registerItemType<VRInputDevice, VRFakeTrackerDevice>("VRFakeTrackerDevice");
     _pluginMgr = new VRPluginManager(this);
 }
 
@@ -199,18 +198,15 @@ void VRMain::loadInstalledConfiguration(const std::string &configName) {
 
 
 void VRMain::loadConfigFile(const std::string &pathAndFilename) {
-    std::cout << "MinVR: Loading config file: " << pathAndFilename << std::endl;
+
     bool success = _config->processXMLFile(pathAndFilename,"/");
     if (!success) {
         throw std::runtime_error("MinVR Error: Could not process XML file " + pathAndFilename);
     }
 }
 
-
-// This functionality really should be in the data index.
 void VRMain::setConfigValueByString(const std::string &keyAndValStr) {
   std::string name = _config->addData(keyAndValStr);
-  std::cout << "MinVR: Setting config value: " << name << std::endl;
 }
 
 
@@ -406,8 +402,7 @@ void VRMain::initializeInternal(int argc, char **argv) {
 
 
 	if (vrSetupsToStartArray.empty()) {
-        std::cerr << "MinVR Error:  No VRSetups to start are defined" << std::endl;
-        throw std::runtime_error("MinVR Error: No VRSetups to start are defined");
+    VRERROR("No VRSetups to start are defined.", "Your config file must contain at least one VRSetup element.");
 		exit(1);
 	}
 
@@ -538,8 +533,9 @@ void VRMain::initializeInternal(int argc, char **argv) {
     // STEP 4:  Sanity check to make sure the vrSetup we are continuing with is
     // actually defined in the config settings that have been loaded.
 	if (!_config->exists(_name)) {
-        std::cerr << "VRMain Error: The VRSetup " << _name << " has not loaded through a config file." << std::endl;
-        throw std::runtime_error("MinVR Error: The VRSetup " + _name + " has not loaded through a config file.");
+    VRERROR("VRMain Error: The VRSetup " +
+            _name + " has not loaded through a config file.",
+            "Your config file must contain a VRSetup element.");
     }
 
     // for everything from this point on, the VRSetup name for this process is stored in _name, and this
@@ -565,15 +561,9 @@ void VRMain::initializeInternal(int argc, char **argv) {
     //    6. <Install directory>/plugins ("install/plugins")
     //    7. <$MINVR_ROOT>/plugins ("$MINVR_ROOT/plugins")
 
-  std::cout << "SELECTING IN : " << _name << std::endl;
-
     std::list<std::string> names = _config->selectByAttribute("pluginType", "*");
 
-    std::cerr << "found " << names.size() << " plugins" << std::endl;
-
     for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); it++) {
-
-      std::cerr << "looking for: " << *it << std::endl;
 
         std::vector<std::string> pluginSearchPaths;
         if (_config->exists("PluginPath", *it)){
@@ -679,16 +669,19 @@ void VRMain::initializeInternal(int argc, char **argv) {
          it != displayNodeNames.end(); ++it) {
 			// CONFIGURE GRAPHICS TOOLKIT
 
+      // If this is not the direct child of _name, then skip it for
+      // now.  We will get to it when building the next generations.
+      if (VRDataIndex::isChild(_name, *it) > 1) continue;
+
       std::string graphicsToolkitName =
         _config->selectFirstByAttribute("graphicstoolkitType", "*", *it);
 
       // If there is no graphics toolkit to be found here, we can't
       // really do anything, so throw an error.
       if (graphicsToolkitName.empty()) {
-        VRERROR("No graphics toolkit found in:" + *it);
+        VRWARNING("No graphics toolkit found in:" + *it,
+                  "Is there an element with 'graphicstoolkitType' specified in your config file?");
       }
-
-      std::cout << graphicsToolkitName << ":::" << _config->printStructure() << std::endl;
 
       // Create a new graphics toolkit.
       VRGraphicsToolkit *gtk =
@@ -719,7 +712,8 @@ void VRMain::initializeInternal(int argc, char **argv) {
                 graphicsToolkitName +
                 " with graphicstoolkit=" +
                 _config->getAttributeValue(graphicsToolkitName,
-                                           "graphicstoolkitType"));
+                                           "graphicstoolkitType"),
+                "The create failed, so there might be a link error to a plugin, or a misconfiguration of the graphics toolkit.");
       }
 
 
@@ -731,7 +725,8 @@ void VRMain::initializeInternal(int argc, char **argv) {
       // If there is no window toolkit to be found here, we can't
       // really do anything, so throw an error.
       if (windowToolkitName.empty()) {
-        VRERROR("No window toolkit found in:" + *it);
+        VRERROR("No window toolkit found in:" + *it,
+                "Is there an element with 'windowtoolkitType' in your config file?");
       }
 
       // Create a new window toolkit.
@@ -758,7 +753,9 @@ void VRMain::initializeInternal(int argc, char **argv) {
         VRERROR("Problem creating window toolkit: " +
                 windowToolkitName +
                 " with windowtoolkitType=" +
-                _config->getAttributeValue(windowToolkitName, "windowtoolkitType"));
+                _config->getAttributeValue(windowToolkitName,
+                                           "windowtoolkitType"),
+                "The create failed, so there might be a link error to a plugin, or a misconfiguration of the window toolkit.");
       }
 
 			// add window to the displayGraph list
@@ -767,7 +764,8 @@ void VRMain::initializeInternal(int argc, char **argv) {
 				_displayGraphs.push_back(dg);
 			}
 			else{
-				std::cerr << "Problem creating window: " << *it << " with windowType=" << _config->getAttributeValue(*it, "windowType") << std::endl;
+        VRWARNINGNOADV("Problem creating window: " + *it + " with windowType=" +
+                       _config->getAttributeValue(*it, "windowType"));
 			}
 		}
 	}

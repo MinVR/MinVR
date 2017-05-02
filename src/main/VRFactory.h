@@ -25,7 +25,7 @@ public:
 
   /// Creates a new item from registered sub-factories.
   template <typename T>
-  T* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
+  T* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &dataContainer);
 
   /// Plugins call this method to register an item type which has a static create method with the same signature
   /// as an the VRItemFactory create method.
@@ -40,29 +40,29 @@ protected:
 };
 
 template <typename T>
-T* VRFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
-
-  std::cerr << "itemfactories:::" << _itemFactories.size() << " ns: " << nameSpace <<  std::endl;
+T* VRFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &dataContainer) {
 
   int i = 0;
   // Run through all the items in the factory trying to generate something of the
   // correct type.
   for (std::vector<VRItemFactory*>::iterator it = _itemFactories.begin();
        it < _itemFactories.end(); ++it) {
-    std::cerr << "c:" << ++i << std::endl;
 
-    T* item = (*it)->createItem<T>(vrMain, config, nameSpace);
+    T* item = (*it)->createItem<T>(vrMain, config, dataContainer);
     if (item != NULL) {
       // Success; we have created something.  Return it.
       return item;
     }
   }
-  VRWARNING("Nothing in the factory catalog with the correct type: " + std::string(typeid(T).name()));
+  VRWARNING("Nothing in the factory catalog with the correct type: " +
+            std::string(typeid(T).name()),
+            "This is usually caused by a typo in your config file.");
   return NULL;
 }
 
 template <typename ParentType, typename T>
 void VRFactory::registerItemType(const std::string typeName) {
+
 	  addSubFactory(new VRConcreteItemFactory<ParentType, T>(typeName));
 }
 
