@@ -18,4 +18,5 @@ if(NOT OPENVR_FOUND)
   set(OPENVR_LIB_DIR $ENV{OPENVR_LIB_DIR} CACHE PATH "Set the directory location of the OpenVR lib folder")
 endif()
 
-mark_as_advanced(OPENVR_INCLUDE_DIR OPENVR_LIBRARY )
+mark_as_advanced(OPENVR_FOUND OPENVR_INCLUDE_DIR OPENVR_LIBRARY )
+

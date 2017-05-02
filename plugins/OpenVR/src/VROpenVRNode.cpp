@@ -6,7 +6,13 @@
  * 		Ben Knorlein
  */
 
-#include <GL/glew.h>
+#include "GL/glew.h"
+#ifdef _WIN32
+#include "GL/wglew.h"
+#elif (!defined(__APPLE__))
+#include "GL/glxew.h"
+#endif
+
 #include "VROpenVRNode.h"
 #include <cmath>
 
@@ -89,8 +95,10 @@ VROpenVRNode::~VROpenVRNode() {
 void
 VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 {
+	//return;
 	if(!isInitialized){
 		isInitialized = true;
+		glewExperimental = true;
 		GLenum nGlewError = glewInit();
 		if (nGlewError != GLEW_OK)
 		{
@@ -169,6 +177,7 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
  		GL_LINEAR  );
  	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0 );
+
 	renderState->popState();
 	glFinish();
 
@@ -177,26 +186,26 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 	vr::Texture_t rightEyeTexture = { (void*)rightEyeDesc.m_nResolveTextureId, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
 	error = vr::VRCompositor()->Submit(vr::Eye_Right, &rightEyeTexture );
 
-	//renderState->pushState();
-	//int width = renderState->getValue("/WindowWidth");
-	//int height = renderState->getValue("/WindowHeight");
+	renderState->pushState();
+	int width = renderState->getValue("/WindowWidth");
+	int height = renderState->getValue("/WindowHeight");
 
-	//glViewport(0, 0, width, height);
-	//glClearColor(0, 0, 0, 1);
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glViewport(0, 0, width, height);
+	glClearColor(0, 0, 0, 1);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//renderState->addData("/ProjectionMatrix", m_mat4ProjectionRight);
-	//renderState->addData("/ViewMatrix", view_right);
-	//renderState->addData("/Eye", "Cyclops");
-	//if (_children.size() == 0) {
-	//	renderHandler->onVRRenderScene(renderState, this);
-	//}
-	//else {
-	//	VRDisplayNode::render(renderState, renderHandler);
-	//}
-	//renderState->pushState();
+	renderState->addData("/ProjectionMatrix", m_mat4ProjectionRight);
+	renderState->addData("/ViewMatrix", view_right);
+	renderState->addData("/Eye", "Cyclops");
+	if (_children.size() == 0) {
+		renderHandler->onVRRenderScene(renderState, this);
+	}
+	else {
+		VRDisplayNode::render(renderState, renderHandler);
+	}
+	renderState->popState();
 
-	//vr::VRCompositor()->PostPresentHandoff();
+	vr::VRCompositor()->PostPresentHandoff();
 }
 
 VRDisplayNode* VROpenVRNode::create(VRMainInterface *vrMain, VRDataIndex *config,  const std::string &nameSpace) {

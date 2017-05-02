@@ -1,0 +1,93 @@
+<MinVR>
+
+  <PluginPath>../../build/plugins</PluginPath>
+  <GLFWPlugin pluginType="MinVR_GLFW"/>
+  <OpenGLPlugin pluginType="MinVR_OpenGL"/>
+  <ThreadingPlugin pluginType="MinVR_Threading"/>
+
+  <Cave hostType="VRStandAlone">
+
+    <RGBBits>8</RGBBits>
+    <AlphaBits>8</AlphaBits>
+    <DepthBits>24</DepthBits>
+    <StencilBits>8</StencilBits>
+    <FullScreen>0</FullScreen>
+    <Resizable>1</Resizable>
+    <AllowMaximize>1</AllowMaximize>
+    <Visible>1</Visible>
+    <ContextVersionMajor>3</ContextVersionMajor>
+    <ContextVersionMinor>3</ContextVersionMinor>
+    <UseGPUAffinity>0</UseGPUAffinity>
+    <UseDebugContext>0</UseDebugContext>
+    <MSAASamples>1</MSAASamples>
+    <QuadBuffered>0</QuadBuffered>
+    <AsyncEnabled>1</AsyncEnabled>
+    <SharedContextGroupID>1</SharedContextGroupID>
+    
+    <!-- Common to all clients -->
+    <GLFWToolkit windowtoolkitType="VRGLFWWindowToolkit"/>
+    <OpenGLToolkit graphicstoolkitType="VROpenGLGraphicsToolkit"/>
+
+    <!-- Common display graph configuration -->
+    <Border>0</Border>
+    <Caption>Desktop</Caption>
+    <StereoFormat>Mono</StereoFormat>
+    <EyeSeparation>0.203</EyeSeparation>
+    <NearClip>0.001</NearClip>
+    <FarClip>500.0</FarClip>
+    <HeadTrackingEvent>Head_Move</HeadTrackingEvent>
+    <LookAtUp type="floatarray">0,1,0</LookAtUp>
+	<LookAtEye type="floatarray">0,0.5,2.75</LookAtEye>
+	<LookAtCenter type="floatarray">0,0,0</LookAtCenter>
+
+    <YPos>100</YPos>
+    <Width>200</Width>
+    <Height>200</Height>
+
+    <ThreadGroupNode displaynodeType="VRThreadGroupNode">
+      <FrontWall displaynodeType="VRGraphicsWindowNode">
+        <XPos>250</XPos>
+        <TopLeft type="floatarray">-4,4,-4</TopLeft>
+        <TopRight type="floatarray">4,4,-4</TopRight>
+        <BottomLeft type="floatarray">-4,-4,-4</BottomLeft>
+        <BottomRight type="floatarray">4,-4,-4</BottomRight>
+        <DisplayGraph linkNode="/MinVR/Cave/MyDisplayGraph/HeadTracker"/>
+      </FrontWall>
+      <Floor displaynodeType="VRGraphicsWindowNode">
+        <XPos>250</XPos>
+        <YPos>300</YPos>
+        <TopLeft type="floatarray">-4,-4,-4</TopLeft>
+        <TopRight type="floatarray">4,-4,-4</TopRight>
+        <BottomLeft type="floatarray">-4,-4,4</BottomLeft>
+        <BottomRight type="floatarray">4,-4,4</BottomRight>
+        <DisplayGraph linkNode="/MinVR/Cave/MyDisplayGraph/HeadTracker"/>
+      </Floor>
+      <LeftWall displaynodeType="VRGraphicsWindowNode">
+          <XPos>50</XPos>
+          <TopLeft type="floatarray">-4,4,4</TopLeft>
+          <TopRight type="floatarray">-4,4,-4</TopRight>
+          <BottomLeft type="floatarray">-4,-4,4</BottomLeft>
+          <BottomRight type="floatarray">-4,-4,-4</BottomRight>
+          <DisplayGraph linkNode="/MinVR/Cave/MyDisplayGraph/HeadTracker"/>
+      </LeftWall>
+      <RightWall displaynodeType="VRGraphicsWindowNode">
+          <XPos>450</XPos>
+          <TopLeft type="floatarray">4,4,-4</TopLeft>
+          <TopRight type="floatarray">4,4,4</TopRight>
+          <BottomLeft type="floatarray">4,-4,-4</BottomLeft>
+          <BottomRight type="floatarray">4,-4,4</BottomRight>
+          <DisplayGraph linkNode="/MinVR/Cave/MyDisplayGraph/HeadTracker"/>
+      </RightWall>
+    </ThreadGroupNode>
+    
+    <!-- ********************** Display Graph ********************** -->
+    <MyDisplayGraph>
+        <HeadTracker displaynodeType="VRTrackedLookAtNode">
+          <StereoNode displaynodeType="VRStereoNode">
+            <ProjectionNode displaynodeType="VROffAxisProjectionNode">
+            </ProjectionNode>
+          </StereoNode>
+        </HeadTracker>
+    </MyDisplayGraph>
+  </Cave> 
+</MinVR>

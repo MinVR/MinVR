@@ -42,6 +42,8 @@ public:
     const float * getProjectionMatrix();
     const float * getViewMatrix();
     const float * getCameraPos();
+	const int getSharedContextId() const;
+	const int getWindowId() const;
     bool isInitialRenderCall();
   
   
