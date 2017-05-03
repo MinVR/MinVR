@@ -18,15 +18,26 @@ class VRSearchPath {
   std::list<std::string> _searchPath;
 
  public:
-  // This would be better if the constructor could hold an arbitrary
-  // number of simple strings.  Can we do that?
   VRSearchPath() {};
 
-  void addPathEntry(const std::string &pathEntry) {
-    _searchPath.push_back(pathEntry);
+  /// \brief Add an entry to the search path.
+  ///
+  /// Adds the given directory name to the list of directories to search.
+  ///
+  /// \param pathEntry The directory name to add.
+  /// \param start A boolean value.  If true, add the entry at the beginning
+  /// of the list.  Otherwise add it to the end.
+  void addPathEntry(const std::string &pathEntry, bool start = false) {
+    if (start) {
+      _searchPath.push_front(pathEntry);
+    } else {
+      _searchPath.push_back(pathEntry);
+    }
   };
 
-  // Adds a whole path as one colon-separated string.
+  /// \brief Create a search path from a single string.
+  ///
+  /// Adds a whole path from one colon-separated string.
   void digestPathString(const std::string &searchList) {
     std::stringstream ss(searchList);
     std::string singlePath;
@@ -35,9 +46,11 @@ class VRSearchPath {
     }
   };
 
-  // Returns a fully-resolved path name of the file in question,
-  // wherever it lies on the search path.  If the file is not found,
-  // the return value is empty.
+  /// \brief Find a file.
+  ///
+  /// \return Returns a fully-resolved path name of the file in question,
+  /// wherever it lies on the search path.  If the file is not found, the
+  /// return value is empty.
   std::string findFile(const std::string &desiredFile) {
     for (std::list<std::string>::iterator it = _searchPath.begin();
          it != _searchPath.end(); it++) {
@@ -48,6 +61,9 @@ class VRSearchPath {
     return "";
   }
 
+  /// \brief Return path as a single string.
+  ///
+  /// Returns the search path as a single colon-separated string.
   std::string getPrintString() const {
 
     std::string out;

@@ -89,9 +89,20 @@ int testSearchPath() {
 
   out += sp.getPrintString().compare("testSearch:testSearch/test1:testSearch/test2:testSearch/test2/test3:testSearch/test2/test4:testSearch/test2/test4/test5");
 
-#endif
+  MinVR::VRSearchPath sp2;
+  sp2.digestPathString(sp.getPrintString());
+
+  std::cout << "path:" << sp2 << std::endl;
+  std::cout << "result:" << sp2.findFile("target.txt") << std::endl;
+
+  out += sp2.findFile("target.txt").compare("testSearch/test2/test3/target.txt");
+
+  out += sp2.getPrintString().compare("testSearch:testSearch/test1:testSearch/test2:testSearch/test2/test3:testSearch/test2/test4:testSearch/test2/test4/test5");
 
   executeShellCommand("rm -rf testSearch");
+
+#endif
+
 
   return out;
 }
