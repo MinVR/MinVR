@@ -3,6 +3,7 @@
 #define MINVR_DATUM_H
 
 #include "VRCoreTypes.h"
+#include <main/VRError.h>
 
 #include <map>
 #include <iostream>
@@ -177,7 +178,12 @@ public:
   VRAttributeList getAttributeList() { return attrList.front(); };
   void setAttributeList(VRAttributeList newList) { attrList.front() = newList; };
   std::string getAttributeValue(const std::string attributeName) {
-    return attrList.front()[attributeName];
+    VRAttributeList::iterator attr = attrList.front().find(attributeName);
+    if (attr != attrList.front().end()) {
+      return attr->second;
+    } else {
+      return "";
+    }
   }
   void setAttributeValue(const std::string attributeName,
                          const std::string attributeValue) {
@@ -188,17 +194,18 @@ public:
   bool hasAttribute(const std::string attributeName) {
     return attrList.front().count(attributeName) > 0;
   }
-  
+
   // Returns the attribute list formatted to include in an XML tag.
   std::string getAttributeListAsString();
-  
+
   // This array is a mapping between VRCORETYPE_ID and the string
   // description of that type that will appear in serialized data.  It
   // is here as a public member as a convenience for other classes
   // that will need this mapping (e.g. VRDatumFactory and
   // VRDataIndex).
-  typedef struct { std::string first; VRCORETYPE_ID second; } VRTypePair;
-  static const VRTypePair VRTypeMap[VRCORETYPE_NTYPES];
+  typedef std::map<std::string, VRCORETYPE_ID> VRTypeMap;
+  static VRTypeMap typeMap;
+  static VRTypeMap initializeTypeMap();
 
   // This produces the serialized version of the datum.  When packaged
   // with the description and a name, this will be ready for
@@ -220,31 +227,31 @@ public:
   // VRDatumSpecialized, below.
   virtual void push() = 0;
   virtual bool pop() = 0;
-  
+
   // Less generic getValue methods.  One of these is to be overridden
   // in each specialization of this class.  The others are here to
   // prevent bad behavior, and throw an error if the programmer
   // attempts to coerce a data type incorrectly.
   virtual VRInt getValueInt() const {
-    throw std::runtime_error("This datum is not a VRInt.");
+    VRERRORNOADV("This datum is not a VRInt.");
   }
   virtual VRFloat getValueFloat() const {
-    throw std::runtime_error("This datum is not a VRFloat.");
+    VRERRORNOADV("This datum is not a VRFloat.");
   }
   // There is a getValueString() implemented for each data type to
   // allow easy string conversions.  It is defined as a pure virtual
   // member function above.
   virtual VRIntArray getValueIntArray() const {
-    throw std::runtime_error("This datum is not a VRIntArray.");
+    VRERRORNOADV("This datum is not a VRIntArray.");
   }
   virtual VRFloatArray getValueFloatArray() const {
-    throw std::runtime_error("This datum is not a VRFloatArray.");
+    VRERRORNOADV("This datum is not a VRFloatArray.");
   }
   virtual VRStringArray getValueStringArray() const {
-    throw std::runtime_error("This datum is not a VRStringArray.");
+    VRERRORNOADV("This datum is not a VRStringArray.");
   }
   virtual VRContainer getValueContainer() const {
-    throw std::runtime_error("This datum is not a VRContainer.");
+    VRERRORNOADV("This datum is not a VRContainer.");
   }
 };
 
@@ -268,7 +275,7 @@ protected:
 
   bool needPush, pushed;
   int stackFrame;
-  
+
 public:
   VRDatumSpecialized(const T inVal):
     VRDatum(TID), needPush(false), pushed(false), stackFrame(1) {
@@ -287,7 +294,7 @@ public:
     value.front() = inVal;
     return true;
   }
-  
+
   VRDatumConverter<VRDatum> getValue() {
     return VRDatumConverter<VRDatum>(this);
   }
@@ -455,6 +462,51 @@ public:
     reference->addRef();
   }
 
+  /// Create a deep copy of this value, without a link to the same
+  /// reference counter.
+  VRDatumPtr clone() {
+
+    VRDatumPtr out;
+
+    switch (pData->getType()) {
+
+    case VRCORETYPE_INT:
+      out = VRDatumPtr(new VRDatumInt(*intVal()));
+      break;
+
+    case VRCORETYPE_FLOAT:
+      out = VRDatumPtr(new VRDatumFloat(*floatVal()));
+      break;
+
+    case VRCORETYPE_STRING:
+      out = VRDatumPtr(new VRDatumString(*stringVal()));
+      break;
+
+    case VRCORETYPE_INTARRAY:
+      out = VRDatumPtr(new VRDatumIntArray(*intArrayVal()));
+      break;
+
+    case VRCORETYPE_FLOATARRAY:
+      out = VRDatumPtr(new VRDatumFloatArray(*floatArrayVal()));
+      break;
+
+    case VRCORETYPE_STRINGARRAY:
+      out = VRDatumPtr(new VRDatumStringArray(*stringArrayVal()));
+      break;
+
+    case VRCORETYPE_CONTAINER:
+      out = VRDatumPtr(new VRDatumContainer(*containerVal()));
+      break;
+
+    case VRCORETYPE_NONE:
+      VRERRORNOADV("can't copy unknown data type");
+      break;
+
+    }
+
+    return out;
+  }
+
   ~VRDatumPtr()
   {
     // Destructor: Decrement the reference count.  If reference becomes
@@ -462,7 +514,7 @@ public:
     if(reference->release() == 0)
       {
         delete pData;
-		delete reference;
+        delete reference;
       }
   }
 
@@ -486,7 +538,7 @@ public:
         if(reference->release() == 0)
           {
             delete pData;
-			delete reference;
+            delete reference;
           }
 
         // Copy the data and reference pointer and increment the
@@ -511,7 +563,7 @@ public:
     if (pData->getType() == VRCORETYPE_INT) {
       return static_cast<VRDatumInt*>(pData);
     } else {
-      throw std::runtime_error("This datum is not a VRInt.");
+      VRERRORNOADV("This datum is not a VRInt.");
     }
   }
 
@@ -520,7 +572,7 @@ public:
     if (pData->getType() == VRCORETYPE_FLOAT) {
       return static_cast<VRDatumFloat*>(pData);
     } else {
-      throw std::runtime_error("This datum is not a VRFloat.");
+      VRERRORNOADV("This datum is not a VRFloat.");
     }
   }
 
@@ -529,7 +581,7 @@ public:
     if (pData->getType() == VRCORETYPE_STRING) {
       return static_cast<VRDatumString*>(pData);
     } else {
-      throw std::runtime_error("This datum is not a VRString.");
+      VRERRORNOADV("This datum is not a VRString.");
     }
   }
 
@@ -538,7 +590,7 @@ public:
     if (pData->getType() == VRCORETYPE_INTARRAY) {
       return static_cast<VRDatumIntArray*>(pData);
     } else {
-      throw std::runtime_error("This datum is not an array of ints.");
+      VRERRORNOADV("This datum is not an array of ints.");
     }
   }
 
@@ -547,7 +599,7 @@ public:
     if (pData->getType() == VRCORETYPE_FLOATARRAY) {
       return static_cast<VRDatumFloatArray*>(pData);
     } else {
-      throw std::runtime_error("This datum is not an array of floats.");
+      VRERRORNOADV("This datum is not an array of floats.");
     }
   }
 
@@ -555,9 +607,9 @@ public:
   {
     if (pData->getType() == VRCORETYPE_STRINGARRAY) {
       return static_cast<VRDatumStringArray*>(pData);
-      
+
     } else {
-      throw std::runtime_error("This datum is not an array of strings.");
+      VRERRORNOADV("This datum is not an array of strings.");
     }
   }
 
@@ -566,7 +618,7 @@ public:
     if (pData->getType() == VRCORETYPE_CONTAINER) {
       return static_cast<VRDatumContainer*>(pData);
     } else {
-      throw std::runtime_error("This datum is not a VRContainer.");
+      VRERRORNOADV("This datum is not a VRContainer.");
     }
   }
 

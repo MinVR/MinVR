@@ -1,33 +1,33 @@
 # ================================================================================
-# 
+#
 # This file is part of the MinVR project.
-# 
+#
 # File: CMakeLists.txt
-# 
+#
 # Original Author(s) of this File:
 # 	Dan Orban, 2015, University of Minnesota
-# 
+#
 # Author(s) of Significant Updates/Modifications to the File:
 # 	MinVR Core Team
-# 
+#
 # -----------------------------------------------------------------------------------
 # Copyright (c) 2015 Regents of the University of Minnesota and Brown University
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without modification,
 # are permitted provided that the following conditions are met:
-# 
+#
 # * Redistributions of source code must retain the above copyright notice, this
 #   list of conditions and the following disclaimer.
-# 
+#
 # * Redistributions in binary form must reproduce the above copyright notice, this
 #   list of conditions and the following disclaimer in the documentation and/or
 #   other materials provided with the distribution.
-# 
+#
 # * The name of the University of Minnesota, nor the names of its
 #   contributors may be used to endorse or promote products derived from
 #   this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 # ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -38,16 +38,16 @@
 # ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# ================================================================================ 
- 
+# ================================================================================
+
 project(MinVR_Project)
 
 
-# CMakeLists files in this project can refer to the root source directory of the 
-# project as ${MINVR_SOURCE_DIR} and to the root binary directory of the project 
+# CMakeLists files in this project can refer to the root source directory of the
+# project as ${MINVR_SOURCE_DIR} and to the root binary directory of the project
 # as ${MINVR_BINARY_DIR}.
 
-cmake_minimum_required (VERSION 2.8.2) 
+cmake_minimum_required (VERSION 2.8.2)
 
 if(NOT CMAKE_BUILD_TYPE)
   set( CMAKE_BUILD_TYPE Release CACHE STRING
@@ -65,7 +65,7 @@ endif()
 # other builds, we'll add a postfix to the name of the lib or exe that we generate.
 
 if(NOT CMAKE_DEBUG_POSTFIX)
-  set(CMAKE_DEBUG_POSTFIX "d")
+  set(CMAKE_DEBUG_POSTFIX "")
 endif()
 set(CMAKE_RELEASE_POSTFIX "")
 set(CMAKE_RELWITHDEBINFO_POSTFIX "rd")
@@ -101,7 +101,7 @@ endforeach(CONF CMAKE_CONFIGURATION_TYPES)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   # Linux specific code
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC") 
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 endif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")

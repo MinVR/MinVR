@@ -65,25 +65,28 @@ void VRDisplayNode::createChildren(VRMainInterface *vrMain,
                                    VRDataIndex *config,
                                    const std::string &nameSpace) {
 
-  std::list<std::string> names = config->getValue(nameSpace);
   std::string validatedNameSpace = config->validateNameSpace(nameSpace);
+
+  std::list<std::string> names =
+    config->selectByAttribute("displaynodeType", "*", validatedNameSpace, true);
 
   for (std::list<std::string>::const_iterator it = names.begin();
        it != names.end(); ++it) {
 
-	  if (config->exists(*it, validatedNameSpace)){
-		  VRDisplayNode *child =
-        vrMain->getFactory()->create<VRDisplayNode>(vrMain,
-                                                    config,
-                                                    validatedNameSpace + *it);
+    // We only want to do this for direct children. The grandchildren
+    // and their progeny will be addressed in turn.
+    if (VRDataIndex::isChild(nameSpace, *it) == 1) {
+
+      VRDisplayNode *child =
+        vrMain->getFactory()->create<VRDisplayNode>(vrMain, config, *it);
       if (child != NULL) {
         addChild(child);
       }
     }
-  }	
+  }
 }
 
-  
+
 /// Returns a list of the values added to the render state by this
 /// node, and its children nodes.
 std::map<std::string,std::string> VRDisplayNode::getValuesAdded() {
@@ -113,7 +116,7 @@ std::map<std::string,std::string> VRDisplayNode::getValuesAdded() {
         }
       }
 		}
-	} 
+	}
 
   return out;
 }
@@ -122,7 +125,7 @@ void VRDisplayNode::auditValues(std::list<std::string> valuesSupplied) {
   // First check to see if all of the values needed appear in the
   // input list.
   bool found;
-  
+
   if ((_valuesNeeded.size() > 0) && (valuesSupplied.size() > 0)) {
     for (std::list<std::string>::iterator it = _valuesNeeded.begin();
          it != _valuesNeeded.end(); it++) {
@@ -148,8 +151,43 @@ void VRDisplayNode::auditValues(std::list<std::string> valuesSupplied) {
          it != _children.end(); it++) {
       (*it)->auditValues(valuesSupplied);
     }
-  }  
+  }
 }
-  
+
+std::string VRDisplayNode::printNode(const std::string &prefix) const {
+
+  std::string name;
+  if (_name.size() > 48) {
+    name = _name.substr(0,15) + "..." +
+      _name.substr(_name.size() - 33, std::string::npos);
+
+  } else {
+    name = _name;
+  }
+
+  std::string out = prefix + "<displayNode:" + name + ">";
+
+  out += "\n" + prefix + "   Values Added";
+  for (std::list<std::string>::const_iterator it = _valuesAdded.begin();
+       it != _valuesAdded.end(); it++) {
+    out += "\n" + prefix + "     " + *it;
+  }
+  if (_valuesAdded.empty()) out += "\n" + prefix + "     <none>";
+
+  out += "\n" + prefix + "   Values Needed";
+  for (std::list<std::string>::const_iterator it = _valuesNeeded.begin();
+       it != _valuesNeeded.end(); it++) {
+    out += "\n" + prefix + "     " + *it;
+  }
+  if (_valuesNeeded.empty()) out += "\n" + prefix + "     <none>";
+
+  for (std::vector<VRDisplayNode*>::const_iterator it = _children.begin();
+       it != _children.end(); it++) {
+    out += "\n" + (*it)->printNode(prefix + "| ");
+  }
+
+  return out;
+}
+
 
 } /* namespace MinVR */

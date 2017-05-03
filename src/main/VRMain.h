@@ -14,6 +14,7 @@
 #include <main/VRRenderHandler.h>
 #include <net/VRNetInterface.h>
 #include <main/VRAppLauncher.h>
+#include <main/VRError.h>
 
 namespace MinVR {
 
@@ -53,23 +54,23 @@ public:
     // TODO: Add function:  void removeRenderHandler();
 
 
-    
+
     // STEP 2:  INITIALIZE MINVR BASED ON CONFIG FILE SETTINGS
-  
+
     /** STEP 2 (option 1): The MinVR initialize step loads MinVR configuration
         files, spawns additional sub-processes (in the case of clustered VR
-        setups), and creates any InputDevices and DisplayDevices specified in 
+        setups), and creates any InputDevices and DisplayDevices specified in
         the config files.
-     
+
         Two initialize*() functions are provided.  Use this one,
         VRMain::initializeWithMinVRCommandLine(..), if you wish to use MinVR's
         convention for command line arguments.
-     
+
         -h, --help         Display a help message.
-     
+
         Add any of the following arguments to the command line as many times as
         needed in a space separated list.
-     
+
         -c <configname>, --load-config <configname>
                            Search for and load the pre-installed MinVR config file
                            named <configname>.minvr -- the search looks in:
@@ -79,11 +80,11 @@ public:
                               executables from build/bin or tests/testname
                            4. MINVR_ROOT/config if the MINVR_ROOT envvar is defined
                            5. the install_prefix specified when libMinVR was built.
-        
+
         -f <path/file.minvr>, --load-file <path/file.minvr>
                            Load the exact MinVR config file specified as a complete
                            relative or absolute path and filename.
-     
+
         -s <key>=<value>, --set-value <key>=<value>
                            Add an entry to the MinVR configuration directly from
                            the command line rather than by specifying it in a
@@ -95,53 +96,53 @@ public:
                            config and then override the WindowHeight and
                            WindowWidth values in the pre-installed desktop
                            configuration with the new values specified.
-     
+
         [nothing]          If no command line arguments are provided, then MinVR
                            will try to load the pre-installed default
                            configuration, whis is the same as running the command
                            'myprogram --load-config default'.
-     
+
         [anything else]    MinVR will silently ignore anything else provided as
                            a command line option.
-     
+
         --MINVR_DATA=xxxx  A special command line argument reserved for internal
                            use by MinVR.
      */
     void initializeWithMinVRCommandLineParsing(int argc, char **argv);
-    
-    
+
+
     /** STEP 2 (option 2): The MinVR initialize step loads MinVR configuration
         files, spawns additional sub-processes (in the case of clustered VR
-        setups), and creates any InputDevices and DisplayDevices specified in 
+        setups), and creates any InputDevices and DisplayDevices specified in
         the config files.
-     
+
         Two initialize*() functions are provided.  Use this one if you wish to
-        load configufreation files yourself and do your own command line 
+        load configufreation files yourself and do your own command line
         parsing.
-     
-        With MinVR, you may use whatever convention you wish for command line 
-        arguments as long as you allow for the last argument passed to your 
-        program to be a special string used by MinVR.  This string will be 
-        formated as follows:  MINVR_DATA=xxxxxx where xxxxxx is a coded string 
-        of data with no spaces.  If you parse your own command line arguments, 
-        we recommend that you do whatever parsing you like ignoring this string.  
-        Then, simply forward the original argc and argv passed into your program 
-        to MinVR::initialize().  MinVR will, in turn, ignore all of your command 
-        line arguments and just pay attention to its special MINVR_DATA=xxxxxx 
+
+        With MinVR, you may use whatever convention you wish for command line
+        arguments as long as you allow for the last argument passed to your
+        program to be a special string used by MinVR.  This string will be
+        formated as follows:  MINVR_DATA=xxxxxx where xxxxxx is a coded string
+        of data with no spaces.  If you parse your own command line arguments,
+        we recommend that you do whatever parsing you like ignoring this string.
+        Then, simply forward the original argc and argv passed into your program
+        to MinVR::initialize().  MinVR will, in turn, ignore all of your command
+        line arguments and just pay attention to its special MINVR_DATA=xxxxxx
         string.
-     
-        To tell MinVR which configuration files to load and any additional 
-        key=value config settings that you with to apply, call the following 
+
+        To tell MinVR which configuration files to load and any additional
+        key=value config settings that you with to apply, call the following
         three functions.
-     
+
          void VRMain::loadInstalledConfiguration(const std::string &configName);
          void VRMain::loadConfigFile(const std::string &pathAndFilename);
          void VRMain::setConfigValue(const std::string &key, const std::string &value);
-     
-        First, call any of these three functions in any order and as many times 
-        as you wish, *then* call initializeWithUserCommandLineParsing(argc,argv). 
+
+        First, call any of these three functions in any order and as many times
+        as you wish, *then* call initializeWithUserCommandLineParsing(argc,argv).
         For example:
-     
+
          VRMain *vrmain = new VRMain();
          vrmain->loadInstalledConfiguration("Display_3DTV");
          vrmain->loadInstalledConfiguration("WinToolkit_GLFW");
@@ -149,15 +150,15 @@ public:
          vrmain->loadConfigFile("/users/dan/myprogram/my-overrides.minvr");
          vrmain->setConfigValueByString("StereoFormat", "Side-by-Side");
          vrmain->initializeWithUserCommandLineParsing(argc, argv);
-         
+
          while (vrmain->mainloop()) {}
-         
+
          vrmain->shutdown();
      */
     void initializeWithUserCommandLineParsing(int argc, char **argv);
-    
+
     /** For use before calling initializeWIthUserCommandLineParsing(..).
-        This will search for and load the pre-installed MinVR config file named 
+        This will search for and load the pre-installed MinVR config file named
         <configName>.minvr -- the search looks in:
         1. the current working directory [cwd]
         2. [cwd]/config
@@ -181,13 +182,13 @@ public:
         @param keyAndValStr A string of the form "key=value".
      */
     void setConfigValueByString(const std::string &keyAndValStr);
-    
-    
 
 
-    
+
+
+
     /***** STEP 3: CALL MINVR'S MAINLOOP() FUNCTION *****/
-    
+
     /** STEP 3 (option 1): Call this mainloop() function once per frame from
         your program's existing main loop.
 
@@ -199,10 +200,10 @@ public:
         handlers that have been registered with MinVR.
 
         The second part of mainloop() is renderOnAllDisplays(). This tells MinVR
-        to traverse its DisplayGraph structure, updateing the appropriate 
-        window, viewport, and other settings specified in the display nodes.  
-        As MinVR traverses the DisplayGraph, it calls any render handlers 
-        that have been registered with MinVR when it reaches an appropriate 
+        to traverse its DisplayGraph structure, updateing the appropriate
+        window, viewport, and other settings specified in the display nodes.
+        As MinVR traverses the DisplayGraph, it calls any render handlers
+        that have been registered with MinVR when it reaches an appropriate
         node.
      */
     bool mainloop() {
@@ -223,19 +224,19 @@ public:
      */
     void renderOnAllDisplays();
 
-    
+
 
     /***** STEP 4: SHUTDOWN MINVR *****/
-    
+
     /** STEP 4: Call shutdown() to close any network connections and/or other
         resources created by MinVR
      */
     void shutdown();
 
 
-    
+
     /***** USED INTERNALLY BY MINVR *****/
-    
+
     std::string getName() { return _name; }
 
     VRFactory* getFactory() { return _factory; }
@@ -243,20 +244,20 @@ public:
     VRDataIndex* getConfig() { return _config; }
 
     void addInputDevice(VRInputDevice* dev);
- 
+
     VRGraphicsToolkit* getGraphicsToolkit(const std::string &name);
     VRWindowToolkit* getWindowToolkit(const std::string &name);
     void addPluginSearchPath(const std::string& path) { _pluginSearchPaths.push_back(path); }
 
     std::list<std::string> auditValuesFromAllDisplays();
-    
+
     void displayCommandLineHelp();
-  
+
 private:
 
     void processCommandLineArgs(std::string commandLine);
     void initializeInternal(int argc, char **argv);
-    
+
     bool _initialized;
 
     std::string      _name;
