@@ -820,6 +820,12 @@ public:
   ///    ~~~
   /// This will create an entry in the resulting data index with the
   /// targetname linked to the *same* data object as sourcename.
+  ///
+  /// Note that linking *containers* probably does not work the way you might
+  /// imagine.  Linking containers results in two containers containing
+  /// values linked to each other.  Unlike the other linked data types, they
+  /// will not be the same container.  That is, adding a value to one of two
+  /// linked containers will not add it to the other.
   bool linkNode(const std::string &fullSourceName,
                 const std::string &fullTargetName,
                 int depthLimit = 0);
