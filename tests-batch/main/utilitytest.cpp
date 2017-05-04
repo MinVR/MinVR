@@ -2,9 +2,6 @@
 
 int testSearchPath();
 
-// Make this a large number to get decent timing data.
-#define LOOP for (int loopctr = 0; loopctr < 1; loopctr++)
-
 int utilitytest(int argc, char* argv[]) {
 
   int defaultchoice = 1;
@@ -65,6 +62,8 @@ int testSearchPath() {
 
   int out = 0;
 
+  // Set up a test tree of directories and subdirectories.  Put a target file
+  // in there, and a decoy.
   executeShellCommand("mkdir -p testSearch");
   executeShellCommand("mkdir -p testSearch/test1");
   executeShellCommand("mkdir -p testSearch/test2");
@@ -73,31 +72,6 @@ int testSearchPath() {
   executeShellCommand("mkdir -p testSearch/test2/test4/test5");
   executeShellCommand("echo hello >testSearch/test2/test4/target.txt");
   executeShellCommand("echo hello >testSearch/test2/test3/target.txt");
-
-  MinVR::VRSearchPath sp;
-  sp.addPathEntry("testSearch");
-  sp.addPathEntry("testSearch/test1");
-  sp.addPathEntry("testSearch/test2");
-  sp.addPathEntry("testSearch/test2/test3");
-  sp.addPathEntry("testSearch/test2/test4");
-  sp.addPathEntry("testSearch/test2/test4/test5");
-
-  std::cout << "result:" << sp.findFile("target.txt") << std::endl;
-  std::cout << "path:" << sp << std::endl;
-
-  out += sp.findFile("target.txt").compare("testSearch/test2/test3/target.txt");
-
-  out += sp.getPath().compare("testSearch:testSearch/test1:testSearch/test2:testSearch/test2/test3:testSearch/test2/test4:testSearch/test2/test4/test5");
-
-  MinVR::VRSearchPath sp2;
-  sp2.digestPathString(sp.getPath());
-
-  std::cout << "path:" << sp2 << std::endl;
-  std::cout << "result:" << sp2.findFile("target.txt") << std::endl;
-
-  out += sp2.findFile("target.txt").compare("testSearch/test2/test3/target.txt");
-
-  out += sp2.getPath().compare("testSearch:testSearch/test1:testSearch/test2:testSearch/test2/test3:testSearch/test2/test4:testSearch/test2/test4/test5");
 
   std::string libRoot = "Henry";
 #ifdef __APPLE__
@@ -114,28 +88,78 @@ int testSearchPath() {
     ".so";
 #endif
 
-  std::cout << "libRoot:" << libRoot<< "libName:" << libName << std::endl;
-
+  // Extend the directory structure for libraries.
   executeShellCommand("mkdir -p testSearch/test2/test3/lib");
   executeShellCommand("mkdir -p testSearch/test2/test4/lib");
   executeShellCommand("echo hello >testSearch/test2/test3/lib/" + libName);
 
-  out += sp.findLib(libRoot).compare("testSearch/test2/test3/lib/libHenryd.dylib");
+  executeShellCommand("mkdir -p testSearch/test2/test4/" + libRoot + "/lib");
+  executeShellCommand("echo hello >testSearch/test2/test4/" + libRoot + "/lib/" + libName);
 
-#ifndef MinVR_DEBUG
-#ifdef __APPLE__
- out += sp.findLib(libRoot + ".dylib").compare("testSearch/test2/test3/lib/libHenryd.dylib");
-#else
- out += sp.findLib(libRoot + ".so").compare("testSearch/test2/test3/lib/libHenryd.dylib");
+    // Plant a couple of config files
+  executeShellCommand("echo hello >testSearch/test2/test3/Chester.minvr");
+  executeShellCommand("echo hello >testSearch/test2/test3/Chester.xml");
+
+
+  // Set up the search path.
+  MinVR::VRSearchPath sp;
+  sp.addPathEntry("testSearch");
+  sp.addPathEntry("testSearch/test1");
+  sp.addPathEntry("testSearch/test2");
+  sp.addPathEntry("testSearch/test2/test3");
+  sp.addPathEntry("testSearch/test2/test4");
+  sp.addPathEntry("testSearch/test2/test4/test5");
+
+  // Do we find the file we're after?
+  out += sp.findFile("target.txt").compare("testSearch/test2/test3/target.txt");
+
+  // std::cout << "result:" << sp.findFile("target.txt") << std::endl;
+  // std::cout << "path:" << sp << std::endl;
+
+  // Does the colon-separated search path look right?
+  out += sp.getPath().compare("testSearch:testSearch/test1:testSearch/test2:testSearch/test2/test3:testSearch/test2/test4:testSearch/test2/test4/test5");
+
+  // Test whether the digestPathString works properly.  This should result in an
+  // sp2 object the same as the sp object, so the tests are the same.
+  MinVR::VRSearchPath sp2;
+  sp2.digestPathString(sp.getPath());
+
+  // std::cout << "path:" << sp2 << std::endl;
+  // std::cout << "result:" << sp2.findFile("target.txt") << std::endl;
+
+  out += sp2.findFile("target.txt").compare("testSearch/test2/test3/target.txt");
+
+  out += sp2.getPath().compare("testSearch:testSearch/test1:testSearch/test2:testSearch/test2/test3:testSearch/test2/test4:testSearch/test2/test4/test5");
+
+  // Now we search for plugins and config files, which have some extra
+  // semantic issues.
+
+
+  // std::cout << "libRoot:" << libRoot<< "libName:" << libName << std::endl;
+
+  // Look for a plugin, using the root name.
+  MinVR::VRSearchPlugin spp;
+  spp.digestPathString(sp.getPath());
+
+  // std::cout << "spp:" << spp.findFile(libRoot) << std::endl;
+
+  // Did we find it?
+  out += spp.findFile(libRoot).compare("testSearch/test2/test4/Henry/lib/libHenryd.dylib");
+
+  MinVR::VRSearchConfig spc;
+  spc.digestPathString(sp.getPath());
+
+  // If we don't specify the suffix, we get the default ".minvr" suffix.  If
+  // we do specify a suffix, we get that.
+  out += spc.findFile("Chester").compare("testSearch/test2/test3/Chester.minvr");
+  out += spc.findFile("Chester.xml").compare("testSearch/test2/test3/Chester.xml");
+
+  // std::cout << "spc:" << spc.findFile("Chester") << std::endl;
+  // std::cout << "spc:" << spc.findFile("Chester.xml") << std::endl;
+
 #endif
-#endif
 
- out += sp.findLib(libName).compare("testSearch/test2/test3/lib/libHenryd.dylib");
-
-  //executeShellCommand("rm -rf testSearch");
-
-#endif
-
+  executeShellCommand("rm -rf testSearch");
 
   return out;
 }

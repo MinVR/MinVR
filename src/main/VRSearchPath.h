@@ -11,13 +11,23 @@
 
 namespace MinVR {
 
-/// This is a simple little class to manage the process of searching a
-/// path of directories for a particular file.  MinVR uses it both for
-/// searching for plugin libraries and for searching for configuration
-/// files.
+/// This is a simple little class to manage the process of searching a path of
+/// directories for a particular file.  MinVR uses subclasses of it both for
+/// searching for plugin libraries and for searching for configuration files.
+/// The class works as is for simple searching for files, but if you want to
+/// add semantic restrictions to the file (i.e. "ends in '.xml' or 'in a
+/// subdirectory called lib and ends in '.dylib', make a sub-class and
+/// redefine the selectFile() method.
 class VRSearchPath {
- private:
+ protected:
   std::list<std::string> _searchPath;
+
+  virtual std::string _selectFile(const std::string &file,
+                                  const std::string &directory) {
+    std::string validDirectory = directory;
+    if (*(validDirectory.rbegin()) != '/') validDirectory += "/";
+    return validDirectory + file;
+  }
 
  public:
   VRSearchPath() {};
@@ -67,74 +77,11 @@ class VRSearchPath {
   std::string findFile(const std::string &desiredFile) {
     for (std::list<std::string>::iterator it = _searchPath.begin();
          it != _searchPath.end(); it++) {
-      std::string testFile = (*it) + "/" + desiredFile;
+      std::string testFile = _selectFile(desiredFile, (*it));
       if (open(testFile.c_str(), O_RDONLY) >= 0)
         return testFile;
     }
     return "";
-  }
-
-  /// \brief Find a file.
-  ///
-  /// This is the same as findFile, with some OS-specific extra semantics
-  /// in the name.
-  /// \return Returns a fully-resolved path name of the library in question,
-  /// wherever it lies on the search path.  If the library is not found, the
-  /// return value is empty.
-  std::string findLib(const std::string &desiredLib) {
-
-    std::string libName;
-
-#if defined(WIN32)
-    // We support just asking for the library, or spelling out the whole name.
-    // So here's some logic to figure out which one we've got.
-    if ((desiredLib.size() > 4) &&
-        (desiredLib.substr(desiredLib.size() - 4).compare(".dll") == 0)) {
-      libName = desiredLib;
-    } else {
-      libName = desiredLib +
-#ifdef MinVR_DEBUG
-        "d" +
-#endif
-        ".dll";
-    }
-
-    return findFile("bin/" + libName);
-#elif defined(__APPLE__)
-    // See above about figuring out which kind of library name we've got.
-    if ((desiredLib.size() > 6) &&
-        (desiredLib.substr(desiredLib.size() - 6).compare(".dylib") == 0)) {
-      libName = desiredLib;
-    } else {
-      libName = desiredLib +
-#ifdef MinVR_DEBUG
-        "d" +
-#endif
-        ".dylib";
-    }
-    if (libName.substr(0,3).compare("lib") != 0) {
-      libName = "lib" + libName;
-    }
-
-    return findFile("lib/" + libName);
-#else
-    // See above about figuring out which kind of library name we've got.
-    if ((desiredLib.size() > 3) &&
-        (desiredLib.substr(desiredLib.size() - 3).compare(".so") == 0)) {
-      libName = desiredLib;
-    } else {
-      libName = desiredLib +
-#ifdef MinVR_DEBUG
-        "d" +
-#endif
-        ".so";
-    }
-    if (libName.substr(0,3).compare("lib") != 0) {
-      libName = "lib" + libName;
-    }
-
-    return findFile("lib/" + libName);
-#endif
   }
 
   /// \brief Return path as a single string.
@@ -154,6 +101,54 @@ class VRSearchPath {
     return os << p.getPath();
   };
 };
+
+/// Same as VRSearchPath, but built to accommodate the specific semantics of
+/// the plugin naming.
+class VRSearchPlugin : public VRSearchPath {
+
+ protected:
+  std::string _selectFile(const std::string &file,
+                          const std::string &directory) {
+
+    // "file" indicates the name of the plugin, which will appear in both the
+    // directory name *and* the name of the library containing the plugin
+    // code.
+    std::string pluginDirectory = directory + "/" + file;
+
+    std::string buildType = "";
+#ifdef MinVR_DEBUG
+    buildType = "d";
+#endif
+
+#if defined(WIN32)
+    return pluginDirectory + "/bin/" + file + buildType + ".dll";
+
+#elif defined(__APPLE__)
+    return pluginDirectory + "/lib/lib" + file + buildType + ".dylib";
+
+#else // Linux
+    return pluginDirectory + "/lib/lib" + file + buildType + ".so";
+
+#endif
+  }
+};
+
+/// Same as VRSearchPath, but built to accommodate the specific semantics of
+/// the configuration file naming.
+class VRSearchConfig : public VRSearchPath {
+
+ protected:
+  std::string _selectFile(const std::string &file,
+                          const std::string &directory) {
+
+    std::string validFile = file;
+    // Does the file already have the suffix specified?
+    if (validFile.find('.') == std::string::npos) validFile += ".minvr";
+
+    return directory + "/" + validFile;
+  };
+};
+
 
 }
 

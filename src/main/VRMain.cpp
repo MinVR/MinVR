@@ -137,63 +137,35 @@ VRMain::~VRMain()
 }
 
 
-bool fileGood(const std::string &fileName) {
-    std::ifstream infile(fileName.c_str());
-    return infile.good();
-}
-
 void VRMain::loadInstalledConfiguration(const std::string &configName) {
-    std::string fname;
-    std::vector< std::string > checked;
 
-    // 1. current working directory
-    fname = "./" + configName + ".minvr";
-    checked.push_back(fname);
-    if (fileGood(fname)) {
-        loadConfigFile(fname);
-        return;
-    }
+  VRSearchConfig configPath;
 
-    // 2. config subdir within current working directory
-    fname = "./config/" + configName + ".minvr";
-    checked.push_back(fname);
-    if (fileGood(fname)) {
-        loadConfigFile(fname);
-        return;
-    }
+  // 1. current working directory
+  configPath.addPathEntry("./");
 
-    // 3. running from within the build tree from build/bin or tests-*/testname
-    fname = "../../config/" + configName + ".minvr";
-    checked.push_back(fname);
-    if (fileGood(fname)) {
-        loadConfigFile(fname);
-        return;
-    }
+  // 2. config subdir within current working directory
+  configPath.addPathEntry("./config/");
 
-    // 4. an installed version based on MINVR_ROOT envvar
-    if (std::getenv("MINVR_ROOT")) {
-        fname = std::string(std::getenv("MINVR_ROOT")) + "/config/" + configName + ".minvr";
-        checked.push_back(fname);
-        if (fileGood(fname)) {
-            loadConfigFile(fname);
-            return;
-        }
-    }
+  // 3. running from within the build tree from build/bin or tests-*/testname
+  configPath.addPathEntry("../../config/");
 
-    // 5. an installed version based on the INSTALL_PREFIX set with cmake
-    fname = std::string(INSTALLPATH) + "/config/" + configName + ".minvr";
-    checked.push_back(fname);
-    if (fileGood(fname)) {
-        loadConfigFile(fname);
-        return;
-    }
+  // 4. an installed version based on MINVR_ROOT envvar
+  configPath.addPathEntry("${MINVR_ROOT}/config/");
 
-    std::cerr << "MinVR Error: Cannot find a configuration named " << configName
-              << " in the following " << checked.size() << " locations:" << std::endl;
-    for (int i=0; i<checked.size(); i++) {
-        std::cerr << i+1 << ": " << checked[i] << std::endl;
-    }
-    throw std::runtime_error("MinVR Error: Cannot find a configuration named " + configName);
+  // 5. an installed version based on the INSTALL_PREFIX set with cmake
+  configPath.addPathEntry(std::string(INSTALLPATH) + "/config/");
+
+  std::string fileName = configPath.findFile(configName);
+  if (fileName.empty()) {
+
+    VRERROR("Cannot find a configuration named " + configName + ".",
+            "Checked: " + configPath.getPath());
+  } else {
+
+    loadConfigFile(fileName);
+
+  }
 }
 
 
@@ -561,7 +533,7 @@ void VRMain::initializeInternal(int argc, char **argv) {
     //    6. <Install directory>/plugins ("install/plugins")
     //    7. <$MINVR_ROOT>/plugins ("$MINVR_ROOT/plugins")
 
-  VRSearchPath sp;
+  VRSearchPlugin sp;
 
   std::vector<std::string> pluginSearchPaths;
   if (_config->exists("/MinVR/PluginPath")){
@@ -575,10 +547,9 @@ void VRMain::initializeInternal(int argc, char **argv) {
   std::size_t endPos = exe.find_last_of("/\\");
   std::string execPath = endPos != std::string::npos ? exe.substr(0,endPos) : ".";
   sp.addPathEntry(execPath + "/../plugins");
-  sp.addPathEntry("${INSTALLPATH}/plugins");
+  // This is CMake trickery.
+  sp.addPathEntry(std::string(INSTALLPATH) + "/plugins");
   sp.addPathEntry("${MINVR_ROOT}/plugins");
-
-  std::cerr << "search path:" << sp << std::endl;
 
   std::list<std::string> names = _config->selectByAttribute("pluginType", "*");
 
@@ -591,7 +562,7 @@ void VRMain::initializeInternal(int argc, char **argv) {
 
     file = _config->getAttributeValue(*it, "pluginType");
 
-    std::string fullLibName = sp.findLib(file);
+    std::string fullLibName = sp.findFile(file);
     if(!_pluginMgr->loadPlugin(fullLibName)) {
       VRWARNING("VRMain Error: Problem loading plugin: " + file,
                 "Could not load from any of the following paths: " +
