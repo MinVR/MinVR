@@ -248,8 +248,9 @@ public:
 
     VRGraphicsToolkit* getGraphicsToolkit(const std::string &name);
     VRWindowToolkit* getWindowToolkit(const std::string &name);
-    void addPluginSearchPath(const std::string& path) { _pluginSearchPaths.push_back(path); }
-
+    void addPluginSearchPath(const std::string& path) {
+      _pluginSearchPath.addPathEntry(path, true);
+    }
     std::list<std::string> auditValuesFromAllDisplays();
 
     void displayCommandLineHelp();
@@ -274,7 +275,8 @@ private:
     std::vector<VRGraphicsToolkit*> _gfxToolkits;
     std::vector<VRWindowToolkit*>   _winToolkits;
     std::vector<VRDisplayNode*>     _displayGraphs;
-    std::vector<std::string>        _pluginSearchPaths;
+
+    VRSearchPlugin                  _pluginSearchPath;
 
     int _frame;
     bool _shutdown;

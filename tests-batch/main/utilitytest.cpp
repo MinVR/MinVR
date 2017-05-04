@@ -111,37 +111,38 @@ int testSearchPath() {
   sp.addPathEntry("testSearch/test2/test4/test5");
 
   // Do we find the file we're after?
-  out += sp.findFile("target.txt").compare("testSearch/test2/test3/target.txt");
+  out += sp.findFile("target.txt").compare("testSearch/test2/test4/target.txt");
 
-  // std::cout << "result:" << sp.findFile("target.txt") << std::endl;
-  // std::cout << "path:" << sp << std::endl;
+  std::cout << "result:" << sp.findFile("target.txt") << " out:" << out << std::endl;
+  std::cout << "path:" << sp << std::endl;
 
   // Does the colon-separated search path look right?
-  out += sp.getPath().compare("testSearch:testSearch/test1:testSearch/test2:testSearch/test2/test3:testSearch/test2/test4:testSearch/test2/test4/test5");
+  out += sp.getPath().compare("testSearch/test2/test4/test5:testSearch/test2/test4:testSearch/test2/test3:testSearch/test2:testSearch/test1:testSearch");
 
   // Test whether the digestPathString works properly.  This should result in an
   // sp2 object the same as the sp object, so the tests are the same.
   MinVR::VRSearchPath sp2;
   sp2.digestPathString(sp.getPath());
 
-  // std::cout << "path:" << sp2 << std::endl;
-  // std::cout << "result:" << sp2.findFile("target.txt") << std::endl;
+  out += sp2.findFile("target.txt").compare("testSearch/test2/test4/target.txt");
 
-  out += sp2.findFile("target.txt").compare("testSearch/test2/test3/target.txt");
+  std::cout << "path:" << sp2 << " out:" << out << std::endl;
 
-  out += sp2.getPath().compare("testSearch:testSearch/test1:testSearch/test2:testSearch/test2/test3:testSearch/test2/test4:testSearch/test2/test4/test5");
+  out += sp2.getPath().compare("testSearch/test2/test4/test5:testSearch/test2/test4:testSearch/test2/test3:testSearch/test2:testSearch/test1:testSearch");
+
+  std::cout << "result:" << sp2.findFile("target.txt") << " out:" << out << std::endl;
 
   // Now we search for plugins and config files, which have some extra
   // semantic issues.
 
 
-  // std::cout << "libRoot:" << libRoot<< "libName:" << libName << std::endl;
+  std::cout << "libRoot:" << libRoot<< "libName:" << libName << std::endl;
 
   // Look for a plugin, using the root name.
   MinVR::VRSearchPlugin spp;
   spp.digestPathString(sp.getPath());
 
-  // std::cout << "spp:" << spp.findFile(libRoot) << std::endl;
+  std::cout << "spp:" << spp.findFile(libRoot) << std::endl;
 
   // Did we find it?
   out += spp.findFile(libRoot).compare("testSearch/test2/test4/Henry/lib/libHenryd.dylib");
@@ -152,10 +153,11 @@ int testSearchPath() {
   // If we don't specify the suffix, we get the default ".minvr" suffix.  If
   // we do specify a suffix, we get that.
   out += spc.findFile("Chester").compare("testSearch/test2/test3/Chester.minvr");
+  std::cout << "spc:" << spc.findFile("Chester") << " out:" << out << std::endl;
+
   out += spc.findFile("Chester.xml").compare("testSearch/test2/test3/Chester.xml");
 
-  // std::cout << "spc:" << spc.findFile("Chester") << std::endl;
-  // std::cout << "spc:" << spc.findFile("Chester.xml") << std::endl;
+  std::cout << "spc:" << spc.findFile("Chester.xml") << " out:" << out << std::endl;
 
 #endif
 

@@ -141,21 +141,6 @@ void VRMain::loadInstalledConfiguration(const std::string &configName) {
 
   VRSearchConfig configPath;
 
-  // 1. current working directory
-  configPath.addPathEntry("./");
-
-  // 2. config subdir within current working directory
-  configPath.addPathEntry("./config/");
-
-  // 3. running from within the build tree from build/bin or tests-*/testname
-  configPath.addPathEntry("../../config/");
-
-  // 4. an installed version based on MINVR_ROOT envvar
-  configPath.addPathEntry("${MINVR_ROOT}/config/");
-
-  // 5. an installed version based on the INSTALL_PREFIX set with cmake
-  configPath.addPathEntry(std::string(INSTALLPATH) + "/config/");
-
   std::string fileName = configPath.findFile(configName);
   if (fileName.empty()) {
 
@@ -163,6 +148,9 @@ void VRMain::loadInstalledConfiguration(const std::string &configName) {
             "Checked: " + configPath.getPath());
   } else {
 
+#ifdef MinVR_DEBUG
+    std::cerr << "Loading configuration: " << fileName << std::endl;
+#endif
     loadConfigFile(fileName);
 
   }
@@ -516,57 +504,37 @@ void VRMain::initializeInternal(int argc, char **argv) {
 
     // STEP 5: LOAD PLUGINS:
 
-	// Load plugins from the plugin directory.  This will add their factories to the master VRFactory.
+	// Load plugins from the plugin directory.  This will add their
+	// factories to the master VRFactory.
 
 
-    // MinVR will try to load plugins based on a search path.  If it doesn't find the plugin
-    // in one path, it will look in another supplied path.  To specify custom paths for an application
-    // a user can set vrmain->addPLuginSearchPath(mypath);
-    //
-    // Here is the search path order that MinVR searches for plugins:
-	//
-    //    1. Plugin path specified in config ("/PluginPath" in VRDataIndex)
-    //    2. Working directory (".")
-    //    3. <Working directory>/plugins ("./plugins")
-    //    4. Custom user defined paths (i.e. vrmain->addPluginSearchPath(mypath))
-    //    5. <Binary directory>/../plugins ("build/bin/../plugins")
-    //    6. <Install directory>/plugins ("install/plugins")
-    //    7. <$MINVR_ROOT>/plugins ("$MINVR_ROOT/plugins")
-
-  VRSearchPlugin sp;
-
-  std::vector<std::string> pluginSearchPaths;
-  if (_config->exists("/MinVR/PluginPath")){
-    sp.digestPathString(_config->getValue("/MinVR/PluginPath"));
+  // MinVR will try to load plugins based on a search path.  If it
+  // doesn't find the plugin in one path, it will look in another
+  // supplied path.  To specify custom paths for an application, use
+  // addPLuginSearchPath().  See VRSearchPath for more information.
+  //
+  // Any search path specified in the config file is prepended to the
+  // default search path.
+  if (_config->exists("/MinVR/PluginPath")) {
+    _pluginSearchPath.digestPathString(_config->getValue("/MinVR/PluginPath"));
   }
 
-  sp.addPathEntry(".");
-  sp.addPathEntry("./plugins");
-
-  std::string exe(argv[0]);
-  std::size_t endPos = exe.find_last_of("/\\");
-  std::string execPath = endPos != std::string::npos ? exe.substr(0,endPos) : ".";
-  sp.addPathEntry(execPath + "/../plugins");
-  // This is CMake trickery.
-  sp.addPathEntry(std::string(INSTALLPATH) + "/plugins");
-  sp.addPathEntry("${MINVR_ROOT}/plugins");
-
+  // Get the objects for which a pluginType is specified.
   std::list<std::string> names = _config->selectByAttribute("pluginType", "*");
 
+  // Sort through the objects returned.
   for (std::list<std::string>::const_iterator it = names.begin();
        it != names.end(); it++) {
 
-    sp.addPathEntry(*it);
+    // Get the name of the plugin specified for each object.
+    std::string pluginName = _config->getAttributeValue(*it, "pluginType");
 
-    std::string file = "";
-
-    file = _config->getAttributeValue(*it, "pluginType");
-
-    std::string fullLibName = sp.findFile(file);
+    // Find the actual library that is the plugin, and load it, if possible.
+    std::string fullLibName = _pluginSearchPath.findFile(pluginName);
     if(!_pluginMgr->loadPlugin(fullLibName)) {
-      VRWARNING("VRMain Error: Problem loading plugin: " + file,
+      VRWARNING("VRMain Error: Problem loading plugin: " + pluginName,
                 "Could not load from any of the following paths: " +
-                sp.getPath());
+                _pluginSearchPath.getPath());
     }
   }
 
