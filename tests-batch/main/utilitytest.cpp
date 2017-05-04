@@ -87,19 +87,52 @@ int testSearchPath() {
 
   out += sp.findFile("target.txt").compare("testSearch/test2/test3/target.txt");
 
-  out += sp.getPrintString().compare("testSearch:testSearch/test1:testSearch/test2:testSearch/test2/test3:testSearch/test2/test4:testSearch/test2/test4/test5");
+  out += sp.getPath().compare("testSearch:testSearch/test1:testSearch/test2:testSearch/test2/test3:testSearch/test2/test4:testSearch/test2/test4/test5");
 
   MinVR::VRSearchPath sp2;
-  sp2.digestPathString(sp.getPrintString());
+  sp2.digestPathString(sp.getPath());
 
   std::cout << "path:" << sp2 << std::endl;
   std::cout << "result:" << sp2.findFile("target.txt") << std::endl;
 
   out += sp2.findFile("target.txt").compare("testSearch/test2/test3/target.txt");
 
-  out += sp2.getPrintString().compare("testSearch:testSearch/test1:testSearch/test2:testSearch/test2/test3:testSearch/test2/test4:testSearch/test2/test4/test5");
+  out += sp2.getPath().compare("testSearch:testSearch/test1:testSearch/test2:testSearch/test2/test3:testSearch/test2/test4:testSearch/test2/test4/test5");
 
-  executeShellCommand("rm -rf testSearch");
+  std::string libRoot = "Henry";
+#ifdef __APPLE__
+  std::string libName = "lib" + libRoot +
+#ifdef MinVR_DEBUG
+    "d" +
+#endif
+    ".dylib";
+#else
+  std::string libName = "lib" + libRoot +
+#ifdef MinVR_DEBUG
+    "d" +
+#endif
+    ".so";
+#endif
+
+  std::cout << "libRoot:" << libRoot<< "libName:" << libName << std::endl;
+
+  executeShellCommand("mkdir -p testSearch/test2/test3/lib");
+  executeShellCommand("mkdir -p testSearch/test2/test4/lib");
+  executeShellCommand("echo hello >testSearch/test2/test3/lib/" + libName);
+
+  out += sp.findLib(libRoot).compare("testSearch/test2/test3/lib/libHenryd.dylib");
+
+#ifndef MinVR_DEBUG
+#ifdef __APPLE__
+ out += sp.findLib(libRoot + ".dylib").compare("testSearch/test2/test3/lib/libHenryd.dylib");
+#else
+ out += sp.findLib(libRoot + ".so").compare("testSearch/test2/test3/lib/libHenryd.dylib");
+#endif
+#endif
+
+ out += sp.findLib(libName).compare("testSearch/test2/test3/lib/libHenryd.dylib");
+
+  //executeShellCommand("rm -rf testSearch");
 
 #endif
 

@@ -561,65 +561,43 @@ void VRMain::initializeInternal(int argc, char **argv) {
     //    6. <Install directory>/plugins ("install/plugins")
     //    7. <$MINVR_ROOT>/plugins ("$MINVR_ROOT/plugins")
 
-    std::list<std::string> names = _config->selectByAttribute("pluginType", "*");
+  VRSearchPath sp;
 
-    for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); it++) {
+  std::vector<std::string> pluginSearchPaths;
+  if (_config->exists("/MinVR/PluginPath")){
+    sp.digestPathString(_config->getValue("/MinVR/PluginPath"));
+  }
 
-        std::vector<std::string> pluginSearchPaths;
-        if (_config->exists("PluginPath", *it)){
-            std::string path = _config->getValue("PluginPath", *it);
-            pluginSearchPaths.push_back(_config->dereferenceEnvVars(path));
-        }
+  sp.addPathEntry(".");
+  sp.addPathEntry("./plugins");
 
-        pluginSearchPaths.push_back(".");
-        pluginSearchPaths.push_back("./plugins");
-        for (int f = 0; f < _pluginSearchPaths.size(); f++) {
-            pluginSearchPaths.push_back(_pluginSearchPaths[f]);
-        }
-        std::string exe(argv[0]);
-        std::size_t endPos = exe.find_last_of("/\\");
-        std::string execPath = endPos != std::string::npos ? exe.substr(0,endPos) : ".";
-        pluginSearchPaths.push_back(execPath + "/../plugins");
-        pluginSearchPaths.push_back(std::string(INSTALLPATH) + "/plugins");
-        const char* minvrRoot = std::getenv("MINVR_ROOT");
-        if (minvrRoot) {
-            pluginSearchPaths.push_back(std::string(minvrRoot) + "/plugins");
-        }
+  std::string exe(argv[0]);
+  std::size_t endPos = exe.find_last_of("/\\");
+  std::string execPath = endPos != std::string::npos ? exe.substr(0,endPos) : ".";
+  sp.addPathEntry(execPath + "/../plugins");
+  sp.addPathEntry("${INSTALLPATH}/plugins");
+  sp.addPathEntry("${MINVR_ROOT}/plugins");
 
-        bool found = false;
-        std::string file = "";
-        string buildType = "";
-#ifdef MinVR_DEBUG
-        buildType = "d";
-#endif
+  std::cerr << "search path:" << sp << std::endl;
 
-        for (std::vector<std::string>::const_iterator
-               searchPath = pluginSearchPaths.begin();
-             searchPath != pluginSearchPaths.end(); ++searchPath) {
-          file = _config->getAttributeValue(*it, "pluginType");
-            std::string path = *searchPath + "/" + file;
+  std::list<std::string> names = _config->selectByAttribute("pluginType", "*");
 
-            if(_pluginMgr->loadPlugin(path, file + buildType)) {
-                found = true;
-                break;
-            }
-        }
+  for (std::list<std::string>::const_iterator it = names.begin();
+       it != names.end(); it++) {
 
-        if (!found) {
-            cerr << "VRMain Error: Problem loading plugin: " << file << buildType << endl;
-            std::cout << "  Could not load from any of the following paths: " << std::endl;
-            for (std::vector<std::string>::const_iterator searchPath = pluginSearchPaths.begin(); searchPath != pluginSearchPaths.end(); ++searchPath) {
-                std::cerr << "\t"<< *searchPath << std::endl;
-            }
-        }
+    sp.addPathEntry(*it);
 
-        //else if(_config->hasAttribute(*it, "pluginlibfile")){
-        //	std::string file = _config->getAttributeValue(*it, "pluginlibfile");
-        //	if (!_pluginMgr->loadPlugin(file)) {
-        //		cerr << "VRMain Error: Problem loading plugin " << file << endl;
-        //	}
-        //}
+    std::string file = "";
+
+    file = _config->getAttributeValue(*it, "pluginType");
+
+    std::string fullLibName = sp.findLib(file);
+    if(!_pluginMgr->loadPlugin(fullLibName)) {
+      VRWARNING("VRMain Error: Problem loading plugin: " + file,
+                "Could not load from any of the following paths: " +
+                sp.getPath());
     }
+  }
 
 
 	// STEP 6: CONFIGURE NETWORKING:

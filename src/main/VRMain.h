@@ -15,6 +15,7 @@
 #include <net/VRNetInterface.h>
 #include <main/VRAppLauncher.h>
 #include <main/VRError.h>
+#include <main/VRSearchPath.h>
 
 namespace MinVR {
 

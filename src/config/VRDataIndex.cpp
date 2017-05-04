@@ -976,7 +976,7 @@ std::string VRDataIndex::dereferenceEnvVars(const std::string &fileName) {
     std::string envVariable = pathName.substr(dollarPos + 2, bracketLen - 3);
 
     if (getenv(envVariable.c_str()) == NULL) {
-      VRERRORNOADV(std::string("No such environment variable: ") + envVariable);
+      VRERRORNOADV("No such environment variable: " + envVariable);
     }
 
     pathName.replace(dollarPos, bracketLen, getenv(envVariable.c_str()));
