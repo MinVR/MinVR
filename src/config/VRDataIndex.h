@@ -609,19 +609,27 @@ public:
   /// \brief Returns objects with the given type.
   ///
   /// Returns a list of names of objects with the given type.
-  VRContainer selectByType(const VRCORETYPE_ID &typeId);
-
+  ///
+  /// \param typeID The ID to select by.
+  /// \param nameSpace Search within this name space.
+  /// \param childOnly Only return names that are the immediate child of the
+  ///        given name space.  That is, ignore grandchildren and
+  ///        great-grandchildren, etc.
+  VRContainer selectByType(const VRCORETYPE_ID &typeID,
+                           const std::string nameSpace = "",
+                           const bool childOnly = false);
 
   /// \brief Returns objects with the given name.
   ///
   /// Returns a list of names of objects with the given name.
   /// \param inName The name can be of any length, and may include
   ///        namespaces (scopes).
-  VRContainer selectByName(const std::string &inName);
+  /// \param nameSpace An optional namespace that will be prepended to the input
+  ///        name before testing.
+  VRContainer selectByName(const std::string &inName,
+                           const std::string nameSpace = "");
 
 
-  // Change selectByType and selectByName to be parallel to selectByAttribute()
-  //
   // reverse default value of selectByAttribute child only *****
   // document wildcard
   // write up difference between get* and select*
@@ -699,7 +707,7 @@ public:
   ///   // now, loop through myNodes and do something...
   ///   ~~~
   /// \param attrName The name of an attribute to check.
-  /// \param attrVal The value of that attribute.
+  /// \param attrVal The value of that attribute.  Use "*" for a wildcard.
   /// \param nameSpace The container to search; defaults to the global scope.
   /// \param childOnly When true, selects only values that are the direct children
   ///        of the given nameSpace, ignores grandchildren, great-grandchildren, etc.

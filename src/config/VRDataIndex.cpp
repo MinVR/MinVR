@@ -632,22 +632,32 @@ std::string VRDataIndex::getByAttribute(const std::string &attrName,
 	return out;
 }
 
-VRContainer VRDataIndex::selectByType(const VRCORETYPE_ID &typeId) {
+VRContainer VRDataIndex::selectByType(const VRCORETYPE_ID &typeID,
+                                      const std::string nameSpace,
+                                      const bool childOnly) {
 
   VRContainer outList;
   for (VRDataMap::iterator it = _theIndex.begin(); it != _theIndex.end(); it++) {
 
-    if (typeId == it->second->getType()) {
+    // Check to see if the type is the type we're looking for.
+    if (typeID == it->second->getType()) {
 
-      outList.push_back(it->first);
+      // Use a string comparison to check if this name is within the given scope.
+      int child = isChild(nameSpace, it->first);
+      if ((childOnly && (child == 1)) || ((!childOnly) && (child >= 1))) {
+
+        // Put the name of the datum on the list.
+        outList.push_back(it->first);
+      }
     }
   }
   return outList;
 }
 
-VRContainer VRDataIndex::selectByName(const std::string &inName) {
+VRContainer VRDataIndex::selectByName(const std::string &inName,
+                                      const std::string nameSpace) {
 
-  std::vector<std::string> inNameParts = _explodeName(inName);
+  std::vector<std::string> inNameParts = _explodeName(nameSpace + inName);
   VRContainer outList;
 
   // Sort through the whole index.
