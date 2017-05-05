@@ -24,7 +24,7 @@ VRDatumFactory VRDataIndex::_initializeFactory() {
 VRDatumFactory VRDataIndex::_factory = VRDataIndex::_initializeFactory();
 
 VRDataIndex::VRDataIndex(const std::string serializedData)  :
-  _overwrite(1), _indexName("MVR") {
+  _overwrite(1), _indexName("MVR"), _linkNeeded(false) {
 
   Cxml *xml = new Cxml();
   xml->parse_string((char*)serializedData.c_str());
@@ -58,8 +58,11 @@ VRDataIndex::VRDataIndex(const std::string serializedData)  :
 
   // If there are nodes in the tree with a 'linknode' attribute,
   // resolve them.
-  _linkNodes();
-  _linkContent();
+  if (_linkNeeded) {
+    _linkNodes();
+    _linkContent();
+    _linkNeeded = false;
+  }
 
 }
 
@@ -394,6 +397,11 @@ std::string VRDataIndex::_walkXML(element* node, std::string nameSpace) {
       typeId = it->second;
     }
   }
+
+  // Check to see if this is a link to anywhere.  If it is, signal
+  // that we'll need the linking step after the deserialize.
+  if (node->get_attribute("linkNode") != NULL) _linkNeeded = true;
+  if (node->get_attribute("linkContent") != NULL) _linkNeeded = true;
 
   // Get a value for the node.
   std::string valueString;
@@ -945,9 +953,10 @@ std::string VRDataIndex::addSerializedValue(const std::string serializedData,
 
   // If there are nodes in the tree with a 'linknode' attribute,
   // resolve them.
-  if (expand) {
+  if (expand && _linkNeeded) {
     _linkNodes();
     _linkContent();
+    _linkNeeded = false;
   }
 
   return out;

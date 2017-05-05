@@ -391,7 +391,7 @@ public:
   ///
   /// The created index has the default name "MVR", which can be changed with
   /// setName().  The index name is used when the index is serialized.
-  VRDataIndex()  : _overwrite(1), _indexName("MVR") {}
+  VRDataIndex()  : _overwrite(1), _indexName("MVR"), _linkNeeded(false) {}
 
   /// \brief Creates an index containing the given data.
   ///
@@ -415,6 +415,7 @@ public:
     _indexName = rhs._indexName;
     _overwrite = rhs._overwrite;
     _linkRegister = rhs._linkRegister;
+    _linkNeeded = rhs._linkNeeded;
 
     return *this;
   };
@@ -1023,6 +1024,9 @@ private:
   // We need this to keep track of links so we can make a deep copy that
   // includes any links that might exist.
   std::map<std::string, std::string> _linkRegister;
+
+  // If this is false, we don't need to do linkNodes() or linkContent().
+  bool _linkNeeded;
 };
 
 
@@ -1124,7 +1128,7 @@ private:
 //     shouldn't be.
 //
 //   - getDatum() should be private.  Add attribute handling methods to the
-//     data index, and the VRDatum type can be completely hidden.
+//     data index, and the VRDatum type can be completely hidden. [DONE]
 //
 //   - We are adding a "list" of index objects.  These are an ordered
 //     collection of VRDataIndex objects, all with more or less the
