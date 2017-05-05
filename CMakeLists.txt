@@ -61,7 +61,7 @@ endif()
 
 
 # Let's follow the convention of putting all of the libs in "build/lib" and all
-# of the exes in "build/bin".  To distingusih between debugging, release, and
+# of the exes in "build/bin".  To distinguish between debugging, release, and
 # other builds, we'll add a postfix to the name of the lib or exe that we generate.
 
 if(NOT CMAKE_DEBUG_POSTFIX)
@@ -131,4 +131,35 @@ add_subdirectory(utils)
 
 # Organize folder structure for Xcode, Visual Studio, etc.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+# add a target to generate API documentation with Doxygen
+find_package(Doxygen)
+
+option(BUILD_DOCUMENTATION "Create and install the HTML based API documentation (requires Doxygen)")
+
+if(BUILD_DOCUMENTATION)
+  if(NOT DOXYGEN_FOUND)
+    message(FATAL_ERROR "Doxygen is needed to build the documentation.")
+  endif()
+
+  message("-- Configured to build documentation.  Use 'make doc'.")
+
+  # Process the config file and put it in the build directory.
+  set(doxyfile_in ${CMAKE_CURRENT_SOURCE_DIR}/doc/MinVR.doxygen.in)
+  set(doxyfile ${CMAKE_BINARY_DIR}/MinVR.doxygen)
+  configure_file(${doxyfile_in} ${doxyfile} @ONLY)
+
+  add_custom_target(doc ALL
+    COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile}
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMENT "Generating API documentation with Doxygen"
+    VERBATIM)
+
+  install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html DESTINATION share/doc)
+
+else()
+  message("-- NOT building MinVR library documentation.")
+  message("   Use 'cmake -DBUILD_DOCUMENTATION=on' to build.")
+
+endif()
 
