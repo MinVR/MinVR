@@ -186,6 +186,11 @@ VRGLFWWindowToolkit::makeWindowCurrent(int windowID) {
 	}
 }
 
+void
+VRGLFWWindowToolkit::getFramebufferSize(int windowID, int& width, int& height) {
+	glfwGetFramebufferSize(_windows[windowID], &width, &height);
+}
+
 void 
 VRGLFWWindowToolkit::swapBuffers(int windowID) {
     glfwMakeContextCurrent(_windows[windowID]);
