@@ -604,7 +604,7 @@ public:
   ///
   /// Note this really is a list of strings, not a VRContainer.  If you want
   /// a list of the names in some container, use getValue().
-  std::list<std::string> getNames();
+  std::list<std::string> findAllNames();
 
   /// \brief Returns objects with the given type.
   ///
@@ -618,6 +618,15 @@ public:
   /// \param inName The name can be of any length, and may include
   ///        namespaces (scopes).
   VRContainer selectByName(const std::string &inName);
+
+
+  // Change selectFirstByAttribute to getByAttribute() *****
+  // Change selectByType and selectByName to be parallel to selectByAttribute()
+  //
+  // reverse default value of selectByAttribute child only *****
+  // document wildcard
+  // write up difference between get* and select*
+  // pick namespace or scope.
 
 
 
@@ -1103,7 +1112,7 @@ private:
 //   - Can we add a helper class to data index? [DONE]
 //
 //   - Need a human-readable and a machine-readable (i.e. quicker)
-//     format for serialization. [TBD]
+//     format for serialization. [DONE]
 //
 //   - The mvrTypeMap is clunky and is not attached to the VRDatum
 //     description field.  The mapping between type ID and description
@@ -1112,7 +1121,7 @@ private:
 //   - Improve (and test) adding values to containers. [DONE]
 //
 //   - The walkXML should look out for linkNode attributes, so we can skip
-//     the linkNodes() and linkContent() steps of deserialization.
+//     the linkNodes() and linkContent() steps of deserialization. [DONE]
 //
 //   Need to simplify the process of adding data types.
 //

@@ -288,7 +288,7 @@ int main(int argc, char** argv) {
           if (elems[1].compare("/") == 0) {
 
             // We want the root list of names.
-            nameList = index->getNames();
+            nameList = index->findAllNames();
           } else {
 
             // Get the list for the specified container.
@@ -296,7 +296,7 @@ int main(int argc, char** argv) {
           }
         } else {
           if (nameSpace.compare("/") == 0) {
-            nameList = index->getNames();
+            nameList = index->findAllNames();
           } else {
             nameList = index->getValue(nameSpace.substr(0,nameSpace.size() - 1));
           }

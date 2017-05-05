@@ -117,7 +117,7 @@ std::string VRDataIndex::serialize() {
     // Unfortunately, we only want the first-level names, and want
     // none of the children of those first-level names.  So we have to
     // weed the second- and third-level names out.
-    VRContainer nameList = getNames();
+    VRContainer nameList = findAllNames();
     if (nameList.empty()) {
 
       serialized += "/>";
@@ -532,7 +532,7 @@ VRCORETYPE_ID VRDataIndex::_inferType(const std::string &valueString) {
 // command, or something like it.  If you want a list of names within
 // a container (or within a namespace, pretty much the same thing),
 // just use getValue().
-std::list<std::string> VRDataIndex::getNames() {
+std::list<std::string> VRDataIndex::findAllNames() {
   VRContainer outList;
   for (VRDataMap::iterator it = _theIndex.begin(); it != _theIndex.end(); it++) {
     outList.push_back(it->first);
