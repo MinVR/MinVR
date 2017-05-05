@@ -581,9 +581,9 @@ VRContainer VRDataIndex::selectByAttribute(const std::string &attrName,
 	return outList;
 }
 
-std::string VRDataIndex::selectFirstByAttribute(const std::string &attrName,
-                                                const std::string &attrVal,
-                                                const std::string nameSpace) {
+std::string VRDataIndex::getByAttribute(const std::string &attrName,
+                                        const std::string &attrVal,
+                                        const std::string nameSpace) {
 
   std::string out = "";
 	std::string validatedNameSpace = validateNameSpace(nameSpace);

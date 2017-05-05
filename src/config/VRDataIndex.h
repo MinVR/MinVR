@@ -620,7 +620,6 @@ public:
   VRContainer selectByName(const std::string &inName);
 
 
-  // Change selectFirstByAttribute to getByAttribute() *****
   // Change selectByType and selectByName to be parallel to selectByAttribute()
   //
   // reverse default value of selectByAttribute child only *****
@@ -721,9 +720,9 @@ public:
   /// \param attrName The name of an attribute to check.
   /// \param attrVal The value of that attribute.
   /// \param nameSpace The container to search; defaults to the global scope.
-  std::string selectFirstByAttribute(const std::string &attrName,
-                                     const std::string &attrVal,
-                                     const std::string nameSpace = "");
+  std::string getByAttribute(const std::string &attrName,
+                             const std::string &attrVal,
+                             const std::string nameSpace = "");
 
 
   /// \brief Check if a data value has an attribute.

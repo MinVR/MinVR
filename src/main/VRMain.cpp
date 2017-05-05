@@ -587,7 +587,7 @@ void VRMain::initializeInternal(int argc, char **argv) {
 			// CONFIGURE GRAPHICS TOOLKIT
 
       std::string graphicsToolkitName =
-        _config->selectFirstByAttribute("graphicstoolkitType", "*", *it);
+        _config->getByAttribute("graphicstoolkitType", "*", *it);
 
       // If there is no graphics toolkit to be found here, we can't
       // really do anything, so throw an error.
@@ -633,7 +633,7 @@ void VRMain::initializeInternal(int argc, char **argv) {
       // CONFIGURE WINDOW TOOLKIT
 
       std::string windowToolkitName =
-        _config->selectFirstByAttribute("windowtoolkitType", "*", *it);
+        _config->getByAttribute("windowtoolkitType", "*", *it);
 
       // If there is no window toolkit to be found here, we can't
       // really do anything, so throw an error.

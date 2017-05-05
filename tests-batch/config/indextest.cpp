@@ -349,23 +349,23 @@ int testSelectionFirst() {
   // output.  Try running the tests with 'ctest -VV'.
   std::cout << n.printStructure() << std::endl;
 
-  std::cout << "1:" << n.selectFirstByAttribute("title", "Duke", "/A/B/E") << std::endl;
-  out += n.selectFirstByAttribute("title", "Duke", "/A/B/E").compare("/A/B/E/F");
+  std::cout << "1:" << n.getByAttribute("title", "Duke", "/A/B/E") << std::endl;
+  out += n.getByAttribute("title", "Duke", "/A/B/E").compare("/A/B/E/F");
 
-  std::cout << "2:" << n.selectFirstByAttribute("title", "Duke", "/A/B") << std::endl;
-  out += n.selectFirstByAttribute("title", "Duke", "/A/B").compare("/A/B/C");
+  std::cout << "2:" << n.getByAttribute("title", "Duke", "/A/B") << std::endl;
+  out += n.getByAttribute("title", "Duke", "/A/B").compare("/A/B/C");
 
-  std::cout << "3:" << n.selectFirstByAttribute("title", "Duke", "/A") << std::endl;
-  out += n.selectFirstByAttribute("title", "Duke", "/A").compare("/A/Q");
+  std::cout << "3:" << n.getByAttribute("title", "Duke", "/A") << std::endl;
+  out += n.getByAttribute("title", "Duke", "/A").compare("/A/Q");
 
-  std::cout << "4:" << n.selectFirstByAttribute("title", "Duke", "/A/B/J") << std::endl;
-  out += n.selectFirstByAttribute("title", "Duke", "/A/B/J").compare("/A/B/C");
+  std::cout << "4:" << n.getByAttribute("title", "Duke", "/A/B/J") << std::endl;
+  out += n.getByAttribute("title", "Duke", "/A/B/J").compare("/A/B/C");
 
-  std::cout << "5:" << n.selectFirstByAttribute("weapon", "*", "/A/B/J") << std::endl;
-  out += n.selectFirstByAttribute("weapon", "*", "/A/B/J").compare("/A/B");
+  std::cout << "5:" << n.getByAttribute("weapon", "*", "/A/B/J") << std::endl;
+  out += n.getByAttribute("weapon", "*", "/A/B/J").compare("/A/B");
 
-  std::cout << "6:" << n.selectFirstByAttribute("title", "Earl", "/A") << std::endl;
-  out += n.selectFirstByAttribute("title", "Earl", "/A").empty()? 0 : 1 ;
+  std::cout << "6:" << n.getByAttribute("title", "Earl", "/A") << std::endl;
+  out += n.getByAttribute("title", "Earl", "/A").empty()? 0 : 1 ;
 
   std::cout << n.getIndexName() << std::endl;
   out += n.getIndexName().compare("example");
