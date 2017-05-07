@@ -148,16 +148,17 @@ std::string VRDataIndex::serialize() {
 
 // Returns the string representation of a name/value pair in the data index.
 // If the argument is '/' you are probably trying to serialize the whole index,
-// in which case, the index name will be used as the root name.
+// in which case the index name will be used as the root name.
 std::string VRDataIndex::serialize(const std::string key,
-                                   const std::string nameSpace) {
+                                   const std::string nameSpace,
+                                   const bool inherit) {
 
   if (key == "/") {
 
     return serialize();
 
   } else {
-    VRDataMap::iterator it = _getEntry(key, nameSpace);
+    VRDataMap::iterator it = _getEntry(key, nameSpace, inherit);
 
     if (it != _theIndex.end()) {
 
@@ -866,7 +867,8 @@ void VRDataIndex::popState() {
 //  namespace.
 VRDataIndex::VRDataMap::iterator
 VRDataIndex::_getEntry(const std::string &key,
-                       const std::string nameSpace) {
+                       const std::string nameSpace,
+                       const bool inherit) {
 
   VRDataMap::iterator outIt;
 
@@ -885,6 +887,9 @@ VRDataIndex::_getEntry(const std::string &key,
     // given name requires looking through the senior namespaces.
 
     std::string validatedNameSpace = validateNameSpace(nameSpace);
+
+    // If inheritance is turned off, just check if this name exists.
+    if (!inherit) return _theIndex.find(validatedNameSpace + key);
 
     // Separate the name space into its constituent elements.
     std::vector<std::string> elems = _explodeName(validatedNameSpace);
@@ -917,9 +922,10 @@ VRDataIndex::_getEntry(const std::string &key,
 }
 
 std::string VRDataIndex::getName(const std::string &key,
-                                 const std::string nameSpace) {
+                                 const std::string nameSpace,
+                                 const bool inherit) {
 
-  VRDataMap::iterator p = _getEntry(key, nameSpace);
+  VRDataMap::iterator p = _getEntry(key, nameSpace, inherit);
 
   if (p == _theIndex.end()) {
     VRERRORNOADV("Never heard of " + key + " in namespace " + nameSpace);
@@ -930,9 +936,10 @@ std::string VRDataIndex::getName(const std::string &key,
 
 // Returns the data object for this name.
 VRDatumPtr VRDataIndex::_getDatum(const std::string &key,
-                                  const std::string nameSpace) {
+                                  const std::string nameSpace,
+                                  const bool inherit) {
 
-  VRDataMap::iterator p = _getEntry(key, nameSpace);
+  VRDataMap::iterator p = _getEntry(key, nameSpace, inherit);
 
   if (p == _theIndex.end()) {
     VRERRORNOADV("Never heard of " + key + " in namespace " + nameSpace);
@@ -1155,7 +1162,8 @@ std::string VRDataIndex::addData(const std::string &keyAndValue) {
 // I find this format to be easier to understand.  Also, the
 // serialize() method does not use white space formatting and
 // newlines.
-std::string VRDataIndex::printStructure(const std::string itemName, const int lim) {
+std::string VRDataIndex::printStructure(const std::string itemName,
+                                        const int lim) {
 
   int i;
   std::string outBuffer;
