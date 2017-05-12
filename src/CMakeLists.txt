@@ -49,6 +49,7 @@ set(vr_config_files
   ${vr_src_dir}/../config/default.minvr
   ${vr_src_dir}/../config/desktop-oldopengl.minvr
   ${vr_src_dir}/../config/desktop.minvr
+  ${vr_src_dir}/../config/desktop-sidebyside.minvr
   ${vr_src_dir}/../config/desktop-multithreaded.minvr
   ${vr_src_dir}/../config/HTC_Vive.minvr
   ${vr_src_dir}/../config/ivlabcave_multithreaded.minvr
