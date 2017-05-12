@@ -20,9 +20,9 @@ namespace MinVR {
 /** VRDisplayNode is an abstract base class that can be inherited to
     create a different types of displays.
  */
- 
+
 class VRMainInterface;
- 
+
 class VRDisplayNode {
 public:
 	VRDisplayNode(const std::string &name);
@@ -95,11 +95,13 @@ public:
   // display node graph.  The return is void because the function will
   // throw an error if a mismatch is found.  Return = success.
   virtual void auditValues(std::list<std::string> valuesSupplied);
-  
+
+  std::string printNode(const std::string &prefix) const;
+
 protected:
 	std::vector<VRDisplayNode*> _children;
   std::string _name;
-  
+
   // This contains a list of the values added by this node.  When
   // getValuesAdded() is invoked, this will be returned, appended to a
   // list of values added by this node's children.
@@ -107,6 +109,10 @@ protected:
 
   // This is a list of the values needed by this node.
   std::list<std::string> _valuesNeeded;
+
+  friend std::ostream & operator<<(std::ostream &os, const VRDisplayNode& p) {
+    return os << p.printNode("| ");
+  };
 };
 
 }

@@ -1,4 +1,6 @@
 #include "VRDataQueue.h"
+#include <main/VRError.h>
+
 
 namespace MinVR {
 
@@ -9,7 +11,7 @@ const VRDataQueue::serialData VRDataQueue::noData = "";
 VRDataQueue::VRDataQueue(const VRDataQueue::serialData serializedQueue) {
 
   addSerializedQueue(serializedQueue);
-  
+
 }
 
 // This function does *not* process arbitrary XML, but it *does*
@@ -19,17 +21,17 @@ VRDataQueue::VRDataQueue(const VRDataQueue::serialData serializedQueue) {
 // from one instance of this class to another, even if it more or less
 // honors the look and feel of XML.
 void VRDataQueue::addSerializedQueue(const VRDataQueue::serialData serializedQueue) {
-  
+
   // Looking for the number in <VRDataQueue num="X">
   if (serializedQueue.size() < 18) return;
-  
+
   std::size_t start, end;
-  
+
   start = 18;
   end = serializedQueue.find("\"", start);
-  
+
   //std::cout << serializedQueue.substr(start, end - start) << std::endl;
-  
+
   int numIncluded;
   std::istringstream( serializedQueue.substr(start,end)) >> numIncluded;
   start = serializedQueue.find(">", end);
@@ -55,13 +57,13 @@ void VRDataQueue::addSerializedQueue(const VRDataQueue::serialData serializedQue
   }
 
   if (numReceived != numIncluded) {
-    throw std::runtime_error(std::string("serialized queue appears corrupted"));
+    VRERRORNOADV("Serialized queue appears corrupted.");
   }
 }
 
 VRDataQueue::serialData VRDataQueue::getSerializedObject() {
   if (dataMap.empty()) {
-      
+
     return "";
   } else {
 
@@ -97,7 +99,7 @@ void VRDataQueue::clear() {
 // below.  There seems to be a resolution issue on some Windows machines that
 // makes lots of events have the same time stamp.
 
-  
+
 void VRDataQueue::push(const VRDataQueue::serialData serializedData) {
 
 #ifdef WIN32
@@ -113,7 +115,7 @@ void VRDataQueue::push(const VRDataQueue::serialData serializedData) {
 
   struct timeval tp;
   gettimeofday(&tp, NULL);
-  
+
   // Get current timestamp in milliseconds.
   long long timeStamp = (long long) tp.tv_sec * 1000000L + tp.tv_usec;
 
@@ -129,7 +131,7 @@ void VRDataQueue::push(const long long timeStamp,
   while (dataMap.find(testStamp) != dataMap.end()) {
     testStamp = VRTimeStamp(timeStamp, testStamp.second + 1);
   }
-  
+
   dataMap.insert(std::pair<VRTimeStamp,VRDataQueue::serialData>
                  (testStamp, serializedData));
 }

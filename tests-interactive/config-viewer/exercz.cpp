@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
 
     index->addData("/george", f);
     index->addData("/mary", g);
-    
+
     index->addData("/billy", s1);
     index->addData("/johnny", s2);
 
@@ -75,14 +75,14 @@ int main(int argc, char** argv) {
     std::cout << index->printStructure();
     return EXIT_SUCCESS;
   }
-  
+
   std::vector<std::string> elems;
   std::string elem;
   std::string line;
   std::string nameSpace("/");
-    
+
   HELPMESSAGE ;
-  
+
   while ((std::cout << "> ") && std::getline(std::cin, line)) {
 
     elems.clear();
@@ -123,8 +123,8 @@ int main(int argc, char** argv) {
     ////// command: name
     } else if (elems[0].compare("name") == 0) {
 
-      std::cout << "The name of this index is: '" << index->getName() << "'" << std::endl;
-        
+      std::cout << "The name of this index is: '" << index->getIndexName() << "'" << std::endl;
+
     ////// command: push
     } else if (elems[0].compare("push") == 0) {
 
@@ -168,7 +168,7 @@ int main(int argc, char** argv) {
         std::cout << index->printStructure();
       }
 
-      
+
     ////// command: z (undocumented in help; use for testing)
     } else if (elems[0].compare("z") == 0) {
 
@@ -202,31 +202,30 @@ int main(int argc, char** argv) {
                     << "serialization: " << index->serialize() << std::endl;
 
         } else {
-        
+
           // This illustrates one way to get the data out of the index.
           // You can also do something like this:
           //
           //  int ip = index->getValue("henry", "/")
-          MinVR::VRDatumPtr p = index->getDatum(elems[1], nameSpace);
 
-          switch (p->getType()) {
+          switch (index->getType(elems[1], nameSpace)) {
           case MinVR::VRCORETYPE_INT:
-            std::cout << "an integer containing: " << ((int)p->getValue()) << std::endl;
+            std::cout << "an integer containing: " << ((int)index->getValue(elems[1], nameSpace)) << std::endl;
 
             std::cout << "same as: " << (int)index->getValue(elems[1], nameSpace) << std::endl;
             break;
 
           case MinVR::VRCORETYPE_FLOAT:
-            std::cout << "a float containing: " << ((float)p->getValue()) << std::endl;
+            std::cout << "a float containing: " << ((float)index->getValue(elems[1], nameSpace)) << std::endl;
             break;
 
           case MinVR::VRCORETYPE_STRING:
-            std::cout << "a string containing: " << ((std::string)p->getValue()) << std::endl;
+            std::cout << "a string containing: " << ((std::string)index->getValue(elems[1], nameSpace)) << std::endl;
             break;
 
           case MinVR::VRCORETYPE_INTARRAY:
             {
-              MinVR::VRIntArray pdata = p->getValue();
+              MinVR::VRIntArray pdata = index->getValue(elems[1], nameSpace);
               for (MinVR::VRIntArray::iterator it = pdata.begin(); it != pdata.end(); ++it) {
                 std::cout << "element: " << *it << std::endl;
               }
@@ -235,7 +234,7 @@ int main(int argc, char** argv) {
 
           case MinVR::VRCORETYPE_FLOATARRAY:
             {
-              MinVR::VRFloatArray pdata = p->getValue();
+              MinVR::VRFloatArray pdata = index->getValue(elems[1], nameSpace);
               for (MinVR::VRFloatArray::iterator it = pdata.begin(); it != pdata.end(); ++it) {
                 std::cout << "element: " << *it << std::endl;
               }
@@ -244,7 +243,7 @@ int main(int argc, char** argv) {
 
           case MinVR::VRCORETYPE_STRINGARRAY:
             {
-              MinVR::VRStringArray pdata = p->getValue();
+              MinVR::VRStringArray pdata = index->getValue(elems[1], nameSpace);
               for (MinVR::VRStringArray::iterator it = pdata.begin(); it != pdata.end(); ++it) {
                 std::cout << "element: " << *it << std::endl;
               }
@@ -256,7 +255,7 @@ int main(int argc, char** argv) {
             {
               std::cout << "a container containing: " << std::endl;
 
-              MinVR::VRContainer nameList = p->getValue();
+              MinVR::VRContainer nameList = index->getValue(elems[1], nameSpace);
               for (MinVR::VRContainer::iterator nl = nameList.begin();
                    nl != nameList.end(); nl++) {
                 std::cout << "                        " << *nl << std::endl;
@@ -267,12 +266,12 @@ int main(int argc, char** argv) {
           case MinVR::VRCORETYPE_NONE:
             {
               break;
-            }	     
+            }
           }
 
           std::cout << "serialization: " << index->serialize(elems[1], nameSpace) << std::endl;
         }
-          
+
       } catch (const std::exception& e) {
 
         std::cout << "oops: " << e.what() << std::endl;
@@ -289,7 +288,7 @@ int main(int argc, char** argv) {
           if (elems[1].compare("/") == 0) {
 
             // We want the root list of names.
-            nameList = index->getNames();
+            nameList = index->findAllNames();
           } else {
 
             // Get the list for the specified container.
@@ -297,7 +296,7 @@ int main(int argc, char** argv) {
           }
         } else {
           if (nameSpace.compare("/") == 0) {
-            nameList = index->getNames();
+            nameList = index->findAllNames();
           } else {
             nameList = index->getValue(nameSpace.substr(0,nameSpace.size() - 1));
           }
@@ -328,7 +327,7 @@ int main(int argc, char** argv) {
 
           MinVR::VRContainer Empty;
           index->addData(nameSpace + elems[1], Empty);
-          
+
         } else {
 
           if (elems[2].compare("int") == 0) {
