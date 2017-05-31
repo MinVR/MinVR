@@ -172,6 +172,8 @@ set(vr_main_h
   ${vr_src_dir}/main/VRMainInterface.h
   ${vr_src_dir}/main/VRRenderHandler.h
   ${vr_src_dir}/main/VRSystem.h
+  ${vr_src_dir}/main/VRError.h
+  ${vr_src_dir}/main/VRSearchPath.h
 )
 
 set(vr_math_cpp
