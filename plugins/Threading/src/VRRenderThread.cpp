@@ -44,11 +44,16 @@ void VRRenderThread::render() {
 		{
 			// Copy render state from shared render state.  The copy is necessary for
 			// display nodes to edit their own values
-			VRDataIndex index = *threadGroup->getRenderState();
+			VRDataIndex index;
 
 			// Various render actions for the display nodes
-			if (action == THREADACTION_Render) {
-				//std::cout << "Thread " << threadId << std::endl;
+			if (action == THREADACTION_Init) {
+				// If the thread node is being initialized
+				index.addData("/InitRender",1);
+				displayNode->render(&index, threadGroup->getRenderHandler());
+			}
+			else if (action == THREADACTION_Render) {
+				index.addData("/InitRender",0);
 				displayNode->render(&index, threadGroup->getRenderHandler());
 			}
 			else if (action == THREADACTION_WaitForRenderToComplete) {

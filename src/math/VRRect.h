@@ -10,6 +10,7 @@
 #define VRRECT_H_
 
 #include "config/VRWritable.h"
+#include "VRMath.h"
 
 namespace MinVR {
 
@@ -62,6 +63,23 @@ public:
 
 	void setUsePercent(bool usePercent) {
 		m_usePercent = usePercent;
+	}
+
+	VRRect intersect(const VRRect& rect)
+	{
+		VRVector3 low(m_xOffset, m_yOffset, 0);
+		VRVector3 rectLow(rect.getX(), rect.getY(), 0);
+		VRVector3 high = low + VRVector3(m_width, m_height, 0);
+		VRVector3 rectHigh = rectLow + VRVector3(rect.getWidth(), rect.getHeight(), 0);
+		VRVector3 maxLow(low.x > rectLow.x ? low.x : rectLow.x, low.y > rectLow.y ? low.y : rectLow.y, 0);
+		VRVector3 minHigh(high.x < rectHigh.x ? high.x : rectHigh.x, high.y < rectHigh.y ? high.y : rectHigh.y, 0);
+		VRRect intersection(maxLow.x, maxLow.y, minHigh.x - maxLow.x > 0 ? minHigh.x - maxLow.x : 0.0, minHigh.y - maxLow.y > 0 ? minHigh.y - maxLow.y : 0);
+		return intersection;
+	}
+
+	float getArea()
+	{
+		return m_width*m_height;
 	}
 
 private:

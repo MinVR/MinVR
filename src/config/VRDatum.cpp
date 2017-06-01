@@ -7,24 +7,35 @@ namespace MinVR {
 // 'type="XX"' part.  So you can change them here, and these changes
 // will be reflected throughout the code, but not in any config files
 // that use them.  This is part of step 1 of adding a new type.
-const VRDatum::VRTypePair VRDatum::VRTypeMap[VRCORETYPE_NTYPES] = {
-  {"none", VRCORETYPE_NONE},
-  {"int", VRCORETYPE_INT},
-  {"float", VRCORETYPE_FLOAT},
-  {"string", VRCORETYPE_STRING},
-  {"intarray", VRCORETYPE_INTARRAY},
-  {"floatarray", VRCORETYPE_FLOATARRAY},
-  {"stringarray", VRCORETYPE_STRINGARRAY},
-  {"container", VRCORETYPE_CONTAINER}
+VRDatum::VRTypeMap VRDatum::initializeTypeMap() {
+  VRDatum::VRTypeMap newTypeMap;
+
+  newTypeMap["none"] = VRCORETYPE_NONE;
+  newTypeMap["int"] = VRCORETYPE_INT;
+  newTypeMap["float"] = VRCORETYPE_FLOAT;
+  newTypeMap["string"] = VRCORETYPE_STRING;
+  newTypeMap["intarray"] = VRCORETYPE_INTARRAY;
+  newTypeMap["floatarray"] = VRCORETYPE_FLOATARRAY;
+  newTypeMap["stringarray"] = VRCORETYPE_STRINGARRAY;
+  newTypeMap["container"] = VRCORETYPE_CONTAINER;
+
+  return newTypeMap;
 };
+
+VRDatum::VRTypeMap VRDatum::typeMap = VRDatum::initializeTypeMap();
 
   // The constructor for the native storage form.
 VRDatum::VRDatum(const VRCORETYPE_ID inType) : type(inType) {
 
+  // Store an empty attribute list.
   attrList.push_front(VRAttributeList());
-  for (int i = 0; i < VRCORETYPE_NTYPES; i++) {
-    if (VRTypeMap[i].second == inType) {
-      description = VRTypeMap[i].first;
+
+  // Do a reverse lookup on the typeMap to get the text description of
+  // the input datum type.
+  for (VRTypeMap::iterator it = VRDatum::typeMap.begin();
+       it != VRDatum::typeMap.end(); it++) {
+    if (it->second == inType) {
+      description = it->first;
     }
   }
 };
@@ -84,10 +95,10 @@ std::string VRDatumIntArray::getValueString() const {
   } else {
     separator = static_cast<char>(it->second[0]);
   }
-  
+
   for (VRIntArray::const_iterator it = value.front().begin();
        it != value.front().end(); ++it) {
-    sprintf(buffer, "%d%c", *it, separator); 
+    sprintf(buffer, "%d%c", *it, separator);
 
     out += std::string(buffer);
   }
@@ -143,7 +154,7 @@ std::string VRDatumStringArray::getValueString() const {
   } else {
     separator = static_cast<char>(it->second[0]);
   }
-  
+
   for (VRStringArray::const_iterator it = value.front().begin();
        it != value.front().end(); ++it) {
     out += *it + std::string(1,separator);
@@ -175,7 +186,7 @@ std::string VRDatumContainer::getValueString() const {
   } else {
     separator = static_cast<char>(it->second[0]);
   }
-  
+
   for (VRContainer::const_iterator it = value.front().begin();
        it != value.front().end(); ++it) {
     out += *it + std::string(1,separator);
@@ -195,14 +206,14 @@ bool VRDatumContainer::addToValue(const VRContainer inVal) {
     needPush = false;
     pushed = true;
   }
-  
+
   // Remove all duplicates from the input list.
   for (VRContainer::const_iterator it = value.front().begin();
        it != value.front().end(); ++it) {
 
     inCopy.remove(*it);
   }
-  
+
   value.front().splice(value.front().end(), inCopy);
   return true;
 }

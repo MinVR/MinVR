@@ -1,5 +1,4 @@
 <MinVR>
-  <PluginPath>../../../MinVR2/build/Release/plugins</PluginPath>
 	<GLFWPlugin pluginType="MinVR_GLFW"/>
 	<OpenGLPlugin pluginType="MinVR_OpenGL"/>
 
@@ -18,16 +17,13 @@
 	  <UseDebugContext>0</UseDebugContext>
 	  <MSAASamples>1</MSAASamples>
 	  <QuadBuffered>0</QuadBuffered>
-	  
-	  <StereoFormat>Mono</StereoFormat>
+	  <StereoFormat>SideBySide</StereoFormat>
 
-  
   <HeadTrackingEvent>Head_Move</HeadTrackingEvent>
-
   <NearClip>0.001</NearClip>
   <FarClip>500.0</FarClip>
   
-	<VRSetups>
+<VRSetups>
 		<Desktop hostType="VRStandAlone">
 	      <GLFWToolkit windowtoolkitType="VRGLFWWindowToolkit"/>
 	      <OpenGLToolkit graphicstoolkitType="VROpenGLGraphicsToolkit"/>
@@ -37,7 +33,7 @@
 				<GPUAffinity>0</GPUAffinity>	
 				<XPos>100</XPos>
 				<YPos>100</YPos>
-				<Width>640</Width>
+				<Width>1280</Width>
 				<Height>640</Height>
 				<LookAtNode displaynodeType="VRTrackedLookAtNode">
 					<LookAtUp type="floatarray">0,1,0</LookAtUp>

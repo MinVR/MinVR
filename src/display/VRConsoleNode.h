@@ -13,6 +13,7 @@
 
 #include "VRDisplayNode.h"
 #include <main/VRFactory.h>
+#include <main/VRError.h>
 
 namespace MinVR {
 

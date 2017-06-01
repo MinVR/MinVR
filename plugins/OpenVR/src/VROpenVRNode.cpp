@@ -6,7 +6,13 @@
  * 		Ben Knorlein
  */
 
-#include <GL/glew.h>
+#include "GL/glew.h"
+#ifdef _WIN32
+#include "GL/wglew.h"
+#elif (!defined(__APPLE__))
+#include "GL/glxew.h"
+#endif
+
 #include "VROpenVRNode.h"
 #include <cmath>
 
@@ -28,7 +34,11 @@ namespace MinVR {
 VROpenVRNode::VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double _near, double _far) : VRDisplayNode(name) , isInitialized(false), m_fNearClip(_near), m_fFarClip(_far){
 	vr::EVRInitError eError = vr::VRInitError_None;
 	m_pHMD = vr::VR_Init( &eError, vr::VRApplication_Scene );
+	int idx = name.find_last_of('/');
+	std::cerr << name.substr(idx + 1) << std::endl;
+	_inputDev = new VROpenVRInputDevice(m_pHMD, name.substr(idx + 1));
 
+	vrMain->addInputDevice(_inputDev);
 	if ( eError != vr::VRInitError_None )
 	{
 		m_pHMD = NULL;
@@ -57,19 +67,9 @@ VROpenVRNode::VROpenVRNode(VRMainInterface *vrMain, const std::string &name, dou
 		std::cerr <<   "Compositor initialization failed. See log file for details" <<std::endl;
 		exit(0);
 	}
-
-	int idx = name.find_last_of('/');
-	std::cerr << name.substr(idx+1) << std::endl;
-	_inputDev = new VROpenVRInputDevice(m_pHMD, name.substr(idx+1));
-
-	vrMain->addInputDevice(_inputDev);
 }
 	
-VROpenVRNode::~VROpenVRNode() {
-	if (_inputDev != NULL) {
-		delete _inputDev;
-	}
-	
+VROpenVRNode::~VROpenVRNode() {	
 	if( m_pHMD )
 	{
 		vr::VR_Shutdown();
@@ -95,8 +95,10 @@ VROpenVRNode::~VROpenVRNode() {
 void
 VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 {
+	//return;
 	if(!isInitialized){
 		isInitialized = true;
+		glewExperimental = true;
 		GLenum nGlewError = glewInit();
 		if (nGlewError != GLEW_OK)
 		{
@@ -127,7 +129,7 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 	VRMatrix4 view_left = m_mat4eyePosLeft * head_pose;
 	renderState->addData("/ProjectionMatrix", m_mat4ProjectionLeft);
 	renderState->addData("/ViewMatrix", view_left);
-
+	renderState->addData("/Eye", "Left");
 	if (_children.size() == 0) {
 		renderHandler->onVRRenderScene(renderState, this);
 	}
@@ -158,7 +160,7 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 	
 	renderState->addData("/ProjectionMatrix",m_mat4ProjectionRight);
 	renderState->addData("/ViewMatrix", view_right);
-
+	renderState->addData("/Eye", "Right");
 	if (_children.size() == 0) {
 		renderHandler->onVRRenderScene(renderState, this);
 	}
@@ -175,21 +177,41 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
  		GL_LINEAR  );
  	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0 );
+
 	renderState->popState();
 	glFinish();
 
-	vr::Texture_t leftEyeTexture = {(void*)leftEyeDesc.m_nResolveTextureId, vr::API_OpenGL, vr::ColorSpace_Gamma };
+	vr::Texture_t leftEyeTexture = { (void*)leftEyeDesc.m_nResolveTextureId, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
 	vr::EVRCompositorError error =  vr::VRCompositor()->Submit(vr::Eye_Left, &leftEyeTexture );
-	vr::Texture_t rightEyeTexture = {(void*)rightEyeDesc.m_nResolveTextureId, vr::API_OpenGL, vr::ColorSpace_Gamma };
+	vr::Texture_t rightEyeTexture = { (void*)rightEyeDesc.m_nResolveTextureId, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
 	error = vr::VRCompositor()->Submit(vr::Eye_Right, &rightEyeTexture );
 
-	//vr::VRCompositor()->PostPresentHandoff();
+	renderState->pushState();
+	int width = renderState->getValue("/WindowWidth");
+	int height = renderState->getValue("/WindowHeight");
+
+	glViewport(0, 0, width, height);
+	glClearColor(0, 0, 0, 1);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	renderState->addData("/ProjectionMatrix", m_mat4ProjectionRight);
+	renderState->addData("/ViewMatrix", view_right);
+	renderState->addData("/Eye", "Cyclops");
+	if (_children.size() == 0) {
+		renderHandler->onVRRenderScene(renderState, this);
+	}
+	else {
+		VRDisplayNode::render(renderState, renderHandler);
+	}
+	renderState->popState();
+
+	vr::VRCompositor()->PostPresentHandoff();
 }
 
 VRDisplayNode* VROpenVRNode::create(VRMainInterface *vrMain, VRDataIndex *config,  const std::string &nameSpace) {
 	std::string nodeNameSpace = config->validateNameSpace(nameSpace);
 
-	VRDisplayNode *node = new VROpenVRNode(vrMain, nameSpace, 0.1f, 30.0f);
+	VRDisplayNode *node = new VROpenVRNode(vrMain, nameSpace, 0.1f, 100000.0f);
 	
 	return node;
 }
@@ -249,7 +271,7 @@ VRMatrix4 VROpenVRNode::GetHMDMatrixProjectionEye( vr::Hmd_Eye nEye )
 	if ( !m_pHMD )
 		return VRMatrix4();
 
-	vr::HmdMatrix44_t mat = m_pHMD->GetProjectionMatrix( nEye, m_fNearClip, m_fFarClip, vr::API_OpenGL);
+	vr::HmdMatrix44_t mat = m_pHMD->GetProjectionMatrix( nEye, m_fNearClip, m_fFarClip);
 	
     VRMatrix4 out = VRMatrix4::fromRowMajorElements(
 		mat.m[0][0], mat.m[1][0], mat.m[2][0], mat.m[3][0],

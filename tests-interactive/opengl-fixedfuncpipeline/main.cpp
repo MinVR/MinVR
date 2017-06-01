@@ -24,7 +24,7 @@ using namespace MinVR;
 /** MyVRApp changes the clear color as frames progress. */
 class MyVRApp : public VRApp {
 public:
-	MyVRApp(int argc, char** argv, const std::string& configFile) : VRApp(argc, argv, configFile) {}
+	MyVRApp(int argc, char** argv) : VRApp(argc, argv) {}
 
 	void onVREvent(const VREvent &event) {
         
@@ -77,14 +77,7 @@ private:
 };
 
 int main(int argc, char **argv) {
-	if (argc < 2) {
-		std::cout << "Please enter a MinVR config file..." << std::endl;
-		std::cout << "Example Usage: \n\tbuild/bin/MinGraphicsExample examples/MinGraphicsExample/desktop.xml" << std::endl;
-		return 1;
-	}
-
-	// The second argument is the config file path for this example
-	MyVRApp app(argc, argv, argv[1]);
+	MyVRApp app(argc, argv);
 	app.run();
 	return 0;
 }

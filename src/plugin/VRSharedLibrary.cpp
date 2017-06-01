@@ -57,9 +57,10 @@ VRSharedLibrary::~VRSharedLibrary() {
 }
 
 void VRSharedLibrary::load() {
-	if (!_isLoaded)
-	{
+	if (!_isLoaded) {
+
 		const char* error;
+
 #if defined(WIN32)
 		_lib = LoadLibraryA(_filePath.c_str());
 #else
@@ -69,12 +70,20 @@ void VRSharedLibrary::load() {
 #endif
 
 		if (!_lib) {
-			//MinVR::Logger::getInstance().assertMessage(false, "Could not load library: " + _filePath + " - " + error);
-			//std::cerr << "Could not load library: " + _filePath + " - " + error << std::endl;
+
+#ifdef MinVR_DEBUG
+			VRWARNING("Could not load library: " + _filePath + " - " + error,
+                "This is a harmless warning, unless the library can't be found anywhere else.");
+#endif
 			return;
+
 		}
 
-		_isLoaded = true;
+    _isLoaded = true;
+
+#ifdef MinVR_DEBUG
+    std::cerr << "Loaded library: " + _filePath << std::endl;
+#endif
 	}
 }
 
@@ -90,7 +99,7 @@ void VRSharedLibrary::unload() {
 		error = dlerror();
 #endif
 		if(result != 0) {
-			//MinVR::Logger::getInstance().assertMessage(false, "Could not unload library: " + _filePath + " - " + error);
+      VRWARNINGNOADV("Could not unload library: " + _filePath + " - " + error);
 			return;
 		}
 

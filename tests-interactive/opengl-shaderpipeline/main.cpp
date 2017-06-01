@@ -1,5 +1,12 @@
 #include <iostream>
 
+#include "GL/glew.h"
+#ifdef _WIN32
+#include "GL/wglew.h"
+#elif (!defined(__APPLE__))
+#include "GL/glxew.h"
+#endif
+
 // OpenGL Headers
 #if defined(WIN32)
 #define NOMINMAX
@@ -31,14 +38,13 @@ using namespace MinVR;
  */
 class MyVRApp : public VRApp {
 public:
-	/// The application expects the user to specify the command line arguments and a path to the vr config file.
-	MyVRApp(int argc, char** argv, const std::string& configFile) : VRApp(argc, argv, configFile) {}
+	MyVRApp(int argc, char** argv) : VRApp(argc, argv) {}
 
     
 	/// onVREvent is called when a new intput event happens.
 	void onVREvent(const VREvent &event) {
         
-        event.print();
+        //event.print();
         
 		// Set time since application began
 		if (event.getName() == "FrameStart") {
@@ -64,6 +70,13 @@ public:
 	void onVRRenderGraphicsContext(const VRGraphicsState &renderState) {
 		// If this is the inital call, initialize context variables
 		if (renderState.isInitialRenderCall()) {
+			glewExperimental = GL_TRUE;
+			GLenum err = glewInit();
+			if (GLEW_OK != err)
+			{
+				std::cout << "Error initializing GLEW." << std::endl;
+			}
+
 			// Init GL
 			glEnable(GL_DEPTH_TEST);
 			glClearDepth(1.0f);
@@ -263,7 +276,7 @@ private:
 
 /// Main method which creates and calls application
 int main(int argc, char **argv) {
-	MyVRApp app(argc, argv, argv[1]);
+	MyVRApp app(argc, argv);
 	app.run();
 	return 0;
 }

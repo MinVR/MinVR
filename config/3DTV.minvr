@@ -1,0 +1,130 @@
+<MinVR>
+  <!-- ********************** VRSetups ********************** -->
+  
+  <!-- This file defines 4 VRSetups, each runs in its own process. -->
+  <VRSetups type="stringarray">TV</VRSetups>
+
+  <TV>
+    <Type>VRStandAlone</Type>
+    <VRPlugins type="stringarray">GLFWPlugin,OpenGLPlugin,VRPNPlugin</VRPlugins>
+    <VRInputDevices type="stringarray"></VRInputDevices>
+    <VRDisplayGraph>FrontNode</VRDisplayGraph>
+    <VRWindowToolkits type="stringarray">GLFWToolkit</VRWindowToolkits>
+    <VRGraphicsToolkits type="stringarray">OpenGLToolkit</VRGraphicsToolkits>
+  </TV>
+
+  <!-- Plugins -->
+
+  <VRPNPlugin>
+    <Path>../../build/plugins/MinVR_VRPN</Path>
+    <File>MinVR_VRPN</File>
+  </VRPNPlugin>
+
+  <GLFWPlugin>
+    <Path>../../build/plugins/MinVR_GLFW</Path>
+    <File>MinVR_GLFW</File>
+  </GLFWPlugin>
+
+  <OpenGLPlugin>
+    <Path>../../build/plugins/MinVR_OpenGL</Path>
+    <File>MinVR_OpenGL</File>
+  </OpenGLPlugin>
+
+<WindowToolkit>VRGLFWWindowToolkit</WindowToolkit>
+<GraphicsToolkit>VROpenGLGraphicsToolkit</GraphicsToolkit>
+<Border>0</Border>
+<Caption>Desktop</Caption>
+<QuadBuffered>0</QuadBuffered>
+<GPUAffinity>None</GPUAffinity>
+<StereoFormat>SideBySide</StereoFormat>
+  
+<FrontNode>
+	<Type>VRGraphicsWindowNode</Type>
+  <Children type="stringarray">FrontStereoNode</Children>
+  <XPos>-1920</XPos>
+  <YPos>0</YPos>
+  <Width>1920</Width>
+  <Height>1080</Height>
+</FrontNode>
+  
+<FrontStereoNode>
+  <Type>VRStereoNode</Type>
+  <Children type="stringarray">FrontProjectionNode</Children>
+</FrontStereoNode>
+
+<FrontProjectionNode>
+    <Type>VROffAxisProjectionNode</Type>
+    <TopLeft type="floatarray">-2.0, 1.32, 0.0</TopLeft>
+    <TopRight type="floatarray"> 2.0, 1.32, 0.0</TopRight>
+    <BottomLeft type="floatarray">-2.0,-1.32, 0.0</BottomLeft>
+    <BottomRight type="floatarray">2.0,-1.32, 0.0</BottomRight>
+  <InitialHeadMatrix type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,5, 0,0,0,1</InitialHeadMatrix>
+  <EyeSeparation>0.203</EyeSeparation>
+  <NearClip>0.01</NearClip>
+  <FarClip>100.0</FarClip>
+  <HeadTrackingEvent>Head_Move</HeadTrackingEvent>
+</FrontProjectionNode>
+
+<GLFWToolkit>
+	<Type>VRGLFWWindowToolkit</Type>
+</GLFWToolkit>
+
+<OpenGLToolkit>
+	<Type>VROpenGLGraphicsToolkit</Type>
+</OpenGLToolkit>
+
+<!--
+  ### VRINPUTDEVICES ###
+
+  # Common to all three Optitrack virtual devices
+  <ConvertLHtoRH>0</ConvertLHtoRH>
+  <IgnoreZeroes>1</IgnoreZeroes>
+  <WaitForNewReportInPoll>0</WaitForNewReportInPoll>
+  <TrackerUnitsToRoomUnitsScale>3.28084</TrackerUnitsToRoomUnitsScale>
+  <DeviceToRoom type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</DeviceToRoom>
+
+  <Optitrack1>
+    <Type>VRVRPNTrackerDevice</Type>
+    <VRPNDeviceName type="string">head@tcp:134.84.121.68:3884</VRPNDeviceName>
+    <EventsToGenerate type="stringarray">Head</EventsToGenerate>
+    <Head>
+      <PropToTracker type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</PropToTracker>
+      <FinalOffset type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+    </Head>
+  </Optitrack1>
+
+  <Optitrack2>
+    <Type>VRVRPNTrackerDevice</Type>
+    <VRPNDeviceName type="string">stylus0@tcp:134.84.121.68:3884</VRPNDeviceName>
+    <EventsToGenerate type="stringarray">RedStylus</EventsToGenerate>
+    <RedStylus>
+      <PropToTracker type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0.25, 0,0,0,1</PropToTracker>
+      <FinalOffset type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+    </RedStylus>
+  </Optitrack2>
+
+  <Optitrack3>
+    <Type>VRVRPNTrackerDevice</Type>
+    <VRPNDeviceName type="string">stylus1@tcp:134.84.121.68:3884</VRPNDeviceName>
+    <EventsToGenerate type="stringarray">BlueStylus</EventsToGenerate>
+    <BlueStylus>
+      <PropToTracker type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0.25, 0,0,0,1</PropToTracker>
+      <FinalOffset type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+    </BlueStylus>
+  </Optitrack3>
+
+  <RedStylusBtns>
+    <Type>VRVRPNButtonDevice</Type>
+    <VRPNDeviceName type="string">Wixel0@tcp:127.0.0.1:3883</VRPNDeviceName>
+    <EventsToGenerate type="stringarray">RedStylusFrontBtn,RedStylusBackBtn</EventsToGenerate>
+  </RedStylusBtns>
+
+  <BlueStylusBtns>
+    <Type>VRVRPNButtonDevice</Type>
+    <VRPNDeviceName type="string">Wixel1@tcp:127.0.0.1:3883</VRPNDeviceName>
+    <EventsToGenerate type="stringarray">BlueStylusFrontBtn,BlueStylusBackBtn</EventsToGenerate>
+  </BlueStylusBtns>
+
+-->
+
+</MinVR>

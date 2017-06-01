@@ -28,7 +28,7 @@ void VRStereoNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandl
 
 	if (_format == VRSTEREOFORMAT_MONO) {
 		renderState->addData("/StereoFormat", "Mono");
-	
+
 		_gfxToolkit->setDrawBuffer(VRGraphicsToolkit::VRDRAWBUFFER_BACK);
 		renderOneEye(renderState, renderHandler, Cyclops);
 	}
@@ -43,7 +43,7 @@ void VRStereoNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandl
 	}
 	else if (_format == VRSTEREOFORMAT_SIDEBYSIDE) {
 		renderState->addData("/StereoFormat", "SideBySide");
-		
+
 		int x,y,w,h;
 		if (renderState->exists("/ViewportX")) {
             x = renderState->getValue("/ViewportX");
@@ -113,12 +113,12 @@ void VRStereoNode::renderOneEye(VRDataIndex *renderState, VRRenderHandler *rende
 			if (eye == Cyclops)
 			{
 				renderState->addData("/Eye", "Cyclops");
-				_children[0]->render(renderState, renderHandler);		
+				_children[0]->render(renderState, renderHandler);
 			}
 			else if (eye == Left){
 				renderState->addData("/Eye", "Left");
-				_children[0]->render(renderState, renderHandler);		
-			} 
+				_children[0]->render(renderState, renderHandler);
+			}
 			else if (eye == Right)
 			{
 				renderState->addData("/Eye", "Right");
@@ -143,9 +143,9 @@ void VRStereoNode::createChildren(VRMainInterface *vrMain, VRDataIndex *config, 
 		for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
 			if (config->exists(*it, validatedNameSpace))
 			{
-				if (config->getDatum(config->validateNameSpace(validatedNameSpace) + *it)->hasAttribute("displaynodeType")){
+				if (config->hasAttribute(validatedNameSpace + *it, "displaynodeType")){
 					config->pushState();
-					config->addData(config->validateNameSpace(config->validateNameSpace(validatedNameSpace) + *it) + "Eye", "Left");
+					config->addData(validatedNameSpace + *it + "/Eye", "Left");
 					VRDisplayNode *child = vrMain->getFactory()->create<VRDisplayNode>(vrMain, config, config->validateNameSpace(validatedNameSpace) + *it);
 					if (child != NULL) {
 						child_left->addChild(child);
@@ -159,9 +159,9 @@ void VRStereoNode::createChildren(VRMainInterface *vrMain, VRDataIndex *config, 
 		for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
 			if (config->exists(*it, validatedNameSpace))
 			{
-				if (config->getDatum(config->validateNameSpace(validatedNameSpace) + *it)->hasAttribute("displaynodeType")){
+				if (config->hasAttribute(validatedNameSpace + *it, "displaynodeType")){
 					config->pushState();
-					config->addData(config->validateNameSpace(config->validateNameSpace(validatedNameSpace) + *it) + "Eye", "Left");
+					config->addData(validatedNameSpace + *it + "/Eye", "Left");
 					VRDisplayNode *child = vrMain->getFactory()->create<VRDisplayNode>(vrMain, config, config->validateNameSpace(validatedNameSpace) + *it);
 					if (child != NULL) {
 						child_right->addChild(child);
@@ -175,9 +175,9 @@ void VRStereoNode::createChildren(VRMainInterface *vrMain, VRDataIndex *config, 
 	{
 		for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
 			if (config->exists(*it, validatedNameSpace)){
-				if (config->getDatum(config->validateNameSpace(validatedNameSpace) + *it)->hasAttribute("displaynodeType")){
+				if (config->hasAttribute(validatedNameSpace + *it, "displaynodeType")){
 					config->pushState();
-					config->addData(config->validateNameSpace(config->validateNameSpace(validatedNameSpace) + *it) + "Eye", "Cyclops");
+					config->addData(validatedNameSpace + *it + "/Eye", "Cyclops");
 					VRDisplayNode *child = vrMain->getFactory()->create<VRDisplayNode>(vrMain, config, config->validateNameSpace(validatedNameSpace) + *it);
 					if (child != NULL) {
 						addChild(child);
@@ -196,7 +196,7 @@ void VRStereoNode::createChildren(VRMainInterface *vrMain, VRDataIndex *config, 
 	//			config->addData(config->validateNameSpace(config->validateNameSpace(validatedNameSpace) + *it) + "Eye", "Left");
 	//			VRDisplayNode *child_left = vrMain->getFactory()->create<VRDisplayNode>(vrMain, config, config->validateNameSpace(validatedNameSpace) + *it);
 	//			if (child_left != NULL) {
-	//				addChild(child_left);	
+	//				addChild(child_left);
 	//			}
 	//			config->popState();
 
@@ -208,7 +208,7 @@ void VRStereoNode::createChildren(VRMainInterface *vrMain, VRDataIndex *config, 
 	//			}
 	//			config->popState();
 	//			break;
-	//		} 
+	//		}
 	//		else
 	//		{
 	//			config->pushState();
@@ -226,7 +226,7 @@ void VRStereoNode::createChildren(VRMainInterface *vrMain, VRDataIndex *config, 
 
 VRDisplayNode* VRStereoNode::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace)
 {
- 
+
 	VRGraphicsToolkit *gfxToolkit = vrMain->getGraphicsToolkit(config->getValue("GraphicsToolkit", nameSpace));
 	float iod = 0.0f;
 	std::string formatStr = config->getValue("StereoFormat", nameSpace);

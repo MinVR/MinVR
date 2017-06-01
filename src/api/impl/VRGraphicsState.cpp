@@ -39,6 +39,13 @@ bool VRGraphicsState::isInitialRenderCall() const {
 	return _internal->isInitialRenderCall();
 }
 
+const int VRGraphicsState::getSharedContextId() const {
+	return _internal->getSharedContextId();
+}
+
+const int VRGraphicsState::getWindowId() const {
+	return _internal->getWindowId();
+}
 
 VRGraphicsStateInternal* VRGraphicsState::getInternal() const {
 	return _internal;

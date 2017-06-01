@@ -41,6 +41,8 @@ private:
 	VRGraphicsToolkit *_gfxToolkit;
 	VRWindowToolkit   *_winToolkit;
 	VRWindowSettings   _settings;
+	int _framebufferWidth;
+	int _framebufferHeight;
 };
 
 

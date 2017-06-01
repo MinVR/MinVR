@@ -1,6 +1,15 @@
 #include "config/VRDataIndex.h"
 
+// IMPORTANT NOTE: These tests need a better comparison operator.
+// They are largely using simple string comparisons to judge whether a
+// serialization comes out ok or not.  But a change that modifies the
+// *order* of the variables in a serialized data index might have no
+// impact on the operation, but will make these tests fail.  If a code
+// change might cause a change in the order of serialization, consider
+// that before panicking over a failed test.
+
 int testIndexSerialize();
+int testIndexSerializeEntire();
 int testIndexSerializeIntArray();
 int testIndexSerializeIntArraySep();
 int testIndexPrintFloatArray();
@@ -8,16 +17,19 @@ int testIndexLotsaEntries();
 int testPushPopIndex();
 int testEscapedChars();
 int testSelections();
+int testSelectionFirst();
 int testLinkNode();
 int testLinkContent();
+int testDepthOfCopy();
+int testIsChild();
 
 // Make this a large number to get decent timing data.
-#define LOOP for (int loopctr = 0; loopctr < 100; loopctr++)
+#define LOOP for (int loopctr = 0; loopctr < 1; loopctr++)
 
 int indextest(int argc, char* argv[]) {
-  
+
   int defaultchoice = 1;
-  
+
   int choice = defaultchoice;
 
   if (argc > 1) {
@@ -28,12 +40,12 @@ int indextest(int argc, char* argv[]) {
   }
 
   int output;
-  
+
   switch(choice) {
   case 1:
     output = testIndexSerialize();
     break;
-    
+
   case 2:
     output = testIndexSerializeIntArray();
     break;
@@ -69,12 +81,28 @@ int indextest(int argc, char* argv[]) {
   case 10:
     output = testLinkContent();
     break;
-    
+
+  case 11:
+    output = testIndexSerializeEntire();
+    break;
+
+  case 12:
+    output = testDepthOfCopy();
+    break;
+
+  case 13:
+    output = testSelectionFirst();
+    break;
+
+  case 14:
+    output = testIsChild();
+    break;
+
   default:
     std::cout << "Test #" << choice << " does not exist!\n";
     output = -1;
   }
-  
+
   return output;
 }
 
@@ -84,7 +112,7 @@ MinVR::VRDataIndex * setupIndex() {
 
   MinVR::VRInt a = 4;
   MinVR::VRFloat b = 3.1415926;
-  
+
   n->addData("/george/a0", a);
   n->addData("/george/a1", a + 1);
   n->addData("/george/a2", a + 2);
@@ -127,12 +155,12 @@ MinVR::VRDataIndex * setupIndex() {
   d.push_back(5.6);
 
   n->addData("/donna/d0", d);
-  
+
   // This file is specified using the WORKING_DIRECTORY option in the
   // ctest framework.  See the CMakeLists.txt file in this directory,
   // and look for the add_test command.
   n->processXMLFile("test.xml", "/");
-  
+
   return n;
 }
 
@@ -140,7 +168,7 @@ int testSelections() {
 
   // Set up the test string and several expected outputs.
   std::string xmlteststring =  "<MVR><!-- some of the illegitimate children of John I --><John name=\"Lackland\"><Isabella name=\"Angouleme\"><Henry seq=\"III\" title=\"King\">1</Henry> <Richard title=\"Earl of Cornwall\">2</Richard> <Joan title=\"Queen Consort\">3</Joan> <Isabella title=\"Queen Consort\">4</Isabella> <Eleanor type=\"string\">5</Eleanor> </Isabella><Joan title=\"Lady of Wales\"><Richard name=\"FitzRoy\">6</Richard><Oliver name=\"FitzRoy\">7</Oliver></Joan> <Unknown><Geoffrey name=\"FitzRoy\" type=\"string\">8</Geoffrey><John name=\"FitzRoy\">9</John> <Henry name=\"FitzRoy\">10</Henry> <Osbert name=\"Gifford\">11</Osbert> <Eudes name=\"FitzRoy\">12</Eudes> <Bartholomew name=\"FitzRoy\">13</Bartholomew> <Maud name=\"FitzRoy\" title=\"Abbess of Barking\">14</Maud><Isabella name=\"FitzRoy\">15</Isabella><Philip name=\"FitzRoy\" type=\"string\">16</Philip></Unknown> </John></MVR>";
-  
+
   MinVR::VRContainer firstTestList;
 
   firstTestList.push_back("/MVR/John");
@@ -156,7 +184,7 @@ int testSelections() {
   firstTestList.push_back("/MVR/John/Unknown/Maud");
   firstTestList.push_back("/MVR/John/Unknown/Osbert");
   firstTestList.push_back("/MVR/John/Unknown/Philip");
-  
+
   MinVR::VRContainer secondTestList;
 
   secondTestList.push_back("/MVR/John/Joan/Oliver");
@@ -175,11 +203,11 @@ int testSelections() {
   thirdTestList.push_back("/MVR/John/Isabella/Eleanor");
   thirdTestList.push_back("/MVR/John/Unknown/Geoffrey");
   thirdTestList.push_back("/MVR/John/Unknown/Philip");
-    
+
   MinVR::VRContainer fourthTestList;
 
   fourthTestList.push_back("/MVR/John/Isabella/Eleanor");
-    
+
   MinVR::VRContainer fifthTestList;
 
   fifthTestList.push_back("/MVR/John/Isabella");
@@ -188,23 +216,28 @@ int testSelections() {
   fifthTestList.push_back("/MVR/John/Isabella/Isabella");
   fifthTestList.push_back("/MVR/John/Isabella/Joan");
   fifthTestList.push_back("/MVR/John/Isabella/Richard");
-  
+
   MinVR::VRContainer sixthTestList;
 
   sixthTestList.push_back("/MVR/John/Isabella/Isabella");
   sixthTestList.push_back("/MVR/John/Unknown/Isabella");
-    
-  
+
+  MinVR::VRContainer seventhTestList;
+
+  seventhTestList.push_back("/MVR/John/Joan/Oliver");
+  seventhTestList.push_back("/MVR/John/Joan/Richard");
+
+
   int out = 0;
 
   LOOP {
     MinVR::VRDataIndex *index = new MinVR::VRDataIndex();
     index->addSerializedValue(xmlteststring, MinVR::VRDataIndex::rootNameSpace);
-    
+
     // Test selection by attribute, not dependent on value.
     MinVR::VRContainer firstList = index->selectByAttribute("name", "*");
 
-    MinVR::VRContainer::iterator jt = firstTestList.begin(); 
+    MinVR::VRContainer::iterator jt = firstTestList.begin();
     for (MinVR::VRContainer::iterator it = firstList.begin();
          it != firstList.end(); it++) {
 
@@ -221,7 +254,7 @@ int testSelections() {
     // Test selection by attribute, specific value
     MinVR::VRContainer secondList = index->selectByAttribute("name", "FitzRoy");
 
-    jt = secondTestList.begin(); 
+    jt = secondTestList.begin();
     for (MinVR::VRContainer::iterator it = secondList.begin();
          it != secondList.end(); it++) {
 
@@ -236,7 +269,7 @@ int testSelections() {
 
     // Test selection by type.
     MinVR::VRContainer thirdList = index->selectByType(MinVR::VRCORETYPE_STRING);
-        
+
     jt = thirdTestList.begin();
     for (MinVR::VRContainer::iterator it = thirdList.begin();
          it != thirdList.end(); it++) {
@@ -246,14 +279,14 @@ int testSelections() {
         std::cout << "mismatch:" << *it << std::endl;
         return 1;
       }
-    
+
       if ((*it).compare(*jt++) != 0) out++;
     }
 
-  
+
     // Test selection by fully qualified name.
     MinVR::VRContainer fourthList = index->selectByName("/MVR/John/Isabella/Eleanor");
-        
+
     jt = fourthTestList.begin();
     for (MinVR::VRContainer::iterator it = fourthList.begin();
          it != fourthList.end(); it++) {
@@ -263,7 +296,7 @@ int testSelections() {
 
     // Test selection by partial name.
     MinVR::VRContainer fifthList = index->selectByName("John/Isabella");
-        
+
     jt = fifthTestList.begin();
     for (MinVR::VRContainer::iterator it = fifthList.begin();
          it != fifthList.end(); it++) {
@@ -274,7 +307,7 @@ int testSelections() {
 
     // Test selection by partial name with wildcard.
     MinVR::VRContainer sixthList = index->selectByName("John/*/Isabella");
-        
+
     jt = sixthTestList.begin();
     for (MinVR::VRContainer::iterator it = sixthList.begin();
          it != sixthList.end(); it++) {
@@ -282,9 +315,61 @@ int testSelections() {
       if ((*it).compare(*jt++) != 0) out++;
     }
 
+    // Test selection by attribute, specific value, specific namespace.
+    MinVR::VRContainer seventhList =
+      index->selectByAttribute("name", "FitzRoy", "/MVR/John/Joan");
+
+    jt = seventhTestList.begin();
+    for (MinVR::VRContainer::iterator it = seventhList.begin();
+         it != seventhList.end(); it++) {
+
+      if (jt == seventhTestList.end()) {
+
+        std::cout << "mismatch:" << *it << std::endl;
+        return 1;
+      }
+
+      if ((*it).compare(*jt++) != 0) out++;
+    }
+
     delete index;
   }
-    
+
+  return out;
+}
+
+int testSelectionFirst() {
+
+  std::string in = "<example><A><B weapon=\"BlueMace\"><C title=\"Duke\">1</C><D>2</D><E><F title=\"Duke\">3</F><G weapon=\"GreenGun\">4</G><H>5</H></E><J><K>6</K><L>7</L></J><M><N>8</N><P>9</P></M></B><Q title=\"Duke\" weapon=\"RedSword\">10</Q></A></example>";
+
+  int out = 0;
+  MinVR::VRDataIndex n = MinVR::VRDataIndex(in);
+
+  // This test is a lot easier to understand when you look at the text
+  // output.  Try running the tests with 'ctest -VV'.
+  std::cout << n.printStructure() << std::endl;
+
+  std::cout << "1:" << n.getByAttribute("title", "Duke", "/A/B/E") << std::endl;
+  out += n.getByAttribute("title", "Duke", "/A/B/E").compare("/A/B/E/F");
+
+  std::cout << "2:" << n.getByAttribute("title", "Duke", "/A/B") << std::endl;
+  out += n.getByAttribute("title", "Duke", "/A/B").compare("/A/B/C");
+
+  std::cout << "3:" << n.getByAttribute("title", "Duke", "/A") << std::endl;
+  out += n.getByAttribute("title", "Duke", "/A").compare("/A/Q");
+
+  std::cout << "4:" << n.getByAttribute("title", "Duke", "/A/B/J") << std::endl;
+  out += n.getByAttribute("title", "Duke", "/A/B/J").compare("/A/B/C");
+
+  std::cout << "5:" << n.getByAttribute("weapon", "*", "/A/B/J") << std::endl;
+  out += n.getByAttribute("weapon", "*", "/A/B/J").compare("/A/B");
+
+  std::cout << "6:" << n.getByAttribute("title", "Earl", "/A") << std::endl;
+  out += n.getByAttribute("title", "Earl", "/A").empty()? 0 : 1 ;
+
+  std::cout << n.getIndexName() << std::endl;
+  out += n.getIndexName().compare("example");
+
   return out;
 }
 
@@ -297,19 +382,19 @@ int testPushPopIndex() {
   std::string testStringPushed = "<MVR type=\"container\"><Server type=\"container\"><Port type=\"string\">3490</Port><Host type=\"string\">hello there</Host><NumClients type=\"int\">12</NumClients></Server><VRPlugins type=\"container\"><MinVRDefaultPlugins type=\"container\"><Names type=\"stringarray\" separator=\"@\">MinVR_GLFW@MinVR_OpenGL@MinVR_Threading</Names><Data type=\"floatarray\">1.200000,2.300000,3.400000,4.500000,5.600000</Data></MinVRDefaultPlugins></VRPlugins><VRDisplayDevices type=\"container\"><ThreadedDisplay type=\"container\"><displayType type=\"string\">thread_group</displayType><Display1 type=\"container\"><allowThreading type=\"int\">1</allowThreading><displayType type=\"string\" val=\"heavy\">glfw_display</displayType><xOffset type=\"int\">600</xOffset><yOffset type=\"int\">0</yOffset><width type=\"int\">200</width><height type=\"int\">200</height></Display1><Display2 type=\"container\"><displayType type=\"string\">glfw_display</displayType><allowThreading type=\"int\">1</allowThreading><xOffset type=\"int\">600</xOffset><yOffset type=\"int\">250</yOffset><width type=\"int\">200</width><height type=\"int\">200</height><stereoFormatter type=\"container\"><displayType type=\"string\">sideBySideStereo</displayType></stereoFormatter></Display2><Display3 type=\"container\"><displayType type=\"string\">glfw_display</displayType><allowThreading type=\"int\">1</allowThreading><xOffset type=\"int\">600</xOffset><yOffset type=\"int\">450</yOffset><width type=\"int\">200</width><height type=\"int\">200</height><stereoFormatter type=\"container\"><displayType type=\"string\">sideBySideStereo</displayType></stereoFormatter></Display3></ThreadedDisplay><MainDisplay type=\"container\"><displayType type=\"string\">glfw_display</displayType><xOffset type=\"int\">800</xOffset><yOffset type=\"int\">0</yOffset><width type=\"int\">300</width><height type=\"int\">600</height></MainDisplay><OtherDisplay type=\"container\"><displayType type=\"string\">glfw_display</displayType><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">0</yOffset><width type=\"int\">600</width><height type=\"int\">600</height><stereoFormatter type=\"container\"><displayType type=\"string\">sideBySideStereo</displayType><topViewport type=\"container\"><displayType type=\"string\">viewport</displayType><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">300</yOffset><width type=\"int\">600</width><height type=\"int\">300</height></topViewport><bottomViewport type=\"container\"><displayType type=\"string\">viewport</displayType><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">0</yOffset><width type=\"int\">600</width><height type=\"int\">300</height></bottomViewport></stereoFormatter></OtherDisplay><radius type=\"float\">20.000000</radius><Display1 type=\"container\"><radius type=\"float\">7.000000</radius><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">300</yOffset></Display1><Display2 type=\"container\"><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">300</yOffset></Display2></VRDisplayDevices><george type=\"container\"><a0 type=\"int\">4</a0><a1 type=\"int\">5</a1><a2 type=\"int\">6</a2><a3 type=\"int\">7</a3><a4 type=\"int\">8</a4><a5 type=\"int\">9</a5><a6 type=\"int\">10</a6><a7 type=\"int\">11</a7><a8 type=\"int\">12</a8><a9 type=\"int\">13</a9></george><martha type=\"container\"><b0 type=\"float\">3.141593</b0><b1 type=\"float\">3.141593</b1><b2 type=\"float\">6.283185</b2><b3 type=\"float\">9.424778</b3><b4 type=\"float\">12.566370</b4><b5 type=\"float\">15.707963</b5><b6 type=\"float\">18.849556</b6><b7 type=\"float\">21.991148</b7><b8 type=\"float\">25.132741</b8><b9 type=\"float\">28.274333</b9></martha><john type=\"container\"><c0 type=\"string\">abigail0</c0><c1 type=\"string\">abigail1</c1><c2 type=\"string\">abigail2</c2><c3 type=\"string\">abigail3</c3><c4 type=\"string\">abigail4</c4><c5 type=\"string\">abigail5</c5><c6 type=\"string\">abigail6</c6><c7 type=\"string\">abigail7</c7><c8 type=\"string\">abigail8</c8><c9 type=\"string\">abigail9</c9></john><donna type=\"container\"><d0 type=\"floatarray\">1.200000,2.300000,3.400000,4.500000,5.600000</d0></donna></MVR>";
 
   std::string testStringSecondPush = "<Server type=\"container\"><Port type=\"string\">3490</Port><Host type=\"string\">localhost</Host><NumClients type=\"int\">1</NumClients><walterjohnson type=\"string\">Big Train</walterjohnson></Server>";
-  
+
   LOOP {
     MinVR::VRDataIndex *n = setupIndex();
 
     std::string output = n->serialize("/MVR");
 
     out += output.compare(testString);
-    
+
     n->pushState();
 
     MinVR::VRInt a = 4;
     MinVR::VRFloat b = 3.1415926;
-  
+
     n->addData("/MVR/george/a0", a);
     n->addData("/MVR/george/a1", a + 1);
     n->addData("/MVR/george/a2", a + 2);
@@ -351,10 +436,10 @@ int testPushPopIndex() {
     out += output.compare(testStringPushed);
 
     //std::cout << output << std::endl;
-    
+
     n->popState();
 
-    
+
     std::vector<float>d;
     d.push_back(1.2);
     d.push_back(2.3);
@@ -366,15 +451,15 @@ int testPushPopIndex() {
 
     n->addData("/MVR/Server/Host", "hello there");
     n->addData("/MVR/Server/NumClients", 12);
-    
+
     output = n->serialize("/MVR");
 
     out += output.compare(testStringSecondPush);
 
     //std::cout << output << std::endl;
-    
+
     n->popState();
- 
+
     output = n->serialize("/MVR");
 
     out += output.compare(testString);
@@ -399,16 +484,16 @@ int testIndexSerializeIntArray() {
     }
 
     n->addData("/george/atestarray", e);
-  
+
     std::string output = n->serialize("atestarray", "/george");
-  
+
     delete n;
 
     out = output.compare(testString);
   }
 
   return out;
-    
+
 }
 
 int testIndexSerializeIntArraySep() {
@@ -427,29 +512,9 @@ int testIndexSerializeIntArraySep() {
     }
 
     n->addData("/george/atestarray", e);
-    n->getDatum("/george/atestarray")->setAttributeValue("separator", "@");
+    n->setAttributeValue("/george/atestarray", "separator", "@");
 
     std::string output = n->serialize("atestarray", "/george");
-  
-    delete n;
-
-    out += output.compare(testString);
-  }
-
-  return out;    
-}
-
-int testIndexSerialize() {
-
-  std::string testString = "<MVR type=\"container\"><Server type=\"container\"><Port type=\"string\">3490</Port><Host type=\"string\">localhost</Host><NumClients type=\"int\">1</NumClients></Server><VRPlugins type=\"container\"><MinVRDefaultPlugins type=\"container\"><Names type=\"stringarray\" separator=\"@\">MinVR_GLFW@MinVR_OpenGL@MinVR_Threading</Names><Data type=\"floatarray\">1.200000,2.300000,3.400000,4.500000,5.600000</Data></MinVRDefaultPlugins></VRPlugins><VRDisplayDevices type=\"container\"><ThreadedDisplay type=\"container\"><displayType type=\"string\">thread_group</displayType><Display1 type=\"container\"><allowThreading type=\"int\">1</allowThreading><displayType type=\"string\" val=\"heavy\">glfw_display</displayType><xOffset type=\"int\">600</xOffset><yOffset type=\"int\">0</yOffset><width type=\"int\">200</width><height type=\"int\">200</height></Display1><Display2 type=\"container\"><displayType type=\"string\">glfw_display</displayType><allowThreading type=\"int\">1</allowThreading><xOffset type=\"int\">600</xOffset><yOffset type=\"int\">250</yOffset><width type=\"int\">200</width><height type=\"int\">200</height><stereoFormatter type=\"container\"><displayType type=\"string\">sideBySideStereo</displayType></stereoFormatter></Display2><Display3 type=\"container\"><displayType type=\"string\">glfw_display</displayType><allowThreading type=\"int\">1</allowThreading><xOffset type=\"int\">600</xOffset><yOffset type=\"int\">450</yOffset><width type=\"int\">200</width><height type=\"int\">200</height><stereoFormatter type=\"container\"><displayType type=\"string\">sideBySideStereo</displayType></stereoFormatter></Display3></ThreadedDisplay><MainDisplay type=\"container\"><displayType type=\"string\">glfw_display</displayType><xOffset type=\"int\">800</xOffset><yOffset type=\"int\">0</yOffset><width type=\"int\">300</width><height type=\"int\">600</height></MainDisplay><OtherDisplay type=\"container\"><displayType type=\"string\">glfw_display</displayType><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">0</yOffset><width type=\"int\">600</width><height type=\"int\">600</height><stereoFormatter type=\"container\"><displayType type=\"string\">sideBySideStereo</displayType><topViewport type=\"container\"><displayType type=\"string\">viewport</displayType><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">300</yOffset><width type=\"int\">600</width><height type=\"int\">300</height></topViewport><bottomViewport type=\"container\"><displayType type=\"string\">viewport</displayType><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">0</yOffset><width type=\"int\">600</width><height type=\"int\">300</height></bottomViewport></stereoFormatter></OtherDisplay><radius type=\"float\">20.000000</radius><Display1 type=\"container\"><radius type=\"float\">7.000000</radius><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">300</yOffset></Display1><Display2 type=\"container\"><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">300</yOffset></Display2></VRDisplayDevices></MVR>";
-
-  int out = 0;
-
-  LOOP {
-  
-    MinVR::VRDataIndex *n = setupIndex();
-
-    std::string output = n->serialize("/MVR");
 
     delete n;
 
@@ -457,8 +522,81 @@ int testIndexSerialize() {
   }
 
   return out;
-  
 }
+
+int testIndexSerialize() {
+
+  std::string testString = "<MVR type=\"container\"><Server type=\"container\"><Port type=\"string\">3490</Port><Host type=\"string\">localhost</Host><NumClients type=\"int\">1</NumClients></Server><VRPlugins type=\"container\"><MinVRDefaultPlugins type=\"container\"><Names type=\"stringarray\" separator=\"@\">MinVR_GLFW@MinVR_OpenGL@MinVR_Threading</Names><Data type=\"floatarray\">1.200000,2.300000,3.400000,4.500000,5.600000</Data></MinVRDefaultPlugins></VRPlugins><VRDisplayDevices type=\"container\"><ThreadedDisplay type=\"container\"><displayType type=\"string\">thread_group</displayType><Display1 type=\"container\"><allowThreading type=\"int\">1</allowThreading><displayType type=\"string\" val=\"heavy\">glfw_display</displayType><xOffset type=\"int\">600</xOffset><yOffset type=\"int\">0</yOffset><width type=\"int\">200</width><height type=\"int\">200</height></Display1><Display2 type=\"container\"><displayType type=\"string\">glfw_display</displayType><allowThreading type=\"int\">1</allowThreading><xOffset type=\"int\">600</xOffset><yOffset type=\"int\">250</yOffset><width type=\"int\">200</width><height type=\"int\">200</height><stereoFormatter type=\"container\"><displayType type=\"string\">sideBySideStereo</displayType></stereoFormatter></Display2><Display3 type=\"container\"><displayType type=\"string\">glfw_display</displayType><allowThreading type=\"int\">1</allowThreading><xOffset type=\"int\">600</xOffset><yOffset type=\"int\">450</yOffset><width type=\"int\">200</width><height type=\"int\">200</height><stereoFormatter type=\"container\"><displayType type=\"string\">sideBySideStereo</displayType></stereoFormatter></Display3></ThreadedDisplay><MainDisplay type=\"container\"><displayType type=\"string\">glfw_display</displayType><xOffset type=\"int\">800</xOffset><yOffset type=\"int\">0</yOffset><width type=\"int\">300</width><height type=\"int\">600</height></MainDisplay><OtherDisplay type=\"container\"><displayType type=\"string\">glfw_display</displayType><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">0</yOffset><width type=\"int\">600</width><height type=\"int\">600</height><stereoFormatter type=\"container\"><displayType type=\"string\">sideBySideStereo</displayType><topViewport type=\"container\"><displayType type=\"string\">viewport</displayType><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">300</yOffset><width type=\"int\">600</width><height type=\"int\">300</height></topViewport><bottomViewport type=\"container\"><displayType type=\"string\">viewport</displayType><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">0</yOffset><width type=\"int\">600</width><height type=\"int\">300</height></bottomViewport></stereoFormatter></OtherDisplay><radius type=\"float\">20.000000</radius><Display1 type=\"container\"><radius type=\"float\">7.000000</radius><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">300</yOffset></Display1><Display2 type=\"container\"><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">300</yOffset></Display2></VRDisplayDevices></MVR>";
+  std::string serverTestString = "<Server type=\"container\"><Port type=\"string\">3490</Port><Host type=\"string\">localhost</Host><NumClients type=\"int\">1</NumClients></Server>";
+  std::string anotherTestString = "<MVR type=\"container\"><Server type=\"container\"><Port type=\"string\">3490</Port><Host type=\"string\">localhost</Host><NumClients type=\"int\">1</NumClients></Server><VRDisplayDevices type=\"container\"><ThreadedDisplay type=\"container\"><displayType type=\"string\">thread_group</displayType><Display1 type=\"container\"><allowThreading type=\"int\">1</allowThreading><displayType type=\"string\" val=\"heavy\">glfw_display</displayType><xOffset type=\"int\">600</xOffset><yOffset type=\"int\">0</yOffset><width type=\"int\">200</width><height type=\"int\">200</height></Display1><Display2 type=\"container\"><displayType type=\"string\">glfw_display</displayType><allowThreading type=\"int\">1</allowThreading><xOffset type=\"int\">600</xOffset><yOffset type=\"int\">250</yOffset><width type=\"int\">200</width><height type=\"int\">200</height><stereoFormatter type=\"container\"><displayType type=\"string\">sideBySideStereo</displayType></stereoFormatter></Display2><Display3 type=\"container\"><displayType type=\"string\">glfw_display</displayType><allowThreading type=\"int\">1</allowThreading><xOffset type=\"int\">600</xOffset><yOffset type=\"int\">450</yOffset><width type=\"int\">200</width><height type=\"int\">200</height><stereoFormatter type=\"container\"><displayType type=\"string\">sideBySideStereo</displayType></stereoFormatter></Display3></ThreadedDisplay><MainDisplay type=\"container\"><displayType type=\"string\">glfw_display</displayType><xOffset type=\"int\">800</xOffset><yOffset type=\"int\">0</yOffset><width type=\"int\">300</width><height type=\"int\">600</height></MainDisplay><OtherDisplay type=\"container\"><displayType type=\"string\">glfw_display</displayType><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">0</yOffset><width type=\"int\">600</width><height type=\"int\">600</height><stereoFormatter type=\"container\"><displayType type=\"string\">sideBySideStereo</displayType><topViewport type=\"container\"><displayType type=\"string\">viewport</displayType><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">300</yOffset><width type=\"int\">600</width><height type=\"int\">300</height></topViewport><bottomViewport type=\"container\"><displayType type=\"string\">viewport</displayType><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">0</yOffset><width type=\"int\">600</width><height type=\"int\">300</height></bottomViewport></stereoFormatter></OtherDisplay><radius type=\"float\">20.000000</radius><Display1 type=\"container\"><radius type=\"float\">7.000000</radius><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">300</yOffset></Display1><Display2 type=\"container\"><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">300</yOffset></Display2></VRDisplayDevices><VRPlugins type=\"container\"><MinVRDefaultPlugins type=\"container\"><Names type=\"stringarray\" separator=\"@\">MinVR_GLFW@MinVR_OpenGL@MinVR_Threading</Names><Data type=\"floatarray\">1.200000,2.300000,3.400000,4.500000,5.600000</Data></MinVRDefaultPlugins></VRPlugins></MVR>";
+
+  int out = 0;
+
+  LOOP {
+
+    MinVR::VRDataIndex *n = setupIndex();
+
+    std::string output = n->serialize("/MVR");
+
+    delete n;
+
+    out += output.compare(testString);
+
+    // We can also use the alternate constructor.
+    MinVR::VRDataIndex *anotherIndex = new MinVR::VRDataIndex(testString);
+
+    // The root level is not 'MVR', but the contents of 'MVR', such as 'Server'.
+    output = anotherIndex->serialize("Server");
+    out += output.compare(serverTestString);
+
+    // There is also a name to the index.
+    out += anotherIndex->getIndexName().compare("MVR");
+
+    // But we can also serialize the whole thing, in which case it
+    // gets wrapped up, just like the starting test string.
+    output = anotherIndex->serialize();
+    out += output.compare(anotherTestString);
+
+    delete anotherIndex;
+
+  }
+
+  return out;
+
+}
+
+int testIndexSerializeEntire() {
+
+  std::string testString = "<MVR type=\"container\"><Server type=\"container\"><Port type=\"string\">3490</Port><Host type=\"string\">localhost</Host><NumClients type=\"int\">1</NumClients></Server><VRPlugins type=\"container\"><MinVRDefaultPlugins type=\"container\"><Names type=\"stringarray\" separator=\"@\">MinVR_GLFW@MinVR_OpenGL@MinVR_Threading</Names><Data type=\"floatarray\">1.200000,2.300000,3.400000,4.500000,5.600000</Data></MinVRDefaultPlugins></VRPlugins><VRDisplayDevices type=\"container\"><ThreadedDisplay type=\"container\"><displayType type=\"string\">thread_group</displayType><Display1 type=\"container\"><allowThreading type=\"int\">1</allowThreading><displayType type=\"string\" val=\"heavy\">glfw_display</displayType><xOffset type=\"int\">600</xOffset><yOffset type=\"int\">0</yOffset><width type=\"int\">200</width><height type=\"int\">200</height></Display1><Display2 type=\"container\"><displayType type=\"string\">glfw_display</displayType><allowThreading type=\"int\">1</allowThreading><xOffset type=\"int\">600</xOffset><yOffset type=\"int\">250</yOffset><width type=\"int\">200</width><height type=\"int\">200</height><stereoFormatter type=\"container\"><displayType type=\"string\">sideBySideStereo</displayType></stereoFormatter></Display2><Display3 type=\"container\"><displayType type=\"string\">glfw_display</displayType><allowThreading type=\"int\">1</allowThreading><xOffset type=\"int\">600</xOffset><yOffset type=\"int\">450</yOffset><width type=\"int\">200</width><height type=\"int\">200</height><stereoFormatter type=\"container\"><displayType type=\"string\">sideBySideStereo</displayType></stereoFormatter></Display3></ThreadedDisplay><MainDisplay type=\"container\"><displayType type=\"string\">glfw_display</displayType><xOffset type=\"int\">800</xOffset><yOffset type=\"int\">0</yOffset><width type=\"int\">300</width><height type=\"int\">600</height></MainDisplay><OtherDisplay type=\"container\"><displayType type=\"string\">glfw_display</displayType><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">0</yOffset><width type=\"int\">600</width><height type=\"int\">600</height><stereoFormatter type=\"container\"><displayType type=\"string\">sideBySideStereo</displayType><topViewport type=\"container\"><displayType type=\"string\">viewport</displayType><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">300</yOffset><width type=\"int\">600</width><height type=\"int\">300</height></topViewport><bottomViewport type=\"container\"><displayType type=\"string\">viewport</displayType><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">0</yOffset><width type=\"int\">600</width><height type=\"int\">300</height></bottomViewport></stereoFormatter></OtherDisplay><radius type=\"float\">20.000000</radius><Display1 type=\"container\"><radius type=\"float\">7.000000</radius><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">300</yOffset></Display1><Display2 type=\"container\"><xOffset type=\"int\">0</xOffset><yOffset type=\"int\">300</yOffset></Display2></VRDisplayDevices></MVR>";
+
+  int out = 0;
+
+  LOOP {
+
+    MinVR::VRDataIndex* n = new MinVR::VRDataIndex(testString);
+
+    std::string output = n->serialize();
+
+
+    // This uses the constructor, so the "MVR" gets absorbed as the
+    // name of the index, not the root name in the index.
+    std::string test1 = n->getValue("/VRDisplayDevices/ThreadedDisplay/Display1/displayType");
+
+    std::string test2 = n->getAttributeValue("/VRDisplayDevices/ThreadedDisplay/Display1/displayType", "val");
+
+    out += test1.compare("glfw_display");
+    out += test2.compare("heavy");
+    out += 2871 - output.size();
+    out += n->getIndexName().compare("MVR");
+
+    delete n;
+  }
+
+  return out;
+
+}
+
+
 
 int testIndexPrintFloatArray() {
 
@@ -467,10 +605,10 @@ int testIndexPrintFloatArray() {
   int out = 0;
 
   LOOP {
-  
+
     MinVR::VRDataIndex *n = setupIndex();
 
-    std::string output = n->printStructure("/donna",200);  
+    std::string output = n->printStructure("/donna",200);
     delete n;
 
     //    std::cout << "output:     " << output << std::endl;
@@ -479,25 +617,25 @@ int testIndexPrintFloatArray() {
     out += output.compare(testString);
   }
 
-  return out;  
+  return out;
 }
-  
+
 int testIndexLotsaEntries() {
 
   int out = 0;
 
   LOOP {
-  
+
     MinVR::VRDataIndex *n = setupIndex();
 
     int lctr;
     int N = 1000;
-  
+
     for (lctr = 0; lctr < N; lctr++) {
       std::stringstream name;
       name << "/henry/entry" << lctr;
 
-      n->addData(name.str(), lctr);   
+      n->addData(name.str(), lctr);
     }
 
     for (lctr = 0; lctr < N; lctr++) {
@@ -512,7 +650,7 @@ int testIndexLotsaEntries() {
 
   return out;
 }
-  
+
 int testEscapedChars() {
 
   int out = 0;
@@ -527,7 +665,7 @@ int testEscapedChars() {
     // Escaping the comma separator between Gamma and Delta.
     std::string inString = "<mimi type=\"stringarray\" separator=\",\">Alpha,Beta,Gamma\\,Delta,Epsilon</mimi>";
     n->addSerializedValue(inString, MinVR::VRDataIndex::rootNameSpace);
-    
+
     MinVR::VRStringArray s = n->getValue("/mimi");
 
     out += (s.size() == 4) ? 0 : 1;
@@ -545,32 +683,94 @@ int testEscapedChars() {
   return out;
 }
 
+// This is to test whether the copy constructor actually recreates the
+// links, and also that it is a "deep" copy.
+int testDepthOfCopy() {
+  std::string xmlstring =  "<MVR><!-- some of the illegitimate children of John I --><John name=\"Lackland\"><Isabella name=\"Angouleme\"><Henry seq=\"III\" title=\"King\">1</Henry> <Izzie linkNode=\"Isabella\"/><Richard title=\"Earl of Cornwall\">2</Richard> <Joan title=\"Queen Consort\">3</Joan> <Isabella title=\"Queen Consort\">4</Isabella> <Eleanor type=\"string\">5</Eleanor> </Isabella><Joan title=\"Lady of Wales\"><Richard name=\"FitzRoy\">6</Richard><Izzie linkNode=\"Isabella\"/><Oliver name=\"FitzRoy\">7</Oliver></Joan> <Unknown><Geoffrey name=\"FitzRoy\" type=\"string\">8</Geoffrey><John name=\"FitzRoy\">9</John> <Henry name=\"FitzRoy\">10</Henry> <Osbert name=\"Gifford\">11</Osbert><Thomas linkNode=\"/MVR/John/Joan\"/> <Eudes name=\"FitzRoy\">12</Eudes> <Bartholomew name=\"FitzRoy\">13</Bartholomew> <Maud name=\"FitzRoy\" title=\"Abbess of Barking\">14</Maud><Isabella name=\"FitzRoy\">15</Isabella><Philip name=\"FitzRoy\" type=\"string\">16</Philip></Unknown> </John></MVR>";
+
+  std::string teststring="<MVR type=\"container\"><John type=\"container\" name=\"Lackland\"><Isabella type=\"container\" name=\"Angouleme\"><Henry type=\"int\" seq=\"III\" title=\"King\">1</Henry><Izzie type=\"int\" title=\"Queen Consort\">4</Izzie><Richard type=\"int\" title=\"Earl of Cornwall\">2</Richard><Joan type=\"int\" title=\"Queen Consort\">3</Joan><Isabella type=\"int\" title=\"Queen Consort\">4</Isabella><Eleanor type=\"string\">5</Eleanor></Isabella><Joan type=\"container\" letter=\"alpha\" title=\"Lady of Wales\"><Richard type=\"int\" name=\"FitzRoy\">6</Richard><Izzie type=\"container\" name=\"Angouleme\"><Henry type=\"int\" seq=\"III\" title=\"King\">1</Henry><Izzie type=\"int\" title=\"Queen Consort\">4</Izzie><Richard type=\"int\" title=\"Earl of Cornwall\">2</Richard><Joan type=\"int\" title=\"Queen Consort\">3</Joan><Isabella type=\"int\" title=\"Queen Consort\">4</Isabella><Eleanor type=\"string\">5</Eleanor></Izzie><Oliver type=\"int\" name=\"FitzRoy\">7</Oliver></Joan><Unknown type=\"container\"><Geoffrey type=\"string\" name=\"FitzRoy\">8</Geoffrey><John type=\"int\" name=\"FitzRoy\">9</John><Henry type=\"int\" name=\"FitzRoy\">10</Henry><Osbert type=\"int\" name=\"Gifford\">11</Osbert><Thomas type=\"container\" letter=\"alpha\" title=\"Lady of Wales\"><Richard type=\"int\" name=\"FitzRoy\">6</Richard><Izzie type=\"container\" name=\"Angouleme\"><Henry type=\"int\" seq=\"III\" title=\"King\">1</Henry><Izzie type=\"int\" title=\"Queen Consort\">4</Izzie><Richard type=\"int\" title=\"Earl of Cornwall\">2</Richard><Joan type=\"int\" title=\"Queen Consort\">3</Joan><Isabella type=\"int\" title=\"Queen Consort\">4</Isabella><Eleanor type=\"string\">5</Eleanor></Izzie><Oliver type=\"int\" name=\"FitzRoy\">7</Oliver></Thomas><Eudes type=\"int\" name=\"FitzRoy\">12</Eudes><Bartholomew type=\"int\" name=\"FitzRoy\">13</Bartholomew><Maud type=\"int\" name=\"FitzRoy\" title=\"Abbess of Barking\">14</Maud><Isabella type=\"int\" name=\"FitzRoy\">15</Isabella><Philip type=\"string\" name=\"FitzRoy\">16</Philip></Unknown></John></MVR>";
+  int out = 0;
+
+  MinVR::VRDatum::VRAttributeList s;
+  std::list<MinVR::VRDatum::VRAttributeList> l;
+  l.push_back(s);
+
+  LOOP {
+    MinVR::VRDataIndex *index = new MinVR::VRDataIndex();
+    index->addSerializedValue(xmlstring, MinVR::VRDataIndex::rootNameSpace);
+
+    // std::cout << index->printStructure() << std::endl;
+
+    // Make a copy of the index.
+    MinVR::VRDataIndex copiedIndex(*index);
+
+    // There is a link in the test index.  To prove that the linked
+    // nodes are actually the same node.  We adjust one node's
+    // attributes to make sure it appears at the copy, as well. (Which
+    // appears twice in the testString.)
+    copiedIndex.setAttributeValue("/MVR/John/Unknown/Thomas","letter", "alpha");
+
+    // Make another copy of the index, but with an assignment.
+    MinVR::VRDataIndex assignedIndex;
+    assignedIndex = *index;
+
+    assignedIndex.setAttributeValue("/MVR/John/Unknown/Thomas", "letter", "alpha");
+
+    // Change the old index, to prove these are different.
+    index->setAttributeValue("/MVR/John/Unknown/Thomas", "letter", "beta");
+
+    std::vector<int> e;
+
+    for (int i = 0; i < 100; i++) {
+      e.push_back(i);
+    }
+
+    index->addData("/MVR/John/Unknown/atestarray", e);
+
+    // std::cout << copiedIndex.printStructure() << std::endl;
+    // std::cout << index->printStructure() << std::endl;
+
+    std::string copiedOutputString = copiedIndex.serialize("/MVR");
+    std::string assignedOutputString = assignedIndex.serialize("/MVR");
+    std::string originalOutputString = index->serialize("/MVR");
+
+    // Test that the copiedOutputString matches the test string.
+    out += teststring.compare(copiedOutputString);
+
+    // Same with assignedOutputString.
+    out += teststring.compare(assignedOutputString);
+
+    // Test that the output of the old index does *not* match the test string.
+    out += (teststring.compare(originalOutputString) != 0) ? 0 : 1;
+
+    delete index;
+    // copiedIndex will be automatically deleted.
+  }
+  return out;
+
+}
+
+
 // Test the linking of one node to another with the linkNode
 // attribute.  There are three linkNodes in the xmlstring, one with an
 // absolute link name, and the other two using the same name, but
 // differing in the context in which the name is interpreted.
 int testLinkNode() {
   std::string xmlstring =  "<MVR><!-- some of the illegitimate children of John I --><John name=\"Lackland\"><Isabella name=\"Angouleme\"><Henry seq=\"III\" title=\"King\">1</Henry> <Izzie linkNode=\"Isabella\"/><Richard title=\"Earl of Cornwall\">2</Richard> <Joan title=\"Queen Consort\">3</Joan> <Isabella title=\"Queen Consort\">4</Isabella> <Eleanor type=\"string\">5</Eleanor> </Isabella><Joan title=\"Lady of Wales\"><Richard name=\"FitzRoy\">6</Richard><Izzie linkNode=\"Isabella\"/><Oliver name=\"FitzRoy\">7</Oliver></Joan> <Unknown><Geoffrey name=\"FitzRoy\" type=\"string\">8</Geoffrey><John name=\"FitzRoy\">9</John> <Henry name=\"FitzRoy\">10</Henry> <Osbert name=\"Gifford\">11</Osbert><Thomas linkNode=\"/MVR/John/Joan\"/> <Eudes name=\"FitzRoy\">12</Eudes> <Bartholomew name=\"FitzRoy\">13</Bartholomew> <Maud name=\"FitzRoy\" title=\"Abbess of Barking\">14</Maud><Isabella name=\"FitzRoy\">15</Isabella><Philip name=\"FitzRoy\" type=\"string\">16</Philip></Unknown> </John></MVR>";
-  
+
   std::string teststring="<MVR type=\"container\"><John type=\"container\" name=\"Lackland\"><Isabella type=\"container\" name=\"Angouleme\"><Henry type=\"int\" seq=\"III\" title=\"King\">1</Henry><Izzie type=\"int\" title=\"Queen Consort\">4</Izzie><Richard type=\"int\" title=\"Earl of Cornwall\">2</Richard><Joan type=\"int\" title=\"Queen Consort\">3</Joan><Isabella type=\"int\" title=\"Queen Consort\">4</Isabella><Eleanor type=\"string\">5</Eleanor></Isabella><Joan type=\"container\" letter=\"alpha\" title=\"Lady of Wales\"><Richard type=\"int\" name=\"FitzRoy\">6</Richard><Izzie type=\"container\" name=\"Angouleme\"><Henry type=\"int\" seq=\"III\" title=\"King\">1</Henry><Izzie type=\"int\" title=\"Queen Consort\">4</Izzie><Richard type=\"int\" title=\"Earl of Cornwall\">2</Richard><Joan type=\"int\" title=\"Queen Consort\">3</Joan><Isabella type=\"int\" title=\"Queen Consort\">4</Isabella><Eleanor type=\"string\">5</Eleanor></Izzie><Oliver type=\"int\" name=\"FitzRoy\">7</Oliver></Joan><Unknown type=\"container\"><Geoffrey type=\"string\" name=\"FitzRoy\">8</Geoffrey><John type=\"int\" name=\"FitzRoy\">9</John><Henry type=\"int\" name=\"FitzRoy\">10</Henry><Osbert type=\"int\" name=\"Gifford\">11</Osbert><Thomas type=\"container\" letter=\"alpha\" title=\"Lady of Wales\"><Richard type=\"int\" name=\"FitzRoy\">6</Richard><Izzie type=\"container\" name=\"Angouleme\"><Henry type=\"int\" seq=\"III\" title=\"King\">1</Henry><Izzie type=\"int\" title=\"Queen Consort\">4</Izzie><Richard type=\"int\" title=\"Earl of Cornwall\">2</Richard><Joan type=\"int\" title=\"Queen Consort\">3</Joan><Isabella type=\"int\" title=\"Queen Consort\">4</Isabella><Eleanor type=\"string\">5</Eleanor></Izzie><Oliver type=\"int\" name=\"FitzRoy\">7</Oliver></Thomas><Eudes type=\"int\" name=\"FitzRoy\">12</Eudes><Bartholomew type=\"int\" name=\"FitzRoy\">13</Bartholomew><Maud type=\"int\" name=\"FitzRoy\" title=\"Abbess of Barking\">14</Maud><Isabella type=\"int\" name=\"FitzRoy\">15</Isabella><Philip type=\"string\" name=\"FitzRoy\">16</Philip></Unknown></John></MVR>";
   int out = 0;
 
   LOOP {
     MinVR::VRDataIndex *index = new MinVR::VRDataIndex();
-    index->addSerializedValue(xmlstring, MinVR::VRDataIndex::rootNameSpace, false);
+    index->addSerializedValue(xmlstring, MinVR::VRDataIndex::rootNameSpace);
 
-    std::cout << index->printStructure() << std::endl;
-
-    // Look for all the nodes with 'linkNode' attributes, and evaluate.
-    index->linkNodes();
 
     // To prove that the linked nodes are actually the same node.  We
     // adjust one node's attributes to make sure it appears at the copy,
     // as well.
-    index->getDatum("/MVR/John/Unknown/Thomas")->setAttributeValue("letter", "alpha");
+    index->setAttributeValue("/MVR/John/Unknown/Thomas", "letter", "alpha");
 
-    std::cout << index->printStructure() << std::endl;
-  
     std::string outputstring = index->serialize("/MVR");
 
     out += teststring.compare(outputstring);
@@ -582,30 +782,95 @@ int testLinkNode() {
 
 int testLinkContent() {
 
-  std::string xmlstring =  "<MVR><!-- some of the illegitimate children of John I --><John name=\"Lackland\"><Isabella name=\"Angouleme\"><Henry seq=\"III\" title=\"King\">1</Henry> <Richard title=\"Earl of Cornwall\">2</Richard> <Joan title=\"Queen Consort\">3</Joan> <Isabella title=\"Queen Consort\">4</Isabella> <Eleanor type=\"string\">5</Eleanor> </Isabella><Joan title=\"Lady of Wales\"><Richard name=\"FitzRoy\">6</Richard><Oliver name=\"FitzRoy\">7</Oliver></Joan> <Unknown><Geoffrey name=\"FitzRoy\" type=\"string\">8</Geoffrey><John name=\"FitzRoy\">9</John> <Henry name=\"FitzRoy\">10</Henry> <Osbert name=\"Gifford\">11</Osbert><Thomas linkContent=\"/MVR/John/Joan\"/> <Eudes name=\"FitzRoy\">12</Eudes> <Bartholomew name=\"FitzRoy\">13</Bartholomew> <Maud name=\"FitzRoy\" title=\"Abbess of Barking\">14</Maud><Isabella name=\"FitzRoy\">15</Isabella><Philip name=\"FitzRoy\" type=\"string\">16</Philip></Unknown> </John></MVR>";
+  std::string xmlstring =  "<MVR><!-- some of the illegitimate children of John I --><John name=\"Lackland\"><Isabella name=\"Angouleme\"><Henry seq=\"III\" title=\"King\">1</Henry> <Richard title=\"Earl of Cornwall\">2</Richard> <Joan title=\"Queen Consort\">3</Joan> <Isabella title=\"Queen Consort\">4</Isabella> <Eleanor type=\"string\">5</Eleanor> </Isabella><Joan title=\"Lady of Wales\"><Richard name=\"FitzRoy\">6</Richard><Oliver name=\"FitzRoy\">7</Oliver></Joan> <Unknown><Geoffrey name=\"FitzRoy\" type=\"string\">8</Geoffrey><John name=\"FitzRoy\">9</John> <Henry name=\"FitzRoy\">10</Henry> <Osbert name=\"Gifford\">11</Osbert><Thomas linkContent=\"/John/Joan\"/> <Eudes name=\"FitzRoy\">12</Eudes> <Bartholomew name=\"FitzRoy\">13</Bartholomew> <Maud name=\"FitzRoy\" title=\"Abbess of Barking\">14</Maud><Isabella name=\"FitzRoy\">15</Isabella><Philip name=\"FitzRoy\" type=\"string\">16</Philip></Unknown> </John></MVR>";
 
- std:;string teststring = "<MVR type=\"container\"><John type=\"container\" name=\"Lackland\"><Isabella type=\"container\" name=\"Angouleme\"><Henry type=\"int\" seq=\"III\" title=\"King\">1</Henry><Richard type=\"int\" title=\"Earl of Cornwall\">2</Richard><Joan type=\"int\" title=\"Queen Consort\">3</Joan><Isabella type=\"int\" title=\"Queen Consort\">4</Isabella><Eleanor type=\"string\">5</Eleanor></Isabella><Joan type=\"container\" title=\"Lady of Wales\"><Richard type=\"int\" name=\"FitzRoy\">6</Richard><Oliver type=\"int\" name=\"FitzRoy\">7</Oliver></Joan><Unknown type=\"container\"><Richard type=\"int\" name=\"FitzRoy\">6</Richard><Oliver type=\"int\" name=\"FitzRoy\">7</Oliver><Geoffrey type=\"string\" name=\"FitzRoy\">8</Geoffrey><John type=\"int\" name=\"FitzRoy\">9</John><Henry type=\"int\" name=\"FitzRoy\">10</Henry><Osbert type=\"int\" name=\"Gifford\">11</Osbert><Eudes type=\"int\" name=\"FitzRoy\">12</Eudes><Bartholomew type=\"int\" name=\"FitzRoy\">13</Bartholomew><Maud type=\"int\" name=\"FitzRoy\" title=\"Abbess of Barking\">14</Maud><Isabella type=\"int\" name=\"FitzRoy\">15</Isabella><Philip type=\"string\" name=\"FitzRoy\">16</Philip></Unknown></John></MVR>";
+  std::string teststring = "<MVR type=\"container\"><John type=\"container\" name=\"Lackland\"><Isabella type=\"container\" name=\"Angouleme\"><Henry type=\"int\" seq=\"III\" title=\"King\">1</Henry><Richard type=\"int\" title=\"Earl of Cornwall\">2</Richard><Joan type=\"int\" title=\"Queen Consort\">3</Joan><Isabella type=\"int\" title=\"Queen Consort\">4</Isabella><Eleanor type=\"string\">5</Eleanor></Isabella><Joan type=\"container\" title=\"Lady of Wales\"><Richard type=\"int\" letter=\"alpha\" name=\"FitzRoy\">6</Richard><Oliver type=\"int\" name=\"FitzRoy\">7</Oliver></Joan><Unknown type=\"container\"><Richard type=\"int\" letter=\"alpha\" name=\"FitzRoy\">6</Richard><Oliver type=\"int\" name=\"FitzRoy\">7</Oliver><Geoffrey type=\"string\" name=\"FitzRoy\">8</Geoffrey><John type=\"int\" name=\"FitzRoy\">9</John><Henry type=\"int\" name=\"FitzRoy\">10</Henry><Osbert type=\"int\" name=\"Gifford\">11</Osbert><Eudes type=\"int\" name=\"FitzRoy\">12</Eudes><Bartholomew type=\"int\" name=\"FitzRoy\">13</Bartholomew><Maud type=\"int\" name=\"FitzRoy\" title=\"Abbess of Barking\">14</Maud><Isabella type=\"int\" name=\"FitzRoy\">15</Isabella><Philip type=\"string\" name=\"FitzRoy\">16</Philip></Unknown></John></MVR>";
 
-  
   int out = 0;
   LOOP {
-    MinVR::VRDataIndex *index = new MinVR::VRDataIndex();
-    index->addSerializedValue(xmlstring, MinVR::VRDataIndex::rootNameSpace, false);
+    MinVR::VRDataIndex *index = new MinVR::VRDataIndex(xmlstring);
 
-    //  std::cout << index->printStructure() << std::endl;
+    //std::cout << index->printStructure() << std::endl;
 
-    // Look for all the nodes with 'linknode' attributes, and evaluate.
-    index->linkNodes(); index->linkContent();
 
     // To prove that the copied nodes are actually the same node.  We
     // adjust one node's attributes to make sure it appears at the copy,
     // as well.
-    //  index->getDatum("/MVR/John/Unknown/Thomas")->setAttributeValue("letter", "alpha");
+    index->setAttributeValue("/John/Joan/Richard", "letter", "alpha");
 
-    out +=  teststring.compare(index->serialize("/MVR"));
+    // std::cout << index->printStructure() << std::endl;
+
+    //std::cout << index->serialize() << std::endl;
+
+    out +=  teststring.compare(index->serialize());
     delete index;
   }
 
   return out;
 
 }
+
+// Just testing a dumb little string test for seeing who is descended from whom.
+// Notice that some of the parentName values have a trailing slash.  This is on
+// purpose and should not matter to the test.
+int testIsChild() {
+
+  int out = 0;
+
+  LOOP {
+    out += (MinVR::VRDataIndex::isChild("/Norman/Bird/Sanctuary/",
+                                        "/Norman/Bird/Sanctuary") == 0) ? 0 : 1;
+    std::cout << "/Norman/Bird/Sanctuary"
+              << " to "
+              << "/Norman/Bird/Sanctuary"
+              << " result="
+              << MinVR::VRDataIndex::isChild("/Norman/Bird/Sanctuary/",
+                                             "/Norman/Bird/Sanctuary")
+              << std::endl;
+
+    out += (MinVR::VRDataIndex::isChild("/Norman/Bird/Sanctuary/",
+                                        "/Norman/Bird/Sanctuary/Egret") == 1) ? 0 : 1;
+    std::cout << "/Norman/Bird/Sanctuary"
+              << " to "
+              << "/Norman/Bird/Sanctuary/Egret"
+              << " result="
+              << MinVR::VRDataIndex::isChild("/Norman/Bird/Sanctuary/",
+                                             "/Norman/Bird/Sanctuary/Egret")
+              << std::endl;
+
+    out += (MinVR::VRDataIndex::isChild("/Norman/Bird/Sanctuary",
+                                        "/Norman/Bird/Sanctuary/Egret/Baby") == 2) ? 0 : 1;
+    std::cout << "/Norman/Bird/Sanctuary"
+              << " to "
+              << "/Norman/Bird/Sanctuary/Egret/Baby"
+              << " result="
+              << MinVR::VRDataIndex::isChild("/Norman/Bird/Sanctuary",
+                                             "/Norman/Bird/Sanctuary/Egret/Baby")
+              << std::endl;
+
+    out += (MinVR::VRDataIndex::isChild("/Norman/Bird/Sanctuary",
+                                        "/Norman/Bird/Egret") == -1) ? 0 : 1;
+    std::cout << "/Norman/Bird/Sanctuary"
+              << " to "
+              << "/Norman/Bird/Egret"
+              << " result="
+              << MinVR::VRDataIndex::isChild("/Norman/Bird/Sanctuary",
+                                             "/Norman/Bird/Egret")
+              << std::endl;
+
+    out += (MinVR::VRDataIndex::isChild("/Norman/Bird/Sanctuary",
+                                        "hello darling") == -1) ? 0 : 1;
+    std::cout << "/Norman/Bird/Sanctuary"
+              << " to "
+              << "hello darling"
+              << " result="
+              << MinVR::VRDataIndex::isChild("/Norman/Bird/Sanctuary",
+                                             "hello darling")
+              << std::endl;
+  }
+
+  return out;
+}
+
+
+
