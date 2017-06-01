@@ -156,18 +156,9 @@ set(vr_main_cpp
   ${vr_src_dir}/main/VRGraphicsStateInternal.cpp
   ${vr_src_dir}/main/VRLocalAppLauncher.cpp
   ${vr_src_dir}/main/VRMain.cpp
+  ${vr_src_dir}/main/VRSearchPath.cpp
   ${vr_src_dir}/main/VRSystem.cpp
 )
-
-## This is executed at cmake-time, and is done in order to sneak the
-## MinVR install directory literal into the VRSearchPath header file.
-## This does mess up the out-of-source build protocol, since the
-## VRSearchPath.h header file is not really source any more, but it
-## seems worth it.
-set(CMAKE_NO_EDIT_WARNING "WARNING -- THIS IS A GENERATED FILE -- DO NOT EDIT")
-configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/main/VRSearchPath.hpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/main/VRSearchPath.h)
 
 set(vr_main_h
   ${vr_src_dir}/main/VRAppLauncher.h
