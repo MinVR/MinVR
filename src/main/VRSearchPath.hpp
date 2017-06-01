@@ -1,3 +1,4 @@
+// ${CMAKE_NO_EDIT_WARNING}
 #ifndef VRSEARCHPATH_H
 #define VRSEARCHPATH_H
 
@@ -174,7 +175,7 @@ class VRSearchPlugin : public VRSearchPath {
     addPathEntry("${MINVR_ROOT}/plugins/", false);
 
     // 5. an installed version based on the INSTALL_PREFIX set with cmake
-    addPathEntry(std::string(INSTALLPATH) + "/plugins", false);
+    addPathEntry(std::string("${CMAKE_INSTALL_PREFIX}") + "/plugins", false);
 
   }
 
@@ -215,7 +216,7 @@ class VRSearchConfig : public VRSearchPath {
     addPathEntry("${MINVR_ROOT}/config/", false);
 
     // 5. an installed version based on the INSTALL_PREFIX set with cmake
-    addPathEntry(std::string(INSTALLPATH) + "/config/", false);
+    addPathEntry(std::string("${CMAKE_INSTALL_PREFIX}") + "/config/", false);
   }
 };
 
