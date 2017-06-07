@@ -31,7 +31,7 @@ public:
 	PLUGIN_API VRGLFWInputDevice();
 	PLUGIN_API virtual ~VRGLFWInputDevice();
 
-	PLUGIN_API void appendNewInputEventsSinceLastCall(VRDataQueue* queue);
+    PLUGIN_API void appendNewInputEventsSinceLastCall(std::vector<VRDataIndex> *events);
 
     PLUGIN_API void addWindow(::GLFWwindow* window);
 	// TODO: removeWindow()?
@@ -44,8 +44,7 @@ public:
   	PLUGIN_API void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
   
 private:
-	std::vector<std::string> _events;
-	VRDataIndex _dataIndex;
+	std::vector<VRDataIndex> _events;
     std::vector< ::GLFWwindow*> _windows;
 };
 

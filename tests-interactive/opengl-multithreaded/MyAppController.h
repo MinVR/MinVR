@@ -27,12 +27,13 @@ public:
 	MyAppController(int argc, char** argv);
 	virtual ~MyAppController();
 
-	/// Handles VR Events
-	void onVREvent(const VREvent &event);
-	/// Handles and updates Graphics Context
-	void onVRRenderGraphicsContext(const VRGraphicsState &renderState);
-	/// Handles Graphics rendering
-	void onVRRenderGraphics(const VRGraphicsState &renderState);
+    
+    void onAnalogChange(const VRAnalogState &state);
+    void onButtonDown(const VRButtonState &state);
+
+    
+    void onRenderGraphicsScene(const VRGraphicsState& state);
+    void onRenderGraphicsContext(const VRGraphicsState& state);
 
 private:
 	MyAppModel model;

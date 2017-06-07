@@ -9,10 +9,14 @@
 #ifndef VRAPP_H_
 #define VRAPP_H_
 
-#include "VREvent.h"
-//#include "VRAudioState.h"
+#include "VRAnalogState.h"
+#include "VRAudioState.h"
+#include "VRButtonState.h"
+#include "VRConsoleState.h"
+#include "VRCursorState.h"
 #include "VRGraphicsState.h"
-//#include "VRHapticsState.h"
+#include "VRHapticsState.h"
+#include "VRTrackerState.h"
 
 namespace MinVR {
 
@@ -98,33 +102,47 @@ public:
 	 */
 	virtual ~VRApp();
 
-	/**
-	 * onVREvent is called when MinVR issues an event callback.  Since event data is extremely diverse,
-	 * developers can get the specific event data by named fields using the VREvent interface.
+
+
+
+	/** USER INTERFACE CALLBACKS **/
+
+    virtual void onAnalogChange(const VRAnalogState &state) {}
+
+	virtual void onButtonDown(const VRButtonState &state) {}
+
+	virtual void onButtonUp(const VRButtonState &state) {}
+
+	virtual void onCursorMove(const VRCursorState &state) {}
+
+	virtual void onTrackerMove(const VRTrackerState &state) {}
+
+
+	/** RENDERING CALLBACKS **/
+
+    virtual void onRenderAudio(const VRAudioState& state) {}
+
+
+    virtual void onRenderConsole(const VRConsoleState& state) {}
+
+
+	/** This function is called once for each time a display node requires the scene
+		      to be drawn.  For example, a stereo display node will require the scene to
+		      be drawn twice (once per eye).  For graphics rendering, this is where the
+		      application makes the OpenGL or other graphics calls to draw the scene on
+		      the GPU.  Every graphics program will need to override this function.  Think
+		      of it as the place where you draw your scene.  In some cases MinVR needs to
+		      interact with the graphics card or operating system in order to prepare for
+		      this rendering (e.g., MinVR will open the correct graphics windows for you),
+		      but as much as possible, MinVR attempts to simply pass the relevant state on
+		      to the application programmer to handle as needed in your own shaders.  This
+		      is done through the VRGraphicsState object.  MinVR updates this data structure
+		      as it traverses the display graph so that it contains any information you may
+		      need to draw graphics (e.g., the correct projection matrix to apply in your
+		      shaders in order to support head tracked stereo rendering).
 	 */
-	virtual void onVREvent(const VREvent &event) {}
+	virtual void onRenderGraphicsScene(const VRGraphicsState& state) {}
 
-
-	//virtual void onVRRenderAudio(const VRAudioState& state) {}
-
-
-	/** This function is called once for each time a display node requires the
-      scene to be drawn.  For example, a stereo display node will require the
-      scene to be drawn twice (once per eye).  For graphics rendering, this is
-      where the application makes the OpenGL or other graphics calls to draw the
-      scene on the GPU.  Every graphics program will need to override this
-      function.  Think of it as the place where you draw your scene.  In some
-      cases MinVR needs to interact with the graphics card or operating system
-      in order to prepare for this rendering (e.g., MinVR will open the correct
-      graphics windows for you), but as much as possible, MinVR attempts to
-      simply pass the relevant state on to the application programmer to handle
-      as needed in your own shaders.  This is done through the VRGraphicsState
-      object.  MinVR updates this data structure as it traverses the display
-      graph so that it contains any information you may need to draw graphics
-      (e.g., the correct projection matrix to apply in your shaders in order to
-      support head tracked stereo rendering).
-	 */
-	virtual void onVRRenderGraphics(const VRGraphicsState& state) {}
 
 	/** Whereas onVRRenderGraphics(..) is called once per scene (e.g., twice for a
       simple stereo display), onVRRenderGraphicsContext(..) is called once per
@@ -136,17 +154,17 @@ public:
       computation that is the same for both eyes, such as loading textures or
       mesh data into graphics card memory.
 	 */
-	virtual void onVRRenderGraphicsContext(const VRGraphicsState& state) {}
+	virtual void onRenderGraphicsContext(const VRGraphicsState& state) {}
 
-	//virtual void onVRRenderHaptics(const VRHapticsState& state) {}
+	virtual void onRenderHaptics(const VRHapticsState& state) {}
 
-  /** Returns whether or not the application is running. */
-  bool isRunning() const;
 
-	/** Starts the application. */
+	/** Starts the application and does not return until the application exits. */
 	void run();
 
-	/** Shuts the application down */
+	/** Frees memory and other resources.  Typically called after run() completes.
+	    If shutdown() is called while the app is still running, it will cause the
+	    app to exit from run() the next time through the mainloop. */
 	void shutdown();
 
   /** After parsing the command line, the number of arguments unused by MinVR

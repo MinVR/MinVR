@@ -17,7 +17,6 @@
 #ifndef VRFAKETRACKERDEVICE_H
 #define VRFAKETRACKERDEVICE_H
 
-#include <api/VREvent.h>
 #include <config/VRDataIndex.h>
 #include <config/VRDataQueue.h>
 #include <input/VRInputDevice.h>
@@ -80,9 +79,9 @@ public:
     
     virtual ~VRFakeTrackerDevice();
     
-    void onVREvent(const VREvent &event);
+    void onVREvent(const VRDataIndex &eventData);
 
-    void appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents);
+    void appendNewInputEventsSinceLastCall(std::vector<VRDataIndex> *inputEvents);
 
     static VRInputDevice* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
     
@@ -136,7 +135,7 @@ private:
     // keep track of the last measured location.
     float _lastMouseX, _lastMouseY;
     
-    VRDataQueue _pendingEvents;
+    std::vector<VRDataIndex> _pendingEvents;
 };
     
 } // end namespace

@@ -62,7 +62,7 @@ VRFakeTrackerDevice::VRFakeTrackerDevice(const std::string &trackerName,
     _pendingEvents.push(di.serialize(_eventName));
 
 }
-    
+
 
 
 VRFakeTrackerDevice::~VRFakeTrackerDevice()
@@ -70,7 +70,7 @@ VRFakeTrackerDevice::~VRFakeTrackerDevice()
 }
 
 
-void VRFakeTrackerDevice::onVREvent(const MinVR::VREvent &event)
+void VRFakeTrackerDevice::onVREvent(const VRDataIndex &eventData)
 {
   if (event.getName() == _toggleEvent) {
     _tracking = !_tracking;
@@ -134,7 +134,7 @@ void VRFakeTrackerDevice::onVREvent(const MinVR::VREvent &event)
       if (_tracking) {
         float deltaX = mousex - _lastMouseX;
         float deltaY = mousey - _lastMouseY;
-            
+
         if (_state == VRFakeTrackerDevice::ZTranslating) {
           // If we're Z translating, that's up and down in the seeker mode, but
           // forward and backward in the looker mode.
@@ -142,14 +142,14 @@ void VRFakeTrackerDevice::onVREvent(const MinVR::VREvent &event)
             _statePos =  VRVector3(0, _zScale * deltaY, 0) + _statePos;
           } else {
             _statePos =  VRVector3(0, 0, _zScale * deltaY) + _statePos;
-          }          
+          }
         }
         else if (_state == VRFakeTrackerDevice::Rotating) {
           // The seeker mode turns the viewer around in place, while the looker
           // mode rotates the object in front of the viewer.  More or less.
-          
+
           VRMatrix4 r;
-          
+
           if (_seeker) {
             VRVector3 up = _stateRot * VRVector3(0.0f, 1.0f, 0.0f);
             // Not sure why these coordinates have to be negated.
@@ -158,8 +158,8 @@ void VRFakeTrackerDevice::onVREvent(const MinVR::VREvent &event)
 
             r = VRMatrix4::rotation(here, up, _rScale * deltaX) *
               VRMatrix4::rotation(here, over, _rScale * deltaY);
-              
-          } else {          
+
+          } else {
             r = VRMatrix4::rotationY(_rScale * deltaX) *
               VRMatrix4::rotationX(-_rScale * deltaY);
           }
@@ -178,29 +178,29 @@ void VRFakeTrackerDevice::onVREvent(const MinVR::VREvent &event)
             _statePos =  _xyScale * VRVector3(deltaX, deltaY, 0) + _statePos;
           }
         }
-        
+
         _transform = VRMatrix4::translation(_statePos) * _stateRot;
 
         VRDataIndex di;
         di.addData(_eventName + "/Transform", _transform);
         _pendingEvents.push(di.serialize(_eventName));
       }
-            
+
       _lastMouseX = mousex;
       _lastMouseY = mousey;
     }
   }
 }
 
-  
-void VRFakeTrackerDevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents)
+
+void VRFakeTrackerDevice::appendNewInputEventsSinceLastCall(std::vector<VRDataIndex> *inputEvents)
 {
-  while (_pendingEvents.notEmpty()) {
-    inputEvents->push(_pendingEvents.getSerializedObject());
-    _pendingEvents.pop();
-  }
+    for (std::vector<VRDataIndex>::iterator evt = _pendingEvents.begin(); evt < _pendingEvents.end(); ++evt) {
+        inputEvents->push_back(*evt);
+    }
+    _pendingEvents.clear();
 }
-  
+
 
 VRInputDevice*
 VRFakeTrackerDevice::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
@@ -269,7 +269,7 @@ VRFakeTrackerDevice::create(VRMainInterface *vrMain, VRDataIndex *config, const 
     return dev;
 }
 
-  
+
 } // end namespace
 
 

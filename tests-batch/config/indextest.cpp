@@ -295,7 +295,7 @@ int testSelections() {
 
 
     // Test selection by fully qualified name.
-    MinVR::VRContainer fourthList = index->selectByName("/MVR/John/Isabella/Eleanor");
+    MinVR::VRContainer fourthList = index->selectByKey("/MVR/John/Isabella/Eleanor");
 
     jt = fourthTestList.begin();
     for (MinVR::VRContainer::iterator it = fourthList.begin();
@@ -305,7 +305,7 @@ int testSelections() {
     }
 
     // Test selection by partial name.
-    MinVR::VRContainer fifthList = index->selectByName("John/Isabella");
+    MinVR::VRContainer fifthList = index->selectByKey("John/Isabella");
 
     jt = fifthTestList.begin();
     for (MinVR::VRContainer::iterator it = fifthList.begin();
@@ -316,7 +316,7 @@ int testSelections() {
 
 
     // Test selection by partial name with wildcard.
-    MinVR::VRContainer sixthList = index->selectByName("John/*/Isabella");
+    MinVR::VRContainer sixthList = index->selectByKey("John/*/Isabella");
 
     jt = sixthTestList.begin();
     for (MinVR::VRContainer::iterator it = sixthList.begin();
@@ -377,8 +377,8 @@ int testSelectionFirst() {
   std::cout << "6:" << n.getByAttribute("title", "Earl", "/A") << std::endl;
   out += n.getByAttribute("title", "Earl", "/A").empty()? 0 : 1 ;
 
-  std::cout << n.getIndexName() << std::endl;
-  out += n.getIndexName().compare("example");
+  std::cout << n.getName() << std::endl;
+  out += n.getName().compare("example");
 
   return out;
 }
@@ -560,7 +560,7 @@ int testIndexSerialize() {
     out += output.compare(serverTestString);
 
     // There is also a name to the index.
-    out += anotherIndex->getIndexName().compare("MVR");
+    out += anotherIndex->getName().compare("MVR");
 
     // But we can also serialize the whole thing, in which case it
     // gets wrapped up, just like the starting test string.
@@ -597,7 +597,7 @@ int testIndexSerializeEntire() {
     out += test1.compare("glfw_display");
     out += test2.compare("heavy");
     out += 2871 - output.size();
-    out += n->getIndexName().compare("MVR");
+    out += n->getName().compare("MVR");
 
     delete n;
   }

@@ -34,6 +34,7 @@ void VRGraphicsWindowNode::render(VRDataIndex *renderState, VRRenderHandler *ren
   renderState->pushState();
 
 	// Is this the kind of state information we expect to pass from one node to the next?
+    renderState->addData("IsGraphics", 1);
 	renderState->addData("/WindowX", _settings.xpos);
 	renderState->addData("/WindowY", _settings.ypos);
 	renderState->addData("/WindowWidth", _settings.width);
@@ -58,7 +59,7 @@ void VRGraphicsWindowNode::render(VRDataIndex *renderState, VRRenderHandler *ren
 	}*/
 	
 	// windows should call the application programmer's context-level callback
-	renderHandler->onVRRenderContext(renderState, this);
+	renderHandler->onVRRenderContext(*renderState);
 
 	VRDisplayNode::render(renderState, renderHandler);
 
