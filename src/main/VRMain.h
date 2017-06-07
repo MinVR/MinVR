@@ -236,13 +236,34 @@ public:
 
 
 
-    /***** USED INTERNALLY BY MINVR *****/
+
+    /***** ACCESS TO MINVR DETAILS *****/
+
+    /// Returns a data index containing all of the setup information loaded in
+    /// to the program via config files.
+    VRDataIndex* getConfig() { return _config; }
+
+    /// Provides access to pointers to input devices based on the DeviceID,
+    /// which is a data field within all the eventData for all MinVR events.  
+    /// Note that it's only possible to access locally attached input devices.  
+    /// DeviceID = -1 is used for events that come from networked nodes, and
+    /// getInputDevice will return NULL when deviceID=-1.
+    VRInputDevice* getInputDevice(int deviceID);
+
+    /// Provides access to pointers to display nodes based on the NodeID,
+    /// which is a data field within the renderState data passed by MinVR
+    /// to all rendering callbacks.
+    VRDisplayNode* getDisplayNode(int nodeID);
+
+
+
+
+    /***** USED INTERNALLY BY MINVR -- THESE COULD PROBABLY BE MOVED TO AN IMPLEMENTATION FILE *****/
 
     std::string getName() { return _name; }
 
     VRFactory* getFactory() { return _factory; }
 
-    VRDataIndex* getConfig() { return _config; }
 
     void addInputDevice(VRInputDevice* dev);
 

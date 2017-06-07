@@ -15,66 +15,65 @@
 #include <GL/glu.h>
 #endif
 
-// MinVR header
-#include <api/MinVR.h>
+
+#include <main/VRMain.h>
 using namespace MinVR;
 
 
-
 /** MyVRApp changes the clear color as frames progress. */
-class MyVRApp : public VRApp {
+class MyVRApp : public VREventHandler, public VRRenderHandler {
 public:
-	MyVRApp(int argc, char** argv) : VRApp(argc, argv) {}
+	MyVRApp(int argc, char** argv) {
+        _main = new VRMain();
+        _main->addEventHandler(this);
+        _main->addRenderHandler(this);
+        _main->initializeWithMinVRCommandLineParsing(argc,argv);
+    }
 
-	void onVREvent(const VREvent &event) {
+	void onVREvent(const VRDataIndex &event) {
         
-		if (isRunning()) {
-			event.print();
+        event.printStructure();
 
-			// Get the time since application began
-			if (event.getName() == "FrameStart") {
-				time = event.getDataAsFloat("ElapsedSeconds");
-				return;
-			}
-
-			// Quit if the escape button is pressed
-			if (event.getName() == "KbdEsc_Down") {
-				shutdown();
-			}
+		// Get the time since application began
+		if (event.getName() == "FrameStart") {
+			time = event.getValue("ElapsedSeconds");
 		}
+
+        // Quit if the escape button is pressed
+        else if (event.getName() == "KbdEsc_Down") {
+            _main->shutdown();
+        }
 	}
 
-	void onVRRenderGraphicsContext(const VRGraphicsState &renderState) {
-		// Print out when the window was opened and closed
-		if (renderState.isInitialRenderCall()) {
-			std::cout << "Window opened." << std::endl;
-
-			// Create VBOs, VAOs, Textures, Shaders, and FrameBuffers
-		}
-
-		if (!isRunning()) {
-			std::cout << "Window closed." << std::endl;
-		}
+	void onVRRenderContext(const VRDataIndex &stateData) {
+        if (stateData.exists("IsGraphics")) {
+        }
 	}
 
-	void onVRRenderGraphics(const VRGraphicsState &renderState) {
-		if (isRunning()) {
-			// Get projection an view matrices
-			const float* projectionMatrix = renderState.getProjectionMatrix();
-			const float* viewMatrix = renderState.getViewMatrix();
+	void onVRRenderScene(const VRDataIndex &stateData) {
+        if (stateData.exists("IsGraphics")) {
+            VRFloatArray projMat = stateData.getValue("ProjectionMatrix");
+            VRFloatArray viewMat = stateData.getValue("ViewMatrix");
 
-			// Show gradient of red color over four seconds then restart
-			float red = std::fmod(time/4.0,1.0);
-			glClearColor(red, 0, 0, 1);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+            // Show gradient of red color over four seconds then restart
+            float red = std::fmod(time/4.0,1.0);
+            glClearColor(red, 0, 0, 1);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-			// Draw calls here
-		}
+            // Draw calls here
+        }
 	}
 
+    void run() {
+        while (_main->mainloop()) {}
+    }
+    
 private:
 	float time;
+    VRMain *_main;
 };
+
+
 
 int main(int argc, char **argv) {
 	MyVRApp app(argc, argv);

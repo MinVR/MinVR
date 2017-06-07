@@ -6,12 +6,6 @@ namespace MinVR {
 
     
     
-/**  TODO:  Add NormalizedPosition to the Mouse_Move event
-            Register VRFakeTrackerDevice with VRFactory
-*/
-    
-    
-    
 VRFakeTrackerDevice::VRFakeTrackerDevice(const std::string &trackerName,
                                          const std::string &toggleOnOffEventName,
                                          float xyScale,
@@ -36,30 +30,29 @@ VRFakeTrackerDevice::~VRFakeTrackerDevice()
 }
 
 
-void VRFakeTrackerDevice::onVREvent(const MinVR::VREvent &event)
+void VRFakeTrackerDevice::onVREvent(const VRDataIndex &eventData)
 {
-    if (event.getName() == _toggleEvent) {
+    if (eventData.getName() == _toggleEvent) {
         _tracking = !_tracking;
         if (_tracking) {
             _state = VRFakeTrackerDevice::XYTranslating;
         }
     }
-    else if (event.getName() == "KbdZ_Down") {
+    else if (eventData.getName() == "KbdZ_Down") {
         _state = VRFakeTrackerDevice::ZTranslating;
     }
-    else if (event.getName() == "KbdZ_Up") {
+    else if (eventData.getName() == "KbdZ_Up") {
         _state = VRFakeTrackerDevice::XYTranslating;
     }
-    else if (event.getName() == "KbdR_Down") {
+    else if (eventData.getName() == "KbdR_Down") {
         _state = VRFakeTrackerDevice::Rotating;
     }
-    else if (event.getName() == "KbdR_Up") {
+    else if (eventData.getName() == "KbdR_Up") {
         _state = VRFakeTrackerDevice::XYTranslating;
     }
-    else if (event.getName() == "Mouse_Move") {
-        
-        const float *screenPos = event.getDataAsFloatArray("NormalizedPosition");
-        if (screenPos != NULL) {
+    else if (eventData.getName() == "Mouse_Move") {
+        VRFloatArray screenPos = eventData.getValue("NormalizedPosition");
+        if (screenPos.size() >= 2) {
             float mousex = 2.0*(screenPos[0] - 0.5);
             float mousey = 2.0*((1.0-screenPos[1]) - 0.5);
 
@@ -77,9 +70,9 @@ void VRFakeTrackerDevice::onVREvent(const MinVR::VREvent &event)
                 VRVector3 pos = VRVector3(_xyScale * mousex, _xyScale * mousey, _z);
                 VRMatrix4 xform  = VRMatrix4::translation(pos) * _R;
 
-                VRDataIndex di;
-                di.addData(_eventName + "/Transform", xform);
-                _pendingEvents.push(di.serialize(_eventName));
+                VRDataIndex di(_eventName);
+                di.addData("Transform", xform);
+                _pendingEvents.push_back(di);
             }
             
             _lastMouseX = mousex;
@@ -89,12 +82,12 @@ void VRFakeTrackerDevice::onVREvent(const MinVR::VREvent &event)
 }
 
   
-void VRFakeTrackerDevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents)
+void VRFakeTrackerDevice::appendNewInputEventsSinceLastCall(std::vector<VRDataIndex> *inputEvents)
 {
-  while (_pendingEvents.notEmpty()) {
-    inputEvents->push(_pendingEvents.getSerializedObject());
-    _pendingEvents.pop();
-  }
+    for (std::vector<VRDataIndex>::iterator evt = _pendingEvents.begin(); evt < _pendingEvents.end(); ++evt) {
+        inputEvents->push_back(*evt);
+    }
+    _pendingEvents.clear();
 }
   
 

@@ -176,9 +176,10 @@ public:
   // There is also a 'separator=' attribute that indicates a character
   // to use in the serialized version of an array.
   VRAttributeList getAttributeList() { return attrList.front(); };
+  const VRAttributeList getAttributeList() const { return attrList.front(); };
   void setAttributeList(VRAttributeList newList) { attrList.front() = newList; };
-  std::string getAttributeValue(const std::string attributeName) {
-    VRAttributeList::iterator attr = attrList.front().find(attributeName);
+  std::string getAttributeValue(const std::string attributeName) const {
+    VRAttributeList::const_iterator attr = attrList.front().find(attributeName);
     if (attr != attrList.front().end()) {
       return attr->second;
     } else {
@@ -196,7 +197,7 @@ public:
   }
 
   // Returns the attribute list formatted to include in an XML tag.
-  std::string getAttributeListAsString();
+  std::string getAttributeListAsString() const;
 
   // This array is a mapping between VRCORETYPE_ID and the string
   // description of that type that will appear in serialized data.  It
@@ -216,12 +217,12 @@ public:
   // The description of the datum is a part of the network-ready
   // serialized data.  It's in the 'type=""' part of the XML.
   std::string getDescription() const { return description; };
-  VRCORETYPE_ID getType() { return type; };
+  VRCORETYPE_ID getType() const { return type; };
 
   // The generic getValue() method returns an object of the helper
   // class above, which is then coerced into the type the user
   // actually wants.
-  virtual VRDatumConverter<VRDatum> getValue() = 0;
+  virtual VRDatumConverter<VRDatum> getValue() const = 0;
 
   // The easiest way to accommodate the push/pop feature of
   // VRDatumSpecialized, below.
@@ -295,7 +296,7 @@ public:
     return true;
   }
 
-  VRDatumConverter<VRDatum> getValue() {
+  VRDatumConverter<VRDatum> getValue() const {
     return VRDatumConverter<VRDatum>(this);
   }
 
@@ -528,6 +529,11 @@ public:
     return pData;
   }
 
+  const VRDatum* operator-> () const
+  {
+    return pData;
+  }
+    
   VRDatumPtr& operator = (const VRDatumPtr& sp)
   {
     // Assignment operator

@@ -2,7 +2,7 @@
 #define VREVENTHANDLER_H
 
 
-#include <api/VREvent.h>
+#include <config/VRDataIndex.h>
 
 
 namespace MinVR {
@@ -16,7 +16,7 @@ class VREventHandler {
 public:
   /// Called from within VRMain::synchronizeAndProcessEvents() once for each
   /// event generated since the last call to synchronizeAndProcessEvents().
-  virtual void onVREvent(const VREvent &event) = 0;
+  virtual void onVREvent(const VRDataIndex &eventData) = 0;
 };
 
 

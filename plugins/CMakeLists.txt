@@ -34,7 +34,7 @@ endif()
 
 #------------------Python-----------------------------
 option(MINVR_PYTHON_PLUGIN "If enabled, Python plugin will be installed" OFF)
-if (MINVR_PYTHON_PLUGIN OR BASE_PLUGINS)
+if (MINVR_PYTHON_PLUGIN)
 	add_subdirectory (Python)
 endif()
 

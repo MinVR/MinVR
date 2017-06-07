@@ -16,8 +16,7 @@ class VRNetClient : public VRNetInterface {
   VRNetClient(const std::string &serverIP, const std::string &serverPort);
   ~VRNetClient();
 
-  VRDataQueue::serialData
-    syncEventDataAcrossAllNodes(VRDataQueue::serialData eventData);
+  void syncEventDataAcrossAllNodes(std::vector<VRDataIndex> *events);
 
   void syncSwapBuffersAcrossAllNodes();
 

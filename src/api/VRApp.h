@@ -9,10 +9,14 @@
 #ifndef VRAPP_H_
 #define VRAPP_H_
 
-#include "VREvent.h"
-//#include "VRAudioState.h"
+#include "VRAnalogState.h"
+#include "VRAudioState.h"
+#include "VRButtonState.h"
+#include "VRConsoleState.h"
+#include "VRCursorState.h"
 #include "VRGraphicsState.h"
-//#include "VRHapticsState.h"
+#include "VRHapticsState.h"
+#include "VRTrackerState.h"
 
 namespace MinVR {
 
@@ -102,15 +106,31 @@ public:
 	 */
 	virtual ~VRApp();
 
-	/**
-	 * onVREvent is called when MinVR issues an event callback.  Since event data is extremely diverse,
-	 * developers can get the specific event data by named fields using the VREvent interface.
-	 */
-	virtual void onVREvent(const VREvent &event) {}
+    
+    
+
+	/** USER INTERFACE CALLBACKS **/
+
+    virtual void onAnalogChange(const VRAnalogState &state) {}
+    
+	virtual void onButtonDown(const VRButtonState &state) {}
+
+	virtual void onButtonUp(const VRButtonState &state) {}
+
+	virtual void onCursorMove(const VRCursorState &state) {}
+
+	virtual void onTrackerMove(const VRTrackerState &state) {}
 
 
-	//virtual void onVRRenderAudio(const VRAudioState& state) {}
+    
 
+	/** RENDERING CALLBACKS **/
+
+    virtual void onRenderAudio(const VRAudioState& state) {}
+    
+    
+    virtual void onRenderConsole(const VRConsoleState& state) {}
+    
 
 	/** This function is called once for each time a display node requires the scene
 		      to be drawn.  For example, a stereo display node will require the scene to
@@ -127,8 +147,9 @@ public:
 		      need to draw graphics (e.g., the correct projection matrix to apply in your
 		      shaders in order to support head tracked stereo rendering).
 	 */
-	virtual void onVRRenderGraphics(const VRGraphicsState& state) {}
+	virtual void onRenderGraphicsScene(const VRGraphicsState& state) {}
 
+    
 	/** Whereas onVRRenderGraphics(..) is called once per scene (e.g., twice for a
 	      simple stereo display), onVRRenderGraphicsContext(..) is called once per
 	      rendering context.  For a stereo graphics application, onVRRenderContext(..)
@@ -139,20 +160,21 @@ public:
 	      computation that is the same for both eyes, such as loading textures or
 	      mesh data into graphics card memory.
 	 */
-	virtual void onVRRenderGraphicsContext(const VRGraphicsState& state) {}
+	virtual void onRenderGraphicsContext(const VRGraphicsState& state) {}
 
 
-	//virtual void onVRRenderHaptics(const VRHapticsState& state) {}
 
+	virtual void onRenderHaptics(const VRHapticsState& state) {}
 
-    /** Returns whether or not the application is running. */
-    bool isRunning() const;
-  
+    
+    
 
-	/** Starts the application. */
+	/** Starts the application and does not return until the application exits. */
 	void run();
 
-	/** Shuts the application down */
+	/** Frees memory and other resources.  Typically called after run() completes.
+	    If shutdown() is called while the app is still running, it will cause the
+	    app to exit from run() the next time through the mainloop. */
 	void shutdown();
 
 private:

@@ -6,12 +6,15 @@
  * 		Dan Orban (dtorban)
  */
 
-#include "../VRApp.h"
+#include "api/VRApp.h"
+#include "api/VRAudioState.h"
+#include "api/VRButtonState.h"
+#include "api/VRConsoleState.h"
+#include "api/VRCursorState.h"
+#include "api/VRGraphicsState.h"
+#include "api/VRHapticsState.h"
+#include "api/VRTrackerState.h"
 
-//#include <main/VRAudioHandler.h>
-#include <main/VREventHandler.h>
-#include <main/VRGraphicsHandler.h>
-//#include <main/VRHapticsHandler.h>
 #include <main/VRMain.h>
 
 
@@ -24,61 +27,101 @@ namespace MinVR {
     do not need to know how to do this, rather they simply subclass from VRApp and override
     the virtual methods provided there as needed.
 */
-  class VRAppInternal : //public VRAudioHandler,
-					  public VREventHandler, 
-                      public VRGraphicsHandler { //,
-                      //public VRHapticsHandler {
+class VRAppInternal : public VREventHandler, public VRRenderHandler {
 public:
-	VRAppInternal(int argc, char** argv, VRApp *app) : _app(app), _running(false) {
+	VRAppInternal(int argc, char** argv, VRApp *app) : _app(app) {
 		_main = new VRMain();
-		_main->initializeWithMinVRCommandLineParsing(argc, argv);
-		_main->addEventHandler(this);
-		_main->addRenderHandler(this);
+        _main->addEventHandler(this);
+        _main->addRenderHandler(this);
+        _main->initializeWithMinVRCommandLineParsing(argc, argv);
 	}
 
 	virtual ~VRAppInternal() {
 		delete _main;
 	}
 
-	void onVREvent(const VREvent &event) {
-		_app->onVREvent(event);
+	void onVREvent(const VRDataIndex &eventData) {
+        std::string type;
+        if (eventData.exists("EventType")) {
+            type = (VRString)eventData.getValue("EventType");
+        }
+        else {
+            VRERROR("VRAppInternal::onVREvent() received an event named " + eventData.getName() + " of unknown type.",
+                    "All events should have a data field named EventType but none was found for this event.");
+        }
+
+        if (type == "AnalogChange") {
+            _app->onAnalogChange(VRAnalogState(eventData));
+        }
+        else if (type == "ButtonDown") {
+            _app->onButtonDown(VRButtonState(eventData));
+        }
+        else if (type == "ButtonUp") {
+            _app->onButtonUp(VRButtonState(eventData));
+        }
+        else if (type == "CursorMove") {
+            _app->onCursorMove(VRCursorState(eventData));
+        }
+        else if (type == "TrackerMove") {
+            _app->onTrackerMove(VRTrackerState(eventData));
+        }
+        else if (type == "ButtonRepeat") {
+            // ignore, this doesn't seem to be supported on all platforms.
+        }
+        else {
+            VRERROR("VRAppInternal::onVREvent() received an event of unknown type: " + eventData.getName(),
+                    "Perhaps an input device that sends a new type of event was rencently added.");
+        }
 	}
 
-//	void onVRRenderAudio(const VRAudioState& state) {
-//		_app->onVRRenderAudio(state);
-//	}
-
-	void onVRRenderGraphics(const VRGraphicsState& state) {
-		_app->onVRRenderGraphics(state);
-	}
-
-	void onVRRenderGraphicsContext(const VRGraphicsState& state) {
-		_app->onVRRenderGraphicsContext(state);
-	}
-
-//	void onVRRenderHaptics(const VRHapticsState& state) {
-//		_app->onVRRenderHaptics(state);
-//	}
-
-    bool isRunning() {
-        return _running;
+    void onVRRenderContext(const VRDataIndex &renderData) {
+        if (renderData.exists("IsGraphics")) {
+            _app->onRenderGraphicsContext(VRGraphicsState(renderData));
+        }
+        else if (renderData.exists("IsAudio")) {
+            _app->onRenderAudio(VRAudioState(renderData));
+        }
+        else if (renderData.exists("IsConsole")) {
+            _app->onRenderConsole(VRConsoleState(renderData));
+        }
+        else if (renderData.exists("IsHaptics")) {
+            _app->onRenderHaptics(VRHapticsState(renderData));
+        }
+        else {
+            VRERROR("VRAppInternal::onRenderContext() received an unknown type of render callback",
+                    "Perhaps a new type of display node was recently added.");
+        }
     }
-                        
-	void run() {
-        _running = true;
+    
+    
+    void onVRRenderScene(const VRDataIndex &renderData) {
+        if (renderData.exists("IsGraphics")) {
+            _app->onRenderGraphicsScene(VRGraphicsState(renderData));
+        }
+        else if (renderData.exists("IsAudio")) {
+        }
+        else if (renderData.exists("IsConsole")) {
+        }
+        else if (renderData.exists("IsHaptics")) {
+        }
+        else {
+            VRERROR("VRAppInternal::onRenderScene() received an unknown type of render callback",
+                    "Perhaps a new type of display node was recently added.");
+        }
+    }
+    
+    void run() {
         while (_main->mainloop()) {}
 	}
 
 	void shutdown() {
-        _running = false;
-		_main->shutdown();
+ 		_main->shutdown();
 	}
 
 private:
 
     VRApp *_app;
 	VRMain *_main;
-    bool _running;
 };
 
 
@@ -94,10 +137,6 @@ VRApp::~VRApp()  {
 
 void VRApp::run()  {
 	_internal->run();
-}
-
-bool VRApp::isRunning() const  {
-  return _internal->isRunning();
 }
   
 void VRApp::shutdown() {

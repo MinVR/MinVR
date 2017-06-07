@@ -13,42 +13,83 @@ Author(s) of Significant Updates/Modifications to the File:
 	...
 */
 
-#include "../VRGraphicsState.h"
-#include <main/VRGraphicsStateInternal.h>
+#include "api/VRGraphicsState.h"
+#include <config/VRDataIndex.h>
 
 namespace MinVR {
 
-// This is the only constructor that needs to be implemented. The default and 
-// copy constructors are listed as private simply to avoid accidental use.
-VRGraphicsState::VRGraphicsState(VRGraphicsStateInternal *internalState) : _internal(internalState) {
+    
+float VRGraphicsState::defaultProjMat[16] = {1.0, 0.0, 0.0, 0.0,  0.0, 1.0, 0.0, 0.0,  0.0, 0.0, 1.0, 0.0,  0.0, 0.0, 0.0, 1.0};
+float VRGraphicsState::defaultViewMat[16] = {1.0, 0.0, 0.0, 0.0,  0.0, 1.0, 0.0, 0.0,  0.0, 0.0, 1.0, 0.0,  0.0, 0.0, 0.0, 1.0};
+float VRGraphicsState::defaultEyePos[3] = {0.0, 0.0, 0.0};
+int VRGraphicsState::defaultSharedContextID = 0;
+int VRGraphicsState::defaultWindowID = 0;
+    
+    
+VRGraphicsState::VRGraphicsState(const VRDataIndex &internalIndex) : _index(internalIndex) {
+    
 }
 
+VRGraphicsState::~VRGraphicsState() {
+    
+}
+
+const VRDataIndex& VRGraphicsState::index() {
+    return _index;
+}
+    
+
 const float * VRGraphicsState::getProjectionMatrix() const {
-	return _internal->getProjectionMatrix();
+    if (_index.exists("ProjectionMatrix")) {
+        const std::vector<float> &mat = _index.getValue("ProjectionMatrix");
+        return &mat[0];
+    }
+    else {
+        return defaultProjMat;
+    }
 }
 
 const float * VRGraphicsState::getViewMatrix() const {
-	return _internal->getViewMatrix();
+    if (_index.exists("ViewMatrix")) {
+        const std::vector<float> &mat = _index.getValue("ViewMatrix");
+        return &mat[0];
+    }
+    else {
+        return defaultViewMat;
+    }
 }
 
 const float * VRGraphicsState::getCameraPos() const {
-	return _internal->getCameraPos();
+    if (_index.exists("EyePosition")) {
+        const std::vector<float> &mat = _index.getValue("EyePosition");
+        return &mat[0];
+    }
+    else {
+        return defaultEyePos;
+    }
 }
 
 bool VRGraphicsState::isInitialRenderCall() const {
-	return _internal->isInitialRenderCall();
+    bool initRender = (int)_index.getValue("InitRender","/") == 1;
+    return initRender;
 }
 
-const int VRGraphicsState::getSharedContextId() const {
-	return _internal->getSharedContextId();
+int VRGraphicsState::getSharedContextId() const {
+    if (_index.exists("SharedContextId")) {
+        return _index.getValue("SharedContextId");
+    }
+    else {
+        return defaultSharedContextID;
+    }
 }
 
-const int VRGraphicsState::getWindowId() const {
-	return _internal->getWindowId();
-}
-
-VRGraphicsStateInternal* VRGraphicsState::getInternal() const {
-	return _internal;
+int VRGraphicsState::getWindowId() const {
+    if (_index.exists("WindowID")) {
+        return _index.getValue("WindowID");
+    }
+    else {
+        return defaultWindowID;
+    }
 }
 
 

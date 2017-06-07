@@ -137,23 +137,32 @@ set(vr_input_h
 
 set(vr_api_cpp
   ${vr_src_dir}/api/impl/VRApp.cpp
-  ${vr_src_dir}/api/impl/VREvent.cpp
+  ${vr_src_dir}/api/impl/VRAnalogState.cpp
+  ${vr_src_dir}/api/impl/VRAudioState.cpp
+  ${vr_src_dir}/api/impl/VRButtonState.cpp
+  ${vr_src_dir}/api/impl/VRConsoleState.cpp
+  ${vr_src_dir}/api/impl/VRCursorState.cpp
   ${vr_src_dir}/api/impl/VRGraphicsState.cpp
+  ${vr_src_dir}/api/impl/VRHapticsState.cpp
+  ${vr_src_dir}/api/impl/VRTrackerState.cpp
 )
 
 set(vr_api_h
   ${vr_src_dir}/api/MinVR.h
   ${vr_src_dir}/api/VRApp.h
-  ${vr_src_dir}/api/VREvent.h
+  ${vr_src_dir}/api/VRAnalogState.h
+  ${vr_src_dir}/api/VRAudioState.h
+  ${vr_src_dir}/api/VRButtonState.h
+  ${vr_src_dir}/api/VRConsoleState.h  
+  ${vr_src_dir}/api/VRCursorState.h
   ${vr_src_dir}/api/VRGraphicsState.h
+  ${vr_src_dir}/api/VRHapticsState.h
+  ${vr_src_dir}/api/VRTrackerState.h
 )
 
 set(vr_main_cpp
   ${vr_src_dir}/main/VRAppLauncher.cpp
-  ${vr_src_dir}/main/VREventInternal.cpp
   ${vr_src_dir}/main/VRFactory.cpp
-  ${vr_src_dir}/main/VRGraphicsHandler.cpp
-  ${vr_src_dir}/main/VRGraphicsStateInternal.cpp
   ${vr_src_dir}/main/VRLocalAppLauncher.cpp
   ${vr_src_dir}/main/VRMain.cpp
   ${vr_src_dir}/main/VRSearchPath.cpp
@@ -163,10 +172,7 @@ set(vr_main_cpp
 set(vr_main_h
   ${vr_src_dir}/main/VRAppLauncher.h
   ${vr_src_dir}/main/VREventHandler.h
-  ${vr_src_dir}/main/VREventInternal.h
   ${vr_src_dir}/main/VRFactory.h
-  ${vr_src_dir}/main/VRGraphicsHandler.h
-  ${vr_src_dir}/main/VRGraphicsStateInternal.h
   ${vr_src_dir}/main/VRItemFactory.h
   ${vr_src_dir}/main/VRLocalAppLauncher.h
   ${vr_src_dir}/main/VRMain.h
@@ -256,7 +262,7 @@ install(FILES ${vr_config_h_cxml}
 install(FILES ${vr_config_h_base}
   DESTINATION ${CMAKE_INSTALL_PREFIX}/include/config/base64)
 install(FILES ${vr_display_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/display)
-install(FILES ${vr_api_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/api)
+install(FILES ${vr_max_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/max)
 install(FILES ${vr_input_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/input)
 install(FILES ${vr_main_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/main)
 install(FILES ${vr_math_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/math)

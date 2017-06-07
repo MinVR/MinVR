@@ -230,10 +230,11 @@ VRNetServer::~VRNetServer()
 
 // Wait for and receive an eventData message from every client, add
 // them together and send them out again.
-VRDataQueue::serialData
-VRNetServer::syncEventDataAcrossAllNodes(VRDataQueue::serialData eventData) {
+void
+VRNetServer::syncEventDataAcrossAllNodes(std::vector<VRDataIndex> *events) {
 
-  VRDataQueue dataQueue = VRDataQueue(eventData);
+  // TODO TOM:  Add events into this initial dataQueue
+  VRDataQueue dataQueue = VRDataQueue();
   
   // TODO: rather than a for loop, could use a select() system call
   // here (I think) to figure out which socket is ready for a read in
@@ -252,7 +253,10 @@ VRNetServer::syncEventDataAcrossAllNodes(VRDataQueue::serialData eventData) {
     sendEventData(*itr, dq);
   }
 
-  return dq;
+  // TODO TOM: Create a new events array based on the combined events queue.
+  // events->clear();
+  // events->push_back(....);
+    
 }
 
 // This variant is not used by the server, but is part of the net
