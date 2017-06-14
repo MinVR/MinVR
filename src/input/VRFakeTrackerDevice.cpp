@@ -195,8 +195,9 @@ void VRFakeTrackerDevice::onVREvent(const VRDataIndex &eventData)
 
 void VRFakeTrackerDevice::appendNewInputEventsSinceLastCall(std::vector<VRDataIndex> *inputEvents)
 {
-    for (std::vector<VRDataIndex>::iterator evt = _pendingEvents.begin(); evt < _pendingEvents.end(); ++evt) {
-        inputEvents->push_back(*evt);
+    for (std::vector<VRDataIndex>::iterator evt = _pendingEvents.begin();
+         evt < _pendingEvents.end(); ++evt) {
+      queue->push(evt->serialize());
     }
     _pendingEvents.clear();
 }

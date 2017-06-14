@@ -21,34 +21,34 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode,
     ((VRGLFWInputDevice*)(glfwGetWindowUserPointer(window)))->keyCallback(window, key, scancode, action, mods);
 }
 
-  
+
 static void glfw_size_callback(GLFWwindow* window, int width, int height) {
     ((VRGLFWInputDevice*)(glfwGetWindowUserPointer(window)))->sizeCallback(window, width, height);
 }
 
-  
+
 static void glfw_cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
     ((VRGLFWInputDevice*)(glfwGetWindowUserPointer(window)))->cursorPositionCallback(window, xpos, ypos);
 }
 
-  
+
 static void glfw_mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
   ((VRGLFWInputDevice*)(glfwGetWindowUserPointer(window)))->mouseButtonCallback(window, button, action, mods);
 }
 
-  
+
 VRGLFWInputDevice::VRGLFWInputDevice() {
 }
 
 VRGLFWInputDevice::~VRGLFWInputDevice() {
 }
 
-void VRGLFWInputDevice::appendNewInputEventsSinceLastCall(std::vector<VRDataIndex> *events) {
+void VRGLFWInputDevice::appendNewInputEventsSinceLastCall(VRDataQueue* queue) {
     glfwPollEvents();
 
     for (size_t f = 0; f < _events.size(); f++)
     {
-    	events->push_back(_events[f]);
+    	queue->push(_events[f].serialize());
     }
 
     _events.clear();
@@ -88,18 +88,18 @@ void VRGLFWInputDevice::cursorPositionCallback(GLFWwindow* window, float xpos, f
     pos.push_back(xpos);
     pos.push_back(ypos);
     event.addData("Position", pos);
-    
+
     int width, height;
     glfwGetWindowSize(window, &width, &height);
     pos[0] /= (float)width;
     pos[1] /= (float)height;
     event.addData("NormalizedPosition", pos);
-    
+
     _events.push_back(event);
 }
 
-  
-  
+
+
 void VRGLFWInputDevice::mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
   std::string buttonStr;
   if (button == GLFW_MOUSE_BUTTON_LEFT) {
@@ -116,7 +116,7 @@ void VRGLFWInputDevice::mouseButtonCallback(GLFWwindow* window, int button, int 
     os << button;
     buttonStr = "MouseBtn" + os.str() + "_";
   }
-  
+
   std::string actionStr;
   if (action == GLFW_PRESS) {
     actionStr = "Down";
@@ -132,10 +132,10 @@ void VRGLFWInputDevice::mouseButtonCallback(GLFWwindow* window, int button, int 
     _events.push_back(event);
 }
 
-  
-  
-  
-  
+
+
+
+
 std::string getGlfwKeyName(int key) {
     switch (key)
     {

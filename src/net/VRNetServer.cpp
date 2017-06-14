@@ -18,13 +18,13 @@ void sigchld_handler(int s) {
 void *get_in_addr(struct sockaddr *sa) {
   if (sa->sa_family == AF_INET) {
     return &(((struct sockaddr_in*)sa)->sin_addr);
-  }  
+  }
   return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
 
 
-VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients) 
+VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
 {
 
 #ifdef WIN32  // Winsock implementation
@@ -40,7 +40,7 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
   const char yes = 1;
   char s[INET6_ADDRSTRLEN];
   int rv;
-  
+
   rv = WSAStartup(MAKEWORD(2,2), &wsaData);
   if (rv != 0) {
     cerr << "WSAStartup failed with error: " << rv << endl;
@@ -65,7 +65,7 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
       cerr << "socket() failed with error: " << WSAGetLastError() << endl;
       continue;
     }
-    
+
     if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == SOCKET_ERROR) {
       cerr << "setsockopt() failed with error: " << WSAGetLastError() << endl;
       closesocket(sockfd);
@@ -79,7 +79,7 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
       cerr << "bind() failed with error: " << WSAGetLastError() << endl;
       continue;
     }
-    
+
     break;
   }
 
@@ -110,7 +110,7 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
       cerr << "server: got invalid socket while accepting connection" << endl;
       continue;
     }
-    
+
     // Disable Nagle's algorithm on the client's socket
     char value = 1;
     setsockopt(new_fd, IPPROTO_TCP, TCP_NODELAY, &value, sizeof(value));
@@ -118,7 +118,7 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
     numConnected++;
     inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr), s, sizeof s);
     printf("server: got connection %d from %s\n", numConnected, s);
-    
+
     _clientSocketFDs.push_back(new_fd);
   }
 
@@ -133,52 +133,52 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
   int yes=1;
   char s[INET6_ADDRSTRLEN];
   int rv;
-  
+
   memset(&hints, 0, sizeof hints);
   hints.ai_family = AF_UNSPEC;
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_flags = AI_PASSIVE; // use my IP
-  
+
   if ((rv = getaddrinfo(NULL, listenPort.c_str(), &hints, &servinfo)) != 0) {
     fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
     //return 1;
     exit(1);
   }
-  
+
   // loop through all the results and bind to the first we can
   for (p = servinfo; p != NULL; p = p->ai_next) {
     if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
       perror("server: socket");
       continue;
     }
-    
+
     if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
       perror("setsockopt");
       exit(1);
     }
-    
+
     if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
       close(sockfd);
       perror("server: bind");
       continue;
     }
-    
+
     break;
   }
-  
+
   if (p == NULL)  {
     fprintf(stderr, "server: failed to bind\n");
     //return 2;
     exit(2);
   }
-  
+
   freeaddrinfo(servinfo); // all done with this structure
-  
+
   if (listen(sockfd, BACKLOG) == -1) {
     perror("listen");
     exit(1);
   }
-  
+
   sa.sa_handler = sigchld_handler; // reap all dead processes
   sigemptyset(&sa.sa_mask);
   sa.sa_flags = SA_RESTART;
@@ -186,7 +186,7 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
     perror("sigaction");
     exit(1);
   }
-  
+
   printf("server: waiting for connections...\n");
 
   int numConnected = 0;
@@ -197,7 +197,7 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
       perror("accept");
       continue;
     }
-    
+
     // Disable Nagle's algorithm on the client's socket
     char value = 1;
     setsockopt(new_fd, IPPROTO_TCP, TCP_NODELAY, &value, sizeof(value));
@@ -205,7 +205,7 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
     numConnected++;
     inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr), s, sizeof s);
     printf("server: got connection %d from %s\n", numConnected, s);
-    
+
     _clientSocketFDs.push_back(new_fd);
   }
 
@@ -230,12 +230,12 @@ VRNetServer::~VRNetServer()
 
 // Wait for and receive an eventData message from every client, add
 // them together and send them out again.
-void
-VRNetServer::syncEventDataAcrossAllNodes(std::vector<VRDataIndex> *events) {
+VRDataQueue::serialData
+VRNetServer::syncEventDataAcrossAllNodes(VRDataQueue::serialData eventData) {
 
   // TODO TOM:  Add events into this initial dataQueue
-  VRDataQueue dataQueue = VRDataQueue();
-  
+  VRDataQueue dataQueue = VRDataQueue(eventData);
+
   // TODO: rather than a for loop, could use a select() system call
   // here (I think) to figure out which socket is ready for a read in
   // the situation where one client is ready but other(s) are not
@@ -253,10 +253,11 @@ VRNetServer::syncEventDataAcrossAllNodes(std::vector<VRDataIndex> *events) {
     sendEventData(*itr, dq);
   }
 
+  return dq;
   // TODO TOM: Create a new events array based on the combined events queue.
   // events->clear();
   // events->push_back(....);
-    
+
 }
 
 // This variant is not used by the server, but is part of the net
@@ -273,13 +274,13 @@ VRNetServer::syncEventDataAcrossAllNodes() {
 void VRNetServer::syncSwapBuffersAcrossAllNodes() {
   // 1. wait for, receive, and parse a swap_buffers_request message
   // from every client
-  
+
   // TODO: rather than a for loop could use a select() system call here (I think) to figure out which socket is ready for a read in the situation where 1 is ready but other(s) are not
   for (std::vector<SOCKET>::iterator itr=_clientSocketFDs.begin();
        itr < _clientSocketFDs.end(); itr++) {
     waitForAndReceiveSwapBuffersRequest(*itr);
   }
-  
+
   // 2. send a swap_buffers_now message to every client
   for (std::vector<SOCKET>::iterator itr=_clientSocketFDs.begin();
        itr < _clientSocketFDs.end(); itr++) {
@@ -287,4 +288,4 @@ void VRNetServer::syncSwapBuffersAcrossAllNodes() {
   }
 }
 
-} // end namespace MinVR  
+} // end namespace MinVR
