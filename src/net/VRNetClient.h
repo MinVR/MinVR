@@ -16,7 +16,8 @@ class VRNetClient : public VRNetInterface {
   VRNetClient(const std::string &serverIP, const std::string &serverPort);
   ~VRNetClient();
 
-  void syncEventDataAcrossAllNodes(std::vector<VRDataIndex> *events);
+  VRDataQueue::serialData
+  syncEventDataAcrossAllNodes(VRDataQueue::serialData eventData);
 
   void syncSwapBuffersAcrossAllNodes();
 
@@ -27,7 +28,7 @@ class VRNetClient : public VRNetInterface {
 };
 
 
-} // end namespace MinVR  
+} // end namespace MinVR
 
 
 #endif
