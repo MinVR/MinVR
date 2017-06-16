@@ -153,7 +153,7 @@ set(vr_api_h
   ${vr_src_dir}/api/VRAnalogState.h
   ${vr_src_dir}/api/VRAudioState.h
   ${vr_src_dir}/api/VRButtonState.h
-  ${vr_src_dir}/api/VRConsoleState.h  
+  ${vr_src_dir}/api/VRConsoleState.h
   ${vr_src_dir}/api/VRCursorState.h
   ${vr_src_dir}/api/VRGraphicsState.h
   ${vr_src_dir}/api/VRHapticsState.h

@@ -22,9 +22,7 @@ class VRNetServer : public VRNetInterface {
   VRNetServer(const std::string &listenPort, int numExpectedClients);
   ~VRNetServer();
 
-  VRDataQueue::serialData
-    syncEventDataAcrossAllNodes(VRDataQueue::serialData eventData);
-  VRDataQueue::serialData syncEventDataAcrossAllNodes();
+  VRDataQueue syncEventDataAcrossAllNodes(VRDataQueue eventQueue);
 
   void syncSwapBuffersAcrossAllNodes();
 

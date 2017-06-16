@@ -147,25 +147,15 @@ VRNetClient::~VRNetClient()
 }
 
 
-VRDataQueue::serialData
-VRNetClient::syncEventDataAcrossAllNodes(VRDataQueue::serialData eventData)
-{
-
-  // TODO TOM:  Serialize events into eventData here...
-
-
+VRDataQueue VRNetClient::syncEventDataAcrossAllNodes(VRDataQueue eventQueue) {
 
   // 1. send inputEvents to server
-  sendEventData(_socketFD, eventData);
+  sendEventData(_socketFD, eventQueue.serialize());
 
   // 2. receive all events from the server
   VRDataQueue::serialData allEventData = waitForAndReceiveEventData(_socketFD);
 
-  return allEventData;
-  // TODO TOM: Deserialize allEventData into events array here...
-  // events->clear();
-  // events->push_back(....);
-
+  return VRDataQueue(allEventData);
 }
 
 void

@@ -230,52 +230,35 @@ VRNetServer::~VRNetServer()
 
 // Wait for and receive an eventData message from every client, add
 // them together and send them out again.
-VRDataQueue::serialData
-VRNetServer::syncEventDataAcrossAllNodes(VRDataQueue::serialData eventData) {
-
-  // TODO TOM:  Add events into this initial dataQueue
-  VRDataQueue dataQueue = VRDataQueue(eventData);
+VRDataQueue VRNetServer::syncEventDataAcrossAllNodes(VRDataQueue eventQueue) {
 
   // TODO: rather than a for loop, could use a select() system call
   // here (I think) to figure out which socket is ready for a read in
   // the situation where one client is ready but other(s) are not
   for (std::vector<SOCKET>::iterator itr=_clientSocketFDs.begin();
        itr < _clientSocketFDs.end(); itr++) {
-    VRDataQueue::serialData ed = waitForAndReceiveEventData(*itr);
+    VRDataQueue::serialData eventData = waitForAndReceiveEventData(*itr);
 
-    dataQueue.addSerializedQueue(ed);
+    eventQueue.addQueue(eventData);
   }
 
-  VRDataQueue::serialData dq = dataQueue.serialize();
+  VRDataQueue::serialData serializedEventQueue = eventQueue.serialize();
   // 2. send new combined inputEvents array out to all clients
   for (std::vector<SOCKET>::iterator itr=_clientSocketFDs.begin();
        itr < _clientSocketFDs.end(); itr++) {
-    sendEventData(*itr, dq);
+    sendEventData(*itr, serializedEventQueue);
   }
 
-  return dq;
-  // TODO TOM: Create a new events array based on the combined events queue.
-  // events->clear();
-  // events->push_back(....);
-
-}
-
-// This variant is not used by the server, but is part of the net
-// interface definition for convenience.  Empty definition here to
-// satisfy the compiler.
-VRDataQueue::serialData
-VRNetServer::syncEventDataAcrossAllNodes() {
-
-  VRDataQueue::serialData out = "";
-  return out;
-
+  return eventQueue;
 }
 
 void VRNetServer::syncSwapBuffersAcrossAllNodes() {
   // 1. wait for, receive, and parse a swap_buffers_request message
   // from every client
 
-  // TODO: rather than a for loop could use a select() system call here (I think) to figure out which socket is ready for a read in the situation where 1 is ready but other(s) are not
+  // TODO: rather than a for loop could use a select() system call
+  // here (I think) to figure out which socket is ready for a read in
+  // the situation where 1 is ready but other(s) are not
   for (std::vector<SOCKET>::iterator itr=_clientSocketFDs.begin();
        itr < _clientSocketFDs.end(); itr++) {
     waitForAndReceiveSwapBuffersRequest(*itr);
