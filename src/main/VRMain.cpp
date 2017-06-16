@@ -753,67 +753,52 @@ void VRMain::initialize(int argc, char **argv) {
 }
 
 void
-VRMain::synchronizeAndProcessEvents()
-{
+VRMain::synchronizeAndProcessEvents() {
+
 	if (!_initialized) {
 		throw std::runtime_error("VRMain not initialized.");
 	}
 
   VRDataQueue eventQueue;
 
-    // Add a standard "FrameStart" event at the beginning of each frame
-    VRDataIndex frameStartEvent;
-    frameStartEvent.setName("FrameStart");
-    frameStartEvent.addData("ElapsedSeconds", (float)VRSystem::getTime());
-    frameStartEvent.addData("EventType", "AnalogChange");
-    frameStartEvent.linkNode("ElapsedSeconds", "DefaultData");
-    eventQueue.push(frameStartEvent.serialize());
+  // Add a standard "FrameStart" event at the beginning of each frame
+  VRDataIndex frameStartEvent;
+  frameStartEvent.setName("FrameStart");
+  frameStartEvent.addData("ElapsedSeconds", (float)VRSystem::getTime());
+  frameStartEvent.addData("EventType", "AnalogChange");
+  frameStartEvent.linkNode("ElapsedSeconds", "DefaultData");
+  eventQueue.push(frameStartEvent.serialize());
 
-    for (int f = 0; f < _inputDevices.size(); f++) {
-        _inputDevices[f]->appendNewInputEventsSinceLastCall(&eventQueue);
-    }
+  for (int f = 0; f < _inputDevices.size(); f++) {
+    _inputDevices[f]->appendNewInputEventsSinceLastCall(&eventQueue);
+  }
 
 	// SYNCHRONIZATION POINT #1: When this function returns, we know
 	// that all MinVR nodes have the same list of input events generated
 	// since the last call to synchronizeAndProcessEvents(..).  So,
 	// every node will process the same set of input events this frame.
-    VRDataQueue::serialData eventData;
-    if (_net != NULL) {
-      _net->syncEventDataAcrossAllNodes(eventQueue.serialize());
-    }
-    else if (eventQueue.notEmpty()) {
-      // TODO: There is no need to serialize here if we are not a network node
-      eventData = eventQueue.serialize();
-    }
+  if (_net != NULL) {
+    eventQueue = _net->syncEventDataAcrossAllNodes(eventQueue);
+  }
 
-    VRDataQueue *events = new VRDataQueue(eventData);
-    while (events->notEmpty()) {
-      // Unpack the next item from the queue.
-
-
-      // Invoke the user's callback on the new event
-      for (int f = 0; f < _eventHandlers.size(); f++) {
-        _eventHandlers[f]->onVREvent(VRDataIndex(events->getSerializedObject()));
-      }
-
-      // Get the next item from the queue.
-      events->pop();
+  while (eventQueue.notEmpty()) {
+    // Unpack the next item from the queue and invoke the user's
+    // callback on it.
+    for (int f = 0; f < _eventHandlers.size(); f++) {
+      _eventHandlers[f]->onVREvent(eventQueue.getFirst());
     }
 
-    delete events;
+    // Remove the item from the queue.
+    eventQueue.pop();
+  }
 
-
-    // for (std::vector<VRDataIndex>::iterator evt = events.begin(); evt < events.end(); ++evt) {
-    //     // Invoke the user's callback on the new event
-    //     for (int f = 0; f < _eventHandlers.size(); f++) {
-    //         _eventHandlers[f]->onVREvent(*evt);
-    //     }
-    // }
+  // At this point the eventQueue should be empty with all its events
+  // distributed to the user callback.  Our job here is done and we can
+  // safely get out.
 }
 
-void
-VRMain::renderOnAllDisplays()
-{
+void VRMain::renderOnAllDisplays() {
+
   if (!_initialized) throw std::runtime_error("VRMain not initialized.");
 
 	VRDataIndex renderState;

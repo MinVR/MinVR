@@ -173,7 +173,7 @@ int TestQueueUnpack() {
   MinVR::VRDataIndex *n = setupQIndex();
   MinVR::VRDataQueue *q = new MinVR::VRDataQueue;
 
-  std::vector<int>e;
+  std::vector<int> e;
 
   for (int i = 0; i < 100; i++) {
     e.push_back(i);
@@ -183,25 +183,29 @@ int TestQueueUnpack() {
   n->addData("/george/atestarray", e);
 
   // Get the serialized version of an index object.
-  testString = n->serialize("/george");
+  testString = n->serialize("/george/atestarray");
 
   // Put that object into the queue.
   q->push(n->serialize("/george"));
 
-  MinVR::VRDataIndex* index = new MinVR::VRDataIndex;
-
   // Unpack the serialized object.
-  index->addSerializedValue( q->getSerializedObject(), "/" );
+  MinVR::VRDataIndex index = q->getFirst();
 
   // Unpack it into a different index.
-  std::string output = index->serialize("/george");
+  std::string output = index.serialize("atestarray");
+
+  // std::cout << "testString:" << testString << std::endl;
+  // std::cout << "output    :" << output << std::endl;
 
   // Does it match?
   int out = testString.compare(output);
 
+  // The "george" name becomes the name of the index itself.
+  std::string testName = "george";
+  out += testName.compare(index.getName());
+
   delete n;
   delete q;
-  delete index;
 
   return out;
 }
@@ -247,16 +251,16 @@ int TestQueueMultipleTimeStamps() {
 
   // Make sure the values with the same timestamps come out in a
   // consistent order.
-  out += q->getSerializedObject().substr(1, 8).compare("vladimir");
+  out += q->getFirst().serialize().substr(1, 8).compare("vladimir");
   q->pop();
 
-  out += q->getSerializedObject().substr(1, 8).compare("estragon");
+  out += q->getFirst().serialize().substr(1, 8).compare("estragon");
   q->pop();
 
-  out += q->getSerializedObject().substr(1, 5).compare("pozzo");
+  out += q->getFirst().serialize().substr(1, 5).compare("pozzo");
   q->pop();
 
-  out += q->getSerializedObject().substr(1, 5).compare("lucky");
+  out += q->getFirst().serialize().substr(1, 5).compare("lucky");
   q->pop();
 
   return out;

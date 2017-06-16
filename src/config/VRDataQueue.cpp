@@ -14,12 +14,11 @@ VRDataQueue::VRDataQueue(const VRDataQueue::serialData serializedQueue) {
 
 }
 
-// This function does *not* process arbitrary XML, but it *does*
-// process XML that was produced by the serialize() method below.
-// This is why it looks a bit hacky, with mysterious constants like
-// the number 18.  This serialization is only intended to transmit
-// from one instance of this class to another, even if it more or less
-// honors the look and feel of XML.
+// This function does *not* process arbitrary XML, but it *does* process XML
+// that was produced by the serialize() method below.  This is why it looks a
+// bit hacky, with mysterious constants like the number 18.  This
+// serialization is only intended to transmit from one instance of this class
+// to another, even if it more or less honors the look and feel of XML.
 void VRDataQueue::addSerializedQueue(const VRDataQueue::serialData serializedQueue) {
 
   // Looking for the number in <VRDataQueue num="X">
@@ -61,13 +60,22 @@ void VRDataQueue::addSerializedQueue(const VRDataQueue::serialData serializedQue
   }
 }
 
-VRDataQueue::serialData VRDataQueue::getSerializedObject() {
+void VRDataQueue::addQueue(const VRDataQueue newQueue) {
+
+  while (newQueue.notEmpty()) {
+
+    VRDataListItem p = newQueue.getFirstItem();
+    push(p.first.first, p.second);
+  }
+}
+
+VRDataIndex VRDataQueue::getFirst() const {
   if (dataMap.empty()) {
 
-    return "";
+    return VRDataIndex();
   } else {
 
-    return dataMap.begin()->second;
+    return dataMap.begin()->second.getValue();
   }
 }
 
@@ -132,8 +140,18 @@ void VRDataQueue::push(const long long timeStamp,
     testStamp = VRTimeStamp(timeStamp, testStamp.second + 1);
   }
 
-  dataMap.insert(std::pair<VRTimeStamp,VRDataQueue::serialData>
-                 (testStamp, serializedData));
+  dataMap.insert(VRDataListItem(testStamp, VRDataQueueItem(serializedData)));
+}
+
+void VRDataQueue::push(const long long timeStamp,
+                       const VRDataQueueItem queueItem) {
+
+  VRTimeStamp testStamp = VRTimeStamp(timeStamp, 0);
+  while (dataMap.find(testStamp) != dataMap.end()) {
+    testStamp = VRTimeStamp(timeStamp, testStamp.second + 1);
+  }
+
+  dataMap.insert(VRDataListItem(testStamp, queueItem));
 }
 
 
@@ -149,7 +167,7 @@ VRDataQueue::serialData VRDataQueue::serialize() {
     std::ostringstream timeStamp;
     timeStamp << it->first.first << "-" << std::setfill('0') << std::setw(3) << it->first.second;
     out += "<VRDataQueueItem timeStamp=\"" + timeStamp.str() + "\">" +
-      it->second + "</VRDataQueueItem>";
+      it->second.serialize() + "</VRDataQueueItem>";
   }
   out += "</VRDataQueue>";
 
@@ -165,7 +183,7 @@ std::string VRDataQueue::printQueue() {
   int i = 0;
   for (VRDataList::iterator it = dataMap.begin(); it != dataMap.end(); ++it) {
     sprintf(buf, "%d", ++i);
-    out += "element " + std::string(buf) + ": " + it->second + "\n";
+    out += "element " + std::string(buf) + ": " + it->second.serialize() + "\n";
   }
 
   return out;

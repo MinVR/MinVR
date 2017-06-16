@@ -622,7 +622,6 @@ public:
   /// container/namespace and not inherit from any namespace above.
   VRAnyCoreType getValue(const std::string &key,
                          const std::string nameSpace = "",
-<<<<<<< HEAD
                          const bool inherit = true) {
     VRDataMap::iterator p = _getEntry(key, nameSpace, inherit);
 
@@ -684,10 +683,6 @@ public:
     } else {
       return p->second->getValue();
     }
-=======
-                         const bool inherit = true) const {
-    return _getDatum(key, nameSpace, inherit)->getValue();
->>>>>>> first steps toward merging revised VRDataIndex and API together
   }
 
   /// \brief Returns the type of the specified value.
@@ -1314,6 +1309,9 @@ private:
   // If this is false, we don't need to do linkNodes() or linkContent().
   bool _linkNeeded;
 
+  friend std::ostream & operator<<(std::ostream &os, const VRDataIndex& di) {
+    return os << di.printStructure();
+  }
 };
 
 
