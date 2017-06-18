@@ -84,7 +84,6 @@ else()
 endif()
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DMinVR_DEBUG")
-add_definitions(-DINSTALLPATH="${CMAKE_INSTALL_PREFIX}")
 
 make_directory(${CMAKE_BINARY_DIR}/lib)
 make_directory(${CMAKE_BINARY_DIR}/bin)
@@ -97,6 +96,10 @@ foreach (CONF ${CMAKE_CONFIGURATION_TYPES})
   set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${CONF} ${CMAKE_BINARY_DIR}/lib)
   set (CMAKE_LIBRARY_OUTPUT_DIRECTORY_${CONF} ${CMAKE_BINARY_DIR}/lib)
 endforeach(CONF CMAKE_CONFIGURATION_TYPES)
+
+## Some definitions to use in the code for convenience.
+add_definitions(-DINSTALLPATH="${CMAKE_INSTALL_PREFIX}")
+add_definitions(-DBINARYPATH="${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")

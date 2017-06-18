@@ -15,7 +15,8 @@ void *get_in_addr2(struct sockaddr *sa) {
 
 VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverPort)
 {
-	printf("client: connecting...\n");
+  std::cerr << "client: connecting..." << std::endl;
+
 #ifdef WIN32  // WinSock implementation
 
   WSADATA wsaData;
@@ -81,18 +82,18 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
 
 #else  // BSD sockets implementation
 
-
   int sockfd;
   struct addrinfo hints, *servinfo, *p;
   int rv;
   char s[INET6_ADDRSTRLEN];
+  char problemString[50];
 
   memset(&hints, 0, sizeof hints);
   hints.ai_family = AF_UNSPEC;
   hints.ai_socktype = SOCK_STREAM;
 
   if ((rv = getaddrinfo(serverIP.c_str(), serverPort.c_str(), &hints, &servinfo)) != 0) {
-    fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
+    std::cerr << "getaddrinfo: " << std::string(gai_strerror(rv)) << std::endl;
     //return 1;
     exit(1);
   }
@@ -108,7 +109,9 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
 
       if (connect(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
         close(sockfd);
-        perror("client: connect");
+        sprintf(problemString,
+                "client (pid=%d) connection issue, will retry", getpid());
+        perror(problemString);
         continue;
       }
 
@@ -116,13 +119,13 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
     }
   }
   if (p == NULL) {
-    fprintf(stderr, "client: failed to connect\n");
+    std::cerr << "client: failed to connect" << std::endl;
     //return 2;
     exit(2);
   }
 
   inet_ntop(p->ai_family, get_in_addr2((struct sockaddr *)p->ai_addr), s, sizeof s);
-  printf("client: connected to %s\n", s);
+  std::cerr << "client: connected to " << s << std::endl;
 
   freeaddrinfo(servinfo); // all done with this structure
 
