@@ -1215,6 +1215,13 @@ private:
   }
 };
 
+/// \brief A class to hold an arbitrary event.
+///
+/// An event in MinVR is just a VRDataIndex object.
+typedef VRDataIndex VRRawEvent;
+
+
+
 
 // Where are we going with this: We have an index that contains
 // pointers to more-or-less arbitrary data types, yay.  On the to-do
