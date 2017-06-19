@@ -407,6 +407,10 @@ public:
   /// And another that fills an index with some serialized data.  The
   /// root name in the serialized data is adopted as the '_indexName' field
   /// of the index object.
+  ///
+  /// If the input data is just a simple string with no XML features
+  /// (i.e. it does not begin with a '<') then just create an empty
+  /// index with the given name.
   VRDataIndex(const std::string serializedData);
 
   /// \brief Makes a deep copy.

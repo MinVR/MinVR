@@ -28,6 +28,14 @@ VRDataIndex::VRDataIndex(const std::string serializedData)  :
 
   _lastDatum = _theIndex.end();
 
+  // If this is just a name, we just need an empty data index with the
+  // given name.
+  if (serializedData[0] != '<') {
+    _indexName = serializedData;
+    return;
+  }
+
+  // If you're here, the input data looks like XML. So parse it.
   Cxml *xml = new Cxml();
   xml->parse_string((char*)serializedData.c_str());
   element *xml_node = xml->get_root_element();
