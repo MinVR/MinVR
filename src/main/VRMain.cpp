@@ -762,8 +762,7 @@ VRMain::synchronizeAndProcessEvents() {
   VRDataQueue eventQueue;
 
   // Add a standard "FrameStart" event at the beginning of each frame
-  VRDataIndex frameStartEvent;
-  frameStartEvent.setName("FrameStart");
+  VRDataIndex frameStartEvent("FrameStart");
   frameStartEvent.addData("ElapsedSeconds", (float)VRSystem::getTime());
   frameStartEvent.addData("EventType", "AnalogChange");
   frameStartEvent.linkNode("ElapsedSeconds", "DefaultData");
