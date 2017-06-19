@@ -132,6 +132,9 @@ public:
   /// Removes all the objects in the queue.
   void clear();
 
+  /// Makes a timestamp from system facilities.
+  long long makeTimeStamp();
+
   /// Adds an event to the queue.
   void push(const VRDataIndex event);
   /// Adds a serialized event to the queue.

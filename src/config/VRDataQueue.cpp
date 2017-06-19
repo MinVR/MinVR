@@ -108,7 +108,7 @@ void VRDataQueue::clear() {
 // makes lots of events have the same time stamp.
 
 
-void VRDataQueue::push(const VRDataQueue::serialData serializedData) {
+long long VRDataQueue::makeTimeStamp() {
 
 #ifdef WIN32
 	LARGE_INTEGER frequency;        // ticks per second
@@ -129,18 +129,21 @@ void VRDataQueue::push(const VRDataQueue::serialData serializedData) {
 
 #endif
 
-  push(timeStamp, serializedData);
+  return timeStamp;
+}
+
+void VRDataQueue::push(const VRDataQueue::serialData serializedData) {
+  push(makeTimeStamp(), serializedData);
+}
+
+void VRDataQueue::push(const VRDataIndex event) {
+  VRDataIndex* eventPtr = new VRDataIndex(event);
+  push(makeTimeStamp(), VRDataQueueItem(eventPtr));
 }
 
 void VRDataQueue::push(const long long timeStamp,
                        const VRDataQueue::serialData serializedData) {
-
-  VRTimeStamp testStamp = VRTimeStamp(timeStamp, 0);
-  while (dataMap.find(testStamp) != dataMap.end()) {
-    testStamp = VRTimeStamp(timeStamp, testStamp.second + 1);
-  }
-
-  dataMap.insert(VRDataListItem(testStamp, VRDataQueueItem(serializedData)));
+  push(timeStamp, VRDataQueueItem(serializedData));
 }
 
 void VRDataQueue::push(const long long timeStamp,
