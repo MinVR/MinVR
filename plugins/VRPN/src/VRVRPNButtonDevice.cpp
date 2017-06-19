@@ -1,14 +1,14 @@
 /* ================================================================================
 
-This file is part of the MinVR Open Source Project, which is developed and 
-maintained collaboratively by the University of Minnesota's Interactive 
+This file is part of the MinVR Open Source Project, which is developed and
+maintained collaboratively by the University of Minnesota's Interactive
 Visualization Lab and the Brown University Visualization Research Lab.
 
 File: VRVRPNButtonDevice.cpp
 
-Original Author(s) of this File: 
+Original Author(s) of this File:
 	Daniel Keefe, 2004, Brown University (originally VRG3D/VRPNButtonDevice.cpp)
-	
+
 Author(s) of Significant Updates/Modifications to the File:
 	Bret Jackson, 2013, University of Minnesota (adapted to MinVR)
 	Dan Keefe, 2016, University of Minnesota (adapted to MinVR2)
@@ -110,13 +110,10 @@ void VRVRPNButtonDevice::sendEvent(int buttonNumber, bool down)
 	}
 }
 
-void VRVRPNButtonDevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents)
-{
+void VRVRPNButtonDevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents) {
 	_vrpnDevice->mainloop();
-	while (_pendingEvents.notEmpty()) {
-		inputEvents->push(_pendingEvents.getSerializedObject());
-		_pendingEvents.pop();
-	}
+  inputEvents->addQueue(_pendingEvents);
+  _pendingEvents.clear();
 }
 
 
