@@ -158,10 +158,10 @@ int testSearchPath() {
   out += spc.findFile("Chester.xml").compare("testSearch/test2/test3/Chester.xml");
 
   std::cout << "spc:" << spc.findFile("Chester.xml") << " out:" << out << std::endl;
+  
+  executeShellCommand("rm -rf testSearch");
 
 #endif
-
-  executeShellCommand("rm -rf testSearch");
 
   return out;
 }

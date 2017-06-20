@@ -8,6 +8,12 @@
 #include <list>
 #include <fcntl.h>
 
+#ifdef WIN32
+#include <io.h> // Necessary for open() and write() support in windows
+#endif // WIN32
+
+
+
 #include <config/VRDataIndex.h>
 
 namespace MinVR {
