@@ -769,7 +769,7 @@ int VRDataIndex::isChild(const std::string &parentName,
 
   // Remove any trailing slashes on the parent name.
   std::string pName = parentName;
-  if (pName[pName.size() - 1] == '/') pName.erase(pName.size() - 1);
+  if (pName.size() > 0 && pName[pName.size() - 1] == '/') pName.erase(pName.size() - 1);
 
   // First check that the childName contains the pName, and is longer.
   int out = childName.compare(0, std::string::npos, pName) > 0;
