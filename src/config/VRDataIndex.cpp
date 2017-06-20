@@ -1257,6 +1257,9 @@ std::string VRDataIndex::printStructure(const std::string itemName,
 
     bool printMe = true;
 
+    // If we're printing the entire index, prepend the index name.
+    if (itemName.compare("/") == 0) outBuffer += _indexName + "\n";
+
     // Get the pieces of the current name.
     std::vector<std::string> elems = _explodeName( it->first );
     if (elems.size() == 0) continue;
