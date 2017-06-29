@@ -10,10 +10,6 @@ int main(int argc, char* argv[]) {
 
   MinVR::VRNetClient client = MinVR::VRNetClient("localhost", "3490");
 
-  // Engineer a small sleep sometimes.
-  srand(time(NULL));
-  sleep(3 + (random() % 4));
-
   // Get the client number from the argv list and the process ID.
   std::stringstream clientIDstring;
   clientIDstring << "client " << std::string(argv[1]) << ", pid = " << getpid();

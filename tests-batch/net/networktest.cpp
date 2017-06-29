@@ -46,8 +46,31 @@ int networktest(int argc, char* argv[]) {
   return output;
 }
 
+bool checkClientExitStatus(const int &status) {
+
+  if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+
+    std::cout << "WIFEXITED=" << WIFEXITED(status) << std::endl;
+    std::cout << "WEXITSTATUS=" << WEXITSTATUS(status) << std::endl;
+    std::cout << "WIFSIGNALED=" << WIFSIGNALED(status) << std::endl;
+    std::cout << "WIFSTOPPED=" << WIFSTOPPED(status) << std::endl;
+    std::cout << "WTERMSIG=" << WTERMSIG(status) << std::endl;
+    std::cout << "WSTOPSIG=" << WSTOPSIG(status) << std::endl;
+
+    if (WIFSIGNALED(status) != 0) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return true;
+  }
+}
+
+
 int TestSwapBufferSignal() {
 
+  int out = 0;
   int numberOfClients = 10;
   int ret;
 
@@ -57,7 +80,7 @@ int TestSwapBufferSignal() {
   std::string launchSwapClient = std::string(BINARYPATH) + "/launchSwapClient";
   std::cout << "Using: " << launchSwapClient << std::endl;
 
-  std::stringstream clientNumber;
+  char clientNumberStr[10];
   for (int i = 0; i < numberOfClients; i++) {
     clientPIDs[i] = fork();
 
@@ -70,10 +93,10 @@ int TestSwapBufferSignal() {
     } else {
       // The forked client returns 0 from the fork() call.
 
-      clientNumber << i+1;
+      sprintf(clientNumberStr, "%d", i+1);
       ret = execl(launchSwapClient.c_str(),
                   launchSwapClient.c_str(),
-                  clientNumber.str().c_str(), (char*)NULL);
+                  clientNumberStr, (char*)NULL);
 
       // Shouldn't get here, unless the execl() fails.
       if (ret < 0) {
@@ -97,24 +120,103 @@ int TestSwapBufferSignal() {
     int status;
 
     while (-1 == waitpid(clientPIDs[i], &status, WNOHANG));
+
     std::cout << "waited for " << clientPIDs[i] << std::endl;
-    if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
-      std::cout << "WIFSIGNALED=" << WIFSIGNALED(status) << '\n';
-      std::cout << "WIFSTOPPED=" << WIFSTOPPED(status) << '\n';
-      std::cout << "WTERMSIG=" << WTERMSIG(status) << '\n';
-      std::cout << "WSTOPSIG=" << WSTOPSIG(status) << '\n';
-      if (WIFSIGNALED(status) != 0) {
-        cerr << "Process " << i+1 << " (pid " << clientPIDs[i] << ") failed" << endl;
-        return 1;
-      } else {
-        return 0;
-      }
+
+    if (!checkClientExitStatus(status)) {
+      cerr << "Process " << i+1 << " (pid " << clientPIDs[i] << ") failed" << endl;
+      out += 1;
     }
   }
   std::cout << "CLIENT SUCCESS" << std::endl;
 
-  return 0; }
+  return out;
+}
 
-int TestTwo() { return 0; }
+int TestTwo() {
+
+  int out = 0;
+  int numberOfClients = 10;
+  int numberOfSends = 3;
+  int ret;
+
+  std::vector<pid_t> clientPIDs(numberOfClients);
+
+  // Fork N clients to connect to the server.
+  std::string launchEventClient = std::string(BINARYPATH) + "/launchEventClient";
+  std::cout << "Using: " << launchEventClient << std::endl;
+
+  char clientNumberStr[10];
+  char numberOfSendsStr[10];
+  sprintf(numberOfSendsStr, "%d", numberOfSends);
+  for (int i = 0; i < numberOfClients; i++) {
+    clientPIDs[i] = fork();
+
+    if (clientPIDs[i] != 0) {
+      // This is still on the main fork, and the PID returned belongs
+      // to the process that was forked.
+      std::cout << "client " << i+1
+                << " forked, pid = " << clientPIDs[i] << std::endl;
+
+    } else {
+      // The forked client returns 0 from the fork() call.
+
+
+      sprintf(clientNumberStr, "%d", i+1);
+      std::cout << "running:" << launchEventClient << " " << std::string(clientNumberStr) << ":" << i << " " << numberOfSends << std::endl;
+      ret = execl(launchEventClient.c_str(),
+                  launchEventClient.c_str(),
+                  clientNumberStr,
+                  numberOfSendsStr, (char*)NULL);
+
+      // Shouldn't get here, unless the execl() fails.
+      if (ret < 0) {
+        std::cerr << "execl number " << i << " failed: " << errno << std::endl;
+        return 1;
+      }
+    }
+  }
+
+  std::cout << "All clients forked, open for business now." << std::endl;
+
+	MinVR::VRNetServer server = MinVR::VRNetServer("3490", numberOfClients);
+
+  for (int i = 0; i < numberOfSends; i++) {
+
+    std::cout << "Server cycle " << i << std::endl;
+
+    MinVR::VRDataQueue queue;
+    MinVR::VRRawEvent e = MinVR::VRRawEvent("testEvent");
+    e.addData("testInt", i);
+    e.addData("testFloat", ((float)i)/7.0f);
+    queue.push(e);
+
+    queue = server.syncEventDataAcrossAllNodes(queue);
+    std::cout << "All event requests " << i << " made by server." << std::endl;
+  }
+
+  std::cout << "done sending, now waiting..." << std::endl;
+
+  // Waits for all the child processes to finish running
+  for (int i = 0; i < numberOfClients; ++i) {
+    int status;
+
+    while (-1 == waitpid(clientPIDs[i], &status, WNOHANG | WUNTRACED)) {
+      std::cout << i << ":" << clientPIDs[i] << ":errno:" << errno << std::endl;
+      // If errno == 10, the process has already ended.
+      if (errno == 10) break;
+    };
+    std::cout << "waited for " << clientPIDs[i] << std::endl;
+
+    if (!checkClientExitStatus(status)) {
+
+      cerr << "Process " << i+1 << " (pid " << clientPIDs[i] << ") failed" << endl;
+      out += 1;
+    }
+  }
+  std::cout << "CLIENT SUCCESS" << std::endl;
+
+  return out;
+}
 
 int TestThree() { return 0; }
