@@ -9,7 +9,7 @@ set (dataindextests datum index queue)
 # test program.  See, e.g., datumtest.cpp
 set (datum_parts 1 2 3 4 5 6 7 8 9 10)
 set (index_parts 1 2 3 4 5 6 7 8 9 10 11 12 13 14)
-set (queue_parts 1 2 3 4)
+set (queue_parts 1 2 3 4 5)
 
 # For tests where a list of parts has not been defined we add a default of 1:
 foreach(dataindextest ${dataindextests})
