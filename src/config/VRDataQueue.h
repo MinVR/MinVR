@@ -174,25 +174,38 @@ private:
 
 
 public:
+
+  /// \brief Create an empty queue.
   VRDataQueue() {};
+
+  /// \brief Create a queue from serialized data.
   VRDataQueue(const serialData serializedQueue);
 
   static const serialData noData;
 
-  // We want to be able to use iterators.
+  /// The easiest way to create an iterator to the queue.
   typedef VRDataList::iterator iterator;
+  /// The easiest way to create an iterator to the queue.
   typedef VRDataList::const_iterator const_iterator;
 
+  /// \brief Returns an iterator to the first item in the queue.
   iterator begin() { return _dataMap.begin(); }
+  /// \brief Returns an iterator to the first item in the queue.
   const_iterator begin() const { return _dataMap.begin(); }
+  /// \brief Returns an iterator past the last item in the queue.
   iterator end() { return _dataMap.end(); }
+  /// \brief Returns an iterator past the last item in the queue.
   const_iterator end() const { return _dataMap.end(); }
 
   /// Process a chunk of XML into queue items and add them to the
   /// existing queue.
   void addSerializedQueue(const serialData serializedQueue);
 
-  /// Add another queue's data to this one.
+  /// \brief Add another queue's data to this one.
+  ///
+  /// The data queue is heterogeneous and contains both serialized
+  /// data and pointers to VRDataIndex objects.  The queues that are
+  /// added to each other can be mixed, too.
   void addQueue(const VRDataQueue newQueue);
 
   /// \brief A boolean to determine whether there is anything in the queue.
@@ -207,25 +220,28 @@ public:
   /// A more traditional test.
   bool empty() const { return !(bool)_dataMap.size(); }
 
-  /// \brief Returns the event at the head of the queue, but does not remove
-  /// it.
+  /// \brief Returns the event at the head of the queue.
+  ///
+  /// Does not remove the item.
   VRDataIndex getFirst() const;
 
   /// \brief Return the first item in the queue with its timestamp.
   VRDataListItem getFirstItem() const { return *_dataMap.begin(); };
 
-  /// Removes the object at the front of the queue.
+  /// \brief Removes the object at the front of the queue.
+  ///
+  /// Does not return the value.  Use getFirst() for that.
   void pop();
 
-  /// Removes all the objects in the queue.
+  /// \brief Removes all the objects in the queue.
   void clear();
 
-  /// Makes a timestamp from system facilities.
+  /// \brief Makes a timestamp from system facilities.
   long long makeTimeStamp();
 
-  /// Adds an event to the queue.
+  /// \brief Adds an event to the queue.
   void push(const VRDataIndex event);
-  /// Adds a serialized event to the queue.
+  /// \brief Adds a serialized event to the queue.
   void push(const serialData eventString);
 
   /// \brief Adds an event to the queue with a given time stamp.
@@ -238,17 +254,21 @@ public:
   /// \brief Adds a serialized event to the queue with a given time stamp.
   ///
   /// Use this method if you want to generate your own time stamp, perhaps
-  // for debugging.  Objects in the queue will be sorted by the time stamp,
-  // and will be popped off the stack in time stamp order.
+  /// for debugging.  Objects in the queue will be sorted by the time stamp,
+  /// and will be popped off the stack in time stamp order.
   void push(const long long timeStamp, const serialData eventString);
 
-  // Serialize the whole queue into a piece of XML.
+  /// \brief Serialize the whole queue into a piece of XML.
   serialData serialize();
 
-  // A debug-friendly output function.
+  /// \brief An output function.
+  ///
+  /// Mostly for debugging, prints a list of the queue elements.  An asterisk
+  /// indicates whether the element is stored as serial data or as a pointer to
+  /// a VRDataIndex object.
   std::string printQueue() const;
 
-  // How big is the queue?
+  /// \brief How big is the queue?
   int size() { return _dataMap.size(); };
 
 };
