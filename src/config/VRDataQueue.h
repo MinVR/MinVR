@@ -18,6 +18,14 @@
 #include <iostream>
 #include <iomanip>
 
+// These are mostly for the iterator.
+#include <cassert>      // Provides assert
+#include <cstddef>      // Provides ptrdiff_t
+#include <iterator>     // iterator
+#include <type_traits>  // remove_cv
+#include <utility>      // swap
+
+
 #ifdef WIN32
 // winsock2 must be included before windows.h because we are also using it in net
 	#include <winsock2.h>
@@ -71,6 +79,51 @@ public:
   }
 };
 
+
+
+// template
+// <
+//     class Type,
+//     class UnqualifiedType = std::remove_cv<Type>
+// >
+// class ForwardIterator
+//   : public std::iterator<std::forward_iterator_tag,
+//                          UnqualifiedType,
+//                          std::ptrdiff_t,
+//                          Type*,
+//                          Type&> {
+//   VRDataPairnode<UnqualifiedType>* itr;
+
+//   explicit ForwardIterator(node<UnqualifiedType>* nd) : itr(nd) {}
+
+// public:
+//   /// Default constructor.
+//   ///
+//   /// Empty argument gives end().
+//   ForwardIterator() : itr(nullptr) {}
+
+//   void swap(ForwardIterator& other) noexcept {
+//     using std::swap;
+//     swap(itr, other.iter);
+//   }
+
+//   /// Pre-increment operator.
+//   ForwardIterator& operator++ () {
+//     assert(itr != nullptr && "Out-of-bounds iterator increment!");
+//     itr = itr->next;
+//     return *this;
+//   }
+
+//   /// Post-increment operator.
+//   ForwardIterator operator++ (int) {
+//     assert(itr != nullptr && "Out-of-bounds iterator increment!");
+//     ForwardIterator tmp(*this);
+//     itr = itr->next;
+//     return tmp;
+//   }
+
+
+
 /// \brief A queue of MinVR events.
 ///
 ///
@@ -94,20 +147,34 @@ public:
 ///
 class VRDataQueue {
 public:
-    typedef std::string serialData;
+  typedef std::string serialData;
 
 private:
 
+  /// \brief A timestamp for the queue system.
+  ///
+  /// A timestamp in this system consists of a time value and a
+  /// disambiguation value, in case multiple events are recorded at the
+  /// same time step.
   typedef std::pair<long long,int> VRTimeStamp;
   typedef std::pair<VRTimeStamp,VRDataQueueItem> VRDataListItem;
   typedef std::map<VRTimeStamp,VRDataQueueItem> VRDataList;
-  VRDataList dataMap;
+  VRDataList _dataMap;
 
 public:
   VRDataQueue() {};
   VRDataQueue(const serialData serializedQueue);
 
   static const serialData noData;
+
+  // We want to be able to use iterators.
+  typedef VRDataList::iterator iterator;
+  typedef VRDataList::const_iterator const_iterator;
+
+  iterator begin() { return _dataMap.begin(); }
+  const_iterator begin() const { return _dataMap.begin(); }
+  iterator end() { return _dataMap.end(); }
+  const_iterator end() const { return _dataMap.end(); }
 
   /// Process a chunk of XML into queue items and add them to the
   /// existing queue.
@@ -117,14 +184,23 @@ public:
   void addQueue(const VRDataQueue newQueue);
 
   /// \brief A boolean to determine whether there is anything in the queue.
-  bool notEmpty() const { return (bool)dataMap.size(); }
+  ///
+  /// This one is more efficient than returning the negation so that
+  /// the user can negate it. There is also an empty() for those who
+  /// want something more traditional.
+  bool notEmpty() const { return (bool)_dataMap.size(); }
+
+  /// \brief A boolean to determine whether there is anything in the queue.
+  ///
+  /// A more traditional test.
+  bool empty() const { return !(bool)_dataMap.size(); }
 
   /// \brief Returns the event at the head of the queue, but does not remove
   /// it.
   VRDataIndex getFirst() const;
 
   /// \brief Return the first item in the queue with its timestamp.
-  VRDataListItem getFirstItem() const { return *dataMap.begin(); };
+  VRDataListItem getFirstItem() const { return *_dataMap.begin(); };
 
   /// Removes the object at the front of the queue.
   void pop();
@@ -161,7 +237,7 @@ public:
   std::string printQueue();
 
   // How big is the queue?
-  int size() { return dataMap.size(); };
+  int size() { return _dataMap.size(); };
 
 };
 

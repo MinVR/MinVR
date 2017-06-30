@@ -62,29 +62,33 @@ void VRDataQueue::addSerializedQueue(const VRDataQueue::serialData serializedQue
 
 void VRDataQueue::addQueue(const VRDataQueue newQueue) {
 
-  while (newQueue.notEmpty()) {
+  if (newQueue.notEmpty()) {
 
-    VRDataListItem p = newQueue.getFirstItem();
-    push(p.first.first, p.second);
+    for (VRDataQueue::const_iterator it = newQueue.begin();
+         it != newQueue.end(); it++) {
+      // We only want the time value of the timestamp, not the disambiguation
+      // value.
+      push(it->first.first, it->second);
+    }
   }
 }
 
 VRDataIndex VRDataQueue::getFirst() const {
-  if (dataMap.empty()) {
+  if (_dataMap.empty()) {
 
     return VRDataIndex();
   } else {
 
-    return dataMap.begin()->second.getValue();
+    return _dataMap.begin()->second.getValue();
   }
 }
 
 void VRDataQueue::pop() {
-  dataMap.erase(dataMap.begin());
+  _dataMap.erase(_dataMap.begin());
 }
 
 void VRDataQueue::clear() {
-  dataMap.clear();
+  _dataMap.clear();
 }
 
 // Suggested on Stackoverflow:
@@ -150,23 +154,23 @@ void VRDataQueue::push(const long long timeStamp,
                        const VRDataQueueItem queueItem) {
 
   VRTimeStamp testStamp = VRTimeStamp(timeStamp, 0);
-  while (dataMap.find(testStamp) != dataMap.end()) {
+  while (_dataMap.find(testStamp) != _dataMap.end()) {
     testStamp = VRTimeStamp(timeStamp, testStamp.second + 1);
   }
 
-  dataMap.insert(VRDataListItem(testStamp, queueItem));
+  _dataMap.insert(VRDataListItem(testStamp, queueItem));
 }
 
 
 VRDataQueue::serialData VRDataQueue::serialize() {
 
   std::ostringstream lenStr;
-  lenStr << dataMap.size();
+  lenStr << _dataMap.size();
 
   VRDataQueue::serialData out;
 
   out = "<VRDataQueue num=\"" + lenStr.str() + "\">";
-  for (VRDataList::iterator it = dataMap.begin(); it != dataMap.end(); ++it) {
+  for (VRDataList::iterator it = _dataMap.begin(); it != _dataMap.end(); ++it) {
     std::ostringstream timeStamp;
     timeStamp << it->first.first << "-" << std::setfill('0') << std::setw(3) << it->first.second;
     out += "<VRDataQueueItem timeStamp=\"" + timeStamp.str() + "\">" +
@@ -184,7 +188,7 @@ std::string VRDataQueue::printQueue() {
 
   char buf[3];
   int i = 0;
-  for (VRDataList::iterator it = dataMap.begin(); it != dataMap.end(); ++it) {
+  for (VRDataList::iterator it = _dataMap.begin(); it != _dataMap.end(); ++it) {
     sprintf(buf, "%d", ++i);
     out += "element " + std::string(buf) + ": " + it->second.serialize() + "\n";
   }
