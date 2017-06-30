@@ -6,6 +6,7 @@ int TestQueueUnpack();
 int TestQueueMultipleTimeStamps();
 int TestQueueIterator();
 int TestAddQueue();
+int TestAddQueueSerialized();
 
 int queuetest(int argc, char* argv[]) {
 
@@ -43,8 +44,9 @@ int queuetest(int argc, char* argv[]) {
     output = TestAddQueue();
     break;
 
-    // Need test of notEmpty and empty()
-    //
+  case 6:
+    output = TestAddQueueSerialized();
+    break;
 
     // Add case statements to handle other values.
   default:
@@ -170,6 +172,60 @@ int TestAddQueue() {
 
   // Add the queues.
   q1.addQueue(q2);
+
+
+  std::cout << q1.printQueue();
+
+  // This is how we expect the entries to appear.
+  int expectedOrder[20] = {0,10,1,9,2,8,3,7,4,6,5,5,6,4,7,3,8,2,9,1};
+
+  int j = 0;
+  while (q1.notEmpty()) {
+
+    std::cout << "Entry:" << q1.getFirst() << std::endl;
+    if (expectedOrder[j++] != (int)q1.getFirst().getValue("testInt")) out++;
+    q1.pop();
+  }
+
+  return out;
+}
+
+// This is precisely the same test as above, but with one of the
+// queues composed of serialized data.  The queue is indifferent, and it
+// only serializes as necessary.
+int TestAddQueueSerialized() {
+
+  int out = 0;
+
+  MinVR::VRDataQueue q1, q2;
+
+  char ename[10], fname[10];
+  std::vector<MinVR::VRRawEvent> e(10), f(10);
+
+  for (int i = 0; i < 10; i++) {
+    sprintf(ename, "ENAME%d", i);
+    e[i] = MinVR::VRRawEvent(ename);
+    e[i].addData("testInt", i);
+    q1.push(e[i].serialize());
+
+    sprintf(fname, "FNAME%d", i);
+    f[i] = MinVR::VRRawEvent(fname);
+    f[i].addData("testInt", 10-i);
+    q2.push(f[i]);
+  }
+
+  // Now we have two queues, each of which has ten entries that were
+  // added in alternating fashion.  If the time stamps and everthing
+  // work out right, then when the two queues are added, the entries
+  // from each should appear alternating, too.
+
+  // Add the queues.
+  q1.addQueue(q2);
+
+
+  // Also testing the stream output here...
+  std::cout << "The asterisks imply the event data of that queue item is stored as serial data." << std::endl;
+  std::cout << q1;
 
   // This is how we expect the entries to appear.
   int expectedOrder[20] = {0,10,1,9,2,8,3,7,4,6,5,5,6,4,7,3,8,2,9,1};

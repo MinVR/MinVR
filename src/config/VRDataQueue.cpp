@@ -182,15 +182,22 @@ VRDataQueue::serialData VRDataQueue::serialize() {
 }
 
 // DEBUG only
-std::string VRDataQueue::printQueue() {
+std::string VRDataQueue::printQueue() const {
 
   std::string out;
 
-  char buf[3];
+  char buf[6];  // No queues more than a million entries long.
   int i = 0;
-  for (VRDataList::iterator it = _dataMap.begin(); it != _dataMap.end(); ++it) {
+  for (VRDataList::const_iterator it = _dataMap.begin();
+       it != _dataMap.end(); ++it) {
     sprintf(buf, "%d", ++i);
-    out += "element " + std::string(buf) + ": " + it->second.serialize() + "\n";
+    std::string identifier = "element";
+    if (it->second.isSerialized()) {
+      identifier += "*";
+    } else {
+      identifier += " ";
+    }
+    out += identifier + std::string(buf) + ": " + it->second.serialize() + "\n";
   }
 
   return out;
