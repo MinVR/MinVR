@@ -270,9 +270,9 @@ int TestQueueIterator() {
   int j = 0;
   int expectedValue[11] = {9, 8, 7, 6, 5, 100, 4, 3, 2, 1, 0};
   for (MinVR::VRDataQueue::iterator it = q.begin(); it != q.end(); it++) {
-    std::cout << "Entry:" << it->second.getValue() << std::endl;
+    std::cout << "Entry:" << it->second.getData() << std::endl;
     // If the indexValue in the queue item is the same as j, all is well.
-    if (expectedValue[j++] != (int)it->second.getValue().getValue("indexValue"))
+    if (expectedValue[j++] != (int)it->second.getData().getValue("indexValue"))
       out++;
   }
 

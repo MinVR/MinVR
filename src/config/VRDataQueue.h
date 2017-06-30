@@ -67,6 +67,7 @@ public:
   /// This is mostly for debugging, perhaps just for the curious.
   bool isSerialized() const { return (_dataIndex == NULL); };
 
+  /// \brief Return the serialized version of this queue item.
   std::string serialize() const {
     if (_dataIndex) {
       return _dataIndex->serialize();
@@ -75,7 +76,8 @@ public:
     }
   }
 
-  VRDataIndex getValue() const {
+  /// \brief Return the data index version of this queue item.
+  VRDataIndex getData() const {
     if (_dataIndex) {
       return *_dataIndex;
     } else {
