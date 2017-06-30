@@ -87,54 +87,10 @@ public:
 };
 
 
-
-// template
-// <
-//     class Type,
-//     class UnqualifiedType = std::remove_cv<Type>
-// >
-// class ForwardIterator
-//   : public std::iterator<std::forward_iterator_tag,
-//                          UnqualifiedType,
-//                          std::ptrdiff_t,
-//                          Type*,
-//                          Type&> {
-//   VRDataPairnode<UnqualifiedType>* itr;
-
-//   explicit ForwardIterator(node<UnqualifiedType>* nd) : itr(nd) {}
-
-// public:
-//   /// Default constructor.
-//   ///
-//   /// Empty argument gives end().
-//   ForwardIterator() : itr(nullptr) {}
-
-//   void swap(ForwardIterator& other) noexcept {
-//     using std::swap;
-//     swap(itr, other.iter);
-//   }
-
-//   /// Pre-increment operator.
-//   ForwardIterator& operator++ () {
-//     assert(itr != nullptr && "Out-of-bounds iterator increment!");
-//     itr = itr->next;
-//     return *this;
-//   }
-
-//   /// Post-increment operator.
-//   ForwardIterator operator++ (int) {
-//     assert(itr != nullptr && "Out-of-bounds iterator increment!");
-//     ForwardIterator tmp(*this);
-//     itr = itr->next;
-//     return tmp;
-//   }
-
-
-
 /// \brief A queue of MinVR events.
 ///
 ///
-/// This object maintains a queue (FIFO) of serialized VRDatum objects,
+/// This object maintains a queue (FIFO) of serialized "event" objects,
 /// ordered by a timestamp.  Events, which are just small VRDataIndex
 /// objects, are pushed onto the queue, examined, and popped off.  You can
 /// serialize a queue, preparing it to be sent across a network, and you can
@@ -151,6 +107,12 @@ public:
 /// Use this queue for sending data to some other process, or receiving
 /// it.  The transmission format is the same XML format as in the
 /// VRDataIndex description.
+///
+/// Note that the queue supports both serialized data and raw data.  If you
+/// add serialized data to the queue, it will remain serialized until you
+/// ask for it with getFirst().  If you add raw data (in the form of a
+/// VRDataIndex object (a/k/a VRRawEvent), it will remain raw data, unless
+/// the queue is serialized for transmission over the network.
 ///
 class VRDataQueue {
 public:
