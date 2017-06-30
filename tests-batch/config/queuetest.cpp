@@ -5,6 +5,7 @@ int TestQueueArray();
 int TestQueueUnpack();
 int TestQueueMultipleTimeStamps();
 int TestQueueIterator();
+int TestAddQueue();
 
 int queuetest(int argc, char* argv[]) {
 
@@ -38,10 +39,12 @@ int queuetest(int argc, char* argv[]) {
     output = TestQueueIterator();
     break;
 
+  case 5:
+    output = TestAddQueue();
+    break;
+
     // Need test of notEmpty and empty()
     //
-    // And test of iterator.
-
 
     // Add case statements to handle other values.
   default:
@@ -139,6 +142,48 @@ std::string removeTimeStamps(const std::string inString) {
   return outString;
 }
 
+int TestAddQueue() {
+
+  int out = 0;
+
+  MinVR::VRDataQueue q1, q2;
+
+  char ename[10], fname[10];
+  std::vector<MinVR::VRRawEvent> e(10), f(10);
+
+  for (int i = 0; i < 10; i++) {
+    sprintf(ename, "ENAME%d", i);
+    e[i] = MinVR::VRRawEvent(ename);
+    e[i].addData("testInt", i);
+    q1.push(e[i]);
+
+    sprintf(fname, "FNAME%d", i);
+    f[i] = MinVR::VRRawEvent(fname);
+    f[i].addData("testInt", 10-i);
+    q2.push(f[i]);
+  }
+
+  // Now we have two queues, each of which has ten entries that were
+  // added in alternating fashion.  If the time stamps and everthing
+  // work out right, then when the two queues are added, the entries
+  // from each should appear alternating, too.
+
+  // Add the queues.
+  q1.addQueue(q2);
+
+  // This is how we expect the entries to appear.
+  int expectedOrder[20] = {0,10,1,9,2,8,3,7,4,6,5,5,6,4,7,3,8,2,9,1};
+
+  int j = 0;
+  while (q1.notEmpty()) {
+
+    std::cout << "Entry:" << q1.getFirst() << std::endl;
+    if (expectedOrder[j++] != (int)q1.getFirst().getValue("testInt")) out++;
+    q1.pop();
+  }
+
+  return out;
+}
 
 int TestQueueIterator() {
 
@@ -153,8 +198,8 @@ int TestQueueIterator() {
     sprintf(name, "NAME%d", i);
     n[i] = MinVR::VRDataIndex(name);
 
-    // To make sure the order comes out the way we want it, we are inverting
-    // the order of the timestamps.
+    // To test the ordering features as well, we are spoofing the time
+    // stamps, and inverting their order.
     n[i].addData("indexValue", i);
     q.push(10 - i, MinVR::VRDataQueueItem(&n[i]));
   }
