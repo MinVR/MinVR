@@ -62,6 +62,11 @@ public:
     _dataIndex(index), _serialData("") {};
   VRDataQueueItem(std::string str) : _dataIndex(NULL), _serialData(str) {};
 
+  /// \brief Flag to say whether the entry is serialized or not.
+  ///
+  /// This is mostly for debugging, perhaps just for the curious.
+  bool isSerialized() const { return (_dataIndex == NULL); };
+
   std::string serialize() const {
     if (_dataIndex) {
       return _dataIndex->serialize();
@@ -161,6 +166,11 @@ private:
   typedef std::map<VRTimeStamp,VRDataQueueItem> VRDataList;
   VRDataList _dataMap;
 
+  friend std::ostream & operator<<(std::ostream &os, const VRDataQueue& dq) {
+    return os << dq.printQueue();
+  }
+
+
 public:
   VRDataQueue() {};
   VRDataQueue(const serialData serializedQueue);
@@ -234,7 +244,7 @@ public:
   serialData serialize();
 
   // A debug-friendly output function.
-  std::string printQueue();
+  std::string printQueue() const;
 
   // How big is the queue?
   int size() { return _dataMap.size(); };
