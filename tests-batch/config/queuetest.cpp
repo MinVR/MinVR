@@ -4,6 +4,7 @@
 int TestQueueArray();
 int TestQueueUnpack();
 int TestQueueMultipleTimeStamps();
+int TestQueueIterator();
 
 int queuetest(int argc, char* argv[]) {
 
@@ -32,6 +33,15 @@ int queuetest(int argc, char* argv[]) {
   case 3:
     output = TestQueueMultipleTimeStamps();
     break;
+
+  case 4:
+    output = TestQueueIterator();
+    break;
+
+    // Need test of notEmpty and empty()
+    //
+    // And test of iterator.
+
 
     // Add case statements to handle other values.
   default:
@@ -129,6 +139,44 @@ std::string removeTimeStamps(const std::string inString) {
   return outString;
 }
 
+
+int TestQueueIterator() {
+
+  int out = 0;
+
+  std::vector<MinVR::VRDataIndex> n(10);
+  MinVR::VRDataQueue q;
+
+  for (int i = 0; i < 10; i++) {
+
+    char name[10];
+    sprintf(name, "NAME%d", i);
+    n[i] = MinVR::VRDataIndex(name);
+
+    // To make sure the order comes out the way we want it, we are inverting
+    // the order of the timestamps.
+    n[i].addData("indexValue", i);
+    q.push(10 - i, MinVR::VRDataQueueItem(&n[i]));
+  }
+
+  // Now add one more, with a redundant time value.
+  MinVR::VRDataIndex nf = MinVR::VRDataIndex("NAMElast");
+  nf.addData("indexValue", 100);
+  q.push(5, MinVR::VRDataQueueItem(&nf));
+
+  // Now we have a queue with 11 little data index objects in it.
+
+  int j = 0;
+  int expectedValue[11] = {9, 8, 7, 6, 5, 100, 4, 3, 2, 1, 0};
+  for (MinVR::VRDataQueue::iterator it = q.begin(); it != q.end(); it++) {
+    std::cout << "Entry:" << it->second.getValue() << std::endl;
+    // If the indexValue in the queue item is the same as j, all is well.
+    if (expectedValue[j++] != (int)it->second.getValue().getValue("indexValue"))
+      out++;
+  }
+
+  return out;
+}
 
 
 int TestQueueArray() {
