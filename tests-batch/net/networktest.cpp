@@ -48,6 +48,10 @@ int networktest(int argc, char* argv[]) {
 
 bool checkClientExitStatus(const int &status) {
 
+#ifdef WIN32
+  return true;
+#else
+
   if (!WIFEXITED(status) || WEXITSTATUS(status) != 0) {
 
     std::cout << "WIFEXITED=" << WIFEXITED(status) << std::endl;
@@ -65,10 +69,15 @@ bool checkClientExitStatus(const int &status) {
   } else {
     return true;
   }
+#endif
 }
 
 
 int TestSwapBufferSignal() {
+
+#ifdef WIN32
+  return 0;
+#else
 
   // This isn't much of a test, since all it does is fork a bunch of
   // clients and execute swapBuffer messages with them.  Since the
@@ -118,28 +127,39 @@ int TestSwapBufferSignal() {
 
   for (int i = 0; i < 10; i++) {
     server.syncSwapBuffersAcrossAllNodes();
-    std::cout << "All swaps for request " << i << " made by server." << std::endl;
+    std::cout << "All swap requests " << i << " made by server." << std::endl;
   }
+
+  std::cout << "done sending, now waiting for children to exit..." << std::endl;
 
   // Waits for all the child processes to finish running
   for (int i = 0; i < numberOfClients; ++i) {
     int status;
 
-    while (-1 == waitpid(clientPIDs[i], &status, WNOHANG));
+    while (-1 == waitpid(clientPIDs[i], &status, WNOHANG | WUNTRACED)) {
+      std::cout << i << ":" << clientPIDs[i] << ":errno:" << errno << std::endl;
+      // If errno == 10, the process has already ended.
+      if (errno == 10) break;
+    };
 
     std::cout << "waited for " << clientPIDs[i] << std::endl;
 
     if (!checkClientExitStatus(status)) {
-      cerr << "Process " << i+1 << " (pid " << clientPIDs[i] << ") failed" << endl;
+      std::cout << "Process " << i+1 << " (pid " << clientPIDs[i] << ") failed" << std::endl;
       out += 1;
     }
   }
   std::cout << "CLIENT SUCCESS" << std::endl;
 
   return out;
+#endif
 }
 
 int TestExchangeEventData() {
+
+#ifdef WIN32
+  return 0;
+#else
 
   // This is the same as the test of the swapBuffers message, but it
   // passes event data back and forth, so we can check that as a test.
@@ -246,6 +266,7 @@ int TestExchangeEventData() {
   std::cout << "CLIENT SUCCESS" << std::endl;
 
   return out;
+#endif
 }
 
 int TestThree() { return 0; }
