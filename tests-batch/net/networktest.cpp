@@ -5,7 +5,7 @@
 #include "config/VRDataQueue.h"
 
 int TestSwapBufferSignal();
-int TestTwo();
+int TestExchangeEventData();
 int TestThree();
 
 int networktest(int argc, char* argv[]) {
@@ -30,7 +30,7 @@ int networktest(int argc, char* argv[]) {
     break;
 
   case 2:
-    output = TestTwo();
+    output = TestExchangeEventData();
     break;
 
   case 3:
@@ -69,6 +69,12 @@ bool checkClientExitStatus(const int &status) {
 
 
 int TestSwapBufferSignal() {
+
+  // This isn't much of a test, since all it does is fork a bunch of
+  // clients and execute swapBuffer messages with them.  Since the
+  // syncSwapBuffers method is a void return, there isn't much to
+  // test, but if this runs to completion, you do know that the
+  // functionality is basically all there.
 
   int out = 0;
   int numberOfClients = 10;
@@ -133,7 +139,12 @@ int TestSwapBufferSignal() {
   return out;
 }
 
-int TestTwo() {
+int TestExchangeEventData() {
+
+  // This is the same as the test of the swapBuffers message, but it
+  // passes event data back and forth, so we can check that as a test.
+  // Plus, of course, if the test runs to completion, that's useful
+  // information, too.
 
   int out = 0;
   int numberOfClients = 10;
@@ -150,20 +161,21 @@ int TestTwo() {
   char numberOfSendsStr[10];
   sprintf(numberOfSendsStr, "%d", numberOfSends);
   for (int i = 0; i < numberOfClients; i++) {
+    // Here's the fork...
     clientPIDs[i] = fork();
 
     if (clientPIDs[i] != 0) {
-      // This is still on the main fork, and the PID returned belongs
+      // ... we are still on the main fork, and the PID returned belongs
       // to the process that was forked.
       std::cout << "client " << i+1
                 << " forked, pid = " << clientPIDs[i] << std::endl;
 
     } else {
-      // The forked client returns 0 from the fork() call.
-
+      // ... we are on a fork (client returns 0 from the fork() call),
+      // so execute the launchEventClient helper program.
 
       sprintf(clientNumberStr, "%d", i+1);
-      std::cout << "running:" << launchEventClient << " " << std::string(clientNumberStr) << ":" << i << " " << numberOfSends << std::endl;
+      std::cout << "running: " << launchEventClient << " " << std::string(clientNumberStr) << " " << numberOfSends << std::endl;
       ret = execl(launchEventClient.c_str(),
                   launchEventClient.c_str(),
                   clientNumberStr,
@@ -193,9 +205,26 @@ int TestTwo() {
 
     queue = server.syncEventDataAcrossAllNodes(queue);
     std::cout << "All event requests " << i << " made by server." << std::endl;
+
+    std::cout << queue;
+
+    int gsum = 0;
+    // Let's test the result.  The clients all send us events with 'client=n'.
+    while (queue.notEmpty()) {
+      MinVR::VRRawEvent g = queue.getFirst();
+      if (g.exists("client")) {
+        std::cout << g << std::endl;
+        gsum += (int)g.getValue("client");
+      }
+      queue.pop();
+    }
+
+    // This is related to the number of clients.  If you change N,
+    // change this sum.
+    if (gsum != 55) out++;
   }
 
-  std::cout << "done sending, now waiting..." << std::endl;
+  std::cout << "done sending, now waiting for children to exit..." << std::endl;
 
   // Waits for all the child processes to finish running
   for (int i = 0; i < numberOfClients; ++i) {
@@ -210,7 +239,7 @@ int TestTwo() {
 
     if (!checkClientExitStatus(status)) {
 
-      cerr << "Process " << i+1 << " (pid " << clientPIDs[i] << ") failed" << endl;
+      std::cerr << "Process " << i+1 << " (pid " << clientPIDs[i] << ") failed" << std::endl;
       out += 1;
     }
   }
