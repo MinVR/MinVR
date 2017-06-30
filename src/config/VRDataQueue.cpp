@@ -79,7 +79,7 @@ VRDataIndex VRDataQueue::getFirst() const {
     return VRDataIndex();
   } else {
 
-    return _dataMap.begin()->second.getValue();
+    return _dataMap.begin()->second.getData();
   }
 }
 
