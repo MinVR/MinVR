@@ -99,6 +99,7 @@ VRSearchConfig::VRSearchConfig() {
   addPathEntry("./config/", false);
 
   // 3. running from within the build tree from build/bin or tests-*/testname
+  addPathEntry("../config/", false);
   addPathEntry("../../config/", false);
 
   // 4. an installed version based on MINVR_ROOT envvar

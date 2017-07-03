@@ -171,7 +171,10 @@ void VRMain::setConfigValueByString(const std::string &keyAndValStr) {
 
 
 void VRMain::displayCommandLineHelp() {
-    std::cout <<
+
+  VRSearchConfig configPath;
+
+  std::cout <<
     "-h, --help         Display this help message.\n"
     "\n"
     "Add any of the following arguments to the command line as many times as\n"
@@ -180,13 +183,10 @@ void VRMain::displayCommandLineHelp() {
     "-c <configname>, --load-config <configname>\n"
     "                   Search for and load the pre-installed MinVR config file\n"
     "                   named <configname>.minvr -- the search looks in:\n"
-    "                   1. the current working directory [cwd]\n"
-    "                   2. [cwd]/config\n"
-    "                   3. ../../config (for developers running build tree\n"
-    "                      executables from build/bin or tests/testname\n"
-    "                   4. MINVR_ROOT/config if the MINVR_ROOT envvar is defined\n"
-    "                   5. the install_prefix specified when libMinVR was built.\n"
-    "\n"
+    "                   "
+            << configPath.getPath()
+            <<
+    "\n\n"
     "-f <path/file.minvr>, --load-file <path/file.minvr>\n"
     "                   Load the exact MinVR config file specified as a complete\n"
     "                   relative or absolute path and filename.\n"
@@ -226,6 +226,7 @@ void VRMain::processCommandLineArgs(std::string commandLine)  {
     while (argStream) {
         std::string arg;
         argStream >> arg;
+
         if (argStream) {
             count++;
 
@@ -290,6 +291,7 @@ void VRMain::processCommandLineArgs(std::string commandLine)  {
                 processCommandLineArgs(decoded);
                 processeddata = true;
             }
+
         }
     }
 
