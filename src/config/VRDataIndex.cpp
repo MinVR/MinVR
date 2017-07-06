@@ -878,6 +878,12 @@ VRDataIndex::_getEntry(const std::string &key,
 
     return _theIndex.find(key);
 
+  } else if ((nameSpace.size() == 1) && (nameSpace.compare("/") == 0)) {
+    // If we are looking for something in the root name space, that's
+    // not so different than using a fully-qualified name.
+
+    return _theIndex.find(nameSpace + key);
+
   } else {
 
     // If you're asking whether a fully-qualified name works, you want
