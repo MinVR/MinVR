@@ -26,7 +26,11 @@
 #include <main/VREventInternal.h>
 #include <cstdlib>
 
-#define CHECKARG(CMDSTR, CMD) \
+#define TESTARG(ARG, CMDSTR) (ARG.compare(0, CMDSTR.size(), CMDSTR) == 0)
+
+// This checks an argument to see if it's of the form '-s=XXX' or '-s XXX',
+// then executes CMD on that argument.
+#define EXECARG(CMDSTR, CMD)       \
   if (arg.size() > CMDSTR.size()) { \
     CMD(arg.substr(CMDSTR.size() + 1)); \
   } else if (argc > i+1) { \
@@ -46,28 +50,34 @@ void VRParseCommandLine::parse(int argc, char** argv) {
 
     std::string arg = std::string(argv[i]);
 
-    std::cout << "considering: " << arg << std::endl;
-
     if (arg[0] != '-') {
       // Not something we can use.
       _leftoverArgv[_leftoverArgc] = (char*)malloc(arg.size() + 1);
       strcpy(_leftoverArgv[_leftoverArgc++], argv[i]);
 
-    } else if (arg.compare(_setConfigValueShort) == 0) {
+    } else if (TESTARG(arg, _setConfigValueShort)) {
 
-      CHECKARG(_setConfigValueShort, setConfigValue);
+      EXECARG(_setConfigValueShort, setConfigValue);
 
-    } else if (arg.compare(_loadConfigShort) == 0) {
+    } else if (TESTARG(arg, _loadConfigShort)) {
 
-      CHECKARG(_loadConfigShort, loadConfig);
+      EXECARG(_loadConfigShort, loadConfig);
 
-    } else if (arg.compare(_setConfigValueLong) == 0) {
+    } else if (TESTARG(arg, _setConfigValueLong)) {
 
-      CHECKARG(_setConfigValueLong, setConfigValue);
+      EXECARG(_setConfigValueLong, setConfigValue);
 
-    } else if (arg.compare(_loadConfigLong) == 0) {
+    } else if (TESTARG(arg, _loadConfigLong)) {
 
-      CHECKARG(_loadConfigLong, loadConfig);
+      EXECARG(_loadConfigLong, loadConfig);
+
+    } else if (TESTARG(arg, _minVRData)) {
+
+      // We have an encoded command-line here.
+      EXECARG(_minVRData, decodeMinVRData);
+
+      // There is nothing else of interest on the command line.
+      break;
 
     } else if (arg.compare(_helpShort) == 0) {
 
@@ -85,7 +95,41 @@ void VRParseCommandLine::parse(int argc, char** argv) {
       strcpy(_leftoverArgv[_leftoverArgc++], argv[i]);
     }
   }
-};
+}
+
+void VRParseCommandLine::decodeMinVRData(const std::string payload) {
+
+  std::cout << "DECODE LINE: " << payload << std::endl;
+
+  // Decode the payload string.
+  std::string decodedCommandLine = VRAppLauncher::dataToArgs(payload);
+
+  // Break it up into argc and argv.
+  std::stringstream argStream(decodedCommandLine);
+  int newArgc = 0;
+  char* newArgv[50];
+
+  while (argStream) {
+    std::string arg;
+    argStream >> arg;
+
+    // Ignore zero-length args.
+    if (arg.size() < 1) continue;
+
+    std::cout << "processing decoded >" << arg << "<" << std::endl;
+
+    newArgv[newArgc] = new char[arg.size()];
+    strcpy(newArgv[newArgc++], arg.c_str());
+  }
+
+  // Call parse() recursively.
+  parse(newArgc, newArgv);
+
+  // reclaim memory of newArgv
+  for (int i = newArgc - 1; i >= 0; i--) {
+    delete newArgv[i];
+  }
+}
 
 
 /** This helper class is a wrapper around a list of VRRenderHandlers that makes

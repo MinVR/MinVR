@@ -122,6 +122,21 @@ int testSearchPath() {
   std::cout << "result:" << sp.findFile("target.txt") << " out:" << out << std::endl;
   std::cout << "path:" << sp << std::endl;
 
+  // What about an absolute path name?
+  char p[200];
+  std::string rel = "testSearch/test2/test3/target.txt";
+  std::string absolutePath = std::string(getwd(p)) + "/" + rel;
+  std::cout << "checking on absolute path:" << absolutePath << std::endl;
+
+  std::string t = sp.findFile(absolutePath);
+  out += t.substr(t.find("testSearch")).compare(rel);
+
+  // Make the absolute path name fail.
+  absolutePath += "d";
+  t = sp.findFile(absolutePath);
+  // Should be empty string.
+  out += t.size();
+
   // Does the colon-separated search path look right?
   out += sp.getPath().compare("testSearch/test2/test4/test5:testSearch/test2/test4:testSearch/test2/test3:testSearch/test2:testSearch/test1:testSearch");
 
@@ -140,7 +155,6 @@ int testSearchPath() {
 
   // Now we search for plugins and config files, which have some extra
   // semantic issues.
-
 
   std::cout << "libRoot:" << libRoot<< "libName:" << libName << std::endl;
 
@@ -174,14 +188,21 @@ int testSearchPath() {
 
 class testParse : public MinVR::VRParseCommandLine {
 
+public:
+  int _count;
+
+  testParse() { _count = 1; };
+
   void setConfigValue(const std::string keyAndValStr) {
 
     std::cout << "SET CONFIG:" << keyAndValStr << std::endl;
+    _count += 11;
   };
 
   void loadConfig(const std::string configName) {
 
     std::cout << "LOAD CONFIG:" << configName << std::endl;
+    _count += 5;
   };
 };
 
@@ -192,27 +213,88 @@ int testCommandLineParse() {
 
   testParse* tp = new testParse();
 
-  char* instr[5];
-  instr[0] = (char*)malloc(25);
-  strcpy(instr[0], "program");
-  instr[1] = (char*)malloc(25);
-  strcpy(instr[1], "argument1");
-  instr[2] = (char*)malloc(25);
-  strcpy(instr[2], "argument2");
-  instr[3] = (char*)malloc(25);
-  strcpy(instr[3], "--set-value");
-  instr[4] = (char*)malloc(25);
-  strcpy(instr[4], "default");
+  char* instr[10];
+  int i = 0;
 
+  // Test a typical line.
+  std::stringstream argStream("program argument1 argument2 --load-config default");
+  while (argStream) {
+
+    std::string arg;
+    argStream >> arg;
+
+    if (arg.size() > 0) {
+      instr[i] = (char*)malloc(arg.size() + 2);
+      strcpy(instr[i++], arg.c_str());
+    }
+  }
+
+  // Parse it.
   tp->parse(5, instr);
+
+  // We tried to only call loadConfig.
+  if (tp->_count != 6) out++;
 
   std::cout << "leftovers: " << tp->getLeftoverArgc() << ": ";
 
   for (int i = 0; i < tp->getLeftoverArgc(); i++) {
     std::cout << tp->getLeftoverArgv()[i] << ", ";
   }
-
   std::cout << std::endl;
+
+  // Should have three leftovers, and the third called argument2.
+  if ((tp->getLeftoverArgc() != 3) ||
+      (strcmp(tp->getLeftoverArgv()[2], "argument2") != 0)) out++;
+
+  std::cout << "Now let's try an encoded command line." << std::endl;
+
+  delete tp;
+  tp = new testParse();
+
+  std::string encoded = MinVR::VRAppLauncher::argsToData("command arg1 arg2 -s SetupsToStart=doThisOne -c Wonderful");
+
+  char* instr2[2];
+  instr2[0] = (char*)malloc(25);
+  strcpy(instr2[0], "program");
+  instr2[1] = (char*)malloc(225);
+  strcpy(instr2[1], encoded.c_str());
+
+  tp->parse(2, instr2);
+
+  // Should have called loadConfig and setConfigValue.
+  if (tp->_count != 17) out++;
+
+  // Should have three leftovers, and the third called argument2.
+  if ((tp->getLeftoverArgc() != 3) ||
+      (strcmp(tp->getLeftoverArgv()[2], "arg2") != 0)) out++;
+
+  delete tp;
+  tp = new testParse();
+
+  i = 0;
+
+  // Test a typical line.
+  std::stringstream argStream2("program argument1 -c");
+  while (argStream2) {
+
+    std::string arg;
+    argStream2 >> arg;
+
+    if (arg.size() > 0) {
+      instr[i] = (char*)malloc(arg.size() + 2);
+      strcpy(instr[i++], arg.c_str());
+    }
+  }
+
+  // Parse it.  Should cause an exception because there's no argument
+  // for the -c.
+  try {
+    tp->parse(i, instr);
+    std::cout << "no exception, no catch!" << std::endl;
+    out += 1;
+  } catch (const MinVR::VRError& e) {
+    std::cout << "caught exception: " << e.what() << std::endl;
+  }
 
   return out;
 }
