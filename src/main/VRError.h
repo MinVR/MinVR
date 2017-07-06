@@ -38,6 +38,8 @@
 #define VRWARNING(what, advice) VRError::VRWarning(what, advice, __FILE__, __LINE__, __PRETTY_FUNCTION__);
 #endif
 
+namespace MinVR {
+
 /// A class to systematize the error handling in MinVR.
 class VRError: public std::exception {
 public:
@@ -93,7 +95,10 @@ public:
   ///         is in posession of the VRError object. Callers must
   ///         not attempt to free the memory.
   virtual const char* what() const throw (){
-    return _errorMessage().c_str();
+    std::string emsg = _errorMessage();
+    char* out = (char*)malloc(emsg.size() + 2);
+    strcpy(out, _errorMessage().c_str());
+    return out;
   }
 
   static void VRWarning(const std::string& whatMsg,
@@ -133,8 +138,10 @@ protected:
   std::string _whereFunc;
   std::string _adviceMsg;
 
-  friend std::ostream & operator<<(std::ostream &os, VRError& e) {
+  friend std::ostream & operator<<(std::ostream &os, const VRError& e) {
     return os << e._errorMessage();
   }
 };
+
+}
 #endif    // MINVR_VRERROR_H
