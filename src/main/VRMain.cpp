@@ -26,7 +26,66 @@
 #include <main/VREventInternal.h>
 #include <cstdlib>
 
+#define CHECKARG(CMDSTR, CMD) \
+  if (arg.size() > CMDSTR.size()) { \
+    CMD(arg.substr(CMDSTR.size() + 1)); \
+  } else if (argc > i+1) { \
+    CMD(std::string(argv[++i])); \
+  } else { \
+    VRERROR("Something is wrong with the " + CMDSTR + " option.", \
+            "It needs an argument."); \
+  }
+
+
 namespace MinVR {
+
+void VRParseCommandLine::parse(int argc, char** argv) {
+
+  _leftoverArgc = 0;
+  for (int i = 0; i < argc; i++) {
+
+    std::string arg = std::string(argv[i]);
+
+    std::cout << "considering: " << arg << std::endl;
+
+    if (arg[0] != '-') {
+      // Not something we can use.
+      _leftoverArgv[_leftoverArgc] = (char*)malloc(arg.size() + 1);
+      strcpy(_leftoverArgv[_leftoverArgc++], argv[i]);
+
+    } else if (arg.compare(_setConfigValueShort) == 0) {
+
+      CHECKARG(_setConfigValueShort, setConfigValue);
+
+    } else if (arg.compare(_loadConfigShort) == 0) {
+
+      CHECKARG(_loadConfigShort, loadConfig);
+
+    } else if (arg.compare(_setConfigValueLong) == 0) {
+
+      CHECKARG(_setConfigValueLong, setConfigValue);
+
+    } else if (arg.compare(_loadConfigLong) == 0) {
+
+      CHECKARG(_loadConfigLong, loadConfig);
+
+    } else if (arg.compare(_helpShort) == 0) {
+
+      VRSearchConfig vsc;
+      help(vsc);
+
+    } else if (arg.compare(_helpLong) == 0) {
+
+      VRSearchConfig vsc;
+      help(vsc);
+
+    } else {
+      // We do not want this argument.
+      _leftoverArgv[_leftoverArgc] = (char*)malloc(arg.size());
+      strcpy(_leftoverArgv[_leftoverArgc++], argv[i]);
+    }
+  }
+};
 
 
 /** This helper class is a wrapper around a list of VRRenderHandlers that makes
@@ -227,6 +286,8 @@ void VRMain::processCommandLineArgs(std::string commandLine)  {
         std::string arg;
         argStream >> arg;
 
+        std::cerr << "^^^^^^^finding arg:" << arg << std::endl;
+
         if (argStream) {
             count++;
 
@@ -292,6 +353,12 @@ void VRMain::processCommandLineArgs(std::string commandLine)  {
                 processeddata = true;
             }
 
+            // default case: This arg is irrelevant to MinVR, but we keep it
+            // around to hand back to the user program.
+            else {
+              std::cerr << "**********ARG:" << arg << std::endl;
+
+            }
         }
     }
 
@@ -314,6 +381,7 @@ void VRMain::initializeWithMinVRCommandLineParsing(int argc, char **argv) {
             cmdline += " ";
         }
         cmdline += argv[i];
+        std::cerr << "CMDLINE::::::::" << cmdline << std::endl;
     }
     processCommandLineArgs(cmdline);
 

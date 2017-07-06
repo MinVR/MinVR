@@ -1,6 +1,8 @@
 #include "main/VRSearchPath.h"
+#include "main/VRMain.h"
 
 int testSearchPath();
+int testCommandLineParse();
 
 int utilitytest(int argc, char* argv[]) {
 
@@ -20,6 +22,10 @@ int utilitytest(int argc, char* argv[]) {
   switch(choice) {
   case 1:
     output = testSearchPath();
+    break;
+
+  case 2:
+    output = testCommandLineParse();
     break;
 
   default:
@@ -158,10 +164,55 @@ int testSearchPath() {
   out += spc.findFile("Chester.xml").compare("testSearch/test2/test3/Chester.xml");
 
   std::cout << "spc:" << spc.findFile("Chester.xml") << " out:" << out << std::endl;
-  
+
   executeShellCommand("rm -rf testSearch");
 
 #endif
+
+  return out;
+}
+
+class testParse : public MinVR::VRParseCommandLine {
+
+  void setConfigValue(const std::string keyAndValStr) {
+
+    std::cout << "SET CONFIG:" << keyAndValStr << std::endl;
+  };
+
+  void loadConfig(const std::string configName) {
+
+    std::cout << "LOAD CONFIG:" << configName << std::endl;
+  };
+};
+
+
+int testCommandLineParse() {
+
+  int out = 0;
+
+  testParse* tp = new testParse();
+
+  char* instr[5];
+  instr[0] = (char*)malloc(25);
+  strcpy(instr[0], "program");
+  instr[1] = (char*)malloc(25);
+  strcpy(instr[1], "argument1");
+  instr[2] = (char*)malloc(25);
+  strcpy(instr[2], "argument2");
+  instr[3] = (char*)malloc(25);
+  strcpy(instr[3], "--set-value");
+  instr[4] = (char*)malloc(25);
+  strcpy(instr[4], "default");
+
+  tp->parse(5, instr);
+
+  std::cout << "leftovers: " << tp->getLeftoverArgc() << ": ";
+
+  for (int i = 0; i < tp->getLeftoverArgc(); i++) {
+    std::cout << tp->getLeftoverArgv()[i] << ", ";
+  }
+
+  std::cout << std::endl;
 
   return out;
 }

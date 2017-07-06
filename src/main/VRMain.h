@@ -19,7 +19,121 @@
 
 namespace MinVR {
 
+/// \brief Parses a couple of things out of the command line, leaves the rest.
+///
+/// This class is used to get a couple of MinVR-specific values out of
+/// a command line.  Since the application programmer may also have
+/// designs on the command line, there is some flexibility built in
+/// for his or her benefit.
+class VRParseCommandLine {
 
+ public:
+  VRParseCommandLine() {
+    _setConfigValueShort = "-c";
+    _setConfigValueLong = "--set-value";
+    _loadConfigShort = "-l";
+    _loadConfigLong = "--load-config";
+    _helpShort = "-h";
+    _helpLong = "--help";
+    _minVRData = "--MINVR_DATA";
+  };
+
+  /// \brief Parses the command line, per the argument description provided.
+  void parse(int argc, char** argv);
+
+  /// \brief Returns argc once the MinVR-specific args have been removed.
+  int getLeftoverArgc() { return _leftoverArgc; };
+
+  /// \brief Returns argv once the MinVR-specific args have been removed.
+  char** getLeftoverArgv() { return _leftoverArgv; };
+
+  std::string getSetConfigValueShort() { return _setConfigValueShort; };
+  void setSetConfigValueShort(const std::string s) { _setConfigValueShort = s; };
+  std::string getSetConfigValueLong() { return _setConfigValueLong; };
+  void setSetConfigValueLong(const std::string s) { _setConfigValueLong = s; };
+  std::string getLoadConfigShort() { return _loadConfigShort; };
+  void setLoadConfigShort(const std::string s) { _loadConfigShort = s; };
+  std::string getLoadConfigLong() { return _loadConfigLong; };
+  void setLoadConfigLong(const std::string s) { _loadConfigLong = s; };
+  std::string getHelpShort() { return _helpShort; };
+  void setHelpShort(const std::string s) { _helpShort = s; };
+  std::string getHelpLong() { return _helpLong; };
+  void setHelpLong(const std::string s) { _helpLong = s; };
+  std::string getMinVRData() { return _minVRData; };
+  void setMinVRData(const std::string s) { _minVRData = s; };
+
+
+  /// \brief Prints a helpful message.
+  void help(VRSearchConfig configPath, const std::string additionalText = "") {
+    std::cout << getHelpShort() << ", " << getHelpLong()
+              << "         Display this help message.\n"
+      "\n"
+      "Add any of the following arguments to the command line as many times as\n"
+      "needed in a space separated list.\n"
+      "\n"
+              << getLoadConfigShort() << " <configName>, "
+              << getLoadConfigLong() << " <configName>" << std::endl
+              <<
+      "                   Search for and load the pre-installed MinVR config file\n"
+      "                   named <configname>.minvr -- the search looks in:\n"
+      "                   "
+              << configPath.getPath()
+              <<
+      "\n\n"
+      "                   You can also specify a config file as a complete relative\n"
+      "                   or absolute path and filename.\n"
+      "\n"
+              << getSetConfigValueShort() << " <key>=<value>, "
+              << getSetConfigValueLong() << " <key>=<value>" << std::endl
+              <<
+      "                   Add an entry to the MinVR configuration directly from\n"
+      "                   the command line rather than by specifying it in a\n"
+      "                   config file. This can be used to override one specific\n"
+      "                   option in a pre-installed configuration or config file\n"
+      "                   specified earlier on the command line.  For example,\n"
+      "                   'myprogram -c desktop -s WindowHeight=500 -s WindowWidth=500'\n"
+      "                   would start myprogram, load the installed desktop MinVR\n"
+      "                   config and then override the WindowHeight and\n"
+      "                   WindowWidth values in the pre-installed desktop\n"
+      "                   configuration with the new values specified.\n"
+      "\n"
+              << getMinVRData() <<
+      "=xxxx  A special command line argument reserved for internal\n"
+      "                   use by MinVR.\n";
+    if (additionalText.size() > 0) {
+      std::cout << additionalText << std::endl;
+    } else {
+
+      std::cout <<
+      "[anything else]    MinVR will silently ignore anything else provided as\n"
+      "                   a command line option and return it to the application program.\n"
+    "\n"
+                << std::endl;
+    }
+  };
+
+  // These methods are the ultimate purpose here.
+
+  /// \brief Accepts a key=value string and inserts it into the configuration.
+  virtual void setConfigValue(const std::string keyAndValStr) = 0;
+
+  /// \brief Accepts the name of a configuration or configuration file.
+  virtual void loadConfig(const std::string configName) = 0;
+
+ private:
+
+  std::string _setConfigValueShort, _setConfigValueLong;
+  std::string _loadConfigShort, _loadConfigLong;
+  std::string _helpShort, _helpLong;
+  std::string _minVRData;
+
+  /// \brief This is argc once the MinVR-specific args have been removed.
+  int _leftoverArgc;
+
+  /// \brief This is argv once the MinVR-specific args have been removed.
+  char* _leftoverArgv[50];
+
+};
 
 /** Advanced application programmers who require more flexibility than what is
     provided via api/VRApp should use this class as the main interface to the
@@ -111,6 +225,12 @@ public:
      */
     void initializeWithMinVRCommandLineParsing(int argc, char **argv);
 
+    /** Returns a usable argc for the application program.  That is, it is
+        the original argc, minus all the MinVR-relevant pieces. */
+    int getargc() { return _argcRemnants; };
+    /** Returns a usable argv for the application program.  That is, it is
+        the original argv, minus all the MinVR-relevant pieces. */
+    char** getargv() { return _argvRemnants; };
 
     /** STEP 2 (option 2): The MinVR initialize step loads MinVR configuration
         files, spawns additional sub-processes (in the case of clustered VR
@@ -261,6 +381,9 @@ private:
     void initializeInternal(int argc, char **argv);
 
     bool _initialized;
+
+    int _argcRemnants;
+    char** _argvRemnants;
 
     std::string      _name;
     VRDataIndex*     _config;
