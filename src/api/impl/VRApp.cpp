@@ -18,20 +18,20 @@
 namespace MinVR {
 
 
-/** The only purpose of this class is to keep implementation details out of the .h files
-    that make up the MinVR API.  Advanced users could create their own class that inherits
-    directly from the VR*Handler interfaces just as this class does, but users of the API
-    do not need to know how to do this, rather they simply subclass from VRApp and override
-    the virtual methods provided there as needed.
+/** The only purpose of this class is to keep implementation details out of the
+    .h files that make up the MinVR API.  Advanced users could create their own
+    class that inherits directly from the VR*Handler interfaces just as this
+    class does, but users of the API do not need to know how to do this, rather
+    they simply subclass from VRApp and override the virtual methods provided
+    there as needed.
 */
-  class VRAppInternal : //public VRAudioHandler,
-					  public VREventHandler, 
-                      public VRGraphicsHandler { //,
-                      //public VRHapticsHandler {
+class VRAppInternal :
+    public VREventHandler,
+    public VRGraphicsHandler {
 public:
 	VRAppInternal(int argc, char** argv, VRApp *app) : _app(app), _running(false) {
 		_main = new VRMain();
-		_main->initializeWithMinVRCommandLineParsing(argc, argv);
+		_main->initialize(argc, argv);
 		_main->addEventHandler(this);
 		_main->addRenderHandler(this);
 	}
@@ -44,10 +44,6 @@ public:
 		_app->onVREvent(event);
 	}
 
-//	void onVRRenderAudio(const VRAudioState& state) {
-//		_app->onVRRenderAudio(state);
-//	}
-
 	void onVRRenderGraphics(const VRGraphicsState& state) {
 		_app->onVRRenderGraphics(state);
 	}
@@ -56,31 +52,34 @@ public:
 		_app->onVRRenderGraphicsContext(state);
 	}
 
-//	void onVRRenderHaptics(const VRHapticsState& state) {
-//		_app->onVRRenderHaptics(state);
-//	}
+  bool isRunning() {
+    return _running;
+  }
 
-    bool isRunning() {
-        return _running;
-    }
-                        
 	void run() {
-        _running = true;
-        while (_main->mainloop()) {}
+    _running = true;
+    while (_main->mainloop()) {}
 	}
 
 	void shutdown() {
-        _running = false;
+    _running = false;
 		_main->shutdown();
 	}
 
+  int getLeftoverArgc() {
+    return _main->getLeftoverArgc();
+  }
+
+  char** getLeftoverArgv() {
+    return _main->getLeftoverArgv();
+  }
+
 private:
 
-    VRApp *_app;
-	VRMain *_main;
-    bool _running;
+  VRApp *_app;
+  VRMain *_main;
+  bool _running;
 };
-
 
 
 VRApp::VRApp(int argc, char** argv) {
@@ -99,10 +98,17 @@ void VRApp::run()  {
 bool VRApp::isRunning() const  {
   return _internal->isRunning();
 }
-  
+
 void VRApp::shutdown() {
 	_internal->shutdown();
 }
 
+int VRApp::getLeftoverArgc() {
+  return _internal->getLeftoverArgc();
+}
+
+char** VRApp::getLeftoverArgv() {
+  return _internal->getLeftoverArgv();
+}
 
 }

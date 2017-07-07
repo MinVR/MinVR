@@ -26,7 +26,7 @@
 #include <main/VREventInternal.h>
 #include <cstdlib>
 
-#define TESTARG(ARG, CMDSTR) (ARG.compare(0, CMDSTR.size(), CMDSTR) == 0)
+#define TESTARG(ARG, CMDSTR) ((!CMDSTR.empty()) && (ARG.compare(0, CMDSTR.size(), CMDSTR) == 0))
 
 // This checks an argument to see if it's of the form '-s=XXX' or '-s XXX',
 // then executes CMD on that argument.
@@ -43,7 +43,7 @@
 
 namespace MinVR {
 
-void VRParseCommandLine::parse(int argc, char** argv) {
+void VRParseCommandLine::parseCommandLine(int argc, char** argv) {
 
   _leftoverArgc = 0;
   for (int i = 0; i < argc; i++) {
@@ -51,7 +51,7 @@ void VRParseCommandLine::parse(int argc, char** argv) {
     std::string arg = std::string(argv[i]);
 
     if (arg[0] != '-') {
-      // Not something we can use.
+      // Not something we can use.  Add it to the leftovers.
       _leftoverArgv[_leftoverArgc] = (char*)malloc(arg.size() + 1);
       strcpy(_leftoverArgv[_leftoverArgc++], argv[i]);
 
@@ -90,14 +90,14 @@ void VRParseCommandLine::parse(int argc, char** argv) {
       help(vsc);
 
     } else {
-      // We do not want this argument.
+      // We do not want this argument, add it to the leftovers.
       _leftoverArgv[_leftoverArgc] = (char*)malloc(arg.size());
       strcpy(_leftoverArgv[_leftoverArgc++], argv[i]);
     }
   }
 }
 
-void VRParseCommandLine::decodeMinVRData(const std::string payload) {
+void VRParseCommandLine::decodeMinVRData(const std::string &payload) {
 
   std::cout << "DECODE LINE: " << payload << std::endl;
 
@@ -122,8 +122,8 @@ void VRParseCommandLine::decodeMinVRData(const std::string payload) {
     strcpy(newArgv[newArgc++], arg.c_str());
   }
 
-  // Call parse() recursively.
-  parse(newArgc, newArgv);
+  // Call parseCommandLine() recursively.
+  parseCommandLine(newArgc, newArgv);
 
   // reclaim memory of newArgv
   for (int i = newArgc - 1; i >= 0; i--) {
@@ -240,232 +240,49 @@ VRMain::~VRMain()
 }
 
 
-void VRMain::loadInstalledConfiguration(const std::string &configName) {
+void VRMain::loadConfig(const std::string &configName) {
 
-  VRSearchConfig configPath;
-
-  std::string fileName = configPath.findFile(configName);
+  std::string fileName = _configPath.findFile(configName);
   if (fileName.empty()) {
 
     VRERROR("Cannot find a configuration named " + configName + ".",
-            "Checked: " + configPath.getPath());
+            "Checked: " + _configPath.getPath());
   } else {
 
 #ifdef MinVR_DEBUG
     std::cerr << "Loading configuration: " << fileName << std::endl;
 #endif
-    loadConfigFile(fileName);
+    loadConfig(fileName);
 
+    bool success = _config->processXMLFile(fileName, "/");
+
+    if (!success) {
+      VRERROR("Could not process XML file " + fileName,
+              "Something may be wrong with the file.");
+    }
   }
 }
 
-
-void VRMain::loadConfigFile(const std::string &pathAndFilename) {
-
-    bool success = _config->processXMLFile(pathAndFilename,"/");
-    if (!success) {
-        throw std::runtime_error("MinVR Error: Could not process XML file " + pathAndFilename);
-    }
-}
-
-void VRMain::setConfigValueByString(const std::string &keyAndValStr) {
+void VRMain::setConfigValue(const std::string &keyAndValStr) {
   std::string name = _config->addData(keyAndValStr);
 }
 
 
-void VRMain::displayCommandLineHelp() {
+void VRMain::initialize(int argc, char **argv) {
 
-  VRSearchConfig configPath;
-
-  std::cout <<
-    "-h, --help         Display this help message.\n"
-    "\n"
-    "Add any of the following arguments to the command line as many times as\n"
-    "needed in a space separated list.\n"
-    "\n"
-    "-c <configname>, --load-config <configname>\n"
-    "                   Search for and load the pre-installed MinVR config file\n"
-    "                   named <configname>.minvr -- the search looks in:\n"
-    "                   "
-            << configPath.getPath()
-            <<
-    "\n\n"
-    "-f <path/file.minvr>, --load-file <path/file.minvr>\n"
-    "                   Load the exact MinVR config file specified as a complete\n"
-    "                   relative or absolute path and filename.\n"
-    "\n"
-    "-s <key>=<value>, --set-value <key>=<value>\n"
-    "                   Add an entry to the MinVR configuration directly from\n"
-    "                   the command line rather than by specifying it in a\n"
-    "                   config file. This can be used to override one specific\n"
-    "                   option in a pre-installed configuration or config file\n"
-    "                   specified earlier on the command line.  For example,\n"
-    "                   'myprogram -c desktop -s WindowHeight=500 -s WindowWidth=500'\n"
-    "                   would start myprogram, load the installed desktop MinVR\n"
-    "                   config and then override the WindowHeight and\n"
-    "                   WindowWidth values in the pre-installed desktop\n"
-    "                   configuration with the new values specified.\n"
-    "\n"
-    "[nothing]          If no command line arguments are provided, then MinVR\n"
-    "                   will try to load the pre-installed default\n"
-    "                   configuration, whis is the same as running the command\n"
-    "                   'myprogram --load-config default'.\n"
-    "\n"
-    "[anything else]    MinVR will silently ignore anything else provided as\n"
-    "                   a command line option.\n"
-    "\n"
-    "--MINVR_DATA=xxxx  A special command line argument reserved for internal\n"
-    "                   use by MinVR.\n"
-    << std::endl;
-}
-
-
-void VRMain::processCommandLineArgs(std::string commandLine)  {
-
-    std::stringstream argStream(commandLine);
-    int count = 0;
-    bool processeddata = false;
-
-    while (argStream) {
-        std::string arg;
-        argStream >> arg;
-
-        std::cerr << "^^^^^^^finding arg:" << arg << std::endl;
-
-        if (argStream) {
-            count++;
-
-            bool got_help   = ((arg == "-h") || (arg == "--help"));
-
-            bool got_config = ((arg == "-c") || (arg == "--load-config"));
-
-            bool got_file   = ((arg == "-f") || (arg == "--load-file"));
-
-            bool got_keyval = ((arg == "-s") || (arg == "--set-value"));
-
-            //bool got_envvar = ((arg == "-e") || (arg == "--set-envvar"));
-
-            bool got_data   = (arg.find("--MINVR_DATA=") == 0);
-
-
-
-            // case 0: display help and exit
-            if (got_help) {
-                displayCommandLineHelp();
-                exit(0);
-            }
-
-            // case 1: a pre-installed MinVR configuration <configname>.minvr
-            else if (got_config) {
-                argStream >> arg;
-                loadInstalledConfiguration(arg);
-            }
-
-            // case 2: a specific path/filename.minvr config file to load
-            else if (got_file) {
-                argStream >> arg;
-                loadConfigFile(arg);
-            }
-
-            // case 3: a key=value pair to add to the config
-            else if (got_keyval) {
-                argStream >> arg;
-                setConfigValueByString(arg);
-            }
-
-            /*
-            // case 4: a varname=value to set as an environment variable
-            else if (got_envvar) {
-                argStream >> arg;
-                int poseql = arg.find("=");
-                if (poseql == std::string::npos) {
-                    throw std::runtime_error("MinVR Error: Cannot set value, expected to find an = sign on the command line.");
-                }
-                std::string key = arg.substr(0,poseql);
-                std::string value = arg.substr(poseql+1);
-                // TODO: ????  setenv(key.c_str(), value.c_str(), ??);
-            }
-            */
-
-            // case 5: the special --MINVR_DATA=xxxx flag
-            else if (got_data) {
-                int posdata = arg.find("--MINVR_DATA=");
-                std::string data = arg.substr(posdata+13);
-                std::string decoded = VRAppLauncher::dataToArgs(data);
-                // recursive call to process arguments encoded in MINVR_DATA
-                processCommandLineArgs(decoded);
-                processeddata = true;
-            }
-
-            // default case: This arg is irrelevant to MinVR, but we keep it
-            // around to hand back to the user program.
-            else {
-              std::cerr << "**********ARG:" << arg << std::endl;
-
-            }
-        }
-    }
-
-    // If there were no command line arguments or if the only command line
-    // argument was the special --MINVR_DATA=xxxx argument, then load the
-    // pre-installed default configuration.
-    if ((count == 0) || ((count == 1) && (processeddata))) {
-        loadInstalledConfiguration("default");
-    }
-}
-
-
-
-
-void VRMain::initializeWithMinVRCommandLineParsing(int argc, char **argv) {
-    // build a single string with all initialization commands separated by spaces
-    std::string cmdline;
-    for (int i=1; i<argc; i++) {
-        if (i>1) {
-            cmdline += " ";
-        }
-        cmdline += argv[i];
-        std::cerr << "CMDLINE::::::::" << cmdline << std::endl;
-    }
-    processCommandLineArgs(cmdline);
-
-    initializeInternal(argc, argv);
-}
-
-
-
-void VRMain::initializeWithUserCommandLineParsing(int argc, char **argv) {
-    // In this case, ignore all the command line arguments except for
-    // one of the format --MINVR_DATA=xxxx.  If present, this must be a child
-    // process and the parent is passing its config data to us.
-    std::string minvrData;
-    for (int i=1; i<argc; i++) {
-        std::string argstr(argv[i]);
-        int posdata = argstr.find("--MINVR_DATA=");
-        if (posdata != std::string::npos) {
-            // process just this one --MINVR_DATA=xxxx argument
-            processCommandLineArgs(argstr);
-        }
-    }
-
-    initializeInternal(argc, argv);
-}
-
-
-
-
-void VRMain::initializeInternal(int argc, char **argv) {
+  parseCommandLine(argc, argv);
 
 	VRStringArray vrSetupsToStartArray;
 	if (!_config->exists("VRSetupsToStart","/")) {
-		// no vrSetupsToStart are specified, start all of VRSetups listed in the config file
+		// No vrSetupsToStart are specified, start all of VRSetups listed
+		// in the config file.
 		std::list<std::string> names = _config->selectByAttribute("hostType","*");
-		for (std::list<std::string>::const_iterator it = names.begin(); it != names.end(); ++it) {
+		for (std::list<std::string>::const_iterator it = names.begin();
+         it != names.end(); ++it) {
 			vrSetupsToStartArray.push_back(*it);
 		}
-	}
-	else {
-		// a comma-separated list of vrSetupsToStart was provided
+	} else {
+		// A comma-separated list of vrSetupsToStart was provided.
 		std::string vrSetupsToStart = _config->getValue("VRSetupsToStart","/");
 		VRString elem;
 		std::stringstream ss(vrSetupsToStart);
@@ -474,10 +291,11 @@ void VRMain::initializeInternal(int argc, char **argv) {
 		}
 	}
 
-
 	if (vrSetupsToStartArray.empty()) {
-    VRERROR("No VRSetups to start are defined.", "Your config file must contain at least one VRSetup element.");
-		exit(1);
+
+    VRERROR("No VRSetups to start are defined.",
+            "Your config file must contain at least one VRSetup element.");
+
 	}
 
 

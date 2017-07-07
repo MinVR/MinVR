@@ -19,33 +19,35 @@
 
 namespace MinVR {
 
-/// \brief Parses a couple of things out of the command line, leaves
-/// the rest.
+/// \brief Parses a couple of things out of the command line, leaves the
+/// rest.
 ///
-/// This virtual class is used to get a couple of MinVR-specific
-/// values out of a command line.  Since the application programmer
-/// may also have designs on the command line, there is some
-/// flexibility built in for his or her benefit.
+/// This virtual class is used to get a couple of MinVR-specific values out
+/// of a command line.  Since the application programmer may also have
+/// designs on the command line, there is some flexibility built in for his
+/// or her benefit, including the ability to turn off the command-line
+/// parsing entirely (almost), in which case the application program is
+/// responsible for reading the configuration data.
 ///
 /// The class supports selecting a small number of options out of a
-/// command-line, specified with private member data values.  There
-/// are mutators and accessors for these values, allowing the
-/// application programmer to modify these values, if necessary to
-/// accommodate some conflict.  You are responsible for providing the
-/// '--' or '-' in the new strings, as necessary.
+/// command-line, specified with private member data values.  There are
+/// mutators and accessors for these values, allowing the application
+/// programmer to modify these values, if necessary to accommodate some
+/// conflict.  You are responsible for providing the '--' or '-' in the new
+/// strings, as necessary.
 ///
-/// Command-line options can be of the form '-s value' or '-s=value',
-/// and it supports short and long variants, so '-s' or '--set-value'.
-/// (Since the argument to '-s' should always have an equal sign, we
-/// discourage the use of the equal sign form of '-s', but it works.)
+/// Command-line options can be of the form '-s value' or '-s=value', and it
+/// supports short and long variants, so '-s' or '--set-value'.  (Since the
+/// argument to '-s' should always have an equal sign, we discourage the use
+/// of the equal sign form of '-s', but it works.)
 ///
-/// One special functionality is '--MINVR_DATA=', where the argument
-/// to the option contains an entire encoded command line.  If the
-/// parser encounters this option, it unpacks the encoded string, and
-/// executes the parser on this unpacked string, recursively.
+/// One special functionality is '--MINVR_DATA=', where the argument to the
+/// option contains an entire encoded command line.  If the parser
+/// encounters this option, it unpacks the encoded string, and executes the
+/// parser on this unpacked string, recursively.
 ///
-/// This parser is implemented by sub-classing, and supplying the
-/// missing member methods to execute the parse.
+/// This parser is implemented by sub-classing, and supplying the missing
+/// member methods to execute the parse.
 ///
 class VRParseCommandLine {
 
@@ -60,9 +62,45 @@ class VRParseCommandLine {
     _minVRData = "--MINVR_DATA";
   };
 
+  // These two methods are the ultimate purpose of this class.  The
+  // twin purposes of this class are to load the configuration data
+  // easily, including command-line modifications of it -- and to
+  // communicate configuration data from server to clients.
+
+  /// \brief Accepts a key=value string and inserts it into the configuration.
+  virtual void setConfigValue(const std::string &keyAndValStr) = 0;
+
+  /// \brief Accepts the name of a configuration or configuration file.
+  virtual void loadConfig(const std::string &configName) = 0;
+
+  /// \brief Turns off command-line parsing.
+  ///
+  /// An application program may choose not to use the MinVR-supplied
+  /// command line arguments.  You can turn off checking for any of
+  /// these options by setting the private data members to empty
+  /// strings.  Use this function to turn them all off.  Note that you
+  /// cannot turn off the --MINVR_DATA argument, which is used for
+  /// servers and clients to communicate configuration options between
+  /// themselves.
+  ///
+  /// Note that if you turn off the parsing, the MINVR_DATA business
+  /// will still communicate *some* data between server and clients,
+  /// but not necessarily all that you want or expect.  That is, the
+  /// MINVR_DATA will be used to send configuration data from the
+  /// server to the client, but it is your responsibility to read and
+  /// use it on the receiving end.  Caveat programmor.
+  void noParsing() {
+    _setConfigValueShort = "";
+    _setConfigValueLong = "";
+    _loadConfigShort = "";
+    _loadConfigLong = "";
+    _helpShort = "";
+    _helpLong = "";
+  }
+
   /// \brief Parses the command line, per the options provided in the
   /// private variables.
-  void parse(int argc, char** argv);
+  void parseCommandLine(int argc, char** argv);
 
   /// \brief Returns argc once the MinVR-specific args have been removed.
   int getLeftoverArgc() { return _leftoverArgc; };
@@ -76,7 +114,7 @@ class VRParseCommandLine {
   /// \brief Changes the command-line abbreviation for setConfigValue.
   ///
   /// By default, this is "-s".
-  void setSetConfigValueShort(const std::string s) { _setConfigValueShort = s; };
+  void setSetConfigValueShort(const std::string &s) { _setConfigValueShort = s; };
 
   /// \brief Returns the command-line option for setConfigValue.
   std::string getSetConfigValueLong() { return _setConfigValueLong; };
@@ -84,7 +122,7 @@ class VRParseCommandLine {
   /// \brief Changes the command-line option for setConfigValue.
   ///
   /// By default, this is "--set-value".
-  void setSetConfigValueLong(const std::string s) { _setConfigValueLong = s; };
+  void setSetConfigValueLong(const std::string &s) { _setConfigValueLong = s; };
 
   /// \brief Returns the command-line abbreviation for loadConfig.
   std::string getLoadConfigShort() { return _loadConfigShort; };
@@ -92,7 +130,7 @@ class VRParseCommandLine {
   /// \brief Changes the command-line abbreviation for loadConfig.
   ///
   /// By default, this is "-c".
-  void setLoadConfigShort(const std::string s) { _loadConfigShort = s; };
+  void setLoadConfigShort(const std::string &s) { _loadConfigShort = s; };
 
   /// \brief Returns the command-line option for loadConfig.
   std::string getLoadConfigLong() { return _loadConfigLong; };
@@ -100,7 +138,7 @@ class VRParseCommandLine {
   /// \brief Changes the command-line option for loadConfig.
   ///
   /// By default, this is "--load-config".
-  void setLoadConfigLong(const std::string s) { _loadConfigLong = s; };
+  void setLoadConfigLong(const std::string &s) { _loadConfigLong = s; };
 
   /// \brief Returns the command-line abbreviation for help.
   std::string getHelpShort() { return _helpShort; };
@@ -108,7 +146,7 @@ class VRParseCommandLine {
   /// \brief Changes the command-line abbreviation for help.
   ///
   /// By default, this is "-h".
-  void setHelpShort(const std::string s) { _helpShort = s; };
+  void setHelpShort(const std::string &s) { _helpShort = s; };
 
   /// \brief Returns the command-line option for help.
   std::string getHelpLong() { return _helpLong; };
@@ -116,7 +154,7 @@ class VRParseCommandLine {
   /// \brief Changes the command-line option for help.
   ///
   /// By default, this is "--help".
-  void setHelpLong(const std::string s) { _helpLong = s; };
+  void setHelpLong(const std::string &s) { _helpLong = s; };
 
   /// \brief Returns the command-line option for specifying an encoded
   /// command-line.
@@ -126,7 +164,7 @@ class VRParseCommandLine {
   ///
   /// By default, this is "--MINVR_DATA".  You are strongly
   /// discouraged from changing this one, though it is possible.
-  void setMinVRData(const std::string s) { _minVRData = s; };
+  void setMinVRData(const std::string &s) { _minVRData = s; };
 
   /// \brief Returns the configuration path currently in use.
   VRSearchConfig getConfigPath() { return _configPath; };
@@ -135,14 +173,14 @@ class VRParseCommandLine {
   ///
   /// This is used to find a configuration when it is specified on the
   /// command line.
-  void setConfigPath(const VRSearchConfig c) { _configPath = c; };
+  void setConfigPath(const VRSearchConfig &c) { _configPath = c; };
 
   /// \brief Prints a helpful message.
-  void help(VRSearchConfig configPath, const std::string additionalText = "") {
+  void help(VRSearchConfig &configPath, const std::string additionalText = "") {
     std::cerr << makeHelpString(configPath, additionalText) << std::endl;
   }
 
-  std::string makeHelpString(VRSearchConfig configPath,
+  std::string makeHelpString(VRSearchConfig &configPath,
                              const std::string additionalText) {
     std::string out;
     out = getHelpShort() + ", " + getHelpLong() +
@@ -184,19 +222,11 @@ class VRParseCommandLine {
     return out;
   };
 
-  // These methods are the ultimate purpose here.
-
-  /// \brief Accepts a key=value string and inserts it into the configuration.
-  virtual void setConfigValue(const std::string keyAndValStr) = 0;
-
-  /// \brief Accepts the name of a configuration or configuration file.
-  virtual void loadConfig(const std::string configName) = 0;
-
   /// \brief Processes a 'MINVR_DATA=' option.
   ///
-  /// Decodes the payload to a 'MINVR_DATA=' option and calls parse()
-  /// on it recursively.
-  void decodeMinVRData(const std::string payload);
+  /// Decodes the payload to a 'MINVR_DATA=' option and calls
+  /// parseCommandLine() on it recursively.
+  void decodeMinVRData(const std::string &payload);
 
  private:
 
@@ -221,7 +251,9 @@ class VRParseCommandLine {
     programmer through a set of 5 steps needed to add MinVR to an existing
     graphics program or get started with writing a new program.
 */
-class VRMain : public VRMainInterface {
+ class VRMain :
+   public VRMainInterface,
+   public VRParseCommandLine  {
 public:
 
     VRMain();
@@ -257,124 +289,54 @@ public:
         setups), and creates any InputDevices and DisplayDevices specified in
         the config files.
 
-        Two initialize*() functions are provided.  Use this one,
-        VRMain::initializeWithMinVRCommandLine(..), if you wish to use MinVR's
-        convention for command line arguments.
+        MinVR configuration values can be set via the command line, using
+        command-line options specified via the VRParseCommandLine protocol.  You
+        can specify either a file full of configuration options, or individual
+        configuration values.  After initialize() is called, command-line
+        options are accessible to your code via getLeftoverArgc() and
+        getLeftoverArgv().
 
-        -h, --help         Display a help message.
 
-        Add any of the following arguments to the command line as many times as
-        needed in a space separated list.
+        You can redefine the command-line options for MinVR, or disable most of
+        them, using the VRParseCommandLine methods, such as noParsing().  If you
+        disable the configuration options, your code will have to tell MinVR
+        which configuration files to load and any additional key=value config
+        settings that you with to apply.  You can use the following two
+        functions for this.
 
-        -c <configname>, --load-config <configname>
-                           Search for and load the pre-installed MinVR config file
-                           named <configname>.minvr -- the search looks in:
-                           1. the current working directory [cwd]
-                           2. [cwd]/config
-                           3. ../../config (for developers running build tree
-                              executables from build/bin or tests/testname
-                           4. MINVR_ROOT/config if the MINVR_ROOT envvar is defined
-                           5. the install_prefix specified when libMinVR was built.
+        void VRMain::loadConfig(const std::string &configName);
+        void VRMain::setConfigValue(const std::string &key, const std::string &value);
 
-        -f <path/file.minvr>, --load-file <path/file.minvr>
-                           Load the exact MinVR config file specified as a complete
-                           relative or absolute path and filename.
-
-        -s <key>=<value>, --set-value <key>=<value>
-                           Add an entry to the MinVR configuration directly from
-                           the command line rather than by specifying it in a
-                           config file. This can be used to override one specific
-                           option in a pre-installed configuration or config file
-                           specified earlier on the command line.  For example,\n"
-                           'myprogram -c desktop -s WindowHeight=500 -s WindowWidth=500'
-                           would start myprogram, load the installed desktop MinVR
-                           config and then override the WindowHeight and
-                           WindowWidth values in the pre-installed desktop
-                           configuration with the new values specified.
-
-        [nothing]          If no command line arguments are provided, then MinVR
-                           will try to load the pre-installed default
-                           configuration, whis is the same as running the command
-                           'myprogram --load-config default'.
-
-        [anything else]    MinVR will silently ignore anything else provided as
-                           a command line option.
-
-        --MINVR_DATA=xxxx  A special command line argument reserved for internal
-                           use by MinVR.
-     */
-    void initializeWithMinVRCommandLineParsing(int argc, char **argv);
-
-    /** Returns a usable argc for the application program.  That is, it is
-        the original argc, minus all the MinVR-relevant pieces. */
-    int getargc() { return _argcRemnants; };
-    /** Returns a usable argv for the application program.  That is, it is
-        the original argv, minus all the MinVR-relevant pieces. */
-    char** getargv() { return _argvRemnants; };
-
-    /** STEP 2 (option 2): The MinVR initialize step loads MinVR configuration
-        files, spawns additional sub-processes (in the case of clustered VR
-        setups), and creates any InputDevices and DisplayDevices specified in
-        the config files.
-
-        Two initialize*() functions are provided.  Use this one if you wish to
-        load configufreation files yourself and do your own command line
-        parsing.
-
-        With MinVR, you may use whatever convention you wish for command line
-        arguments as long as you allow for the last argument passed to your
-        program to be a special string used by MinVR.  This string will be
-        formated as follows:  MINVR_DATA=xxxxxx where xxxxxx is a coded string
-        of data with no spaces.  If you parse your own command line arguments,
-        we recommend that you do whatever parsing you like ignoring this string.
-        Then, simply forward the original argc and argv passed into your program
-        to MinVR::initialize().  MinVR will, in turn, ignore all of your command
-        line arguments and just pay attention to its special MINVR_DATA=xxxxxx
-        string.
-
-        To tell MinVR which configuration files to load and any additional
-        key=value config settings that you with to apply, call the following
-        three functions.
-
-         void VRMain::loadInstalledConfiguration(const std::string &configName);
-         void VRMain::loadConfigFile(const std::string &pathAndFilename);
-         void VRMain::setConfigValue(const std::string &key, const std::string &value);
-
-        First, call any of these three functions in any order and as many times
-        as you wish, *then* call initializeWithUserCommandLineParsing(argc,argv).
-        For example:
+        Call these two functions in any order and as many times as you wish,
+        *then* call initialize(argc,argv).  For example:
 
          VRMain *vrmain = new VRMain();
-         vrmain->loadInstalledConfiguration("Display_3DTV");
-         vrmain->loadInstalledConfiguration("WinToolkit_GLFW");
-         vrmain->loadInstalledConfiguration("GfxToolkit_OpenGL");
-         vrmain->loadConfigFile("/users/dan/myprogram/my-overrides.minvr");
-         vrmain->setConfigValueByString("StereoFormat", "Side-by-Side");
-         vrmain->initializeWithUserCommandLineParsing(argc, argv);
+         vrmain->loadConfig("Display_3DTV");
+         vrmain->loadConfig("WinToolkit_GLFW");
+         vrmain->loadConfig("GfxToolkit_OpenGL");
+         vrmain->loadConfig("/users/dan/myprogram/my-overrides.minvr");
+         vrmain->setConfigValue("StereoFormat", "Side-by-Side");
+         vrmain->initialize(argc, argv);
 
          while (vrmain->mainloop()) {}
 
          vrmain->shutdown();
-     */
-    void initializeWithUserCommandLineParsing(int argc, char **argv);
 
-    /** For use before calling initializeWIthUserCommandLineParsing(..).
-        This will search for and load the pre-installed MinVR config file named
-        <configName>.minvr -- the search looks in:
-        1. the current working directory [cwd]
-        2. [cwd]/config
-        3. ../../config (for developers running build tree
-           executables from build/bin or tests/testname
-        4. MINVR_ROOT/config if the MINVR_ROOT envvar is defined
-        5. the install_prefix specified when libMinVR was built.
-     */
-    void loadInstalledConfiguration(const std::string &configName);
+        Note that even when command line parsing is disabled, MinVR uses a
+        command-line option for communication between MinVR processes.  You will
+        see a "--MINVR_DATA" option appear on commands issued by a server to its
+        clients.  When parsing is disabled, MinVR simply copies argc and argv
+        via getLeftoverArgc() and getLeftoverArgv(), processing this option
+        along the way.
 
-    /** For use before calling initializeWIthUserCommandLineParsing(..).
-        This will load a specific config file specified by a complete path
-        and filename including .minvr extension.
      */
-    void loadConfigFile(const std::string &pathAndFilename);
+    void initialize(int argc, char **argv);
+
+    /** For use before calling initialize().  This will either load a given file
+        name, or it will search for a file according to the VRSearchConfig
+        rules.
+     */
+    void loadConfig(const std::string &pathAndFilename);
 
     /** For use before calling initializeWIthUserCommandLineParsing(..).
         This can be used to set a specific config key=value setting for MinVR
@@ -382,10 +344,7 @@ public:
         The type is inferred automatically using the VRDataIndex.
         @param keyAndValStr A string of the form "key=value".
      */
-    void setConfigValueByString(const std::string &keyAndValStr);
-
-
-
+    void setConfigValue(const std::string &keyAndValStr);
 
 
     /***** STEP 3: CALL MINVR'S MAINLOOP() FUNCTION *****/
@@ -457,8 +416,7 @@ public:
 
 private:
 
-    void processCommandLineArgs(std::string commandLine);
-    void initializeInternal(int argc, char **argv);
+    VRSearchConfig _configPath;
 
     bool _initialized;
 
