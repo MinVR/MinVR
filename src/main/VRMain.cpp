@@ -252,7 +252,6 @@ void VRMain::loadConfig(const std::string &configName) {
 #ifdef MinVR_DEBUG
     std::cerr << "Loading configuration: " << fileName << std::endl;
 #endif
-    loadConfig(fileName);
 
     bool success = _config->processXMLFile(fileName, "/");
 
