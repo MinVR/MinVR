@@ -166,6 +166,12 @@ class VRParseCommandLine {
   /// discouraged from changing this one, though it is possible.
   void setMinVRData(const std::string &s) { _minVRData = s; };
 
+  /// \brief Returns the original command line, with MinVR and non-MinVR args.
+  std::string getOriginalCommandLine() { return _originalCommandLine; };
+
+  /// \brief Returns the command line with the MinVR-relevant arguments left out.
+  std::string getLeftoverCommandLine() { return _leftoverCommandLine; };
+
   /// \brief Returns the configuration path currently in use.
   VRSearchConfig getConfigPath() { return _configPath; };
 
@@ -236,6 +242,9 @@ class VRParseCommandLine {
   std::string _loadConfigShort, _loadConfigLong;
   std::string _helpShort, _helpLong;
   std::string _minVRData;
+
+  std::string _originalCommandLine;
+  std::string _leftoverCommandLine;
 
   /// \brief This is argc once the MinVR-specific args have been removed.
   int _leftoverArgc;

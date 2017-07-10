@@ -211,27 +211,28 @@ int testCommandLineParse() {
 
   int out = 0;
 
+  char* argStrings[10];
+  int numArgs = 0;
 
-  char* instr[10];
-  int i = 0;
+  std::string testCommand = "program argument1 argument2 --load-config default";
 
   //1./////////////////////////////////////////////////////////////////////////
   // Test a typical line.
-  std::stringstream argStream("program argument1 argument2 --load-config default");
+  std::stringstream argStream(testCommand);
   while (argStream) {
 
     std::string arg;
     argStream >> arg;
 
     if (arg.size() > 0) {
-      instr[i] = (char*)malloc(arg.size() + 2);
-      strcpy(instr[i++], arg.c_str());
+      argStrings[numArgs] = (char*)malloc(arg.size() + 2);
+      strcpy(argStrings[numArgs++], arg.c_str());
     }
   }
 
   // Parse it.
   testParse* tp = new testParse();
-  tp->parseCommandLine(5, instr);
+  tp->parseCommandLine(numArgs, argStrings);
 
   // We tried to only call loadConfig.
   if (tp->_count != 6) out++;
@@ -247,6 +248,17 @@ int testCommandLineParse() {
   if ((tp->getLeftoverArgc() != 3) ||
       (strcmp(tp->getLeftoverArgv()[2], "argument2") != 0)) out++;
 
+  // The original line should match the testCommand, not counting the extra space
+  // at the end of the line that isn't worth our time to squeeze out.
+  std::cout << "test Line>" << testCommand << "<" << std::endl;
+  std::cout << "original line>" << tp->getOriginalCommandLine() << "<" << std::endl;
+  if ((tp->getOriginalCommandLine().compare(0, testCommand.size(), testCommand)) != 0) out++;
+
+  std::cout << "leftover line>" << tp->getLeftoverCommandLine() << "<" << std::endl;
+
+  // The leftovers should match the first part of testCommand.
+  if ((tp->getLeftoverCommandLine().substr(0, 27).compare(testCommand.substr(0, 27))) != 0) out++;
+
   delete tp;
 
   //2./////////////////////////////////////////////////////////////////////////
@@ -256,13 +268,13 @@ int testCommandLineParse() {
 
   std::string encoded = MinVR::VRAppLauncher::argsToData("command arg1 arg2 -s SetupsToStart=doThisOne -c Wonderful");
 
-  char* instr2[2];
-  instr2[0] = (char*)malloc(25);
-  strcpy(instr2[0], "program");
-  instr2[1] = (char*)malloc(225);
-  strcpy(instr2[1], encoded.c_str());
+  char* argStrings2[2];
+  argStrings2[0] = (char*)malloc(25);
+  strcpy(argStrings2[0], "program");
+  argStrings2[1] = (char*)malloc(225);
+  strcpy(argStrings2[1], encoded.c_str());
 
-  tp->parseCommandLine(2, instr2);
+  tp->parseCommandLine(2, argStrings2);
 
   // Should have called loadConfig and setConfigValue.
   if (tp->_count != 17) out++;
@@ -276,7 +288,7 @@ int testCommandLineParse() {
   //3./////////////////////////////////////////////////////////////////////////
   // Catching errors?
   tp = new testParse();
-  i = 0;
+  int i = 0;
 
   // Test a typical line with an error.
   std::stringstream argStream2("program argument1 -c");
@@ -286,15 +298,15 @@ int testCommandLineParse() {
     argStream2 >> arg;
 
     if (arg.size() > 0) {
-      instr[i] = (char*)malloc(arg.size() + 2);
-      strcpy(instr[i++], arg.c_str());
+      argStrings[i] = (char*)malloc(arg.size() + 2);
+      strcpy(argStrings[i++], arg.c_str());
     }
   }
 
   // Parse it.  Should cause an exception because there's no argument
   // for the -c.
   try {
-    tp->parseCommandLine(i, instr);
+    tp->parseCommandLine(i, argStrings);
     std::cout << "no exception, no catch!" << std::endl;
     out += 1;
   } catch (const MinVR::VRError& e) {
@@ -315,8 +327,8 @@ int testCommandLineParse() {
     argStream3 >> arg;
 
     if (arg.size() > 0) {
-      instr[i] = (char*)malloc(arg.size() + 2);
-      strcpy(instr[i++], arg.c_str());
+      argStrings[i] = (char*)malloc(arg.size() + 2);
+      strcpy(argStrings[i++], arg.c_str());
     }
   }
 
@@ -326,7 +338,7 @@ int testCommandLineParse() {
 
   std::cout << " config short>" << tp->getSetConfigValueShort() << "<" << std::endl;
 
-  tp->parseCommandLine(i, instr);
+  tp->parseCommandLine(i, argStrings);
 
   // Should not have called loadConfig and setConfigValue.
   if (tp->_count != 1) out++;
@@ -342,14 +354,14 @@ int testCommandLineParse() {
 
   encoded = MinVR::VRAppLauncher::argsToData("command arg1 arg2 -s SetupsToStart=doThisOne -c Wonderful");
 
-  char* instr3[2];
-  instr3[0] = (char*)malloc(25);
-  strcpy(instr3[0], "program");
-  instr3[1] = (char*)malloc(225);
-  strcpy(instr3[1], encoded.c_str());
+  char* argStrings3[2];
+  argStrings3[0] = (char*)malloc(25);
+  strcpy(argStrings3[0], "program");
+  argStrings3[1] = (char*)malloc(225);
+  strcpy(argStrings3[1], encoded.c_str());
 
   tp->noParsing();
-  tp->parseCommandLine(2, instr3);
+  tp->parseCommandLine(2, argStrings3);
 
   // The only parsing should have been the MINVR_DATA thing, so we
   // should *not* have called loadConfig or setConfigValue.

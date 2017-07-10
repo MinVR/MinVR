@@ -31,10 +31,13 @@
 // This checks an argument to see if it's of the form '-s=XXX' or '-s XXX',
 // then executes CMD on that argument.
 #define EXECARG(CMDSTR, CMD)       \
-  if (arg.size() > CMDSTR.size()) { \
+  if (arg.size() > CMDSTR.size()) {       \
     CMD(arg.substr(CMDSTR.size() + 1)); \
+    _originalCommandLine += " " +  arg.substr(CMDSTR.size() + 1); \
   } else if (argc > i+1) { \
-    CMD(std::string(argv[++i])); \
+    std::string argString = std::string(argv[++i]); \
+    CMD(argString); \
+    _originalCommandLine += argString + " ";  \
   } else { \
     VRERROR("Something is wrong with the " + CMDSTR + " option.", \
             "It needs an argument."); \
@@ -45,13 +48,19 @@ namespace MinVR {
 
 void VRParseCommandLine::parseCommandLine(int argc, char** argv) {
 
+  _originalCommandLine = "";
+  _leftoverCommandLine = "";
+
   _leftoverArgc = 0;
   for (int i = 0; i < argc; i++) {
 
     std::string arg = std::string(argv[i]);
+    _originalCommandLine += arg + " ";
 
     if (arg[0] != '-') {
       // Not something we can use.  Add it to the leftovers.
+      _leftoverCommandLine += arg + " ";
+
       _leftoverArgv[_leftoverArgc] = (char*)malloc(arg.size() + 1);
       strcpy(_leftoverArgv[_leftoverArgc++], argv[i]);
 
@@ -91,6 +100,8 @@ void VRParseCommandLine::parseCommandLine(int argc, char** argv) {
 
     } else {
       // We do not want this argument, add it to the leftovers.
+      _leftoverCommandLine += arg + " ";
+
       _leftoverArgv[_leftoverArgc] = (char*)malloc(arg.size());
       strcpy(_leftoverArgv[_leftoverArgc++], argv[i]);
     }
@@ -311,34 +322,50 @@ void VRMain::initialize(int argc, char **argv) {
             VRLocalAppLauncher launcher(argc, argv);
 
             // Setup needs to be started via ssh.
-            // First get the path were it has to be started
+            // First, get the machine where it is to be started.
+            std::string nodeIP = _config->getValue("HostIP", *it);
+
+            // Now get the path were it has to be started and create a
+            // command to get us there.
             std::string workingDirectory = getCurrentWorkingDir();
-            std::string nodeIP = _config->getValue("HostIP",*it);
             std::string command = "cd " + workingDirectory + ";";
+
+            // If we have to adjust the display, set that in the command.
             if (_config->exists("HostDisplay",*it)) {
                 std::string displayVar = _config->getValue("HostDisplay",*it);
                 command = command + "DISPLAY=" + displayVar + " ";
             }
 
-            std::string processSpecificArgs = "VRSetupsToStart=" + *it + " StartedSSH=1";
+            // These arguments are to be added to the process
+            std::string processSpecificArgs =
+              getSetConfigValueLong() + " VRSetupsToStart=" + *it +
+              getSetConfigValueLong() + " StartedSSH=1";
+
+            std::string logFile = "";
+            if (_config->exists("LogToFile",*it)) {
+              std::string logFile = " >" +
+                (VRString)_config->getValue("LogToFile",*it) + " 2>&1 ";
+
+            }
 
             std::string sshcmd;
-            if (_config->exists("LogToFile",*it)) {
-                std::string logFile = _config->getValue("LogToFile",*it);
-                sshcmd = "ssh " + nodeIP + " '" + command + launcher.generateCommandLine(processSpecificArgs) + " > " + logFile + " " +  "2>&1 &'";
-            }
-            else {
-                sshcmd = "ssh " + nodeIP + " '" + command + launcher.generateCommandLine(processSpecificArgs) + " > /dev/null 2>&1 &'";
-                //sshcmd = "ssh " + nodeIP + " '" + command + launcher.generateCommandLine(sshData) + "'";
-            }
+            sshcmd = "ssh " + nodeIP +
+              " '" + command +
+              launcher.generateCommandLine(processSpecificArgs) +
+              logFile +
+              " &'";
 
+            // Start the client.
             std::cerr << "Start " << sshcmd << std::endl;
-
-            // we start and remove all clients which are started remotely via ssh
-            it = vrSetupsToStartArray.erase(it);
             system(sshcmd.c_str());
-        }else{
-            //setup does not need to be started remotely or was already started remotely
+
+            // Remove the client from the list of clients to start.  This also
+            // increments the iterator.
+            it = vrSetupsToStartArray.erase(it);
+
+        } else {
+            // Setup does not need to be started remotely or was
+            // already started remotely.
             ++it;
         }
     }
@@ -368,7 +395,7 @@ void VRMain::initialize(int argc, char **argv) {
 	// argument -- this means we need to enforce this convention for command line
 	// arguments for all MinVR programs that want to support multiple processes.
 
-    VRLocalAppLauncher launcher(argc,argv);
+  VRLocalAppLauncher launcher(argc,argv);
 
 	for (int i = 1; i < vrSetupsToStartArray.size(); i++) {
 		// https://msdn.microsoft.com/en-us/library/windows/desktop/ms682512(v=vs.85).aspx
@@ -382,7 +409,8 @@ void VRMain::initialize(int argc, char **argv) {
 		strcpy(title, vrSetupsToStartArray[i].c_str());
 		si.lpTitle = title;
 
-        std::string processSpecificArgs = "VRSetupsToStart=" + vrSetupsToStartArray[i];
+    std::string processSpecificArgs =
+      getSetConfigValueLong() + "VRSetupsToStart=" + vrSetupsToStartArray[i];
 		std::string cmdLine = launcher.generateCommandLine(processSpecificArgs);
 
 		LPSTR cmd = new char[cmdLine.size() + 1];
