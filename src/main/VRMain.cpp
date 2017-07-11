@@ -31,14 +31,14 @@
 
 // This checks an argument to an option (i.e. "-s CMDSTR") to see if
 // it's of the form '-s=XXX' (all in CMDSTR) or '-s XXX' (need
-// argv[i+1]), then executes CMD on that argument.
-#define EXECARG(CMDSTR, CMD)       \
+// argv[i+1]), then adds the argument to CMDLIST.
+#define EXECARG(CMDSTR, CMDLIST)       \
   if (arg.size() > CMDSTR.size()) {       \
-    CMD(arg.substr(CMDSTR.size() + 1)); \
+    CMDLIST.push_back(arg.substr(CMDSTR.size() + 1));    \
   } else if (argc > i+1) { \
     std::string argString = std::string(argv[++i]); \
     if (!recursing) _originalCommandLine += argString + " "; \
-    CMD(argString); \
+    CMDLIST.push_back(argString); \
   } else { \
     VRERROR("Something is wrong with the " + CMDSTR + " option.", \
             "It needs an argument."); \
@@ -50,7 +50,15 @@ namespace MinVR {
 bool VRParseCommandLine::parseCommandLine(int argc, char** argv,
                                           bool recursing) {
 
-  std::cout << "argc=" << argc << std::endl;
+  // Our goal here is simply to accumulate all the config data that
+  // needs to be collected, and add it all at once after the whole
+  // command line has been parsed.  There may be multiple key=val
+  // arguments and multiple config files, too.  We also look for -h
+  // and -N options, but we leave the rest to the application
+  // programmer, via the _leftoverArgc and _leftoverArgv params.
+
+  std::vector<std::string> configValList;
+  std::vector<std::string> configFileList;
 
   _execute = true;
 
@@ -74,24 +82,30 @@ bool VRParseCommandLine::parseCommandLine(int argc, char** argv,
 
     } else if (TESTARG(arg, _setConfigValueShort)) {
 
-      EXECARG(_setConfigValueShort, setConfigValue);
-
-    } else if (TESTARG(arg, _loadConfigShort)) {
-
-      EXECARG(_loadConfigShort, loadConfig);
+      EXECARG(_setConfigValueShort, configValList);
 
     } else if (TESTARG(arg, _setConfigValueLong)) {
 
-      EXECARG(_setConfigValueLong, setConfigValue);
+      EXECARG(_setConfigValueLong, configValList);
+
+    } else if (TESTARG(arg, _loadConfigShort)) {
+
+      EXECARG(_loadConfigShort, configFileList);
 
     } else if (TESTARG(arg, _loadConfigLong)) {
 
-      EXECARG(_loadConfigLong, loadConfig);
+      EXECARG(_loadConfigLong, configFileList);
 
     } else if (TESTARG(arg, _minVRData)) {
 
-      // We have an encoded command-line here.
-      EXECARG(_minVRData, decodeMinVRData);
+      // We have an encoded command-line here, and it requires an = sign.
+      if (arg.size() > _minVRData.size()) {
+        decodeMinVRData(arg.substr(_minVRData.size() + 1));
+
+      } else {
+        VRERROR("Something is wrong with the MINVR_DATA= option.",
+                "It needs an argument.");
+      }
 
       // There is nothing else of interest on the command line.
       break;
@@ -119,12 +133,39 @@ bool VRParseCommandLine::parseCommandLine(int argc, char** argv,
     }
   }
 
+  // Now we have a complete list of the config files and key=val
+  // pairs.  Add them.
+
+  if (!configFileList.empty()) {
+    for (std::vector<std::string>::iterator it = configFileList.begin();
+         it != configFileList.end(); it++) {
+
+      if (_execute) {
+        loadConfig(*it);
+      } else {
+        std::cout << "Load Config File: " << *it << std::endl;
+      }
+    }
+  }
+
+  if (!configValList.empty()) {
+    for (std::vector<std::string>::iterator it = configValList.begin();
+         it != configValList.end(); it++) {
+
+      if (_execute) {
+        setConfigValue(*it);
+      } else {
+        std::cout << "Set Config Val: " << *it << std::endl;
+      }
+    }
+  }
+
   return _execute;
 }
 
 void VRParseCommandLine::decodeMinVRData(const std::string &payload) {
 
-  std::cout << "DECODE LINE: " << payload << std::endl;
+  //std::cout << "DECODE LINE: " << payload << std::endl;
 
   // Decode the payload string.
   std::string decodedCommandLine = VRAppLauncher::dataToArgs(payload);
@@ -141,7 +182,7 @@ void VRParseCommandLine::decodeMinVRData(const std::string &payload) {
     // Ignore zero-length args.
     if (arg.size() < 1) continue;
 
-    std::cout << "processing decoded >" << arg << "<" << std::endl;
+    //std::cout << "processing decoded >" << arg << "<" << std::endl;
 
     newArgv[newArgc] = new char[arg.size()];
     strcpy(newArgv[newArgc++], arg.c_str());

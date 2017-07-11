@@ -189,20 +189,20 @@ int testSearchPath() {
 class testParse : public MinVR::VRParseCommandLine {
 
 public:
-  int _count;
+  int testCount;
 
-  testParse() { _count = 1; };
+  testParse() { testCount = 1; };
 
   void setConfigValue(const std::string &keyAndValStr) {
 
     std::cout << "SET CONFIG:" << keyAndValStr << std::endl;
-    _count += 11;
+    testCount += 11;
   };
 
   void loadConfig(const std::string &configName) {
 
     std::cout << "LOAD CONFIG:" << configName << std::endl;
-    _count += 5;
+    testCount += 5;
   };
 };
 
@@ -235,7 +235,7 @@ int testCommandLineParse() {
   tp->parseCommandLine(numArgs, argStrings);
 
   // We tried to only call loadConfig.
-  if (tp->_count != 6) out++;
+  if (tp->testCount != 6) out++;
 
   std::cout << "leftovers: " << tp->getLeftoverArgc() << ": ";
 
@@ -287,7 +287,7 @@ int testCommandLineParse() {
   tp->parseCommandLine(numArgs, argStrings);
 
   // We tried to only call loadConfig.
-  if (tp->_count != 6) out++;
+  if (tp->testCount != 6) out++;
 
   std::cout << "1a leftovers: " << tp->getLeftoverArgc() << ": ";
 
@@ -306,7 +306,7 @@ int testCommandLineParse() {
   std::cout << "original line>" << tp->getOriginalCommandLine() << "<" << std::endl;
   std::cout << "saved line   >" << saveOriginalCommandLine.substr(0,46) << "<" << std::endl;
   if ((tp->getOriginalCommandLine().substr(0, 46).compare(saveOriginalCommandLine.substr(0,46))) != 0) out++;
-  std::cout << "MADE IT TO HERE WITH OUT=" << out << std::endl;
+
   std::cout << "leftover line>" << tp->getLeftoverCommandLine() << "<" << std::endl;
 
   // The leftovers should match the first part of testCommand.
@@ -317,7 +317,7 @@ int testCommandLineParse() {
 
   //1b./////////////////////////////////////////////////////////////////////////
   // Test another typical line, but using no execution.
-  testCommand = "program argument1 argument2 -N --load-config=default";
+  testCommand = "program argument1 -N argument2 --set-value name=Tom --set-value lesson=first --load-config=default";
   std::cout << "Test another typical line, but with -N:" << testCommand << std::endl;
 
   numArgs = 0;
@@ -334,10 +334,12 @@ int testCommandLineParse() {
 
   // Parse it.
   tp = new testParse();
-  tp->parseCommandLine(numArgs, argStrings);
+  bool ret = tp->parseCommandLine(numArgs, argStrings);
 
-  // We tried to only call loadConfig.
-  if (tp->_count != 6) out++;
+  if (ret) out++;
+
+  // No calls executed.
+  if (tp->testCount != 1) out++;
 
   std::cout << "1b leftovers: " << tp->getLeftoverArgc() << ": ";
 
@@ -346,20 +348,9 @@ int testCommandLineParse() {
   }
   std::cout << std::endl;
 
-  // // Should have five leftovers, and the third called argument2.
-  // if ((tp->getLeftoverArgc() != 5) ||
-  //     (strcmp(tp->getLeftoverArgv()[2], "argument2") != 0)) out++;
-
-  // // The original line should match the testCommand, not counting the extra space
-  // // at the end of the line that isn't worth our time to squeeze out.
-  // std::cout << "test Line>" << testCommand << "<" << std::endl;
-  // std::cout << "original line>" << tp->getOriginalCommandLine() << "<" << std::endl;
-  // if ((tp->getOriginalCommandLine().compare(saveOriginalCommandLine)) != 0) out++;
-
-  // std::cout << "leftover line>" << tp->getLeftoverCommandLine() << "<" << std::endl;
-
-  // // The leftovers should match the first part of testCommand.
-  // if ((tp->getLeftoverCommandLine().substr(0, 27).compare(testCommand.substr(0, 27))) != 0) out++;
+  // Should have five leftovers, and the third called argument2.
+  if ((tp->getLeftoverArgc() != 3) ||
+      (strcmp(tp->getLeftoverArgv()[2], "argument2") != 0)) out++;
 
   std::cout << "MADE IT TO HERE WITH OUT=" << out << std::endl;
   delete tp;
@@ -377,8 +368,6 @@ int testCommandLineParse() {
 
   while (as >> arg) {
 
-    std::cout << "assembling: " << arg << std::endl;
-
     if (arg.size() > 0) {
       argStrings[numArgs] = (char*)malloc(arg.size() + 2);
       strcpy(argStrings[numArgs++], arg.c_str());
@@ -388,7 +377,7 @@ int testCommandLineParse() {
   tp->parseCommandLine(numArgs, argStrings);
 
   // Should have called loadConfig and setConfigValue.
-  if (tp->_count != 17) out++;
+  if (tp->testCount != 17) out++;
 
   std::cout << "original line>" << tp->getOriginalCommandLine() << "<" << std::endl;
   std::cout << "leftover line>" << tp->getLeftoverCommandLine() << "<" << std::endl;
@@ -465,7 +454,7 @@ int testCommandLineParse() {
   std::cout << "leftover line>" << tp->getLeftoverCommandLine() << "<" << std::endl;
 
   // Should not have called loadConfig and setConfigValue.
-  if (tp->_count != 1) out++;
+  if (tp->testCount != 1) out++;
 
   // Should have four leftovers, and the fourth called config.
   if ((tp->getLeftoverArgc() != 4) ||
@@ -500,7 +489,7 @@ int testCommandLineParse() {
 
   // The only parsing should have been the MINVR_DATA thing, so we
   // should *not* have called loadConfig or setConfigValue.
-  if (tp->_count != 1) out++;
+  if (tp->testCount != 1) out++;
 
   // There should be seven leftovers from the original command line,
   // and the last is Wonderful.
