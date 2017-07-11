@@ -140,11 +140,7 @@ bool VRParseCommandLine::parseCommandLine(int argc, char** argv,
     for (std::vector<std::string>::iterator it = configFileList.begin();
          it != configFileList.end(); it++) {
 
-      if (_execute) {
-        loadConfig(*it);
-      } else {
-        std::cout << "Load Config File: " << *it << std::endl;
-      }
+      loadConfig(*it);
     }
   }
 
@@ -152,11 +148,7 @@ bool VRParseCommandLine::parseCommandLine(int argc, char** argv,
     for (std::vector<std::string>::iterator it = configValList.begin();
          it != configValList.end(); it++) {
 
-      if (_execute) {
-        setConfigValue(*it);
-      } else {
-        std::cout << "Set Config Val: " << *it << std::endl;
-      }
+      setConfigValue(*it);
     }
   }
 
@@ -343,6 +335,49 @@ void VRMain::setConfigValue(const std::string &keyAndValStr) {
   std::string name = _config->addData(keyAndValStr);
 }
 
+void VRMain::_startSSHProcess(const std::string &setupName, const bool &execute) {
+
+  // First, get the machine where it is to be started.
+  std::string nodeIP = _config->getValue("HostIP", setupName);
+
+  // Now get the path where it has to be started and create a
+  // command to get us there.
+  std::string workingDirectory = getCurrentWorkingDir();
+  std::string command = "cd " + workingDirectory + ";";
+
+  // If we have to adjust the display, set that in the command.
+  if (_config->exists("HostDisplay",setupName)) {
+    std::string displayVar = _config->getValue("HostDisplay",setupName);
+    command = command + "DISPLAY=" + displayVar + " ";
+  }
+
+  // These arguments are to be added to the process
+  std::string processSpecificArgs =
+    " " + getSetConfigValueLong() + " VRSetupsToStart=" + setupName +
+    " " + getSetConfigValueLong() + " StartedSSH=1";
+  if (!execute) processSpecificArgs += " " + getTestStart();
+
+  std::string logFile = "";
+  if (_config->exists("LogToFile",setupName)) {
+    std::string logFile = " >" +
+      (VRString)_config->getValue("LogToFile",setupName) + " 2>&1 ";
+  }
+
+  std::string sshcmd;
+  sshcmd = "ssh " + nodeIP +
+    " '" + getOriginalCommandLine() + processSpecificArgs +
+    logFile +
+    " &'";
+
+  // Start the client, at least if the execute flag tells us to.
+  std::cerr << "Start " << sshcmd << std::endl;
+  if (execute) {
+    system(sshcmd.c_str());
+  } else {
+    std::cerr << "Would start:" << sshcmd << std::endl
+              << _config->printStructure() << std::endl;
+  }
+}
 
 void VRMain::initialize(int argc, char **argv) {
 
@@ -355,25 +390,41 @@ void VRMain::initialize(int argc, char **argv) {
   }
 
 	VRStringArray vrSetupsToStartArray;
-	if (!_config->exists("VRSetupsToStart","/")) {
-		// No vrSetupsToStart are specified, start all of VRSetups listed
-		// in the config file.
-    VRContainer names = _config->getValue("/MinVR/VRSetups");
-		//std::list<std::string> names = _config->selectByAttribute("hostType","*");
-		for (VRContainer::const_iterator it = names.begin();
-         it != names.end(); ++it) {
+	if (_config->exists("VRSetupsToStart","/")) {
 
-			vrSetupsToStartArray.push_back("/MinVR/VRSetups/" + *it);
-		}
-	} else {
-		// A comma-separated list of vrSetupsToStart was provided.
+    // A comma-separated list of vrSetupsToStart was provided.
 		std::string vrSetupsToStart = _config->getValue("VRSetupsToStart","/");
 		VRString elem;
 		std::stringstream ss(vrSetupsToStart);
 		while (std::getline(ss, elem, ',')) {
 			vrSetupsToStartArray.push_back(elem);
 		}
-	}
+
+	} else {
+
+    // No vrSetupsToStart are specified, start all of VRSetups listed
+		// in the config file.
+    if (_config->exists("/MinVR/VRSetups")) {
+
+      // We have a list of Setups.  Move them to the start array.
+      VRContainer names = _config->getValue("/MinVR/VRSetups");
+      for (VRContainer::const_iterator it = names.begin();
+           it != names.end(); ++it) {
+
+        vrSetupsToStartArray.push_back("/MinVR/VRSetups/" + *it);
+      }
+    } else {
+
+      // We have no list of setups.  Let's try starting everything with a
+      // 'hostType' attribute.
+      VRContainer names = _config->selectByAttribute("hostType","*");
+      for (VRContainer::const_iterator it = names.begin();
+           it != names.end(); ++it) {
+
+        vrSetupsToStartArray.push_back(*it);
+      }
+    }
+  }
 
 	if (vrSetupsToStartArray.empty()) {
 
@@ -382,75 +433,35 @@ void VRMain::initialize(int argc, char **argv) {
 
 	}
 
-    // STEP 1: IF ANY OF THE VRSETUPS ARE STARTED AS REMOTE PROCESSES ON ANOTHER
-    // MACHINE, THEN START THEM NOW AND REMOVE THEM FROM THE LIST OF VRSETUPS TO
-    // START ON THIS MACHINE
-  int numberOfSetupsLeftToStart = vrSetupsToStartArray.size();
-  for (vector<std::string>::iterator it = vrSetupsToStartArray.begin();
-       it != vrSetupsToStartArray.end(); it++) {
+  // STEP 1: Loop through the setups to start.  If they belong on another
+  // machine, ssh them over there and let them run.  Adopt the first one that
+  // starts on this machine.  If there are more than one on this machine, fork
+  // (or the Win equivalent) them into separate processes.
 
-    if (_config->exists("HostIP",*it) && !_config->exists("StartedSSH","/")) {
+  for (vector<std::string>::iterator it = vrSetupsToStartArray.begin();
+       it != vrSetupsToStartArray.end(); it++)  {
+
+    if (_config->exists("HostIP", *it) && !_config->exists("StartedSSH", "/")) {
 
       // Setup needs to be started via ssh.
-      // First, get the machine where it is to be started.
-      std::string nodeIP = _config->getValue("HostIP", *it);
-
-      // Now get the path where it has to be started and create a
-      // command to get us there.
-      std::string workingDirectory = getCurrentWorkingDir();
-      std::string command = "cd " + workingDirectory + ";";
-
-      // If we have to adjust the display, set that in the command.
-      if (_config->exists("HostDisplay",*it)) {
-        std::string displayVar = _config->getValue("HostDisplay",*it);
-        command = command + "DISPLAY=" + displayVar + " ";
-      }
-
-      // These arguments are to be added to the process
-      std::string processSpecificArgs =
-        " " + getSetConfigValueLong() + " VRSetupsToStart=" + *it +
-        " " + getSetConfigValueLong() + " StartedSSH=1";
-
-      std::string logFile = "";
-      if (_config->exists("LogToFile",*it)) {
-        std::string logFile = " >" +
-          (VRString)_config->getValue("LogToFile",*it) + " 2>&1 ";
-      }
-
-      std::string sshcmd;
-      sshcmd = "ssh " + nodeIP +
-        " '" + getOriginalCommandLine() + processSpecificArgs +
-        logFile +
-        " &'";
-
-      // Start the client.
-      std::cerr << "Start " << sshcmd << std::endl;
-      if (execute) {
-        system(sshcmd.c_str());
-      } else {
-        std::cerr << "executing:" << sshcmd << std::endl << _config << std::endl;
-      }
+      _startSSHProcess(*it, execute);
 
     } else {
-      // Setup does not need to be started remotely.
 
-      // STEP 2: RECORD THE NAME OF THE VRSETUP TO USE FOR THIS PROCESS
+      if (_name.empty()) {
 
-      // This process will be the first one listed
-      _name = vrSetupsToStartArray[0];
+        // The first local process might as well be this one.
+        _name = *it;
 
+      } else {
 
-      // STEP 3: IF ANY MORE VRSETUPS ARE SUPPOSED TO BE STARTED ON THIS MACHINE
-      // THEN DO THAT NOW -- UNFORTUNATELY, THE WAY TO DO THIS ON WINDOWS IS
-      // DIFFERENT THAN OTHER ARCHITECTURES.
-
-      // Fork a new process for each remaining vrsetup
+        // Fork a new process for each remaining vrsetup to be run locally.
+        // Unfortunately, this is OS-specific.
 
 #ifdef WIN32
-      // Windows doesn't support forking, but it does allow us to create processes,
-      // so we just create a new process.
+        // Windows doesn't support forking, but it does allow us to create
+        // processes, so we just create a new process.
 
-      for (int i = 1; i < vrSetupsToStartArray.size(); i++) {
         // https://msdn.microsoft.com/en-us/library/windows/desktop/ms682512(v=vs.85).aspx
         STARTUPINFO si;
         PROCESS_INFORMATION pi;
@@ -464,6 +475,7 @@ void VRMain::initialize(int argc, char **argv) {
 
         std::string processSpecificArgs =
           " " + getSetConfigValueLong() + "VRSetupsToStart=" + *it;
+        if (!execute) processSpecificArgs += " " + getTestStart();
         std::string cmdLine = getOriginalCommandLine() + processSpecificArgs;
 
         LPSTR cmd = new char[cmdLine.size() + 1];
@@ -486,51 +498,45 @@ void VRMain::initialize(int argc, char **argv) {
 
         delete[] title;
         delete[] cmd;
-      }
-
 #else
 
-      // On linux and OSX we can simply fork a new process for each
-      // vrsetup to start
+        // On linux and OSX we can simply fork a new process for each
+        // vrsetup to start
 
-      if (execute) {
-        pid_t pid = fork();
-        if (pid == 0) {
-          _name = *it;
-          break;
+        if (execute) {
+          pid_t pid = fork();
+          if (pid == 0) {
+            _name = *it;
+            break;
+          }
+        } else {
+          std::cout << "forking..." << *it << std::endl;
         }
-      } else {
-        std::cout << "forking..." << *it << std::endl;
+#endif
       }
     }
-
-#endif
-    numberOfSetupsLeftToStart--;
   }
 
-  if (numberOfSetupsLeftToStart <= 0) {
-  //	if (vrSetupsToStartArray.empty()) {
+  if (_name.empty()) {
     std::cout << "All VRSetups have been started - Exiting." << std::endl;
     exit(1);
 	}
-
 
   if (!execute) exit(1);
 
   ///////////////  Ok, now execute.
 
-
-
     // STEP 4:  Sanity check to make sure the vrSetup we are continuing with is
     // actually defined in the config settings that have been loaded.
 	if (!_config->exists(_name)) {
     VRERROR("VRMain Error: The VRSetup " +
-            _name + " has not loaded through a config file.",
+            _name + " has not been loaded through a config file.",
             "Your config file must contain a VRSetup element.");
-    }
+  }
 
-    // for everything from this point on, the VRSetup name for this process is stored in _name, and this
-	// becomes the base namespace for all of the VRDataIndex lookups that we do.
+  // For everything from this point on, the VRSetup name for this process is
+  // stored in _name, and this becomes the base namespace for all of the
+  // VRDataIndex lookups that we do.
 
 
     // STEP 5: LOAD PLUGINS:
@@ -572,9 +578,10 @@ void VRMain::initialize(int argc, char **argv) {
 
 	// STEP 6: CONFIGURE NETWORKING:
 
-	// check the type of this VRSetup, it should be either "VRServer", "VRClient", or "VRStandAlone"
-    if(_config->hasAttribute(_name, "hostType")){
-      std::string type = _config->getAttributeValue(_name, "hostType");
+	// Check the type of this VRSetup, it should be either "VRServer",
+	// "VRClient", or "VRStandAlone"
+  if(_config->hasAttribute(_name, "hostType")){
+    std::string type = _config->getAttributeValue(_name, "hostType");
 		if (type == "VRServer") {
 			std::string port = _config->getValue("Port", _name);
 			int numClients = _config->getValue("NumClients", _name);

@@ -59,8 +59,9 @@ class VRParseCommandLine {
     _loadConfigLong = "--load-config";
     _helpShort = "-h";
     _helpLong = "--help";
-    _testStart = "-N";
+    _testStart = "--no-execute";
     _minVRData = "--MINVR_DATA";
+    _execute = true;
   };
 
   // These two methods are the ultimate purpose of this class.  The
@@ -183,6 +184,8 @@ class VRParseCommandLine {
 
   /// \brief Returns the command-line option for help.
   std::string getTestStart() { return _testStart; };
+
+  bool getExecute() { return _execute; };
 
   /// \brief Changes the command-line option for help.
   ///
@@ -453,7 +456,7 @@ public:
 
     void displayCommandLineHelp();
 
-private:
+ private:
 
     VRSearchConfig _configPath;
 
@@ -480,6 +483,8 @@ private:
 
     int _frame;
     bool _shutdown;
+
+    void _startSSHProcess(const std::string &name, const bool &execute);
 };
 
 

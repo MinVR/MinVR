@@ -317,8 +317,8 @@ int testCommandLineParse() {
 
   //1b./////////////////////////////////////////////////////////////////////////
   // Test another typical line, but using no execution.
-  testCommand = "program argument1 -N argument2 --set-value name=Tom --set-value lesson=first --load-config=default";
-  std::cout << "Test another typical line, but with -N:" << testCommand << std::endl;
+  testCommand = "program argument1 --no-execute argument2 --set-value name=Tom --set-value lesson=first --load-config=default";
+  std::cout << "Test another typical line, but with --no-execute:" << testCommand << std::endl;
 
   numArgs = 0;
   argStream.clear();
@@ -336,10 +336,11 @@ int testCommandLineParse() {
   tp = new testParse();
   bool ret = tp->parseCommandLine(numArgs, argStrings);
 
+  // Check the return value.
   if (ret) out++;
 
-  // No calls executed.
-  if (tp->testCount != 1) out++;
+  // The config calls are still executed.
+  if (tp->testCount != 28) out++;
 
   std::cout << "1b leftovers: " << tp->getLeftoverArgc() << ": ";
 
@@ -348,7 +349,7 @@ int testCommandLineParse() {
   }
   std::cout << std::endl;
 
-  // Should have five leftovers, and the third called argument2.
+  // Should have three leftovers, and the third called argument2.
   if ((tp->getLeftoverArgc() != 3) ||
       (strcmp(tp->getLeftoverArgv()[2], "argument2") != 0)) out++;
 
