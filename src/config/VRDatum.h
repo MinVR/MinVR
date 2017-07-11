@@ -216,7 +216,7 @@ public:
   // The description of the datum is a part of the network-ready
   // serialized data.  It's in the 'type=""' part of the XML.
   std::string getDescription() const { return description; };
-  VRCORETYPE_ID getType() { return type; };
+  VRCORETYPE_ID getType() const { return type; };
 
   // The generic getValue() method returns an object of the helper
   // class above, which is then coerced into the type the user
