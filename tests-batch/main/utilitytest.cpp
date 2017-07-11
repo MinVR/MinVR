@@ -213,16 +213,16 @@ int testCommandLineParse() {
 
   char* argStrings[10];
   int numArgs = 0;
+  std::string arg;
 
-  std::string testCommand = "program argument1 argument2 --load-config default";
 
   //1./////////////////////////////////////////////////////////////////////////
   // Test a typical line.
-  std::stringstream argStream(testCommand);
-  while (argStream) {
+  std::string testCommand = "program argument1 argument2 -k 2 --load-config default";
+  std::cout << "Test typical line:" << testCommand << std::endl;
 
-    std::string arg;
-    argStream >> arg;
+  std::stringstream argStream(testCommand);
+  while (argStream >> arg) {
 
     if (arg.size() > 0) {
       argStrings[numArgs] = (char*)malloc(arg.size() + 2);
@@ -245,7 +245,7 @@ int testCommandLineParse() {
   std::cout << std::endl;
 
   // Should have three leftovers, and the third called argument2.
-  if ((tp->getLeftoverArgc() != 3) ||
+  if ((tp->getLeftoverArgc() != 5) ||
       (strcmp(tp->getLeftoverArgv()[2], "argument2") != 0)) out++;
 
   // The original line should match the testCommand, not counting the extra space
@@ -254,11 +254,114 @@ int testCommandLineParse() {
   std::cout << "original line>" << tp->getOriginalCommandLine() << "<" << std::endl;
   if ((tp->getOriginalCommandLine().compare(0, testCommand.size(), testCommand)) != 0) out++;
 
+  // Save this for the next test.
+  std::string saveOriginalCommandLine = tp->getOriginalCommandLine();
+
   std::cout << "leftover line>" << tp->getLeftoverCommandLine() << "<" << std::endl;
 
   // The leftovers should match the first part of testCommand.
   if ((tp->getLeftoverCommandLine().substr(0, 27).compare(testCommand.substr(0, 27))) != 0) out++;
 
+  std::cout << "MADE IT TO HERE WITH OUT=" << out << std::endl;
+  delete tp;
+
+  //1a./////////////////////////////////////////////////////////////////////////
+  // Test another typical line, but using an equal sign.
+  testCommand = "program argument1 argument2 -k 2 --load-config=default";
+  std::cout << "Test another typical line:" << testCommand << std::endl;
+
+  numArgs = 0;
+  argStream.clear();
+  argStream.str("");
+  argStream << testCommand;
+  while (argStream >> arg) {
+
+    if (arg.size() > 0) {
+      argStrings[numArgs] = (char*)malloc(arg.size() + 2);
+      strcpy(argStrings[numArgs++], arg.c_str());
+    }
+  }
+
+  // Parse it.
+  tp = new testParse();
+  tp->parseCommandLine(numArgs, argStrings);
+
+  // We tried to only call loadConfig.
+  if (tp->_count != 6) out++;
+
+  std::cout << "1a leftovers: " << tp->getLeftoverArgc() << ": ";
+
+  for (int i = 0; i < tp->getLeftoverArgc(); i++) {
+    std::cout << tp->getLeftoverArgv()[i] << ", ";
+  }
+  std::cout << std::endl;
+
+  // Should have five leftovers, and the third called argument2.
+  if ((tp->getLeftoverArgc() != 5) ||
+      (strcmp(tp->getLeftoverArgv()[2], "argument2") != 0)) out++;
+
+  // The original line should match the testCommand, not counting the extra space
+  // at the end of the line that isn't worth our time to squeeze out.
+  std::cout << "test Line>" << testCommand << "<" << std::endl;
+  std::cout << "original line>" << tp->getOriginalCommandLine() << "<" << std::endl;
+  std::cout << "saved line   >" << saveOriginalCommandLine.substr(0,46) << "<" << std::endl;
+  if ((tp->getOriginalCommandLine().substr(0, 46).compare(saveOriginalCommandLine.substr(0,46))) != 0) out++;
+  std::cout << "MADE IT TO HERE WITH OUT=" << out << std::endl;
+  std::cout << "leftover line>" << tp->getLeftoverCommandLine() << "<" << std::endl;
+
+  // The leftovers should match the first part of testCommand.
+  if ((tp->getLeftoverCommandLine().substr(0, 27).compare(testCommand.substr(0, 27))) != 0) out++;
+
+  std::cout << "MADE IT TO HERE WITH OUT=" << out << std::endl;
+  delete tp;
+
+  //1b./////////////////////////////////////////////////////////////////////////
+  // Test another typical line, but using no execution.
+  testCommand = "program argument1 argument2 -N --load-config=default";
+  std::cout << "Test another typical line, but with -N:" << testCommand << std::endl;
+
+  numArgs = 0;
+  argStream.clear();
+  argStream.str("");
+  argStream << testCommand;
+  while (argStream >> arg) {
+
+    if (arg.size() > 0) {
+      argStrings[numArgs] = (char*)malloc(arg.size() + 2);
+      strcpy(argStrings[numArgs++], arg.c_str());
+    }
+  }
+
+  // Parse it.
+  tp = new testParse();
+  tp->parseCommandLine(numArgs, argStrings);
+
+  // We tried to only call loadConfig.
+  if (tp->_count != 6) out++;
+
+  std::cout << "1b leftovers: " << tp->getLeftoverArgc() << ": ";
+
+  for (int i = 0; i < tp->getLeftoverArgc(); i++) {
+    std::cout << tp->getLeftoverArgv()[i] << ", ";
+  }
+  std::cout << std::endl;
+
+  // // Should have five leftovers, and the third called argument2.
+  // if ((tp->getLeftoverArgc() != 5) ||
+  //     (strcmp(tp->getLeftoverArgv()[2], "argument2") != 0)) out++;
+
+  // // The original line should match the testCommand, not counting the extra space
+  // // at the end of the line that isn't worth our time to squeeze out.
+  // std::cout << "test Line>" << testCommand << "<" << std::endl;
+  // std::cout << "original line>" << tp->getOriginalCommandLine() << "<" << std::endl;
+  // if ((tp->getOriginalCommandLine().compare(saveOriginalCommandLine)) != 0) out++;
+
+  // std::cout << "leftover line>" << tp->getLeftoverCommandLine() << "<" << std::endl;
+
+  // // The leftovers should match the first part of testCommand.
+  // if ((tp->getLeftoverCommandLine().substr(0, 27).compare(testCommand.substr(0, 27))) != 0) out++;
+
+  std::cout << "MADE IT TO HERE WITH OUT=" << out << std::endl;
   delete tp;
 
   //2./////////////////////////////////////////////////////////////////////////
@@ -266,79 +369,100 @@ int testCommandLineParse() {
 
   tp = new testParse();
 
-  std::string encoded = MinVR::VRAppLauncher::argsToData("command arg1 arg2 -s SetupsToStart=doThisOne -c Wonderful");
+  std::string unencoded = "command arg1 arg2 ";
+  std::string encoded = MinVR::VRAppLauncher::argsToData("-s SetupsToStart=doThisOne -c Wonderful");
 
-  char* argStrings2[2];
-  argStrings2[0] = (char*)malloc(25);
-  strcpy(argStrings2[0], "program");
-  argStrings2[1] = (char*)malloc(225);
-  strcpy(argStrings2[1], encoded.c_str());
+  numArgs = 0;
+  std::stringstream as(unencoded + encoded);
 
-  tp->parseCommandLine(2, argStrings2);
+  while (as >> arg) {
+
+    std::cout << "assembling: " << arg << std::endl;
+
+    if (arg.size() > 0) {
+      argStrings[numArgs] = (char*)malloc(arg.size() + 2);
+      strcpy(argStrings[numArgs++], arg.c_str());
+    }
+  }
+
+  tp->parseCommandLine(numArgs, argStrings);
 
   // Should have called loadConfig and setConfigValue.
   if (tp->_count != 17) out++;
 
-  // Should have three leftovers, and the third called argument2.
+  std::cout << "original line>" << tp->getOriginalCommandLine() << "<" << std::endl;
+  std::cout << "leftover line>" << tp->getLeftoverCommandLine() << "<" << std::endl;
+
+  // Should have three leftovers, and the third called arg2.
   if ((tp->getLeftoverArgc() != 3) ||
       (strcmp(tp->getLeftoverArgv()[2], "arg2") != 0)) out++;
 
+
+
+
+  std::cout << "MADE IT TO HERE WITH OUT=" << out << std::endl;
   delete tp;
 
   //3./////////////////////////////////////////////////////////////////////////
   // Catching errors?
+  std::cout << "Try catching errors." << std::endl;
+
   tp = new testParse();
-  int i = 0;
 
   // Test a typical line with an error.
-  std::stringstream argStream2("program argument1 -c");
-  while (argStream2) {
-
-    std::string arg;
-    argStream2 >> arg;
+  numArgs = 0;
+  argStream.clear();
+  argStream.str("");
+  argStream << "program argument1 -c";
+  while (argStream >> arg) {
 
     if (arg.size() > 0) {
-      argStrings[i] = (char*)malloc(arg.size() + 2);
-      strcpy(argStrings[i++], arg.c_str());
+      argStrings[numArgs] = (char*)malloc(arg.size() + 2);
+      strcpy(argStrings[numArgs++], arg.c_str());
     }
   }
 
   // Parse it.  Should cause an exception because there's no argument
   // for the -c.
   try {
-    tp->parseCommandLine(i, argStrings);
+    tp->parseCommandLine(numArgs, argStrings);
     std::cout << "no exception, no catch!" << std::endl;
     out += 1;
   } catch (const MinVR::VRError& e) {
     std::cout << "caught exception: " << e.what() << std::endl;
   }
 
+  std::cout << "MADE IT TO HERE WITH OUT=" << out << std::endl;
   delete tp;
 
   //4./////////////////////////////////////////////////////////////////////////
   // Test a typical line after turning off parsing.
+  std::cout << "Test with no parsing." << std::endl;
+
   tp = new testParse();
-  i = 0;
 
-  std::stringstream argStream3("program argument1 -s hello=34");
-  while (argStream3) {
-
-    std::string arg;
-    argStream3 >> arg;
+  numArgs = 0;
+  argStream.clear();
+  argStream.str("");
+  argStream << "program argument1 -s hello=34";
+  while (argStream >> arg) {
 
     if (arg.size() > 0) {
-      argStrings[i] = (char*)malloc(arg.size() + 2);
-      strcpy(argStrings[i++], arg.c_str());
+      argStrings[numArgs] = (char*)malloc(arg.size() + 2);
+      strcpy(argStrings[numArgs++], arg.c_str());
     }
   }
 
-  // Turn off command line parsing.  The only thing that should work
-  // here is the MINVR_DATA thing.
+  // Turn off command line parsing.
   tp->noParsing();
 
-  std::cout << " config short>" << tp->getSetConfigValueShort() << "<" << std::endl;
+  // The 'noParsing()' method should make the option name strings empty.
+  if (!tp->getSetConfigValueShort().empty()) out++;
 
-  tp->parseCommandLine(i, argStrings);
+  tp->parseCommandLine(numArgs, argStrings);
+
+  std::cout << "original line>" << tp->getOriginalCommandLine() << "<" << std::endl;
+  std::cout << "leftover line>" << tp->getLeftoverCommandLine() << "<" << std::endl;
 
   // Should not have called loadConfig and setConfigValue.
   if (tp->_count != 1) out++;
@@ -347,21 +471,32 @@ int testCommandLineParse() {
   if ((tp->getLeftoverArgc() != 4) ||
       (strcmp(tp->getLeftoverArgv()[3], "hello=34") != 0)) out++;
 
+  std::cout << "MADE IT TO HERE WITH OUT=" << out << std::endl;
+  delete tp;
+
   //5./////////////////////////////////////////////////////////////////////////
   // Another test, turning off parsing, but making sure it still
   // parses the MINVR_DATA business.
+  std::cout << "Test MINVR_DATA with parsing turned off." << std::endl;
   tp = new testParse();
 
-  encoded = MinVR::VRAppLauncher::argsToData("command arg1 arg2 -s SetupsToStart=doThisOne -c Wonderful");
+  numArgs = 0;
+  argStream.clear();
+  argStream.str("");
+  unencoded = "command arg1 arg2 ";
+  encoded = MinVR::VRAppLauncher::argsToData("-s SetupsToStart=doThisOne -c Wonderful");
+  argStream << unencoded + encoded;
 
-  char* argStrings3[2];
-  argStrings3[0] = (char*)malloc(25);
-  strcpy(argStrings3[0], "program");
-  argStrings3[1] = (char*)malloc(225);
-  strcpy(argStrings3[1], encoded.c_str());
+  while (argStream >> arg) {
+
+    if (arg.size() > 0) {
+      argStrings[numArgs] = (char*)malloc(arg.size() + 2);
+      strcpy(argStrings[numArgs++], arg.c_str());
+    }
+  }
 
   tp->noParsing();
-  tp->parseCommandLine(2, argStrings3);
+  tp->parseCommandLine(numArgs, argStrings);
 
   // The only parsing should have been the MINVR_DATA thing, so we
   // should *not* have called loadConfig or setConfigValue.
@@ -372,6 +507,10 @@ int testCommandLineParse() {
   if ((tp->getLeftoverArgc() != 7) ||
       (strcmp(tp->getLeftoverArgv()[6], "Wonderful") != 0)) out++;
 
+  std::cout << "original line>" << tp->getOriginalCommandLine() << "<" << std::endl;
+  std::cout << "leftover line>" << tp->getLeftoverCommandLine() << "<" << std::endl;
+
+  std::cout << "MADE IT TO HERE WITH OUT=" << out << std::endl;
   delete tp;
 
   // Any failures along the way should make this non-zero.

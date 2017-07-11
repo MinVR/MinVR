@@ -26,18 +26,19 @@
 #include <main/VREventInternal.h>
 #include <cstdlib>
 
+// TESTARG is true is the strings match and are not empty.
 #define TESTARG(ARG, CMDSTR) ((!CMDSTR.empty()) && (ARG.compare(0, CMDSTR.size(), CMDSTR) == 0))
 
-// This checks an argument to see if it's of the form '-s=XXX' or '-s XXX',
-// then executes CMD on that argument.
+// This checks an argument to an option (i.e. "-s CMDSTR") to see if
+// it's of the form '-s=XXX' (all in CMDSTR) or '-s XXX' (need
+// argv[i+1]), then executes CMD on that argument.
 #define EXECARG(CMDSTR, CMD)       \
   if (arg.size() > CMDSTR.size()) {       \
     CMD(arg.substr(CMDSTR.size() + 1)); \
-    _originalCommandLine += " " +  arg.substr(CMDSTR.size() + 1); \
   } else if (argc > i+1) { \
     std::string argString = std::string(argv[++i]); \
+    if (!recursing) _originalCommandLine += argString + " "; \
     CMD(argString); \
-    _originalCommandLine += argString + " ";  \
   } else { \
     VRERROR("Something is wrong with the " + CMDSTR + " option.", \
             "It needs an argument."); \
@@ -46,16 +47,23 @@
 
 namespace MinVR {
 
-void VRParseCommandLine::parseCommandLine(int argc, char** argv) {
+bool VRParseCommandLine::parseCommandLine(int argc, char** argv,
+                                          bool recursing) {
 
-  _originalCommandLine = "";
-  _leftoverCommandLine = "";
+  std::cout << "argc=" << argc << std::endl;
 
-  _leftoverArgc = 0;
+  _execute = true;
+
+  if (!recursing) {
+    _originalCommandLine = "";
+    _leftoverCommandLine = "";
+    _leftoverArgc = 0;
+  }
+
   for (int i = 0; i < argc; i++) {
 
     std::string arg = std::string(argv[i]);
-    _originalCommandLine += arg + " ";
+    if (!recursing) _originalCommandLine += arg + " ";
 
     if (arg[0] != '-') {
       // Not something we can use.  Add it to the leftovers.
@@ -88,15 +96,19 @@ void VRParseCommandLine::parseCommandLine(int argc, char** argv) {
       // There is nothing else of interest on the command line.
       break;
 
-    } else if (arg.compare(_helpShort) == 0) {
+    } else if (TESTARG(arg, _helpShort)) {
 
       VRSearchConfig vsc;
       help(vsc);
 
-    } else if (arg.compare(_helpLong) == 0) {
+    } else if (TESTARG(arg, _helpLong)) {
 
       VRSearchConfig vsc;
       help(vsc);
+
+    } else if (TESTARG(arg, _testStart)) {
+
+      _execute = false;
 
     } else {
       // We do not want this argument, add it to the leftovers.
@@ -106,6 +118,8 @@ void VRParseCommandLine::parseCommandLine(int argc, char** argv) {
       strcpy(_leftoverArgv[_leftoverArgc++], argv[i]);
     }
   }
+
+  return _execute;
 }
 
 void VRParseCommandLine::decodeMinVRData(const std::string &payload) {
@@ -118,7 +132,7 @@ void VRParseCommandLine::decodeMinVRData(const std::string &payload) {
   // Break it up into argc and argv.
   std::stringstream argStream(decodedCommandLine);
   int newArgc = 0;
-  char* newArgv[50];
+  char* newArgv[60];
 
   while (argStream) {
     std::string arg;
@@ -133,8 +147,8 @@ void VRParseCommandLine::decodeMinVRData(const std::string &payload) {
     strcpy(newArgv[newArgc++], arg.c_str());
   }
 
-  // Call parseCommandLine() recursively.
-  parseCommandLine(newArgc, newArgv);
+  // Call parseCommandLine() recursively.  Keep accumulating leftovers.
+  parseCommandLine(newArgc, newArgv, _leftoverArgc);
 
   // reclaim memory of newArgv
   for (int i = newArgc - 1; i >= 0; i--) {
@@ -280,16 +294,24 @@ void VRMain::setConfigValue(const std::string &keyAndValStr) {
 
 void VRMain::initialize(int argc, char **argv) {
 
-  parseCommandLine(argc, argv);
+  bool execute = parseCommandLine(argc, argv);
+
+  if (_config->empty()) {
+
+    VRERROR("No config data available.",
+            "Something is wrong with your configuration file specification.");
+  }
 
 	VRStringArray vrSetupsToStartArray;
 	if (!_config->exists("VRSetupsToStart","/")) {
 		// No vrSetupsToStart are specified, start all of VRSetups listed
 		// in the config file.
-		std::list<std::string> names = _config->selectByAttribute("hostType","*");
-		for (std::list<std::string>::const_iterator it = names.begin();
+    VRContainer names = _config->getValue("/MinVR/VRSetups");
+		//std::list<std::string> names = _config->selectByAttribute("hostType","*");
+		for (VRContainer::const_iterator it = names.begin();
          it != names.end(); ++it) {
-			vrSetupsToStartArray.push_back(*it);
+
+			vrSetupsToStartArray.push_back("/MinVR/VRSetups/" + *it);
 		}
 	} else {
 		// A comma-separated list of vrSetupsToStart was provided.
@@ -304,149 +326,147 @@ void VRMain::initialize(int argc, char **argv) {
 	if (vrSetupsToStartArray.empty()) {
 
     VRERROR("No VRSetups to start are defined.",
-            "Your config file must contain at least one VRSetup element.");
+            "Your configuration must contain at least one VRSetup element.");
 
 	}
-
 
     // STEP 1: IF ANY OF THE VRSETUPS ARE STARTED AS REMOTE PROCESSES ON ANOTHER
     // MACHINE, THEN START THEM NOW AND REMOVE THEM FROM THE LIST OF VRSETUPS TO
     // START ON THIS MACHINE
+  int numberOfSetupsLeftToStart = vrSetupsToStartArray.size();
+  for (vector<std::string>::iterator it = vrSetupsToStartArray.begin();
+       it != vrSetupsToStartArray.end(); it++) {
 
-    vector<std::string>::iterator it = vrSetupsToStartArray.begin();
-    while (it != vrSetupsToStartArray.end()) {
-        if (_config->exists("HostIP",*it) && !_config->exists("StartedSSH","/")) {
+    if (_config->exists("HostIP",*it) && !_config->exists("StartedSSH","/")) {
 
-            // TODO: If we're going to use VRAppLaunchers, then this seems like
-            // it should be implemented in a VRSSHAppLauncher class
-            VRLocalAppLauncher launcher(argc, argv);
+      // Setup needs to be started via ssh.
+      // First, get the machine where it is to be started.
+      std::string nodeIP = _config->getValue("HostIP", *it);
 
-            // Setup needs to be started via ssh.
-            // First, get the machine where it is to be started.
-            std::string nodeIP = _config->getValue("HostIP", *it);
+      // Now get the path where it has to be started and create a
+      // command to get us there.
+      std::string workingDirectory = getCurrentWorkingDir();
+      std::string command = "cd " + workingDirectory + ";";
 
-            // Now get the path were it has to be started and create a
-            // command to get us there.
-            std::string workingDirectory = getCurrentWorkingDir();
-            std::string command = "cd " + workingDirectory + ";";
+      // If we have to adjust the display, set that in the command.
+      if (_config->exists("HostDisplay",*it)) {
+        std::string displayVar = _config->getValue("HostDisplay",*it);
+        command = command + "DISPLAY=" + displayVar + " ";
+      }
 
-            // If we have to adjust the display, set that in the command.
-            if (_config->exists("HostDisplay",*it)) {
-                std::string displayVar = _config->getValue("HostDisplay",*it);
-                command = command + "DISPLAY=" + displayVar + " ";
-            }
+      // These arguments are to be added to the process
+      std::string processSpecificArgs =
+        " " + getSetConfigValueLong() + " VRSetupsToStart=" + *it +
+        " " + getSetConfigValueLong() + " StartedSSH=1";
 
-            // These arguments are to be added to the process
-            std::string processSpecificArgs =
-              getSetConfigValueLong() + " VRSetupsToStart=" + *it +
-              getSetConfigValueLong() + " StartedSSH=1";
+      std::string logFile = "";
+      if (_config->exists("LogToFile",*it)) {
+        std::string logFile = " >" +
+          (VRString)_config->getValue("LogToFile",*it) + " 2>&1 ";
+      }
 
-            std::string logFile = "";
-            if (_config->exists("LogToFile",*it)) {
-              std::string logFile = " >" +
-                (VRString)_config->getValue("LogToFile",*it) + " 2>&1 ";
+      std::string sshcmd;
+      sshcmd = "ssh " + nodeIP +
+        " '" + getOriginalCommandLine() + processSpecificArgs +
+        logFile +
+        " &'";
 
-            }
+      // Start the client.
+      std::cerr << "Start " << sshcmd << std::endl;
+      if (execute) {
+        system(sshcmd.c_str());
+      } else {
+        std::cerr << "executing:" << sshcmd << std::endl << _config << std::endl;
+      }
 
-            std::string sshcmd;
-            sshcmd = "ssh " + nodeIP +
-              " '" + command +
-              launcher.generateCommandLine(processSpecificArgs) +
-              logFile +
-              " &'";
+    } else {
+      // Setup does not need to be started remotely.
 
-            // Start the client.
-            std::cerr << "Start " << sshcmd << std::endl;
-            system(sshcmd.c_str());
+      // STEP 2: RECORD THE NAME OF THE VRSETUP TO USE FOR THIS PROCESS
 
-            // Remove the client from the list of clients to start.  This also
-            // increments the iterator.
-            it = vrSetupsToStartArray.erase(it);
-
-        } else {
-            // Setup does not need to be started remotely or was
-            // already started remotely.
-            ++it;
-        }
-    }
-
-	if (vrSetupsToStartArray.empty()) {
-        std::cout << "MinVR: All VRSetups are remote processes. All have been started via SSH - Exiting" << std::endl;
-		exit(1);
-	}
+      // This process will be the first one listed
+      _name = vrSetupsToStartArray[0];
 
 
-    // STEP 2: RECORD THE NAME OF THE VRSETUP TO USE FOR THIS PROCESS
+      // STEP 3: IF ANY MORE VRSETUPS ARE SUPPOSED TO BE STARTED ON THIS MACHINE
+      // THEN DO THAT NOW -- UNFORTUNATELY, THE WAY TO DO THIS ON WINDOWS IS
+      // DIFFERENT THAN OTHER ARCHITECTURES.
 
-	// This process will be the first one listed
-	_name = vrSetupsToStartArray[0];
-
-
-    // STEP 3: IF ANY MORE VRSETUPS ARE SUPPOSED TO BE STARTED ON THIS MACHINE
-    // THEN DO THAT NOW -- UNFORTUNATELY, THE WAY TO DO THIS ON WINDOWS IS
-    // DIFFERENT THAN OTHER ARCHITECTURES.
-
-	// Fork a new process for each remaining vrsetup
+      // Fork a new process for each remaining vrsetup
 
 #ifdef WIN32
-	// Windows doesn't support forking, but it does allow us to create processes,
-	// so we just create a new process with the config file to load as the first
-	// command line argument and the vrsetup to start as the second command line
-	// argument -- this means we need to enforce this convention for command line
-	// arguments for all MinVR programs that want to support multiple processes.
+      // Windows doesn't support forking, but it does allow us to create processes,
+      // so we just create a new process.
 
-  VRLocalAppLauncher launcher(argc,argv);
+      for (int i = 1; i < vrSetupsToStartArray.size(); i++) {
+        // https://msdn.microsoft.com/en-us/library/windows/desktop/ms682512(v=vs.85).aspx
+        STARTUPINFO si;
+        PROCESS_INFORMATION pi;
 
-	for (int i = 1; i < vrSetupsToStartArray.size(); i++) {
-		// https://msdn.microsoft.com/en-us/library/windows/desktop/ms682512(v=vs.85).aspx
-		STARTUPINFO si;
-		PROCESS_INFORMATION pi;
+        ZeroMemory(&si, sizeof(si));
+        si.cb = sizeof(si);
+        ZeroMemory(&pi, sizeof(pi));
+        LPSTR title = new char[*it + 1];
+        strcpy(title, (*it).c_str());
+        si.lpTitle = title;
 
-		ZeroMemory(&si, sizeof(si));
-		si.cb = sizeof(si);
-		ZeroMemory(&pi, sizeof(pi));
-		LPSTR title = new char[vrSetupsToStartArray[i].size() + 1];
-		strcpy(title, vrSetupsToStartArray[i].c_str());
-		si.lpTitle = title;
+        std::string processSpecificArgs =
+          " " + getSetConfigValueLong() + "VRSetupsToStart=" + *it;
+        std::string cmdLine = getOriginalCommandLine() + processSpecificArgs;
 
-    std::string processSpecificArgs =
-      getSetConfigValueLong() + "VRSetupsToStart=" + vrSetupsToStartArray[i];
-		std::string cmdLine = launcher.generateCommandLine(processSpecificArgs);
+        LPSTR cmd = new char[cmdLine.size() + 1];
+        strcpy(cmd, cmdLine.c_str());
 
-		LPSTR cmd = new char[cmdLine.size() + 1];
-		strcpy(cmd, cmdLine.c_str());
+        // Start the child process.
+        if (!CreateProcess(NULL,   // No module name (use command line)
+                           cmd,        // Command line
+                           NULL,           // Process handle not inheritable
+                           NULL,           // Thread handle not inheritable
+                           FALSE,          // Set handle inheritance to FALSE
+                           CREATE_NEW_CONSOLE,              // No creation flags
+                           NULL,           // Use parent's environment block
+                           NULL,           // Use parent's starting directory
+                           &si,            // Pointer to STARTUPINFO structure
+                           &pi )           // Ptr to PROCESS_INFORMATION structure
+            ) {
+          VRERRORNOADV("CreateProcess failed: " + GetLastError());
+        }
 
-		// Start the child process.
-		if (!CreateProcess(NULL,   // No module name (use command line)
-				cmd,        // Command line
-				NULL,           // Process handle not inheritable
-				NULL,           // Thread handle not inheritable
-				FALSE,          // Set handle inheritance to FALSE
-				CREATE_NEW_CONSOLE,              // No creation flags
-				NULL,           // Use parent's environment block
-				NULL,           // Use parent's starting directory
-				&si,            // Pointer to STARTUPINFO structure
-				&pi )           // Pointer to PROCESS_INFORMATION structure
-		) {
-			throw std::runtime_error("MinVR Error: CreateProcess failed: " + GetLastError());
-		}
-
-		delete[] title;
-		delete[] cmd;
-	}
+        delete[] title;
+        delete[] cmd;
+      }
 
 #else
 
-    // On linux and OSX we can simply fork a new process for each vrsetup to start
-	for (int i=1; i < vrSetupsToStartArray.size(); i++) {
-		pid_t pid = fork();
-		if (pid == 0) {
-			break;
-		}
-		_name = vrSetupsToStartArray[i];
-	}
+      // On linux and OSX we can simply fork a new process for each
+      // vrsetup to start
+
+      if (execute) {
+        pid_t pid = fork();
+        if (pid == 0) {
+          _name = *it;
+          break;
+        }
+      } else {
+        std::cout << "forking..." << *it << std::endl;
+      }
+    }
 
 #endif
+    numberOfSetupsLeftToStart--;
+  }
+
+  if (numberOfSetupsLeftToStart <= 0) {
+  //	if (vrSetupsToStartArray.empty()) {
+    std::cout << "All VRSetups have been started - Exiting." << std::endl;
+    exit(1);
+	}
+
+
+  if (!execute) exit(1);
+
+  ///////////////  Ok, now execute.
+
 
 
     // STEP 4:  Sanity check to make sure the vrSetup we are continuing with is

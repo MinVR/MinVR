@@ -59,6 +59,7 @@ class VRParseCommandLine {
     _loadConfigLong = "--load-config";
     _helpShort = "-h";
     _helpLong = "--help";
+    _testStart = "-N";
     _minVRData = "--MINVR_DATA";
   };
 
@@ -96,11 +97,19 @@ class VRParseCommandLine {
     _loadConfigLong = "";
     _helpShort = "";
     _helpLong = "";
+    _testStart = "";
   }
 
   /// \brief Parses the command line, per the options provided in the
   /// private variables.
-  void parseCommandLine(int argc, char** argv);
+  ///
+  /// The return value indicates whether we are actually running the
+  /// program, or just testing the startup with the testStart option.  To be
+  /// more specific, it only signals the absence/presence of the '-N'
+  /// (testStart) option.  (False if the -N is present.)
+  ///
+  /// The recursing argument is only to be used internally.
+  bool parseCommandLine(int argc, char** argv, bool recursing = false);
 
   /// \brief Returns argc once the MinVR-specific args have been removed.
   int getLeftoverArgc() { return _leftoverArgc; };
@@ -166,6 +175,14 @@ class VRParseCommandLine {
   /// discouraged from changing this one, though it is possible.
   void setMinVRData(const std::string &s) { _minVRData = s; };
 
+  /// \brief Returns the command-line option for help.
+  std::string getTestStart() { return _testStart; };
+
+  /// \brief Changes the command-line option for help.
+  ///
+  /// By default, this is "--help".
+  void setTestStart(const std::string &s) { _testStart = s; };
+
   /// \brief Returns the original command line, with MinVR and non-MinVR args.
   std::string getOriginalCommandLine() { return _originalCommandLine; };
 
@@ -213,6 +230,9 @@ class VRParseCommandLine {
       "                   config and then override the WindowHeight and\n" +
       "                   WindowWidth values in the pre-installed desktop\n" +
       "                   configuration with the new values specified.\n\n" +
+      getTestStart() +
+      "                Does not run the program, but describes what it would\n" +
+      "                   do if you ran it.\n\n" +
       getMinVRData() +
       "=xxxx  A special command line argument reserved for internal\n" +
       "                   use by MinVR.\n";
@@ -241,10 +261,14 @@ class VRParseCommandLine {
   std::string _setConfigValueShort, _setConfigValueLong;
   std::string _loadConfigShort, _loadConfigLong;
   std::string _helpShort, _helpLong;
+  std::string _testStart;
   std::string _minVRData;
 
   std::string _originalCommandLine;
   std::string _leftoverCommandLine;
+
+  /// Used to indicate whether this is to be executed, or if we are just testing.
+  bool _execute;
 
   /// \brief This is argc once the MinVR-specific args have been removed.
   int _leftoverArgc;
