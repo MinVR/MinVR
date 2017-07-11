@@ -13,7 +13,7 @@
 #include <main/VRMainInterface.h>
 #include <main/VRRenderHandler.h>
 #include <net/VRNetInterface.h>
-#include <main/VRAppLauncher.h>
+#include <config/base64/base64.h>
 #include <main/VRError.h>
 #include <main/VRSearchPath.h>
 
@@ -174,6 +174,12 @@ class VRParseCommandLine {
   /// By default, this is "--MINVR_DATA".  You are strongly
   /// discouraged from changing this one, though it is possible.
   void setMinVRData(const std::string &s) { _minVRData = s; };
+
+  /// \brief Collect some args into a base64-encoded string.
+  std::string argsToData(const std::string &argStr);
+
+  /// \brief Get some args from a base64-encoded string.
+  std::string dataToArgs(const std::string &payload);
 
   /// \brief Returns the command-line option for help.
   std::string getTestStart() { return _testStart; };

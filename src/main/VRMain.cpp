@@ -163,12 +163,23 @@ bool VRParseCommandLine::parseCommandLine(int argc, char** argv,
   return _execute;
 }
 
+std::string VRParseCommandLine::argsToData(const std::string &argStr) {
+    std::string encodedData =
+      base64_encode((unsigned char const*)argStr.c_str(), argStr.size());
+    return _minVRData + "=" + encodedData;
+}
+
+std::string VRParseCommandLine::dataToArgs(const std::string &payload) {
+
+  return base64_decode(payload);
+}
+
+
 void VRParseCommandLine::decodeMinVRData(const std::string &payload) {
 
   //std::cout << "DECODE LINE: " << payload << std::endl;
 
-  // Decode the payload string.
-  std::string decodedCommandLine = VRAppLauncher::dataToArgs(payload);
+  std::string decodedCommandLine = dataToArgs(payload);
 
   // Break it up into argc and argv.
   std::stringstream argStream(decodedCommandLine);

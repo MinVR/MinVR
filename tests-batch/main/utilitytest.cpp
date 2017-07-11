@@ -361,7 +361,7 @@ int testCommandLineParse() {
   tp = new testParse();
 
   std::string unencoded = "command arg1 arg2 ";
-  std::string encoded = MinVR::VRAppLauncher::argsToData("-s SetupsToStart=doThisOne -c Wonderful");
+  std::string encoded = tp->argsToData("-s SetupsToStart=doThisOne -c Wonderful");
 
   numArgs = 0;
   std::stringstream as(unencoded + encoded);
@@ -473,7 +473,7 @@ int testCommandLineParse() {
   argStream.clear();
   argStream.str("");
   unencoded = "command arg1 arg2 ";
-  encoded = MinVR::VRAppLauncher::argsToData("-s SetupsToStart=doThisOne -c Wonderful");
+  encoded = tp->argsToData("-s SetupsToStart=doThisOne -c Wonderful");
   argStream << unencoded + encoded;
 
   while (argStream >> arg) {
