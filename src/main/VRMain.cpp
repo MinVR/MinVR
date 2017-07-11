@@ -22,7 +22,6 @@
 #include <net/VRNetServer.h>
 #include <plugin/VRPluginManager.h>
 #include <sstream>
-#include <main/VRLocalAppLauncher.h>
 #include <main/VREventInternal.h>
 #include <cstdlib>
 
