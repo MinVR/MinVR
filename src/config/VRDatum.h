@@ -233,25 +233,25 @@ public:
   // prevent bad behavior, and throw an error if the programmer
   // attempts to coerce a data type incorrectly.
   virtual VRInt getValueInt() const {
-    VRERRORNOADV("This datum is not a VRInt.");
+    VRERROR("This datum is not a VRInt.", "It is a " + description + ".");
   }
   virtual VRFloat getValueFloat() const {
-    VRERRORNOADV("This datum is not a VRFloat.");
+    VRERROR("This datum is not a VRFloat.", "It is a " + description + ".");
   }
   // There is a getValueString() implemented for each data type to
   // allow easy string conversions.  It is defined as a pure virtual
   // member function above.
   virtual VRIntArray getValueIntArray() const {
-    VRERRORNOADV("This datum is not a VRIntArray.");
+    VRERROR("This datum is not a VRIntArray.", "It is a " + description + ".");
   }
   virtual VRFloatArray getValueFloatArray() const {
-    VRERRORNOADV("This datum is not a VRFloatArray.");
+    VRERROR("This datum is not a VRFloatArray.", "It is a " + description + ".");
   }
   virtual VRStringArray getValueStringArray() const {
-    VRERRORNOADV("This datum is not a VRStringArray.");
+    VRERROR("This datum is not a VRStringArray.", "It is a " + description + ".");
   }
   virtual VRContainer getValueContainer() const {
-    VRERRORNOADV("This datum is not a VRContainer.");
+    VRERROR("This datum is not a VRContainer.", "It is a " + description + ".");
   }
 };
 
