@@ -125,7 +125,7 @@ int testSearchPath() {
   // What about an absolute path name?
   char p[200];
   std::string rel = "testSearch/test2/test3/target.txt";
-  std::string absolutePath = std::string(getwd(p)) + "/" + rel;
+  std::string absolutePath = std::string(getcwd(p, 200)) + "/" + rel;
   std::cout << "checking on absolute path:" << absolutePath << std::endl;
 
   std::string t = sp.findFile(absolutePath);
