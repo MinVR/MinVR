@@ -345,34 +345,27 @@ void VRMain::_startSSHProcess(const std::string &setupName, const bool &execute)
   // If we have to adjust the display, set that in the command.
   if (_config->exists("HostDisplay",setupName)) {
     std::string displayVar = _config->getValue("HostDisplay",setupName);
-    command = command + "DISPLAY=" + displayVar + " ";
+    command += "export DISPLAY=" + displayVar + " ;";
   }
 
   // These arguments are to be added to the process
   std::string processSpecificArgs =
     " " + getSetConfigValueLong() + " VRSetupsToStart=" + setupName +
     " " + getSetConfigValueLong() + " StartedSSH=1";
-  if (!execute) processSpecificArgs += " " + getNoExecute();
 
   std::string logFile = "";
-  if (_config->exists("LogToFile",setupName)) {
-    std::string logFile = " >" +
-      (VRString)_config->getValue("LogToFile",setupName) + " 2>&1 ";
+  if (_config->exists("LogToFile", setupName)) {
+    logFile = " >" + (VRString)_config->getValue("LogToFile",setupName) + " 2>&1 ";
   }
 
   std::string sshcmd;
   sshcmd = "ssh " + nodeIP +
-    " '" + getOriginalCommandLine() + processSpecificArgs +
-    logFile +
-    " &'";
+    " '" + command + getOriginalCommandLine() + processSpecificArgs + logFile +
+    " &' &";
 
   // Start the client, at least if the execute flag tells us to.
   SHOWMSG("Starting " + sshcmd);
-  if (execute) {
-    system(sshcmd.c_str());
-  } else {
-    SHOWMSG("(Not starting:" + sshcmd + ")");
-  }
+  system(sshcmd.c_str()); 
 }
 
 void VRMain::initialize(int argc, char **argv) {
@@ -465,7 +458,7 @@ void VRMain::initialize(int argc, char **argv) {
         ZeroMemory(&si, sizeof(si));
         si.cb = sizeof(si);
         ZeroMemory(&pi, sizeof(pi));
-        LPSTR title = new char[*it + 1];
+        LPSTR title = new char[(*it).size() + 1];
         strcpy(title, (*it).c_str());
         si.lpTitle = title;
 
@@ -516,9 +509,12 @@ void VRMain::initialize(int argc, char **argv) {
   if (_name.empty()) {
     std::cout << "All VRSetups have been started - Exiting." << std::endl;
     exit(1);
-	}
+  }
 
-  if (!execute) exit(1);
+  if (!execute) {
+    SHOWMSG(_name + " not executing.");
+    exit(1);
+  }
 
   ///////////////  Ok, now execute.
 
