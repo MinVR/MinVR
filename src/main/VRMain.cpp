@@ -347,29 +347,27 @@ void VRMain::_startSSHProcess(const std::string &setupName,
   // If we have to adjust the display, set that in the command.
   if (_config->exists("HostDisplay",setupName)) {
     std::string displayVar = _config->getValue("HostDisplay",setupName);
-    command = command + "DISPLAY=" + displayVar + " ";
+    command += "export DISPLAY=" + displayVar + " ;";
   }
 
   // These arguments are to be added to the process
   std::string processSpecificArgs =
     " " + getSetConfigValueLong() + " VRSetupsToStart=" + setupName +
     " " + getSetConfigValueLong() + " StartedSSH=1";
-  if (!execute) processSpecificArgs += " " + getNoExecute();
 
   std::string logFile = "";
-  if (_config->exists("LogToFile",setupName)) {
-    std::string logFile = " >" +
-      (VRString)_config->getValue("LogToFile",setupName) + " 2>&1 ";
+  if (_config->exists("LogToFile", setupName)) {
+    logFile = " >" + (VRString)_config->getValue("LogToFile",setupName) + " 2>&1 ";
   }
 
   std::string sshcmd;
   sshcmd = "ssh " + nodeIP +
-    " '" + getOriginalCommandLine() + processSpecificArgs +
-    logFile +
-    " &'";
+    " '" + command + getOriginalCommandLine() + processSpecificArgs + logFile +
+    " &' &";
 
   // Start the client, at least if the execute flag tells us to.
   SHOWMSG("Starting " + sshcmd);
+
   if (!noSSH) {
     system(sshcmd.c_str());
   } else {
@@ -398,7 +396,7 @@ bool VRMain::_startLocalProcess(const std::string &setupName,
   si.lpTitle = title;
 
   std::string processSpecificArgs =
-    " " + getSetConfigValueLong() + "VRSetupsToStart=" + setupName;
+    " " + getSetConfigValueLong() + " VRSetupsToStart=" + setupName;
   std::string cmdLine = getOriginalCommandLine() + processSpecificArgs;
 
   LPSTR cmd = new char[cmdLine.size() + 1];
@@ -432,12 +430,6 @@ bool VRMain::_startLocalProcess(const std::string &setupName,
     pid_t pid = fork();
     if (pid == 0) {
       _name = setupName;
-
-      std::string processSpecificArgs =
-        " " + getSetConfigValueLong() + "VRSetupsToStart=" + setupName;
-      std::string cmdLine = getOriginalCommandLine() + processSpecificArgs;
-      std::cout << "********" << cmdLine << std::endl;
-
       return true; // This is the child.
     } else {
       return false; // This is the parent.
@@ -539,7 +531,7 @@ void VRMain::initialize(int argc, char **argv) {
   if (_name.empty()) {
     std::cout << "All VRSetups have been started - Exiting." << std::endl;
     exit(1);
-	}
+  }
 
   // STEP 4:  Sanity check to make sure the vrSetup we are continuing with is
   // actually defined in the config settings that have been loaded.

@@ -1,6 +1,8 @@
 #ifndef MINVR_VRERROR_H
 #define MINVR_VRERROR_H
 #include <string>
+#include <stdlib.h>
+#include <string.h>
 #include <sstream>
 #include <iostream>
 

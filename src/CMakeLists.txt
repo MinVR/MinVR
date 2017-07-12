@@ -242,6 +242,7 @@ source_group("Config Files" FILES ${vr_config_files})
 
 
 add_library(MinVR ${vr_sources})
+target_link_libraries(MinVR dl)
 
 install(TARGETS MinVR
         LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
