@@ -375,6 +375,74 @@ void VRMain::_startSSHProcess(const std::string &setupName, const bool &execute)
   }
 }
 
+bool VRMain::_startLocalProcess(const std::string &setupName,
+                                const bool &execute) {
+  // Fork a new process for each remaining vrsetup to be run locally.
+  // Unfortunately, this is OS-specific.
+
+#ifdef WIN32
+  // Windows doesn't support forking, but it does allow us to create
+  // processes, so we just create a new process.
+
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/ms682512(v=vs.85).aspx
+  STARTUPINFO si;
+  PROCESS_INFORMATION pi;
+
+  ZeroMemory(&si, sizeof(si));
+  si.cb = sizeof(si);
+  ZeroMemory(&pi, sizeof(pi));
+  LPSTR title = new char[setupName + 1];
+  strcpy(title, (setupName).c_str());
+  si.lpTitle = title;
+
+  std::string processSpecificArgs =
+    " " + getSetConfigValueLong() + "VRSetupsToStart=" + setupName;
+  if (!execute) processSpecificArgs += " " + getNoExecute();
+  std::string cmdLine = getOriginalCommandLine() + processSpecificArgs;
+
+  LPSTR cmd = new char[cmdLine.size() + 1];
+  strcpy(cmd, cmdLine.c_str());
+
+  // Start the child process.
+  if (!CreateProcess(NULL,   // No module name (use command line)
+                     cmd,        // Command line
+                     NULL,           // Process handle not inheritable
+                     NULL,           // Thread handle not inheritable
+                     FALSE,          // Set handle inheritance to FALSE
+                     CREATE_NEW_CONSOLE,              // No creation flags
+                     NULL,           // Use parent's environment block
+                     NULL,           // Use parent's starting directory
+                     &si,            // Pointer to STARTUPINFO structure
+                     &pi )           // Ptr to PROCESS_INFORMATION structure
+      ) {
+    VRERRORNOADV("CreateProcess failed: " + GetLastError());
+  }
+
+  delete[] title;
+  delete[] cmd;
+
+  return false;
+#else
+
+  // On linux and OSX we can simply fork a new process for each
+  // vrsetup to start
+
+  if (execute) {
+    pid_t pid = fork();
+    if (pid == 0) {
+      _name = setupName;
+      return true; // This is the child.
+    } else {
+      return false; // This is the parent.
+    }
+  } else {
+    std::cout << "forking..." << setupName << std::endl;
+    return false; // No forking happened.
+  }
+#endif
+}
+
+
 void VRMain::initialize(int argc, char **argv) {
 
   bool execute = parseCommandLine(argc, argv);
@@ -451,64 +519,8 @@ void VRMain::initialize(int argc, char **argv) {
 
       } else {
 
-        // Fork a new process for each remaining vrsetup to be run locally.
-        // Unfortunately, this is OS-specific.
+        if (_startLocalProcess(*it, execute)) break;
 
-#ifdef WIN32
-        // Windows doesn't support forking, but it does allow us to create
-        // processes, so we just create a new process.
-
-        // https://msdn.microsoft.com/en-us/library/windows/desktop/ms682512(v=vs.85).aspx
-        STARTUPINFO si;
-        PROCESS_INFORMATION pi;
-
-        ZeroMemory(&si, sizeof(si));
-        si.cb = sizeof(si);
-        ZeroMemory(&pi, sizeof(pi));
-        LPSTR title = new char[*it + 1];
-        strcpy(title, (*it).c_str());
-        si.lpTitle = title;
-
-        std::string processSpecificArgs =
-          " " + getSetConfigValueLong() + "VRSetupsToStart=" + *it;
-        if (!execute) processSpecificArgs += " " + getNoExecute();
-        std::string cmdLine = getOriginalCommandLine() + processSpecificArgs;
-
-        LPSTR cmd = new char[cmdLine.size() + 1];
-        strcpy(cmd, cmdLine.c_str());
-
-        // Start the child process.
-        if (!CreateProcess(NULL,   // No module name (use command line)
-                           cmd,        // Command line
-                           NULL,           // Process handle not inheritable
-                           NULL,           // Thread handle not inheritable
-                           FALSE,          // Set handle inheritance to FALSE
-                           CREATE_NEW_CONSOLE,              // No creation flags
-                           NULL,           // Use parent's environment block
-                           NULL,           // Use parent's starting directory
-                           &si,            // Pointer to STARTUPINFO structure
-                           &pi )           // Ptr to PROCESS_INFORMATION structure
-            ) {
-          VRERRORNOADV("CreateProcess failed: " + GetLastError());
-        }
-
-        delete[] title;
-        delete[] cmd;
-#else
-
-        // On linux and OSX we can simply fork a new process for each
-        // vrsetup to start
-
-        if (execute) {
-          pid_t pid = fork();
-          if (pid == 0) {
-            _name = *it;
-            break;
-          }
-        } else {
-          std::cout << "forking..." << *it << std::endl;
-        }
-#endif
       }
     }
   }

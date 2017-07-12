@@ -485,6 +485,7 @@ public:
     bool _shutdown;
 
     void _startSSHProcess(const std::string &name, const bool &execute);
+    bool _startLocalProcess(const std::string &name, const bool &execute);
 };
 
 
