@@ -4,6 +4,21 @@
 #include <sstream>
 #include <iostream>
 
+// When multiple processes are writing to the same terminal, their
+// output gets mixed up if you just use std::cout or std::cerr.  Using
+// write() gets you unbuffered output, which is more or less atomic.
+#ifdef MinVR_DEBUG
+#define DEBUGMSG(msg) \
+  { std::string debugmsg = msg + "\n"; \
+    std::cout.write(debugmsg.c_str(), debugmsg.size()); }
+#else
+#define DEBUGMSG(msg)
+#endif
+#define SHOWMSG(msg) \
+  { std::string debugmsg = msg + "\n"; \
+    std::cout.write(debugmsg.c_str(), debugmsg.size()); }
+
+
 /// This class is meant to provide an easy way to systematize error
 /// handling in MinVR, and also encourage people to add a line or two
 /// of advice about what a user might do to address the error or
