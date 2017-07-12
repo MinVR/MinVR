@@ -119,7 +119,7 @@ bool VRParseCommandLine::parseCommandLine(int argc, char** argv,
       VRSearchConfig vsc;
       help(vsc);
 
-    } else if (TESTARG(arg, _testStart)) {
+    } else if (TESTARG(arg, _noExecute)) {
 
       _execute = false;
 
@@ -317,9 +317,7 @@ void VRMain::loadConfig(const std::string &configName) {
             "Checked: " + _configPath.getPath());
   } else {
 
-#ifdef MinVR_DEBUG
-    std::cerr << "Loading configuration: " << fileName << std::endl;
-#endif
+    DEBUGMSG("Loading configuration: " + fileName);
 
     bool success = _config->processXMLFile(fileName, "/");
 
@@ -354,7 +352,7 @@ void VRMain::_startSSHProcess(const std::string &setupName, const bool &execute)
   std::string processSpecificArgs =
     " " + getSetConfigValueLong() + " VRSetupsToStart=" + setupName +
     " " + getSetConfigValueLong() + " StartedSSH=1";
-  if (!execute) processSpecificArgs += " " + getTestStart();
+  if (!execute) processSpecificArgs += " " + getNoExecute();
 
   std::string logFile = "";
   if (_config->exists("LogToFile",setupName)) {
@@ -369,12 +367,11 @@ void VRMain::_startSSHProcess(const std::string &setupName, const bool &execute)
     " &'";
 
   // Start the client, at least if the execute flag tells us to.
-  std::cerr << "Start " << sshcmd << std::endl;
+  SHOWMSG("Starting " + sshcmd);
   if (execute) {
     system(sshcmd.c_str());
   } else {
-    std::cerr << "Would start:" << sshcmd << std::endl
-              << _config->printStructure() << std::endl;
+    SHOWMSG("(Not starting:" + sshcmd + ")");
   }
 }
 
@@ -474,7 +471,7 @@ void VRMain::initialize(int argc, char **argv) {
 
         std::string processSpecificArgs =
           " " + getSetConfigValueLong() + "VRSetupsToStart=" + *it;
-        if (!execute) processSpecificArgs += " " + getTestStart();
+        if (!execute) processSpecificArgs += " " + getNoExecute();
         std::string cmdLine = getOriginalCommandLine() + processSpecificArgs;
 
         LPSTR cmd = new char[cmdLine.size() + 1];
