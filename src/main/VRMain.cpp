@@ -332,7 +332,9 @@ void VRMain::setConfigValue(const std::string &keyAndValStr) {
   std::string name = _config->addData(keyAndValStr);
 }
 
-void VRMain::_startSSHProcess(const std::string &setupName, const bool &execute) {
+void VRMain::_startSSHProcess(const std::string &setupName,
+                              const bool &execute,
+                              const bool noSSH) {
 
   // First, get the machine where it is to be started.
   std::string nodeIP = _config->getValue("HostIP", setupName);
@@ -368,7 +370,7 @@ void VRMain::_startSSHProcess(const std::string &setupName, const bool &execute)
 
   // Start the client, at least if the execute flag tells us to.
   SHOWMSG("Starting " + sshcmd);
-  if (execute) {
+  if (!noSSH) {
     system(sshcmd.c_str());
   } else {
     SHOWMSG("(Not starting:" + sshcmd + ")");
@@ -397,7 +399,6 @@ bool VRMain::_startLocalProcess(const std::string &setupName,
 
   std::string processSpecificArgs =
     " " + getSetConfigValueLong() + "VRSetupsToStart=" + setupName;
-  if (!execute) processSpecificArgs += " " + getNoExecute();
   std::string cmdLine = getOriginalCommandLine() + processSpecificArgs;
 
   LPSTR cmd = new char[cmdLine.size() + 1];
@@ -431,6 +432,12 @@ bool VRMain::_startLocalProcess(const std::string &setupName,
     pid_t pid = fork();
     if (pid == 0) {
       _name = setupName;
+
+      std::string processSpecificArgs =
+        " " + getSetConfigValueLong() + "VRSetupsToStart=" + setupName;
+      std::string cmdLine = getOriginalCommandLine() + processSpecificArgs;
+      std::cout << "********" << cmdLine << std::endl;
+
       return true; // This is the child.
     } else {
       return false; // This is the parent.
@@ -490,6 +497,7 @@ void VRMain::initialize(int argc, char **argv) {
     }
   }
 
+  // Check to see if we've got anything to start.
 	if (vrSetupsToStartArray.empty()) {
 
     VRERROR("No VRSetups to start are defined.",
@@ -519,23 +527,22 @@ void VRMain::initialize(int argc, char **argv) {
 
       } else {
 
+        // This method returns true for a spawned child process.
         if (_startLocalProcess(*it, execute)) break;
 
       }
     }
   }
 
+  // All the processes with names have been started.  If this process
+  // has no name, it is not necessary to keep going.
   if (_name.empty()) {
     std::cout << "All VRSetups have been started - Exiting." << std::endl;
     exit(1);
 	}
 
-  if (!execute) exit(1);
-
-  ///////////////  Ok, now execute.
-
-    // STEP 4:  Sanity check to make sure the vrSetup we are continuing with is
-    // actually defined in the config settings that have been loaded.
+  // STEP 4:  Sanity check to make sure the vrSetup we are continuing with is
+  // actually defined in the config settings that have been loaded.
 	if (!_config->exists(_name)) {
     VRERROR("VRMain Error: The VRSetup " +
             _name + " has not been loaded through a config file.",
@@ -619,6 +626,15 @@ void VRMain::initialize(int argc, char **argv) {
 			}
 		}
 	}
+
+
+
+  // If the program was run with --no-execute, we can stop here.
+  if (!execute) exit(1);
+
+  ///////////////  Ok, now execute.
+
+
 
 	// STEP 8: CONFIGURE WINDOWS
 	{
