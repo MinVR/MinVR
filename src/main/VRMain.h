@@ -460,13 +460,12 @@ public:
     ///
     /// This is for MinVR internal use, public only for testing.
     void _startSSHProcess(const std::string &name,
-                          const bool &execute,
                           const bool noSSH=false);
 
     /// \brief Spawn a new process on the local machine.
     ///
     /// This is for MinVR internal use, public only for testing.
-    bool _startLocalProcess(const std::string &name, const bool &execute);
+    bool _startLocalProcess(const std::string &name);
 
  private:
 

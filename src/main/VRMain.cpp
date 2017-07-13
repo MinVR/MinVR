@@ -333,7 +333,6 @@ void VRMain::setConfigValue(const std::string &keyAndValStr) {
 }
 
 void VRMain::_startSSHProcess(const std::string &setupName,
-                              const bool &execute,
                               const bool noSSH) {
 
   // First, get the machine where it is to be started.
@@ -365,7 +364,7 @@ void VRMain::_startSSHProcess(const std::string &setupName,
     " '" + command + getOriginalCommandLine() + processSpecificArgs + logFile +
     " &' &";
 
-  // Start the client, at least if the execute flag tells us to.
+  // Start the client, at least if the noSSH flag tells us to.
   SHOWMSG("Starting " + sshcmd);
 
   if (!noSSH) {
@@ -375,8 +374,7 @@ void VRMain::_startSSHProcess(const std::string &setupName,
   }
 }
 
-bool VRMain::_startLocalProcess(const std::string &setupName,
-                                const bool &execute) {
+bool VRMain::_startLocalProcess(const std::string &setupName) {
   // Fork a new process for each remaining vrsetup to be run locally.
   // Unfortunately, this is OS-specific.
 
@@ -426,18 +424,14 @@ bool VRMain::_startLocalProcess(const std::string &setupName,
   // On linux and OSX we can simply fork a new process for each
   // vrsetup to start
 
-  if (execute) {
-    pid_t pid = fork();
-    if (pid == 0) {
-      _name = setupName;
-      return true; // This is the child.
-    } else {
-      return false; // This is the parent.
-    }
+  pid_t pid = fork();
+  if (pid == 0) {
+    _name = setupName;
+    return true; // This is the child.
   } else {
-    std::cout << "forking..." << setupName << std::endl;
-    return false; // No forking happened.
+    return false; // This is the parent.
   }
+
 #endif
 }
 
@@ -508,7 +502,7 @@ void VRMain::initialize(int argc, char **argv) {
     if (_config->exists("HostIP", *it) && !_config->exists("StartedSSH", "/")) {
 
       // Setup needs to be started via ssh.
-      _startSSHProcess(*it, execute);
+      _startSSHProcess(*it);
 
     } else {
 
@@ -520,7 +514,7 @@ void VRMain::initialize(int argc, char **argv) {
       } else {
 
         // This method returns true for a spawned child process.
-        if (_startLocalProcess(*it, execute)) break;
+        if (_startLocalProcess(*it)) break;
 
       }
     }
