@@ -446,10 +446,13 @@ void VRMain::initialize(int argc, char **argv) {
             "Something is wrong with your configuration file specification.");
   }
 
+  // Create an empty list of VRSetups that need starting.
 	VRStringArray vrSetupsToStartArray;
+
 	if (_config->exists("VRSetupsToStart","/")) {
 
-    // A comma-separated list of vrSetupsToStart was provided.
+    // A comma-separated list of vrSetupsToStart was provided.  Copy
+    // it into our list.
 		std::string vrSetupsToStart = _config->getValue("VRSetupsToStart","/");
 		VRString elem;
 		std::stringstream ss(vrSetupsToStart);
@@ -459,11 +462,10 @@ void VRMain::initialize(int argc, char **argv) {
 
 	} else {
 
-    // No vrSetupsToStart are specified, start all of VRSetups listed
-		// in the config file.
+    // No vrSetupsToStart are explicitly listed.  So start all of
+		// VRSetups listed in the config file.
     if (_config->exists("/MinVR/VRSetups")) {
 
-      // We have a list of Setups.  Move them to the start array.
       VRContainer names = _config->getValue("/MinVR/VRSetups");
       for (VRContainer::const_iterator it = names.begin();
            it != names.end(); ++it) {
@@ -492,16 +494,17 @@ void VRMain::initialize(int argc, char **argv) {
 	}
 
   // STEP 1: Loop through the setups to start.  If they belong on another
-  // machine, ssh them over there and let them run.  Adopt the first one that
-  // starts on this machine.  If there are more than one on this machine, fork
-  // (or the Win equivalent) them into separate processes.
+  // machine, ssh them over there and let them run.  Adopt the first one
+  // that starts on this machine.  If there are more than one to be started
+  // on this machine, fork (or the Win equivalent) them into separate
+  // processes.
 
   for (vector<std::string>::iterator it = vrSetupsToStartArray.begin();
        it != vrSetupsToStartArray.end(); it++)  {
 
     if (_config->exists("HostIP", *it) && !_config->exists("StartedSSH", "/")) {
 
-      // Setup needs to be started via ssh.
+      // Remote setups need to be started via ssh.
       _startSSHProcess(*it);
 
     } else {
@@ -521,9 +524,9 @@ void VRMain::initialize(int argc, char **argv) {
   }
 
   // All the processes with names have been started.  If this process
-  // has no name, it is not necessary to keep going.
+  // has no name, it must not be necessary to keep it going.
   if (_name.empty()) {
-    std::cout << "All VRSetups have been started - Exiting." << std::endl;
+    SHOWMSG("All VRSetups have been started - Exiting.");
     exit(1);
   }
 
@@ -546,10 +549,10 @@ void VRMain::initialize(int argc, char **argv) {
 	// factories to the master VRFactory.
 
 
-  // MinVR will try to load plugins based on a search path.  If it
-  // doesn't find the plugin in one path, it will look in another
-  // supplied path.  To specify custom paths for an application, use
-  // addPLuginSearchPath().  See VRSearchPath for more information.
+  // MinVR will try to load plugins based on a search path.  To specify
+  // custom paths for an application, use VRSearchPlugin.addPathEntry(), or
+  // add it to the configuration through a configuration file, or the
+  // command line.
   //
   // Any search path specified in the config file is prepended to the
   // default search path.
