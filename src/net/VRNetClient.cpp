@@ -41,6 +41,7 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
   }
 
   //This is a temporary fix to ensure the client can connect and that the connection is not refused
+  p = NULL;
   while(p == NULL){
     // loop through all the results and connect to the first we can
     for (p = servinfo; p != NULL; p = p->ai_next) {
@@ -98,6 +99,7 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
   }
   
   //This is a temporary fix to ensure the client can connect and that the connection is not refused
+  p = NULL;
   while(p == NULL){
     // loop through all the results and connect to the first we can
     for (p = servinfo; p != NULL; p = p->ai_next) {
@@ -121,7 +123,7 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
     exit(2);
   }
   
-  inet_ntop(p->ai_family, get_in_addr2((struct sockaddr *)p->ai_addr), s, sizeof s);
+  inet_ntop(p->ai_family, get_in_addr2((struct sockaddr *)p->ai_addr), s, sizeof(s));
   printf("client: connected to %s\n", s);
 
   freeaddrinfo(servinfo); // all done with this structure
