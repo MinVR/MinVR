@@ -374,6 +374,16 @@ public:
      */
     void initialize(int argc, char **argv);
 
+    /** Use this method to get the number of command line arguments that the 
+	initialize() methods did not need.
+    */
+    int getArgc() { return getLeftoverArgc(); };
+    /** Use this method to get the arguments on a command line that the 
+	initialize() methods did not need.
+    */
+    char** getArgv() { return getLeftoverArgv(); };
+
+
     /** For use before calling initialize().  This will either load a given file
         name, or it will search for a file according to the VRSearchConfig
         rules.

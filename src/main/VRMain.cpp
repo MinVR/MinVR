@@ -344,9 +344,9 @@ void VRMain::_startSSHProcess(const std::string &setupName,
   std::string command = "cd " + workingDirectory + ";";
 
   // If we have to adjust the display, set that in the command.
-  if (_config->exists("HostDisplay",setupName)) {
+  if (_config->exists("HostDisplay", setupName)) {
     std::string displayVar = _config->getValue("HostDisplay",setupName);
-    command += "export DISPLAY=" + displayVar + " ;";
+    command += " export DISPLAY=" + displayVar + " ;";
   }
 
   // These arguments are to be added to the process
@@ -367,10 +367,10 @@ void VRMain::_startSSHProcess(const std::string &setupName,
   // Start the client, at least if the noSSH flag tells us to.
   SHOWMSG("Starting " + sshcmd);
 
-  if (!noSSH) {
-    system(sshcmd.c_str());
-  } else {
+  if (noSSH) {
     SHOWMSG("(Not starting:" + sshcmd + ")");
+  } else {
+    system(sshcmd.c_str());
   }
 }
 
@@ -528,6 +528,8 @@ void VRMain::initialize(int argc, char **argv) {
   if (_name.empty()) {
     SHOWMSG("All VRSetups have been started - Exiting.");
     exit(1);
+  } else {
+    SHOWMSG("Starting node " + _name);
   }
 
   // STEP 4:  Sanity check to make sure the vrSetup we are continuing with is
