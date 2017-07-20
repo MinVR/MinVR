@@ -11,13 +11,13 @@
 // write() gets you unbuffered output, which is more or less atomic.
 #ifdef MinVR_DEBUG
 #define DEBUGMSG(msg) \
-  { std::string debugmsg = msg + "\n"; \
+  { std::string debugmsg = msg + std::string("\n");		\
     std::cout.write(debugmsg.c_str(), debugmsg.size()); }
 #else
 #define DEBUGMSG(msg)
 #endif
 #define SHOWMSG(msg) \
-  { std::string debugmsg = msg + "\n"; \
+  { std::string debugmsg = msg + std::string("\n");		\
     std::cout.write(debugmsg.c_str(), debugmsg.size()); }
 
 
@@ -38,7 +38,7 @@
 /// If you don't like providing advice, or if it's not at all clear
 /// what advice would be relevant, you can also do this:
 ///
-///   VRERROR("Syntax error.");
+///   VRERRORNOADV("Syntax error.");
 ///
 
 
@@ -150,10 +150,10 @@ protected:
   /// The pieces of the error message.
   ///
   std::string _whatMsg;
-  std::string _whereFile;
-  std::string _whereLine;
-  std::string _whereFunc;
   std::string _adviceMsg;
+  std::string _whereFile;
+  std::string _whereFunc;
+  std::string _whereLine;
 
   friend std::ostream & operator<<(std::ostream &os, const VRError& e) {
     return os << e._errorMessage();

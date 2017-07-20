@@ -24,7 +24,7 @@ VRDatumFactory VRDataIndex::_initializeFactory() {
 VRDatumFactory VRDataIndex::_factory = VRDataIndex::_initializeFactory();
 
 VRDataIndex::VRDataIndex(const std::string serializedData)  :
-  _overwrite(1), _indexName("MVR"), _linkNeeded(false) {
+  _indexName("MVR"), _overwrite(1), _linkNeeded(false) {
 
   Cxml *xml = new Cxml();
   xml->parse_string((char*)serializedData.c_str());
@@ -131,7 +131,7 @@ std::string VRDataIndex::serialize() {
            lt != nameList.end(); lt++) {
 
         // Search for a slash, not including the leading one.
-        int slashPos = lt->find_first_of("/", 1);
+        size_t slashPos = lt->find_first_of("/", 1);
 
         // If we didn't find it, this is a root-level name.
         if (slashPos == std::string::npos) {
@@ -547,8 +547,7 @@ VRContainer VRDataIndex::selectByAttribute(const std::string &attrName,
                                            const std::string nameSpace,
                                            const bool childOnly) {
 
-	std::string validatedNameSpace = validateNameSpace(nameSpace);
-  int vnsLength = validatedNameSpace.size();
+  std::string validatedNameSpace = validateNameSpace(nameSpace);
 
   std::list<std::string> outList;
 	for (VRDataMap::iterator it = _theIndex.begin(); it != _theIndex.end(); it++) {
@@ -587,9 +586,8 @@ std::string VRDataIndex::getByAttribute(const std::string &attrName,
                                         const std::string nameSpace) {
 
   std::string out = "";
-	std::string validatedNameSpace = validateNameSpace(nameSpace);
-  int vnsLength = validatedNameSpace.size();
-  int matchedLength = 0;
+  std::string validatedNameSpace = validateNameSpace(nameSpace);
+  size_t matchedLength = 0;
 
   // We are going to loop through all the names in the index to find the
   // longest string match to the input name space.  That *is* the match at the
@@ -673,7 +671,7 @@ VRContainer VRDataIndex::selectByName(const std::string &inName,
 
       // This is a full path name, so just start matching the two
       // names from their beginnings.
-      int i;
+      size_t i;
       for (i = 0; i < inNameParts.size(); i++) {
 
         if (i >= nameParts.size()) break;
@@ -690,8 +688,8 @@ VRContainer VRDataIndex::selectByName(const std::string &inName,
       // This part of the operation has two steps: find where to start the
       // the match testing, and then do the testing.
       //   Step 1: find the first match between the two exploded names.
-      int i = 0;
-      int j = 0;
+      size_t i = 0;
+      size_t j = 0;
       test = 1;
 
       for (i = 0; i < nameParts.size(); i++) {
@@ -803,7 +801,7 @@ std::string VRDataIndex::_getNameSpace(const std::string &fullName) {
     // Start at the end.
     std::string::const_reverse_iterator it = fullName.rbegin();
 
-    int charLimit = 0;
+    size_t charLimit = 0;
     // March backward to the first '/' (if there was one).
     while (((*(++it)) != '/') && (charLimit < fullName.length())) { charLimit++; };
 
@@ -992,19 +990,19 @@ std::string VRDataIndex::dereferenceEnvVars(const std::string &fileName) {
   // inside a '${}' combination, e.g. ${MVRHOME}/tests/config/test.xml
   //
   std::string pathName = fileName;
-  int dollarPos = 0;
+  size_t dollarPos = 0;
 
   dollarPos = pathName.find_first_of("$", dollarPos);
   while (dollarPos != std::string::npos) {
 
-    int bracketPos = pathName.find_first_of("}", dollarPos);
+    size_t bracketPos = pathName.find_first_of("}", dollarPos);
 
     if (bracketPos == string::npos) {
       VRERROR("Bad environment variable syntax.",
               "Environment variables must be enclosed like ${THIS}.");
     }
 
-    int bracketLen = 1 + bracketPos - dollarPos;
+    size_t bracketLen = 1 + bracketPos - dollarPos;
     std::string envVariable = pathName.substr(dollarPos + 2, bracketLen - 3);
 
     if (getenv(envVariable.c_str()) == NULL) {
@@ -1138,7 +1136,7 @@ std::string VRDataIndex::addData(const std::string &key,
 
 std::string VRDataIndex::addData(const std::string &keyAndValue) {
 
-  int poseql = keyAndValue.find("=");
+  size_t poseql = keyAndValue.find("=");
   if (poseql == std::string::npos) {
     VRERRORNOADV("MinVR Error: Expected a key=value format for the string: " +
                  keyAndValue);
@@ -1169,9 +1167,9 @@ std::string VRDataIndex::addData(const std::string &keyAndValue) {
 // serialize() method does not use white space formatting and
 // newlines.
 std::string VRDataIndex::printStructure(const std::string itemName,
-                                        const int lim) {
+                                        const size_t lim) {
 
-  int i;
+  size_t i;
   std::string outBuffer;
 
   // Get the pieces of the input name.
@@ -1198,7 +1196,7 @@ std::string VRDataIndex::printStructure(const std::string itemName,
     if (!printMe) continue;
 
     // Yes, print it.  First calculate and print the indent.
-    for (i = 0; i < ((int)elems.size() - 1); i++) outBuffer += " | ";
+    for (i = 0; i < (elems.size() - 1); i++) outBuffer += " | ";
 
     // The name is being printed in context, so we only need the last
     // element of the exploded name.
@@ -1224,7 +1222,7 @@ std::string VRDataIndex::printStructure(const std::string itemName,
     if (vrl.size() > 0) {
       outBuffer += "\n";
       // Matches the indent above.
-      for (i = 0; i < ((int)elems.size() - 1); i++) outBuffer += " | ";
+      for (i = 0; i < (elems.size() - 1); i++) outBuffer += " | ";
       outBuffer += "   [" + it->second->getAttributeListAsString() + " ]";
     }
 
