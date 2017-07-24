@@ -357,6 +357,8 @@ void VRMain::_startSSHProcess(const std::string &setupName,
   std::string logFile = "";
   if (_config->exists("LogToFile", setupName)) {
     logFile = " >" + (VRString)_config->getValue("LogToFile",setupName) + " 2>&1 ";
+  } else {
+    logFile = " >/dev/null 2>&1 ";
   }
 
   std::string sshcmd;
