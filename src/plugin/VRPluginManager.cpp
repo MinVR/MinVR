@@ -56,13 +56,13 @@ VRPluginManager::VRPluginManager(VRMainInterface *vrMain) : _vrMain(vrMain) {
 }
 
 VRPluginManager::~VRPluginManager() {
-	for (int f = 0; f < _plugins.size(); f++)
+	for (size_t f = 0; f < _plugins.size(); f++)
 	{
 		_plugins[f]->unregisterWithMinVR(_vrMain);
 		delete _plugins[f];
 	}
 
-	for (int f = 0; f < _libraries.size(); f++)
+	for (size_t f = 0; f < _libraries.size(); f++)
 	{
 		delete _libraries[f];
 	}

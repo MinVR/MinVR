@@ -760,7 +760,7 @@ VRMain::synchronizeAndProcessEvents()
     _config->addData(event + dataField, (float)VRSystem::getTime());
     eventsFromDevices.push(_config->serialize(event));
 
-	for (int f = 0; f < _inputDevices.size(); f++) {
+	for (size_t f = 0; f < _inputDevices.size(); f++) {
 		_inputDevices[f]->appendNewInputEventsSinceLastCall(&eventsFromDevices);
 	}
 	//eventsFromDevices.printQueue();
@@ -786,7 +786,7 @@ VRMain::synchronizeAndProcessEvents()
         VREventInternal event(eventName, _config);
 
 		// Invoke the user's callback on the new event
-		for (int f = 0; f < _eventHandlers.size(); f++) {
+		for (size_t f = 0; f < _eventHandlers.size(); f++) {
 			_eventHandlers[f]->onVREvent(*event.getAPIEvent());
 		}
 

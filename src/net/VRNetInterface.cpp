@@ -63,7 +63,7 @@ void VRNetInterface::waitForAndReceiveOneByte(SOCKET socketID,
   while (receivedID != messageID) {
     int status = receiveall(socketID, &receivedID, 1);
     if (status == -1) {
-      std::cerr << "NetInterface error: receiveall failed." << std::endl;
+      std::cerr << "NetInterface error: receiveall failed receiving singly byte." << std::endl;
       exit(1);
     }
     else if ((status == 1) && (receivedID != messageID)) {
@@ -96,7 +96,7 @@ VRNetInterface::waitForAndReceiveEventData(SOCKET socketID) {
   unsigned char buf1[VRNET_SIZEOFINT];
   int status = receiveall(socketID, buf1, VRNET_SIZEOFINT);
   if (status == -1) {
-    std::cerr << "NetInterface error: receiveall failed." << std::endl;
+    std::cerr << "NetInterface error: receiveall failed receiving event header." << std::endl;
     exit(1);
   }
   int dataSize = unpackInt(buf1);
@@ -105,7 +105,7 @@ VRNetInterface::waitForAndReceiveEventData(SOCKET socketID) {
   unsigned char *buf2 = new unsigned char[dataSize+1];
   status = receiveall(socketID, buf2, dataSize);
   if ((status == -1) || (status != dataSize)) {
-    std::cerr << "NetInterface error: receiveall failed." << std::endl;
+    std::cerr << "NetInterface error: receiveall failed receiving event data." << std::endl;
     exit(1);
   }
   

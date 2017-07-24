@@ -165,7 +165,7 @@ int testSearchPath() {
   std::cout << "spp:" << spp.findFile(libRoot) << std::endl;
 
   // Did we find it?
-  out += spp.findFile(libRoot).compare("testSearch/test2/test4/Henry/lib/libHenryd.dylib");
+  out += spp.findFile(libRoot).compare("testSearch/test2/test4/Henry/lib/" + libName);
 
   MinVR::VRSearchConfig spc;
   spc.digestPathString(sp.getPath());

@@ -60,7 +60,7 @@ namespace MinVR {
 void VRPN_CALLBACK analogHandler(void *thisPtr, const vrpn_ANALOGCB info)
 {
   int lastchannel = info.num_channel;
-  if (lastchannel > ((VRVRPNAnalogDevice*)thisPtr)->numChannels()) {
+  if (lastchannel > (int)((VRVRPNAnalogDevice*)thisPtr)->numChannels()) {
     lastchannel = ((VRVRPNAnalogDevice*)thisPtr)->numChannels();
   }
   for (int i=0;i<lastchannel;i++) {
@@ -71,7 +71,7 @@ void VRPN_CALLBACK analogHandler(void *thisPtr, const vrpn_ANALOGCB info)
 VRVRPNAnalogDevice::VRVRPNAnalogDevice(const std::string &vrpnAnalogDeviceName, const std::vector<std::string> &eventsToGenerate)
 {
 	_eventNames = eventsToGenerate;
-	for (int i=0;i<_eventNames.size();i++) {
+	for (size_t i=0;i<_eventNames.size();i++) {
 		_channelValues.push_back(0.0);
 	}
 
@@ -91,7 +91,7 @@ VRVRPNAnalogDevice::~VRVRPNAnalogDevice()
 
 std::string	VRVRPNAnalogDevice::getEventName(int channelNumber)
 {
-	if (channelNumber >= _eventNames.size()) {
+  if (channelNumber >= (int)_eventNames.size()) {
 		return std::string("VRPNAnalogDevice_Unknown_Event");
 	}
 	else {
