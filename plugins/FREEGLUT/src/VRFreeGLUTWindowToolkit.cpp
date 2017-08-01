@@ -37,9 +37,6 @@ VRFreeGLUTWindowToolkit::VRFreeGLUTWindowToolkit(VRMainInterface *vrMain) : _vrM
 }
 
 VRFreeGLUTWindowToolkit::~VRFreeGLUTWindowToolkit() {
-	if (_inputDev != NULL) {
-		delete _inputDev;
-	}
     for (std::vector<int>::iterator it = _windows.begin(); it != _windows.end(); ++it){
 			glutDestroyWindow(*it);
 	}
