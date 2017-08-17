@@ -707,7 +707,7 @@ VRMain::synchronizeAndProcessEvents() {
   frameStartEvent.addData("ElapsedSeconds", (float)VRSystem::getTime());
   frameStartEvent.addData("EventType", "AnalogChange");
   frameStartEvent.linkNode("ElapsedSeconds", "DefaultData");
-  eventQueue.push(frameStartEvent.serialize());
+  eventQueue.push(frameStartEvent);
 
   for (int f = 0; f < _inputDevices.size(); f++) {
     _inputDevices[f]->appendNewInputEventsSinceLastCall(&eventQueue);
