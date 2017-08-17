@@ -1,14 +1,14 @@
 /* ================================================================================
 
-This file is part of the MinVR Open Source Project, which is developed and 
-maintained collaboratively by the University of Minnesota's Interactive 
+This file is part of the MinVR Open Source Project, which is developed and
+maintained collaboratively by the University of Minnesota's Interactive
 Visualization Lab and the Brown University Visualization Research Lab.
 
 File: VRVRPNTrackerDevice.cpp
 
-Original Author(s) of this File: 
+Original Author(s) of this File:
 	Daniel Keefe, 2004, Brown University (originally VRG3D/VRPNTrackerDevice.cpp)
-	
+
 Author(s) of Significant Updates/Modifications to the File:
 	Bret Jackson, 2013, University of Minnesota (adapted to MinVR)
 	Dan Keefe, 2016, University of Minnesota (adapted to MinVR2)
@@ -78,7 +78,7 @@ void VRPN_CALLBACK trackerHandler(void *thisPtr, const vrpn_TRACKERCB info)
     vrpnEvent(0,3) = info.pos[0];
     vrpnEvent(1,3) = info.pos[1];
     vrpnEvent(2,3) = info.pos[2];
-  
+
 	VRVRPNTrackerDevice* device = ((VRVRPNTrackerDevice*)thisPtr);
 	device->processEvent(vrpnEvent, info.sensor);
 }
@@ -194,7 +194,7 @@ std::string VRVRPNTrackerDevice::getEventName(int trackerNumber)
 		return _eventNames[trackerNumber];
 }
 
-  
+
 void VRVRPNTrackerDevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents)
 {
   // If this poll routine isn't called fast enough then the UDP buffer can fill up and
@@ -212,17 +212,15 @@ void VRVRPNTrackerDevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEv
     _vrpnDevice->mainloop();
   }
 
-  while (_pendingEvents.notEmpty()) {
-    inputEvents->push(_pendingEvents.getSerializedObject());
-    _pendingEvents.pop();
-  }
+  inputEvents->addQueue(_pendingEvents);
+  _pendingEvents.clear();
 }
-  
+
 
 VRInputDevice*
 VRVRPNTrackerDevice::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
   std::string devNameSpace = nameSpace;
-    
+
   std::string vrpnName = config->getValue("VRPNDeviceName", devNameSpace);
   std::vector<std::string> eventsToGenerate = config->getValue("EventsToGenerate", devNameSpace);
   double scale = config->getValue("TrackerUnitsToRoomUnitsScale", devNameSpace);
@@ -231,13 +229,13 @@ VRVRPNTrackerDevice::create(VRMainInterface *vrMain, VRDataIndex *config, const 
   bool wait = ((int)config->getValue("WaitForNewReportInPoll", nameSpace)) == 1;
   bool convert = ((int)config->getValue("ConvertLHtoRH", nameSpace)) == 1;
   bool ignore = ((int)config->getValue("IgnoreZeroes", nameSpace)) == 1;
-  
-  
+
+
   std::vector<VRMatrix4> p2t;
   std::vector<VRMatrix4> fo;
   for (int  i = 0; i < eventsToGenerate.size(); i++) {
 	  std::string trackerNameSpace = config->validateNameSpace(nameSpace) + eventsToGenerate[i] + "/";
-    
+
     VRMatrix4 m = config->getValue("PropToTracker", trackerNameSpace);
     m = m.orthonormal();
     p2t.push_back(m);
@@ -245,13 +243,13 @@ VRVRPNTrackerDevice::create(VRMainInterface *vrMain, VRDataIndex *config, const 
     m = m.orthonormal();
     fo.push_back(m);
   }
-  
+
   VRInputDevice *dev = new VRVRPNTrackerDevice(vrpnName, eventsToGenerate, scale,
                                                d2r, p2t, fo, wait, convert, ignore);
   return dev;
 }
 
-  
+
 } // end namespace
 
 

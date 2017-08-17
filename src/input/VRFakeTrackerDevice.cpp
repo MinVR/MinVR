@@ -4,8 +4,8 @@
 
 namespace MinVR {
 
-    
-    
+
+
 VRFakeTrackerDevice::VRFakeTrackerDevice(const std::string &trackerName,
                                          const std::string &toggleOnOffEventName,
                                          float xyScale,
@@ -22,7 +22,7 @@ VRFakeTrackerDevice::VRFakeTrackerDevice(const std::string &trackerName,
     _state = VRFakeTrackerDevice::XYTranslating;
     _z = 0.0;
 }
-    
+
 
 
 VRFakeTrackerDevice::~VRFakeTrackerDevice()
@@ -59,14 +59,14 @@ void VRFakeTrackerDevice::onVREvent(const VRDataIndex &eventData)
             if (_tracking) {
                 float deltaX = mousex - _lastMouseX;
                 float deltaY = mousey - _lastMouseY;
-            
+
                 if (_state == VRFakeTrackerDevice::ZTranslating) {
                     _z += _zScale * deltaY;
                 }
                 else if (_state == VRFakeTrackerDevice::Rotating) {
                     _R = VRMatrix4::rotationY(_rScale*deltaX) * VRMatrix4::rotationX(-_rScale*deltaY) * _R;
                 }
-            
+
                 VRVector3 pos = VRVector3(_xyScale * mousex, _xyScale * mousey, _z);
                 VRMatrix4 xform  = VRMatrix4::translation(pos) * _R;
 
@@ -74,40 +74,42 @@ void VRFakeTrackerDevice::onVREvent(const VRDataIndex &eventData)
                 di.addData("Transform", xform);
                 _pendingEvents.push_back(di);
             }
-            
+
             _lastMouseX = mousex;
             _lastMouseY = mousey;
         }
     }
 }
 
-  
-void VRFakeTrackerDevice::appendNewInputEventsSinceLastCall(std::vector<VRDataIndex> *inputEvents)
+
+void VRFakeTrackerDevice::appendNewInputEventsSinceLastCall(VRDataQueue* queue)
 {
-    for (std::vector<VRDataIndex>::iterator evt = _pendingEvents.begin(); evt < _pendingEvents.end(); ++evt) {
-        inputEvents->push_back(*evt);
+    for (std::vector<VRDataIndex>::iterator evt = _pendingEvents.begin();
+         evt < _pendingEvents.end(); ++evt) {
+      queue->push(evt->serialize());
     }
     _pendingEvents.clear();
 }
-  
+
 
 VRInputDevice*
-VRFakeTrackerDevice::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
-    std::string devNameSpace = nameSpace;
-  
-    std::string trackerName = config->getValue("TrackerName", devNameSpace);
-    std::string toggleEvent = config->getValue("ToggleOnOffEvent", devNameSpace);
-    float xyScale = config->getValue("XYTranslationScale", devNameSpace);
-    float zScale = config->getValue("ZTranslationScale", devNameSpace);
-    float rScale = config->getValue("RotationScale", devNameSpace);
-    
-    VRFakeTrackerDevice *dev = new VRFakeTrackerDevice(trackerName, toggleEvent, xyScale, zScale, rScale);
-    vrMain->addEventHandler(dev);
+VRFakeTrackerDevice::create(VRMainInterface *vrMain, VRDataIndex *config,
+                            const std::string &nameSpace) {
+  std::string devNameSpace = nameSpace;
 
-    return dev;
+  std::string trackerName = config->getValue("TrackerName", devNameSpace);
+  std::string toggleEvent = config->getValue("ToggleOnOffEvent", devNameSpace);
+  float xyScale = config->getValue("XYTranslationScale", devNameSpace);
+  float zScale = config->getValue("ZTranslationScale", devNameSpace);
+  float rScale = config->getValue("RotationScale", devNameSpace);
+
+  VRFakeTrackerDevice *dev = new VRFakeTrackerDevice(trackerName, toggleEvent, xyScale, zScale, rScale);
+  vrMain->addEventHandler(dev);
+
+  return dev;
 }
 
-  
+
 } // end namespace
 
 

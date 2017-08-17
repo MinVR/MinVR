@@ -32,7 +32,7 @@ namespace MinVR {
 
 class VRNetInterface {
 public:
-    virtual void syncEventDataAcrossAllNodes(std::vector<VRDataIndex> *events) = 0;
+  virtual VRDataQueue syncEventDataAcrossAllNodes(VRDataQueue eventQueue) = 0;
 	virtual void syncSwapBuffersAcrossAllNodes() = 0;
 
 	virtual ~VRNetInterface() {};

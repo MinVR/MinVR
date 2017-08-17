@@ -26,6 +26,14 @@ VRDatumFactory VRDataIndex::_factory = VRDataIndex::_initializeFactory();
 VRDataIndex::VRDataIndex(const std::string serializedData)  :
   _indexName("MVR"), _overwrite(1), _linkNeeded(false) {
 
+  // If this is just a name, we just need an empty data index with the
+  // given name.
+  if (serializedData[0] != '<') {
+    _indexName = serializedData;
+    return;
+  }
+
+  // If you're here, the input data looks like XML. So parse it.
   Cxml *xml = new Cxml();
   xml->parse_string((char*)serializedData.c_str());
   element *xml_node = xml->get_root_element();
@@ -920,64 +928,64 @@ VRDataIndex::_getEntry(const std::string &key,
     return _theIndex.end();
   }
 }
-    
+
 // non-const version
 VRDataIndex::VRDataMap::iterator
 VRDataIndex::_getEntry(const std::string &key,
                        const std::string nameSpace,
                        const bool inherit) {
-    
+
     VRDataMap::iterator outIt;
-    
+
     // If the input key begins with a "/", it is a fully qualified
     // name already.  That is, it already includes the name space.
     if (key[0] == '/') {
-        
+
         return _theIndex.find(key);
-        
+
     } else {
-        
+
         // If you're asking whether a fully-qualified name works, you want
         // a yes or no.  If you're asking about a relative name, you will
         // accept a name defined in a namespace senior to the one
         // specified.  So answering the query for an entry to match the
         // given name requires looking through the senior namespaces.
-        
+
         std::string validatedNameSpace = validateNameSpace(nameSpace);
-        
+
         // If inheritance is turned off, just check if this name exists.
         if (!inherit) return _theIndex.find(validatedNameSpace + key);
-        
+
         // Separate the name space into its constituent elements.
         std::vector<std::string> elems = _explodeName(validatedNameSpace);
-        
+
         // We start from the longest name space and peel off the rightmost
         // element each iteration until we find a match, or not.  This
         // provides for the most local version of key to prevail.  The
         // last iteration creates an empty testSpace, on purpose, to test
         // the root level nameSpace.
         for (int N = elems.size(); N >= 0; --N) {
-            
+
             std::vector<std::string> names(&elems[0], &elems[0] + N);
             std::string testSpace;
-            
+
             for (std::vector<std::string>::iterator it = names.begin();
                  it != names.end(); ++it) {
-                
+
                 testSpace += *it + "/" ;
             }
-            
+
             outIt = _theIndex.find(testSpace + key);
             if (outIt != _theIndex.end()) {
                 return outIt;
             }
         }
-        
+
         // If we are here, there is no matching name in the index.
         return _theIndex.end();
     }
 }
-    
+
 
 std::string VRDataIndex::getFullKey(const std::string &key,
                                     const std::string nameSpace,
@@ -1005,14 +1013,14 @@ VRDatumPtr VRDataIndex::_getDatum(const std::string &key,
     return p->second;
   }
 }
-    
+
 // Returns the data object for this name.
 const VRDatumPtr VRDataIndex::_getDatum(const std::string &key,
                                   const std::string nameSpace,
                                   const bool inherit) const {
-    
+
     VRDataMap::const_iterator p = _getEntry(key, nameSpace, inherit);
-    
+
     if (p == _theIndex.end()) {
         VRERRORNOADV("Never heard of " + key + " in namespace " + nameSpace);
     } else {
@@ -1248,6 +1256,9 @@ std::string VRDataIndex::printStructure(const std::string itemName,
   for (VRDataMap::const_iterator it = _theIndex.begin(); it != _theIndex.end(); ++it) {
 
     bool printMe = true;
+
+    // If we're printing the entire index, prepend the index name.
+    if (itemName.compare("/") == 0) outBuffer += _indexName + "\n";
 
     // Get the pieces of the current name.
     std::vector<std::string> elems = _explodeName( it->first );

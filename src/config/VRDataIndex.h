@@ -405,6 +405,10 @@ public:
   /// And another that fills an index with some serialized data.  The
   /// root name in the serialized data is adopted as the '_indexName' field
   /// of the index object.
+  ///
+  /// If the input data is just a simple string with no XML features
+  /// (i.e. it does not begin with a '<') then just create an empty
+  /// index with the given name.
   VRDataIndex(const std::string serializedData);
 
   /// \brief Makes a deep copy.
@@ -1106,11 +1110,11 @@ private:
   VRDataMap::iterator _getEntry(const std::string &key,
                                 const std::string nameSpace = "",
                                 const bool inherit = true);
-    
+
   VRDataMap::const_iterator _getEntry(const std::string &key,
                                       const std::string nameSpace = "",
                                       const bool inherit = true) const;
-    
+
   // Returns a pointer to the value with a given name (and namespace)
   VRDatumPtr _getDatum(const std::string &key,
                        const std::string nameSpace = "",
@@ -1205,7 +1209,18 @@ private:
 
   // If this is false, we don't need to do linkNodes() or linkContent().
   bool _linkNeeded;
+
+  friend std::ostream & operator<<(std::ostream &os, const VRDataIndex& di) {
+    return os << di.printStructure();
+  }
 };
+
+/// \brief A class to hold an arbitrary event.
+///
+/// An event in MinVR is just a VRDataIndex object.
+typedef VRDataIndex VRRawEvent;
+
+
 
 
 // Where are we going with this: We have an index that contains

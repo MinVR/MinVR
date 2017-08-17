@@ -15,7 +15,8 @@ void *get_in_addr2(struct sockaddr *sa) {
 
 VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverPort)
 {
-	printf("client: connecting...\n");
+  std::cerr << "client: connecting..." << std::endl;
+
 #ifdef WIN32  // WinSock implementation
 
   WSADATA wsaData;
@@ -48,14 +49,14 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
 	    std::cerr << "socket() failed with error: " << WSAGetLastError() << std::endl;
         continue;
       }
-    
+
       if (connect(sockfd, p->ai_addr, (int)p->ai_addrlen) == SOCKET_ERROR) {
         closesocket(sockfd);
         sockfd = INVALID_SOCKET;
 	    std::cerr << "connect() to server socket failed" << std::endl;
         continue;
       }
-    
+
       break;
     }
   }
@@ -65,7 +66,7 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
     //return 2;
     exit(2);
   }
-  
+
   //inet_ntop(p->ai_family, get_in_addr2((struct sockaddr *)p->ai_addr), s, sizeof s);
   //printf("client: connecting to %s\n", s);
   printf("client: connected\n");
@@ -81,22 +82,22 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
 
 #else  // BSD sockets implementation
 
-
-  int sockfd;  
+  int sockfd;
   struct addrinfo hints, *servinfo, *p;
   int rv;
   char s[INET6_ADDRSTRLEN];
-  
+  char problemString[50];
+
   memset(&hints, 0, sizeof hints);
   hints.ai_family = AF_UNSPEC;
   hints.ai_socktype = SOCK_STREAM;
 
   if ((rv = getaddrinfo(serverIP.c_str(), serverPort.c_str(), &hints, &servinfo)) != 0) {
-    fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
+    std::cerr << "getaddrinfo: " << std::string(gai_strerror(rv)) << std::endl;
     //return 1;
     exit(1);
   }
-  
+
   //This is a temporary fix to ensure the client can connect and that the connection is not refused
   while(p == NULL){
     // loop through all the results and connect to the first we can
@@ -105,24 +106,26 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
         perror("client: socket");
         continue;
       }
-    
+
       if (connect(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
         close(sockfd);
-        perror("client: connect");
+        sprintf(problemString,
+                "client (pid=%d) connection issue, will retry", getpid());
+        perror(problemString);
         continue;
       }
-    
+
       break;
     }
   }
   if (p == NULL) {
-    fprintf(stderr, "client: failed to connect\n");
+    std::cerr << "client: failed to connect" << std::endl;
     //return 2;
     exit(2);
   }
-  
+
   inet_ntop(p->ai_family, get_in_addr2((struct sockaddr *)p->ai_addr), s, sizeof s);
-  printf("client: connected to %s\n", s);
+  std::cerr << "client: connected to " << s << std::endl;
 
   freeaddrinfo(servinfo); // all done with this structure
 
@@ -138,7 +141,7 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
 
 VRNetClient::~VRNetClient()
 {
-#ifdef WIN32 
+#ifdef WIN32
   closesocket(_socketFD);
   WSACleanup();
 #else
@@ -147,29 +150,19 @@ VRNetClient::~VRNetClient()
 }
 
 
-void
-VRNetClient::syncEventDataAcrossAllNodes(std::vector<VRDataIndex> *events)
-{
+VRDataQueue VRNetClient::syncEventDataAcrossAllNodes(VRDataQueue eventQueue) {
 
-  // TODO TOM:  Serialize events into eventData here...
-  VRDataQueue::serialData eventData;
-    
-    
   // 1. send inputEvents to server
-  sendEventData(_socketFD, eventData);
+  sendEventData(_socketFD, eventQueue.serialize());
 
   // 2. receive all events from the server
   VRDataQueue::serialData allEventData = waitForAndReceiveEventData(_socketFD);
 
-
-  // TODO TOM: Deserialize allEventData into events array here...
-  // events->clear();
-  // events->push_back(....);
-    
+  return VRDataQueue(allEventData);
 }
 
-void 
-VRNetClient::syncSwapBuffersAcrossAllNodes() 
+void
+VRNetClient::syncSwapBuffersAcrossAllNodes()
 {
   // 1. send a swap_buffers_request message to the server
   sendSwapBuffersRequest(_socketFD);
@@ -178,4 +171,4 @@ VRNetClient::syncSwapBuffersAcrossAllNodes()
   waitForAndReceiveSwapBuffersNow(_socketFD);
 }
 
-} // end namespace MinVR  
+} // end namespace MinVR

@@ -15,15 +15,14 @@
 #include <config/VRDataIndex.h>
 
 namespace MinVR {
-  
+
 class VRNetServer : public VRNetInterface {
  public:
 
   VRNetServer(const std::string &listenPort, int numExpectedClients);
   ~VRNetServer();
 
-  void syncEventDataAcrossAllNodes(std::vector<VRDataIndex> *events);
-  VRDataQueue::serialData syncEventDataAcrossAllNodes();
+  VRDataQueue syncEventDataAcrossAllNodes(VRDataQueue eventQueue);
 
   void syncSwapBuffersAcrossAllNodes();
 
