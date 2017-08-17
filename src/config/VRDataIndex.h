@@ -398,7 +398,7 @@ public:
   ///
   /// The created index has the default name "MVR", which can be changed with
   /// setName().  The index name is used when the index is serialized.
-  VRDataIndex()  : _overwrite(1), _indexName("MVR"), _linkNeeded(false) {}
+  VRDataIndex()  : _indexName("MVR"), _overwrite(1), _linkNeeded(false) {}
 
   /// \brief Creates an index containing the given data.
   ///
@@ -1014,7 +1014,7 @@ public:
   /// \param lim The maximum number of characters to output on each line.  If
   ///            exceeded, the text will be truncated.
   std::string printStructure(const std::string itemName = "/",
-                             const int lim = 80);
+                             const size_t lim = 80);
 
   /// \brief Returns a list of all the fully-qualified names in the index.
   ///
@@ -1023,6 +1023,11 @@ public:
   /// no container in the index that contains these names.  If you want a list
   /// of the names in some container, use getValue().
   std::list<std::string> findAllNames();
+
+  /// \brief Does the index have any entries?
+  ///
+  /// \return A boolean value, true if empty.
+  bool empty() { return _theIndex.empty(); };
 
   ///@}
 

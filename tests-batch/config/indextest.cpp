@@ -655,9 +655,6 @@ int testEscapedChars() {
 
   int out = 0;
 
-  int lctr;
-  int N = 1000;
-
   LOOP {
 
     MinVR::VRDataIndex *n = setupIndex();

@@ -42,7 +42,6 @@ protected:
 template <typename T>
 T* VRFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &dataContainer) {
 
-  int i = 0;
   // Run through all the items in the factory trying to generate something of the
   // correct type.
   for (std::vector<VRItemFactory*>::iterator it = _itemFactories.begin();

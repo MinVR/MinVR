@@ -18,7 +18,8 @@
 if(TARGET quat)
 	# Look for the header file.
 	find_path(QUATLIB_INCLUDE_DIR NAMES quat.h
-			PATHS ${quatlib_SOURCE_DIR})
+	  HINTS ENV CPATH
+	  PATHS ${quatlib_SOURCE_DIR})
 
 	set(QUATLIB_LIBRARY "quat")
 
@@ -55,6 +56,7 @@ else()
 		quat.h
 		HINTS
 		"${QUATLIB_ROOT_DIR}"
+		ENV CPATH
 		PATH_SUFFIXES
 		include
 		PATHS

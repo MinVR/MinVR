@@ -86,7 +86,7 @@ VRVRPNButtonDevice::~VRVRPNButtonDevice()
 
 std::string VRVRPNButtonDevice::getEventName(int buttonNumber)
 {
-	if (buttonNumber >= _eventNames.size()) {
+  if (buttonNumber >= (int)_eventNames.size()) {
 		return std::string("VRPNButtonDevice_Unknown_Event");
 	}
 	else {

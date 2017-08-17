@@ -16,8 +16,10 @@
 
 namespace MinVR {
 
-VRScalableNode::VRScalableNode(const std::string &name, const std::string _meshName, double _near, double _far) : VRDisplayNode(name) , isInitialized(false), meshName(_meshName)
-		, near(_near), far(_far), isLeftEye(false){
+  VRScalableNode::VRScalableNode(const std::string &name, const std::string _meshName, 
+				 double _near, double _far) : 
+    VRDisplayNode(name),  meshName(_meshName), isInitialized(false),
+    isLeftEye(false), near(_near), far(_far) {
 	
 }
 	

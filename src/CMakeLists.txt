@@ -149,26 +149,22 @@ set(vr_api_h
 )
 
 set(vr_main_cpp
-  ${vr_src_dir}/main/VRAppLauncher.cpp
   ${vr_src_dir}/main/VREventInternal.cpp
   ${vr_src_dir}/main/VRFactory.cpp
   ${vr_src_dir}/main/VRGraphicsHandler.cpp
   ${vr_src_dir}/main/VRGraphicsStateInternal.cpp
-  ${vr_src_dir}/main/VRLocalAppLauncher.cpp
   ${vr_src_dir}/main/VRMain.cpp
   ${vr_src_dir}/main/VRSearchPath.cpp
   ${vr_src_dir}/main/VRSystem.cpp
 )
 
 set(vr_main_h
-  ${vr_src_dir}/main/VRAppLauncher.h
   ${vr_src_dir}/main/VREventHandler.h
   ${vr_src_dir}/main/VREventInternal.h
   ${vr_src_dir}/main/VRFactory.h
   ${vr_src_dir}/main/VRGraphicsHandler.h
   ${vr_src_dir}/main/VRGraphicsStateInternal.h
   ${vr_src_dir}/main/VRItemFactory.h
-  ${vr_src_dir}/main/VRLocalAppLauncher.h
   ${vr_src_dir}/main/VRMain.h
   ${vr_src_dir}/main/VRMainInterface.h
   ${vr_src_dir}/main/VRRenderHandler.h
@@ -246,6 +242,7 @@ source_group("Config Files" FILES ${vr_config_files})
 
 
 add_library(MinVR ${vr_sources})
+target_link_libraries(MinVR dl)
 
 install(TARGETS MinVR
         LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib

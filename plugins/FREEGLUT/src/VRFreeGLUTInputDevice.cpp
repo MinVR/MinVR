@@ -63,7 +63,7 @@ void VRFreeGLUTInputDevice::appendNewInputEventsSinceLastCall(VRDataQueue* queue
 	}
 	
 
-    for (int f = 0; f < _events.size(); f++)
+    for (size_t f = 0; f < _events.size(); f++)
     {
     	queue->push(_events[f]);
     }

@@ -46,7 +46,8 @@ bool Cxml::get_node(char* xml_string)
     const char CTAB = '\t';
     const char CEXCLAMATION = '!';
     const char CMINUS = '-';
-    const char CSQRPO = '[';
+    // This is not currently used.  TS.
+    //    const char CSQRPO = '[';
     const char CSQRPC = ']';
     const char SZCDATA[9] = "![CDATA[";
     const char CQM = '?';
