@@ -9,16 +9,18 @@
 #include <ctime>
 #include <cctype>
 
+#include "VROpenVRRenderModelHandler.h"
 #include "VROpenVRInputDevice.h"
+#include "VROpenVRNode.h"
 
 namespace MinVR {
                        
-VROpenVRInputDevice::VROpenVRInputDevice(vr::IVRSystem *pHMD, string name):m_pHMD(pHMD), m_name(name){
+	VROpenVRInputDevice::VROpenVRInputDevice(vr::IVRSystem *pHMD, string name, VROpenVRNode * node) :m_pHMD(pHMD), m_name(name), m_node(node){
 	updateDeviceNames();
-}
+	}
 
-VROpenVRInputDevice::~VROpenVRInputDevice() {
-}
+	VROpenVRInputDevice::~VROpenVRInputDevice() {
+	}
 
 void VROpenVRInputDevice::appendNewInputEventsSinceLastCall(VRDataQueue* queue) {
 	//process VR Events
@@ -229,8 +231,10 @@ void VROpenVRInputDevice::processVREvent( const vr::VREvent_t & event ,vr::Track
 		case vr::VREvent_TrackedDeviceActivated:
 		{
 			updateDeviceNames(); 
-			std::cerr << "Device " << getDeviceName(event.trackedDeviceIndex) << " idx : " << event.trackedDeviceIndex << " attached.\n" << std::endl;
-			
+			if (m_node->getRenderModelHandler())
+				m_node->getRenderModelHandler()->queueModelForLoading(event.trackedDeviceIndex);
+
+			std::cerr << "Device " << getDeviceName(event.trackedDeviceIndex) << " idx : " << event.trackedDeviceIndex << " attached.\n" << std::endl;		
 		}
 		break;
 	case vr::VREvent_TrackedDeviceDeactivated:

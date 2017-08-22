@@ -30,6 +30,7 @@ struct FramebufferDesc
 
 namespace MinVR {
   
+	class VROpenVRRenderModelHandler;
 /** OpenVR Implementation for the MinVR VRDisplayNode abstraction.
  */
 class VROpenVRNode : public VRDisplayNode {
@@ -45,9 +46,11 @@ public:
 	//virtual void onVREvent(const std::string &eventName, VRDataIndex *eventData);
 	PLUGIN_API static VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 	
+	VROpenVRRenderModelHandler* getRenderModelHandler(){ return m_rendermodelhandler; }
+
 private:
 	VROpenVRInputDevice * _inputDev;
-
+	VROpenVRRenderModelHandler * m_rendermodelhandler;
 	bool isInitialized;
 	vr::IVRSystem *m_pHMD;
 	vr::IVRRenderModels *m_pRenderModels;

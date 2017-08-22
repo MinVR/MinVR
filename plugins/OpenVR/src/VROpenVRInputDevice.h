@@ -14,22 +14,22 @@
 #include <vector>
 #include <string>
 
-#include <openvr.h>
 
+#include <openvr.h>
 #include <config/VRDataQueue.h>
 #include <input/VRInputDevice.h>
 #include <plugin/VRPlugin.h>
 #include <math/VRMath.h>
+#include "VROpenVRRenderModel.h"
 
 namespace MinVR {
-
-	class VROpenVRRenderModels;
+	class VROpenVRNode;
 
 /** A VRInputDevice that polls input events 
  */
 class VROpenVRInputDevice : public VRInputDevice {
 public:
-	PLUGIN_API VROpenVRInputDevice(vr::IVRSystem *pHMD, std::string name);
+	PLUGIN_API VROpenVRInputDevice(vr::IVRSystem *pHMD, std::string name, VROpenVRNode * node);
 	PLUGIN_API virtual ~VROpenVRInputDevice();
 
 	PLUGIN_API void appendNewInputEventsSinceLastCall(VRDataQueue* queue);
@@ -37,14 +37,18 @@ public:
 	PLUGIN_API void updatePoses();
 	PLUGIN_API VRMatrix4 getPose(int device_idx);
  
+
+
 private:
 	std::vector<std::string> _events;
 	VRDataIndex _dataIndex;
     std::vector<int > _windows;
 	vr::IVRSystem *m_pHMD;
+	VROpenVRNode* m_node;
 	std::vector<std::string> devices;
 	vr::TrackedDevicePose_t m_rTrackedDevicePose[ vr::k_unMaxTrackedDeviceCount ];
 	std::string m_name;
+	
 	void processVREvent( const vr::VREvent_t & event ,vr::TrackedDevicePose_t *pose);
 	void reportStates();
 	VRMatrix4 poseToMatrix4(vr::TrackedDevicePose_t *pose);

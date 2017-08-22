@@ -14,6 +14,7 @@
 #endif
 
 #include "VROpenVRNode.h"
+#include "VROpenVRRenderModelHandler.h"
 #include <cmath>
 
 #if defined(WIN32)
@@ -36,7 +37,8 @@ VROpenVRNode::VROpenVRNode(VRMainInterface *vrMain, const std::string &name, dou
 	m_pHMD = vr::VR_Init( &eError, vr::VRApplication_Scene );
 	int idx = name.find_last_of('/');
 	std::cerr << name.substr(idx + 1) << std::endl;
-	_inputDev = new VROpenVRInputDevice(m_pHMD, name.substr(idx + 1));
+	_inputDev = new VROpenVRInputDevice(m_pHMD, name.substr(idx + 1), this);
+	m_rendermodelhandler = new VROpenVRRenderModelHandler(m_pHMD, _inputDev);
 
 	vrMain->addInputDevice(_inputDev);
 	if ( eError != vr::VRInitError_None )
@@ -70,6 +72,10 @@ VROpenVRNode::VROpenVRNode(VRMainInterface *vrMain, const std::string &name, dou
 }
 	
 VROpenVRNode::~VROpenVRNode() {	
+	if (m_rendermodelhandler){
+		delete  m_rendermodelhandler;
+		m_rendermodelhandler = NULL;
+	}
 	if( m_pHMD )
 	{
 		vr::VR_Shutdown();
@@ -89,8 +95,9 @@ VROpenVRNode::~VROpenVRNode() {
 		glDeleteTextures( 1, &rightEyeDesc.m_nResolveTextureId );
 		glDeleteFramebuffers( 1, &rightEyeDesc.m_nResolveFramebufferId );
 	}
-}
 
+	
+}
 
 void
 VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
@@ -115,6 +122,9 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 		SetupStereoRenderTargets();
 	}
 		
+	if (m_rendermodelhandler)
+		m_rendermodelhandler->initModels();
+
 	_inputDev->updatePoses();
 	VRMatrix4 head_pose = _inputDev->getPose(vr::k_unTrackedDeviceIndex_Hmd).inverse();
 
@@ -136,6 +146,9 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 	else {
 		VRDisplayNode::render(renderState, renderHandler);
 	}
+
+	if (m_rendermodelhandler)
+		m_rendermodelhandler->draw();
 
  	glBindFramebuffer( GL_FRAMEBUFFER, 0 );	
 	glDisable( GL_MULTISAMPLE ); 	
@@ -167,6 +180,9 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 	else {
 		VRDisplayNode::render(renderState, renderHandler);
 	}
+
+	if (m_rendermodelhandler)
+		m_rendermodelhandler->draw();
 
  	glBindFramebuffer( GL_FRAMEBUFFER, 0 );	
 	glDisable( GL_MULTISAMPLE );
@@ -203,6 +219,10 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 	else {
 		VRDisplayNode::render(renderState, renderHandler);
 	}
+
+	if (m_rendermodelhandler)
+		m_rendermodelhandler->draw();
+
 	renderState->popState();
 
 	vr::VRCompositor()->PostPresentHandoff();
