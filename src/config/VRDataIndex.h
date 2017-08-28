@@ -588,6 +588,8 @@ public:
   /// find values.
   ///
 
+  /// \brief Returns the value associated with some name.
+  ///
   /// Returns the value of the data field stored under key.  The return type
   /// VRAnyCoreType is a wrapper that can be cast to any core type.
   /// Do not use VRAnyCoreType directly; instead just cast it immediately to
@@ -620,6 +622,40 @@ public:
                          const std::string nameSpace = "",
                          const bool inherit = true) {
     return _getDatum(key, nameSpace, inherit)->getValue();
+  }
+
+
+  /// \brief Returns an index value, with a default value.
+  ///
+  /// Returns the value of the data field stored under key, offers the
+  /// opportunity to provide a default value if the given name is not
+  /// found.  The cast rules for getValue() apply here, and you will
+  /// sometimes need to cast the default argument, too.
+  ///
+  /// \param key The name of the data field to retrieve.  The name may include
+  /// namespaces, separated by slashes.  Valid names are strings like "cora",
+  /// "nora/cora", and "/flora/nora/cora".  The last name is "fully qualified,
+  /// which means it begins with a slash.  In this case, the function only
+  /// returns a value if that exact name appears in the data index and the
+  /// nameSpace argument is ignored, if it is provided.
+  /// \param defaultVal The default value to be returned if the given key is
+  /// not found.  This must be an unambiguous match to the return value, use
+  /// a cast if there is any ambiguity.
+  /// \param nameSpace The container in which to look for the key.
+  /// \param inherit Set to false if you only want values from the specified
+  /// container/namespace and not inherit from any namespace above.
+  template <typename T>
+  T getValueWithDefault(const std::string &key,
+                        const T &defaultVal,
+                        const std::string nameSpace = "",
+                        const bool inherit = true) {
+    VRDataMap::iterator p = _getEntry(key, nameSpace, inherit);
+
+    if (p == _theIndex.end()) {
+      return defaultVal;
+    } else {
+      return p->second->getValue();
+    }
   }
 
   /// \brief Returns the type of the specified value.
