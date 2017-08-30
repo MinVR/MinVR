@@ -36,8 +36,8 @@ public:
  
 	PLUGIN_API void updatePoses();
 	PLUGIN_API VRMatrix4 getPose(int device_idx);
- 
 
+	VRMatrix4 poseToMatrix4(float m[3][4]);
 
 private:
 	std::vector<std::string> _events;
@@ -51,11 +51,12 @@ private:
 	
 	void processVREvent( const vr::VREvent_t & event ,vr::TrackedDevicePose_t *pose);
 	void reportStates();
-	VRMatrix4 poseToMatrix4(vr::TrackedDevicePose_t *pose);
 	std::string getDeviceName(int idx);
 	void updateDeviceNames();
 	std::string getButtonName(vr::EVRButtonId id);
 	std::string getAxisType(int device, int axis);
+
+	VRMatrix4 poseToMatrix4(vr::TrackedDevicePose_t *pose);
 };
 
 

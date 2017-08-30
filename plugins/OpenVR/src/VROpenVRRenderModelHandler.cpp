@@ -21,9 +21,10 @@
 #endif
 
 namespace MinVR {
-	VROpenVRRenderModelHandler::VROpenVRRenderModelHandler(vr::IVRSystem *pHMD, VROpenVRInputDevice* inputDevice) : m_pHMD(pHMD), m_inputDevice(inputDevice), m_unRenderModelProgramID(0)
+	VROpenVRRenderModelHandler::VROpenVRRenderModelHandler(vr::IVRSystem *pHMD, VROpenVRInputDevice* inputDevice) : m_pHMD(pHMD), m_inputDevice(inputDevice), m_unRenderModelProgramID(0), m_nRenderModelMatrixLocation(-1)
 	{
 		memset(m_rTrackedDeviceToRenderModel, 0, sizeof(m_rTrackedDeviceToRenderModel));
+		memset(hasComponent, 0, sizeof(hasComponent));
 
 		if (!m_pHMD)
 			return;
@@ -113,7 +114,8 @@ namespace MinVR {
 				"render model",
 
 				// vertex shader
-				"#version 410 compatibility\n"
+				"#version 410\n"
+				"uniform mat4 matrix;\n"
 				"layout(location = 0) in vec4 position;\n"
 				"layout(location = 1) in vec3 v3NormalIn;\n"
 				"layout(location = 2) in vec2 v2TexCoordsIn;\n"
@@ -121,11 +123,11 @@ namespace MinVR {
 				"void main()\n"
 				"{\n"
 				"	v2TexCoord = v2TexCoordsIn;\n"
-				"	gl_Position = gl_ModelViewProjectionMatrix * vec4(position.xyz, 1);\n"
+				"	gl_Position = matrix * vec4(position.xyz, 1);\n"
 				"}\n",
 
 				//fragment shader
-				"#version 410 compatibility\n"
+				"#version 410 core\n"
 				"uniform sampler2D diffuse;\n"
 				"in vec2 v2TexCoord;\n"
 				"out vec4 outputColor;\n"
@@ -135,6 +137,13 @@ namespace MinVR {
 				"}\n"
 
 				);
+
+			m_nRenderModelMatrixLocation = glGetUniformLocation(m_unRenderModelProgramID, "matrix");
+			if (m_nRenderModelMatrixLocation == -1)
+			{
+				std::cerr << "Unable to find matrix uniform in render model shader" << std:: endl;
+				exit(-1);
+			}
 		}
 
 		while (!modelLoaderQueue.empty())
@@ -145,31 +154,51 @@ namespace MinVR {
 			if (index >= vr::k_unMaxTrackedDeviceCount)
 				continue;
 
-			if (m_rTrackedDeviceToRenderModel[index] == NULL)
+			if (m_rTrackedDeviceToRenderModel[index] == NULL && !hasComponent[index])
 				setupRenderModelForTrackedDevice(index);
 		}
 	}
 
-	void VROpenVRRenderModelHandler::draw()
+	void VROpenVRRenderModelHandler::draw(VRMatrix4 projection, VRMatrix4 modelview)
 	{
 		glUseProgram(m_unRenderModelProgramID);
 
 		for (uint32_t unTrackedDevice = 0; unTrackedDevice < vr::k_unMaxTrackedDeviceCount; unTrackedDevice++)
 		{
-			if (!m_rTrackedDeviceToRenderModel[unTrackedDevice])
-				continue;
+			if (!hasComponent[unTrackedDevice]){
+				if (!m_rTrackedDeviceToRenderModel[unTrackedDevice])
+					continue;
 
-			/*const vr::TrackedDevicePose_t & pose = m_rTrackedDevicePose[unTrackedDevice];
-			if (!pose.bPoseIsValid)
-				continue;
+				VRMatrix4 MVP = projection * modelview * m_inputDevice->getPose(unTrackedDevice);
+				glUniformMatrix4fv(m_nRenderModelMatrixLocation, 1, GL_FALSE, MVP.getArray());
 
-			const Matrix4 & matDeviceToTracking = m_rmat4DevicePose[unTrackedDevice];
-			Matrix4 matMVP = GetCurrentViewProjectionMatrix(nEye) * matDeviceToTracking;
-			glUniformMatrix4fv(m_nRenderModelMatrixLocation, 1, GL_FALSE, matMVP.get());*/
-			glPushMatrix();
-			glMultMatrixf(m_inputDevice->getPose(unTrackedDevice).getArray());
-			m_rTrackedDeviceToRenderModel[unTrackedDevice]->Draw();
-			glPopMatrix();
+				m_rTrackedDeviceToRenderModel[unTrackedDevice]->Draw();
+			}
+			else
+			{
+				for (int i = 0; i < m_rTrackedDeviceToRenderModelComponents[unTrackedDevice].size(); i++)
+				{
+					vr::VRControllerState_t c_state;
+					if (m_pHMD->GetControllerState(unTrackedDevice, &c_state, sizeof(c_state))){
+						vr::RenderModel_ControllerMode_State_t statemode;
+						statemode.bScrollWheelVisible = false;
+						vr::RenderModel_ComponentState_t component_state;
+						
+						if (vr::VRRenderModels()->GetComponentState(m_rDeviceName[unTrackedDevice][i].c_str(), m_rComponentName[unTrackedDevice][i].c_str(), &c_state, &statemode, &component_state))
+						{
+							//std::cerr << "Working " << std::endl;// << component_state->mTrackingToComponentLocal.m << std::endl;
+							if (component_state.uProperties & vr::VRComponentProperty_IsVisible){
+								VRMatrix4 MVP = projection * modelview * m_inputDevice->getPose(unTrackedDevice) * m_inputDevice->poseToMatrix4(component_state.mTrackingToComponentRenderModel.m);
+								glUniformMatrix4fv(m_nRenderModelMatrixLocation, 1, GL_FALSE, MVP.getArray());
+								
+								m_rTrackedDeviceToRenderModelComponents[unTrackedDevice][i]->Draw();
+							}
+
+						}
+					}
+				}
+
+			}
 		}
 		glUseProgram(0);
 	}
@@ -196,7 +225,7 @@ namespace MinVR {
 	//-----------------------------------------------------------------------------
 	VROpenVRRenderModel* VROpenVRRenderModelHandler::findOrLoadRenderModel(const char *pchRenderModelName)
 	{
-		std::cerr << "Load model: " << pchRenderModelName << std::endl;
+		std::cerr << "Find Or Load model: " << pchRenderModelName << std::endl;
 		VROpenVRRenderModel *pRenderModel = NULL;
 		for (std::vector< VROpenVRRenderModel * >::iterator i = m_vecRenderModels.begin(); i != m_vecRenderModels.end(); i++)
 		{
@@ -210,6 +239,7 @@ namespace MinVR {
 		// load the model if we didn't find one
 		if (!pRenderModel)
 		{
+			std::cerr << "Load model: " << pchRenderModelName << std::endl;
 			vr::RenderModel_t *pModel;
 			vr::EVRRenderModelError error;
 			while (1)
@@ -266,8 +296,7 @@ namespace MinVR {
 			}
 			vr::VRRenderModels()->FreeRenderModel(pModel);
 			vr::VRRenderModels()->FreeTexture(pTexture);
-		}
-
+		}	
 		return pRenderModel;
 	}
 
@@ -281,15 +310,47 @@ namespace MinVR {
 
 		// try to find a model we've already set up
 		std::string sRenderModelName = getTrackedDeviceString(m_pHMD, unTrackedDeviceIndex, vr::Prop_RenderModelName_String);
-		VROpenVRRenderModel *pRenderModel = findOrLoadRenderModel(sRenderModelName.c_str());
-		if (!pRenderModel)
-		{
-			std::string sTrackingSystemName = getTrackedDeviceString(m_pHMD, unTrackedDeviceIndex, vr::Prop_TrackingSystemName_String);
-			std::cerr << "Unable to load render model for tracked device " << unTrackedDeviceIndex << " (" << sTrackingSystemName.c_str() << "," << sRenderModelName.c_str() << ")" << std::endl;
+		unsigned int count = vr::VRRenderModels()->GetComponentCount(sRenderModelName.c_str());
+
+		if (count == 0){
+			VROpenVRRenderModel *pRenderModel = findOrLoadRenderModel(sRenderModelName.c_str());
+			if (!pRenderModel)
+			{
+				std::string sTrackingSystemName = getTrackedDeviceString(m_pHMD, unTrackedDeviceIndex, vr::Prop_TrackingSystemName_String);
+				std::cerr << "Unable to load render model for tracked device " << unTrackedDeviceIndex << " (" << sTrackingSystemName.c_str() << "," << sRenderModelName.c_str() << ")" << std::endl;
+			}
+			else
+			{
+				m_rTrackedDeviceToRenderModel[unTrackedDeviceIndex] = pRenderModel;
+			}
 		}
 		else
 		{
-			m_rTrackedDeviceToRenderModel[unTrackedDeviceIndex] = pRenderModel;
+			hasComponent[unTrackedDeviceIndex] = true;
+			for (unsigned int i = 0; i < count; i++)
+			{
+				char *pchBuffer = new char[10000];
+				unsigned int  name_length = 10000;
+				if (vr::VRRenderModels()->GetComponentName(sRenderModelName.c_str(), i, pchBuffer, name_length) > 0){
+					std::string componentName = pchBuffer;
+					
+					if (vr::VRRenderModels()->GetComponentRenderModelName(sRenderModelName.c_str(), componentName.c_str(), pchBuffer, name_length) > 0){
+						std::string componentRenderModelName = pchBuffer;
+						VROpenVRRenderModel* component = findOrLoadRenderModel(componentRenderModelName.c_str());
+						if (!component)
+						{
+							std::cerr << "Unable to load render model for tracked device " << sRenderModelName.c_str() << " " << unTrackedDeviceIndex << " Component " << componentName.c_str() << std::endl;
+						}
+						else
+						{
+							m_rTrackedDeviceToRenderModelComponents[unTrackedDeviceIndex].push_back(component);
+							m_rComponentName[unTrackedDeviceIndex].push_back(componentName);
+							m_rDeviceName[unTrackedDeviceIndex].push_back(sRenderModelName);
+						}
+					}
+				}
+				delete[] pchBuffer;
+			}
 		}
 	}
 

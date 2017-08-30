@@ -297,6 +297,19 @@ VRMatrix4 VROpenVRInputDevice::poseToMatrix4(vr::TrackedDevicePose_t *pose)
 	return mat.transpose();
 }
 
+VRMatrix4 VROpenVRInputDevice::poseToMatrix4(float m[3][4])
+{
+	VRMatrix4 mat = VRMatrix4::fromRowMajorElements(
+		m[0][0], m[1][0], m[2][0], 0.0, 
+		m[0][1], m[1][1], m[2][1], 0.0,
+		m[0][2], m[1][2], m[2][2], 0.0,
+		m[0][3], m[1][3], m[2][3], 1.0f
+		);
+
+	return mat.transpose();
+}
+
+
 } /* namespace MinVR */
 
 

@@ -32,13 +32,13 @@
 
 namespace MinVR {
 
-VROpenVRNode::VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double _near, double _far) : VRDisplayNode(name) , isInitialized(false), m_fNearClip(_near), m_fFarClip(_far){
+	VROpenVRNode::VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double _near, double _far, bool draw_controller) : VRDisplayNode(name), isInitialized(false), m_fNearClip(_near), m_fFarClip(_far), m_draw_controller(draw_controller), m_rendermodelhandler(NULL){
 	vr::EVRInitError eError = vr::VRInitError_None;
 	m_pHMD = vr::VR_Init( &eError, vr::VRApplication_Scene );
 	int idx = name.find_last_of('/');
 	std::cerr << name.substr(idx + 1) << std::endl;
 	_inputDev = new VROpenVRInputDevice(m_pHMD, name.substr(idx + 1), this);
-	m_rendermodelhandler = new VROpenVRRenderModelHandler(m_pHMD, _inputDev);
+	
 
 	vrMain->addInputDevice(_inputDev);
 	if ( eError != vr::VRInitError_None )
@@ -50,18 +50,9 @@ VROpenVRNode::VROpenVRNode(VRMainInterface *vrMain, const std::string &name, dou
 		exit(0);
 	}
 
-	m_pRenderModels = (vr::IVRRenderModels *)vr::VR_GetGenericInterface( vr::IVRRenderModels_Version, &eError );
-	if( !m_pRenderModels )
-	{
-		m_pHMD = NULL;
-		vr::VR_Shutdown();
-
-		char buf[1024];
-		std::cerr <<  "Unable to get render model interface: " << vr::VR_GetVRInitErrorAsEnglishDescription( eError )  << std::endl;
-
-		exit(0);
-	}
-
+	if (m_draw_controller)
+		m_rendermodelhandler = new VROpenVRRenderModelHandler(m_pHMD, _inputDev);
+	
 	vr::EVRInitError peError = vr::VRInitError_None;
 
 	if ( !vr::VRCompositor() )
@@ -148,7 +139,7 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 	}
 
 	if (m_rendermodelhandler)
-		m_rendermodelhandler->draw();
+		m_rendermodelhandler->draw(m_mat4ProjectionLeft, view_left);
 
  	glBindFramebuffer( GL_FRAMEBUFFER, 0 );	
 	glDisable( GL_MULTISAMPLE ); 	
@@ -182,7 +173,7 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 	}
 
 	if (m_rendermodelhandler)
-		m_rendermodelhandler->draw();
+		m_rendermodelhandler->draw(m_mat4ProjectionRight, view_right);
 
  	glBindFramebuffer( GL_FRAMEBUFFER, 0 );	
 	glDisable( GL_MULTISAMPLE );
@@ -221,7 +212,7 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 	}
 
 	if (m_rendermodelhandler)
-		m_rendermodelhandler->draw();
+		m_rendermodelhandler->draw(m_mat4ProjectionRight, view_right);
 
 	renderState->popState();
 
@@ -231,7 +222,12 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 VRDisplayNode* VROpenVRNode::create(VRMainInterface *vrMain, VRDataIndex *config,  const std::string &nameSpace) {
 	std::string nodeNameSpace = config->validateNameSpace(nameSpace);
 
-	VRDisplayNode *node = new VROpenVRNode(vrMain, nameSpace, 0.1f, 100000.0f);
+	int drawController = true;
+	if (config->exists("DrawController", nameSpace))
+	{
+		drawController = config->getValue("DrawController", nameSpace);
+	}
+	VRDisplayNode *node = new VROpenVRNode(vrMain, nameSpace, 0.1f, 100000.0f, drawController);
 	
 	return node;
 }

@@ -18,7 +18,6 @@
 #include <GL/gl.h>
 
 namespace MinVR {
-
 	class VROpenVRRenderModel {
 
 public:

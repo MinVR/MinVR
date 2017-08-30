@@ -19,6 +19,7 @@
 #include <queue>
 
 namespace MinVR {
+	class VRMatrix4;
 	class VROpenVRRenderModel;
 	class VROpenVRInputDevice;
 	class VROpenVRRenderModelHandler {
@@ -29,19 +30,27 @@ public:
 
 	void queueModelForLoading(vr::TrackedDeviceIndex_t unTrackedDeviceIndex){ modelLoaderQueue.push(unTrackedDeviceIndex); }
 	void initModels();
-	void draw();
+	void draw(VRMatrix4 projection, VRMatrix4 modelview);
 
 private:
 	vr::IVRSystem *m_pHMD;
 	VROpenVRInputDevice * m_inputDevice;
 	std::vector< VROpenVRRenderModel * > m_vecRenderModels;
+
 	VROpenVRRenderModel *m_rTrackedDeviceToRenderModel[vr::k_unMaxTrackedDeviceCount];
+	std::vector<VROpenVRRenderModel*> m_rTrackedDeviceToRenderModelComponents[vr::k_unMaxTrackedDeviceCount];
+	std::vector<std::string> m_rDeviceName[vr::k_unMaxTrackedDeviceCount];
+	std::vector<std::string> m_rComponentName[vr::k_unMaxTrackedDeviceCount];
+	bool hasComponent[vr::k_unMaxTrackedDeviceCount];
+
 	std::queue<vr::TrackedDeviceIndex_t> modelLoaderQueue;
 
 	VROpenVRRenderModel* findOrLoadRenderModel(const char *pchRenderModelName);
 	void setupRenderModelForTrackedDevice(vr::TrackedDeviceIndex_t unTrackedDeviceIndex);
 
 	GLuint m_unRenderModelProgramID;
+	GLint m_nRenderModelMatrixLocation;
+
 };
 
 
