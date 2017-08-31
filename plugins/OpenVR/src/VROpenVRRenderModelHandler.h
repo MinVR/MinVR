@@ -50,7 +50,7 @@ private:
 
 	GLuint m_unRenderModelProgramID;
 	GLint m_nRenderModelMatrixLocation;
-
+	GLint m_nRenderModelState;
 };
 
 

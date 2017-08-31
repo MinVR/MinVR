@@ -21,7 +21,7 @@
 #endif
 
 namespace MinVR {
-	VROpenVRRenderModelHandler::VROpenVRRenderModelHandler(vr::IVRSystem *pHMD, VROpenVRInputDevice* inputDevice) : m_pHMD(pHMD), m_inputDevice(inputDevice), m_unRenderModelProgramID(0), m_nRenderModelMatrixLocation(-1)
+	VROpenVRRenderModelHandler::VROpenVRRenderModelHandler(vr::IVRSystem *pHMD, VROpenVRInputDevice* inputDevice) : m_pHMD(pHMD), m_inputDevice(inputDevice), m_unRenderModelProgramID(0), m_nRenderModelMatrixLocation(-1), m_nRenderModelState(-1)
 	{
 		memset(m_rTrackedDeviceToRenderModel, 0, sizeof(m_rTrackedDeviceToRenderModel));
 		memset(hasComponent, 0, sizeof(hasComponent));
@@ -129,11 +129,14 @@ namespace MinVR {
 				//fragment shader
 				"#version 410 core\n"
 				"uniform sampler2D diffuse;\n"
+				"uniform uint state;\n"
 				"in vec2 v2TexCoord;\n"
 				"out vec4 outputColor;\n"
 				"void main()\n"
 				"{\n"
 				"   outputColor = texture( diffuse, v2TexCoord);\n"
+				"	if (state == 2) outputColor.r = outputColor.r + 0.3; "
+				"   else if (state == 1) outputColor.b = outputColor.b + 0.3;"
 				"}\n"
 
 				);
@@ -142,6 +145,13 @@ namespace MinVR {
 			if (m_nRenderModelMatrixLocation == -1)
 			{
 				std::cerr << "Unable to find matrix uniform in render model shader" << std:: endl;
+				exit(-1);
+			}
+
+			m_nRenderModelState = glGetUniformLocation(m_unRenderModelProgramID, "state");
+			if (m_nRenderModelState == -1)
+			{
+				std::cerr << "Unable to find state uniform in render model shader" << std::endl;
 				exit(-1);
 			}
 		}
@@ -171,6 +181,7 @@ namespace MinVR {
 
 				VRMatrix4 MVP = projection * modelview * m_inputDevice->getPose(unTrackedDevice);
 				glUniformMatrix4fv(m_nRenderModelMatrixLocation, 1, GL_FALSE, MVP.getArray());
+				glUniform1ui(m_nRenderModelState, 0);
 
 				m_rTrackedDeviceToRenderModel[unTrackedDevice]->Draw();
 			}
@@ -190,7 +201,8 @@ namespace MinVR {
 							if (component_state.uProperties & vr::VRComponentProperty_IsVisible){
 								VRMatrix4 MVP = projection * modelview * m_inputDevice->getPose(unTrackedDevice) * m_inputDevice->poseToMatrix4(component_state.mTrackingToComponentRenderModel.m);
 								glUniformMatrix4fv(m_nRenderModelMatrixLocation, 1, GL_FALSE, MVP.getArray());
-								
+								unsigned int state = (component_state.uProperties & vr::VRComponentProperty_IsPressed) ? 2 : (component_state.uProperties & vr::VRComponentProperty_IsTouched) ? 1 : 0;
+								glUniform1ui(m_nRenderModelState, state);
 								m_rTrackedDeviceToRenderModelComponents[unTrackedDevice][i]->Draw();
 							}
 
