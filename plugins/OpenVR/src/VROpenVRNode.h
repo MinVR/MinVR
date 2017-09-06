@@ -35,7 +35,7 @@ namespace MinVR {
  */
 class VROpenVRNode : public VRDisplayNode {
 public:
-	PLUGIN_API VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double near, double far, bool draw_controller) ;
+	PLUGIN_API VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double near, double far, bool draw_controller, bool hide_tracker, unsigned char openvr_plugin_flags);
 	
 	PLUGIN_API virtual ~VROpenVRNode();
 

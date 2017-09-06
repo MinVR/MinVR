@@ -25,7 +25,7 @@ namespace MinVR {
 	class VROpenVRRenderModelHandler {
 
 public:
-	VROpenVRRenderModelHandler(vr::IVRSystem *pHMD, VROpenVRInputDevice* inputDevice);
+	VROpenVRRenderModelHandler(vr::IVRSystem *pHMD, VROpenVRInputDevice* inputDevice, bool hide_tracker);
 	~VROpenVRRenderModelHandler();
 
 	void queueModelForLoading(vr::TrackedDeviceIndex_t unTrackedDeviceIndex){ modelLoaderQueue.push(unTrackedDeviceIndex); }
@@ -39,7 +39,7 @@ private:
 
 	VROpenVRRenderModel *m_rTrackedDeviceToRenderModel[vr::k_unMaxTrackedDeviceCount];
 	std::vector<VROpenVRRenderModel*> m_rTrackedDeviceToRenderModelComponents[vr::k_unMaxTrackedDeviceCount];
-	std::vector<std::string> m_rDeviceName[vr::k_unMaxTrackedDeviceCount];
+	std::string m_rDeviceName[vr::k_unMaxTrackedDeviceCount];
 	std::vector<std::string> m_rComponentName[vr::k_unMaxTrackedDeviceCount];
 	bool hasComponent[vr::k_unMaxTrackedDeviceCount];
 
@@ -51,6 +51,8 @@ private:
 	GLuint m_unRenderModelProgramID;
 	GLint m_nRenderModelMatrixLocation;
 	GLint m_nRenderModelState;
+
+	bool m_hide_tracker;
 };
 
 

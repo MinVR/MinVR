@@ -25,11 +25,21 @@
 namespace MinVR {
 	class VROpenVRNode;
 
+	enum OpenVRFlags
+	{
+		Pose = 0x01,
+		Touched = 0x02,
+		Pressed = 0x04,
+		Axis = 0x08,
+		WaitForPoses = 0x16,
+	};
+
+
 /** A VRInputDevice that polls input events 
  */
 class VROpenVRInputDevice : public VRInputDevice {
 public:
-	PLUGIN_API VROpenVRInputDevice(vr::IVRSystem *pHMD, std::string name, VROpenVRNode * node);
+	PLUGIN_API VROpenVRInputDevice(vr::IVRSystem *pHMD, std::string name, VROpenVRNode * node, unsigned char openvr_plugin_flags);
 	PLUGIN_API virtual ~VROpenVRInputDevice();
 
 	PLUGIN_API void appendNewInputEventsSinceLastCall(VRDataQueue* queue);
@@ -57,6 +67,16 @@ private:
 	std::string getAxisType(int device, int axis);
 
 	VRMatrix4 poseToMatrix4(vr::TrackedDevicePose_t *pose);
+	void setTipOffset(int device);
+	VRMatrix4 m_tip_offset[vr::k_unMaxTrackedDeviceCount];
+
+	bool m_report_state;
+	bool m_report_state_touched;
+	bool m_report_state_pressed;
+	bool m_report_state_axis;
+	bool m_report_state_pose;
+	bool m_wait_for_pose;
+
 };
 
 

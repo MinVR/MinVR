@@ -32,12 +32,12 @@
 
 namespace MinVR {
 
-	VROpenVRNode::VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double _near, double _far, bool draw_controller) : VRDisplayNode(name), isInitialized(false), m_fNearClip(_near), m_fFarClip(_far), m_draw_controller(draw_controller), m_rendermodelhandler(NULL){
+	VROpenVRNode::VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double _near, double _far, bool draw_controller, bool hide_tracker, unsigned char openvr_plugin_flags) : VRDisplayNode(name), isInitialized(false), m_fNearClip(_near), m_fFarClip(_far), m_draw_controller(draw_controller), m_rendermodelhandler(NULL){
 	vr::EVRInitError eError = vr::VRInitError_None;
 	m_pHMD = vr::VR_Init( &eError, vr::VRApplication_Scene );
 	int idx = name.find_last_of('/');
 	std::cerr << name.substr(idx + 1) << std::endl;
-	_inputDev = new VROpenVRInputDevice(m_pHMD, name.substr(idx + 1), this);
+	_inputDev = new VROpenVRInputDevice(m_pHMD, name.substr(idx + 1), this, openvr_plugin_flags);
 	
 
 	vrMain->addInputDevice(_inputDev);
@@ -51,7 +51,7 @@ namespace MinVR {
 	}
 
 	if (m_draw_controller)
-		m_rendermodelhandler = new VROpenVRRenderModelHandler(m_pHMD, _inputDev);
+		m_rendermodelhandler = new VROpenVRRenderModelHandler(m_pHMD, _inputDev, hide_tracker);
 	
 	vr::EVRInitError peError = vr::VRInitError_None;
 
@@ -227,7 +227,35 @@ VRDisplayNode* VROpenVRNode::create(VRMainInterface *vrMain, VRDataIndex *config
 	{
 		drawController = config->getValue("DrawController", nameSpace);
 	}
-	VRDisplayNode *node = new VROpenVRNode(vrMain, nameSpace, 0.1f, 100000.0f, drawController);
+	int hide_tracker = false;
+	if (config->exists("HideTracker", nameSpace))
+	{
+		hide_tracker = config->getValue("HideTracker", nameSpace);
+	}
+
+	unsigned char flags = Pressed | Touched | Axis | Pose | WaitForPoses;
+	if (config->exists("ReportStatePressed", nameSpace) && !((int) config->getValue("ReportStatePressed", nameSpace)))
+	{
+		flags = flags & ~Pressed;
+	}
+	if (config->exists("ReportStateTouched", nameSpace) && !((int)config->getValue("ReportStateTouched", nameSpace)))
+	{
+		flags = flags & ~Touched;
+	}
+	if (config->exists("ReportStateAxis", nameSpace) && !((int)config->getValue("ReportStateAxis", nameSpace)))
+	{
+		flags = flags & ~Axis;
+	}
+	if (config->exists("ReportStatePose", nameSpace) && !((int)config->getValue("ReportStatePose", nameSpace)))
+	{
+		flags = flags & ~Pose;
+	}
+	if (config->exists("WaitForPose", nameSpace) && !((int)config->getValue("WaitForPose", nameSpace)))
+	{
+		flags = flags & ~WaitForPoses;
+	}
+
+	VRDisplayNode *node = new VROpenVRNode(vrMain, nameSpace, 0.1f, 100000.0f, drawController, hide_tracker, flags);
 	
 	return node;
 }

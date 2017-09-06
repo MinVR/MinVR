@@ -21,7 +21,7 @@
 #endif
 
 namespace MinVR {
-	VROpenVRRenderModelHandler::VROpenVRRenderModelHandler(vr::IVRSystem *pHMD, VROpenVRInputDevice* inputDevice) : m_pHMD(pHMD), m_inputDevice(inputDevice), m_unRenderModelProgramID(0), m_nRenderModelMatrixLocation(-1), m_nRenderModelState(-1)
+	VROpenVRRenderModelHandler::VROpenVRRenderModelHandler(vr::IVRSystem *pHMD, VROpenVRInputDevice* inputDevice, bool hide_tracker) : m_pHMD(pHMD), m_inputDevice(inputDevice), m_unRenderModelProgramID(0), m_nRenderModelMatrixLocation(-1), m_nRenderModelState(-1), m_hide_tracker(hide_tracker)
 	{
 		memset(m_rTrackedDeviceToRenderModel, 0, sizeof(m_rTrackedDeviceToRenderModel));
 		memset(hasComponent, 0, sizeof(hasComponent));
@@ -175,6 +175,10 @@ namespace MinVR {
 
 		for (uint32_t unTrackedDevice = 0; unTrackedDevice < vr::k_unMaxTrackedDeviceCount; unTrackedDevice++)
 		{
+			if (m_pHMD->GetTrackedDeviceClass(unTrackedDevice) != vr::TrackedDeviceClass_Controller
+				&& m_hide_tracker)
+				continue;
+
 			if (!hasComponent[unTrackedDevice]){
 				if (!m_rTrackedDeviceToRenderModel[unTrackedDevice])
 					continue;
@@ -195,7 +199,7 @@ namespace MinVR {
 						statemode.bScrollWheelVisible = false;
 						vr::RenderModel_ComponentState_t component_state;
 						
-						if (vr::VRRenderModels()->GetComponentState(m_rDeviceName[unTrackedDevice][i].c_str(), m_rComponentName[unTrackedDevice][i].c_str(), &c_state, &statemode, &component_state))
+						if (vr::VRRenderModels()->GetComponentState(m_rDeviceName[unTrackedDevice].c_str(), m_rComponentName[unTrackedDevice][i].c_str(), &c_state, &statemode, &component_state))
 						{
 							//std::cerr << "Working " << std::endl;// << component_state->mTrackingToComponentLocal.m << std::endl;
 							if (component_state.uProperties & vr::VRComponentProperty_IsVisible){
@@ -205,7 +209,6 @@ namespace MinVR {
 								glUniform1ui(m_nRenderModelState, state);
 								m_rTrackedDeviceToRenderModelComponents[unTrackedDevice][i]->Draw();
 							}
-
 						}
 					}
 				}
@@ -357,7 +360,7 @@ namespace MinVR {
 						{
 							m_rTrackedDeviceToRenderModelComponents[unTrackedDeviceIndex].push_back(component);
 							m_rComponentName[unTrackedDeviceIndex].push_back(componentName);
-							m_rDeviceName[unTrackedDeviceIndex].push_back(sRenderModelName);
+							m_rDeviceName[unTrackedDeviceIndex] = sRenderModelName;
 						}
 					}
 				}
