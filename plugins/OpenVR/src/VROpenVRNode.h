@@ -35,7 +35,7 @@ namespace MinVR {
  */
 class VROpenVRNode : public VRDisplayNode {
 public:
-	PLUGIN_API VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double near, double far, bool draw_controller, bool hide_tracker, unsigned char openvr_plugin_flags);
+	PLUGIN_API VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double near, double far, bool draw_controller, bool hide_tracker, bool draw_HMD_Only, unsigned char openvr_plugin_flags);
 	
 	PLUGIN_API virtual ~VROpenVRNode();
 
@@ -66,6 +66,7 @@ private:
 	double m_fNearClip;
 	double m_fFarClip;
 	bool m_draw_controller;
+	bool m_draw_HMD_Only;
 
 	VRMatrix4 GetHMDMatrixProjectionEye( vr::Hmd_Eye nEye );
 	VRMatrix4 GetHMDMatrixPoseEye( vr::Hmd_Eye nEye );

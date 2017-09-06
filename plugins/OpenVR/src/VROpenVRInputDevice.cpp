@@ -16,7 +16,7 @@
 namespace MinVR {
                        
 	VROpenVRInputDevice::VROpenVRInputDevice(vr::IVRSystem *pHMD, string name, VROpenVRNode * node, unsigned char openvr_plugin_flags) :m_pHMD(pHMD), m_name(name), m_node(node),
-		m_report_state(openvr_plugin_flags), m_report_state_touched(openvr_plugin_flags & Touched), m_report_state_pressed(openvr_plugin_flags & Pressed), m_report_state_axis(openvr_plugin_flags & Axis), m_report_state_pose(openvr_plugin_flags & Pose), m_wait_for_pose(openvr_plugin_flags & WaitForPoses)
+		m_report_state(openvr_plugin_flags), m_report_state_touched(openvr_plugin_flags & Touched), m_report_state_pressed(openvr_plugin_flags & Pressed), m_report_state_axis(openvr_plugin_flags & Axis), m_report_state_pose(openvr_plugin_flags & Pose)
 	{
 		updateDeviceNames();
 
@@ -49,13 +49,8 @@ void VROpenVRInputDevice::appendNewInputEventsSinceLastCall(VRDataQueue* queue) 
 }
 
 void VROpenVRInputDevice::updatePoses(){
-	if (m_wait_for_pose){
-		vr::VRCompositor()->WaitGetPoses(m_rTrackedDevicePose, vr::k_unMaxTrackedDeviceCount, nullptr, 0);
-	}
-	else
-	{
-		vr::VRCompositor()->GetLastPoses(m_rTrackedDevicePose, vr::k_unMaxTrackedDeviceCount, nullptr, 0);
-	}
+	vr::VRCompositor()->WaitGetPoses(m_rTrackedDevicePose, vr::k_unMaxTrackedDeviceCount, nullptr, 0);
+
 	for (vr::TrackedDeviceIndex_t unDevice = 0; unDevice < vr::k_unMaxTrackedDeviceCount; unDevice++)
 	{
 		if (m_pHMD->IsTrackedDeviceConnected(unDevice)){

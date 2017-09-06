@@ -32,7 +32,7 @@
 
 namespace MinVR {
 
-	VROpenVRNode::VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double _near, double _far, bool draw_controller, bool hide_tracker, unsigned char openvr_plugin_flags) : VRDisplayNode(name), isInitialized(false), m_fNearClip(_near), m_fFarClip(_far), m_draw_controller(draw_controller), m_rendermodelhandler(NULL){
+	VROpenVRNode::VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double _near, double _far, bool draw_controller, bool hide_tracker, bool draw_HMD_Only, unsigned char openvr_plugin_flags) : VRDisplayNode(name), isInitialized(false), m_fNearClip(_near), m_fFarClip(_far), m_draw_controller(draw_controller), m_draw_HMD_Only(draw_HMD_Only), m_rendermodelhandler(NULL){
 	vr::EVRInitError eError = vr::VRInitError_None;
 	m_pHMD = vr::VR_Init( &eError, vr::VRApplication_Scene );
 	int idx = name.find_last_of('/');
@@ -117,6 +117,7 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 		m_rendermodelhandler->initModels();
 
 	_inputDev->updatePoses();
+
 	VRMatrix4 head_pose = _inputDev->getPose(vr::k_unTrackedDeviceIndex_Hmd).inverse();
 
 	// Left Eye
@@ -186,37 +187,40 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0 );
 
 	renderState->popState();
-	glFinish();
 
 	vr::Texture_t leftEyeTexture = { (void*)leftEyeDesc.m_nResolveTextureId, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
 	vr::EVRCompositorError error =  vr::VRCompositor()->Submit(vr::Eye_Left, &leftEyeTexture );
+
 	vr::Texture_t rightEyeTexture = { (void*)rightEyeDesc.m_nResolveTextureId, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
-	error = vr::VRCompositor()->Submit(vr::Eye_Right, &rightEyeTexture );
+	error = vr::VRCompositor()->Submit(vr::Eye_Right, &rightEyeTexture  );
 
-	renderState->pushState();
-	int width = renderState->getValue("/WindowWidth");
-	int height = renderState->getValue("/WindowHeight");
-
-	glViewport(0, 0, width, height);
-	glClearColor(0, 0, 0, 1);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	renderState->addData("/ProjectionMatrix", m_mat4ProjectionRight);
-	renderState->addData("/ViewMatrix", view_right);
-	renderState->addData("/Eye", "Cyclops");
-	if (_children.size() == 0) {
-		renderHandler->onVRRenderScene(renderState, this);
-	}
-	else {
-		VRDisplayNode::render(renderState, renderHandler);
-	}
-
-	if (m_rendermodelhandler)
-		m_rendermodelhandler->draw(m_mat4ProjectionRight, view_right);
-
-	renderState->popState();
-
+	glFlush();
 	vr::VRCompositor()->PostPresentHandoff();
+
+	if (!m_draw_HMD_Only){
+		renderState->pushState();
+		int width = renderState->getValue("/WindowWidth");
+		int height = renderState->getValue("/WindowHeight");
+
+		glViewport(0, 0, width, height);
+		glClearColor(0, 0, 0, 1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		renderState->addData("/ProjectionMatrix", m_mat4ProjectionRight);
+		renderState->addData("/ViewMatrix", view_right);
+		renderState->addData("/Eye", "Cyclops");
+		if (_children.size() == 0) {
+			renderHandler->onVRRenderScene(renderState, this);
+		}
+		else {
+			VRDisplayNode::render(renderState, renderHandler);
+		}
+
+		if (m_rendermodelhandler)
+			m_rendermodelhandler->draw(m_mat4ProjectionRight, view_right);
+
+		renderState->popState();
+	}
 }
 
 VRDisplayNode* VROpenVRNode::create(VRMainInterface *vrMain, VRDataIndex *config,  const std::string &nameSpace) {
@@ -233,7 +237,7 @@ VRDisplayNode* VROpenVRNode::create(VRMainInterface *vrMain, VRDataIndex *config
 		hide_tracker = config->getValue("HideTracker", nameSpace);
 	}
 
-	unsigned char flags = Pressed | Touched | Axis | Pose | WaitForPoses;
+	unsigned char flags = Pressed | Touched | Axis | Pose;
 	if (config->exists("ReportStatePressed", nameSpace) && !((int) config->getValue("ReportStatePressed", nameSpace)))
 	{
 		flags = flags & ~Pressed;
@@ -250,12 +254,13 @@ VRDisplayNode* VROpenVRNode::create(VRMainInterface *vrMain, VRDataIndex *config
 	{
 		flags = flags & ~Pose;
 	}
-	if (config->exists("WaitForPose", nameSpace) && !((int)config->getValue("WaitForPose", nameSpace)))
+	bool draw_HMD_Only = false;
+	if (config->exists("DrawHMDOnly", nameSpace) && ((int)config->getValue("DrawHMDOnly", nameSpace)))
 	{
-		flags = flags & ~WaitForPoses;
+		draw_HMD_Only = true;
 	}
 
-	VRDisplayNode *node = new VROpenVRNode(vrMain, nameSpace, 0.1f, 100000.0f, drawController, hide_tracker, flags);
+	VRDisplayNode *node = new VROpenVRNode(vrMain, nameSpace, 0.1f, 100000.0f, drawController, hide_tracker, draw_HMD_Only, flags);
 	
 	return node;
 }

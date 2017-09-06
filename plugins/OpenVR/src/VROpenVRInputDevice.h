@@ -31,7 +31,6 @@ namespace MinVR {
 		Touched = 0x02,
 		Pressed = 0x04,
 		Axis = 0x08,
-		WaitForPoses = 0x16,
 	};
 
 
@@ -75,7 +74,6 @@ private:
 	bool m_report_state_pressed;
 	bool m_report_state_axis;
 	bool m_report_state_pose;
-	bool m_wait_for_pose;
 
 };
 
