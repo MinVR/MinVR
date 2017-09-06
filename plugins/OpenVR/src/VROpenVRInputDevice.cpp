@@ -182,7 +182,19 @@ void VROpenVRInputDevice::updateDeviceNames()
 			}
 			else if (deviceClass == vr::TrackedDeviceClass_Controller){
 				controller_count++;
-				entry = m_name + "_Controller_" + std::to_string(controller_count);
+				vr::ETrackedControllerRole role = m_pHMD->GetControllerRoleForTrackedDeviceIndex(unDevice);
+				switch (role){
+				case vr::TrackedControllerRole_Invalid:
+				default:// Invalid value for controller type
+					entry = m_name + "_Controller_" + std::to_string(controller_count);
+					break;
+				case vr::TrackedControllerRole_LeftHand:	
+					entry = m_name + "_Controller_Left";
+					break;
+				case vr::TrackedControllerRole_RightHand:
+					entry = m_name + "_Controller_Right";
+					break;	
+				}
 			}
 			else if (deviceClass == vr::TrackedDeviceClass_TrackingReference){
 				trackingReference_count++;
