@@ -30,11 +30,12 @@ struct FramebufferDesc
 
 namespace MinVR {
   
+	class VROpenVRRenderModelHandler;
 /** OpenVR Implementation for the MinVR VRDisplayNode abstraction.
  */
 class VROpenVRNode : public VRDisplayNode {
 public:
-	PLUGIN_API VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double near, double far) ;
+	PLUGIN_API VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double near, double far, bool draw_controller, bool hide_tracker, bool draw_HMD_Only, unsigned char openvr_plugin_flags);
 	
 	PLUGIN_API virtual ~VROpenVRNode();
 
@@ -45,12 +46,13 @@ public:
 	//virtual void onVREvent(const std::string &eventName, VRDataIndex *eventData);
 	PLUGIN_API static VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 	
+	VROpenVRRenderModelHandler* getRenderModelHandler(){ return m_rendermodelhandler; }
+
 private:
 	VROpenVRInputDevice * _inputDev;
-
+	VROpenVRRenderModelHandler * m_rendermodelhandler;
 	bool isInitialized;
 	vr::IVRSystem *m_pHMD;
-	vr::IVRRenderModels *m_pRenderModels;
 	FramebufferDesc leftEyeDesc;
 	FramebufferDesc rightEyeDesc;
 	uint32_t m_nRenderWidth;
@@ -63,6 +65,8 @@ private:
 
 	double m_fNearClip;
 	double m_fFarClip;
+	bool m_draw_controller;
+	bool m_draw_HMD_Only;
 
 	VRMatrix4 GetHMDMatrixProjectionEye( vr::Hmd_Eye nEye );
 	VRMatrix4 GetHMDMatrixPoseEye( vr::Hmd_Eye nEye );

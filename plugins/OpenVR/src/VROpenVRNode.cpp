@@ -14,6 +14,7 @@
 #endif
 
 #include "VROpenVRNode.h"
+#include "VROpenVRRenderModelHandler.h"
 #include <cmath>
 
 #if defined(WIN32)
@@ -31,12 +32,13 @@
 
 namespace MinVR {
 
-VROpenVRNode::VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double _near, double _far) : VRDisplayNode(name) , isInitialized(false), m_fNearClip(_near), m_fFarClip(_far){
+	VROpenVRNode::VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double _near, double _far, bool draw_controller, bool hide_tracker, bool draw_HMD_Only, unsigned char openvr_plugin_flags) : VRDisplayNode(name), isInitialized(false), m_fNearClip(_near), m_fFarClip(_far), m_draw_controller(draw_controller), m_draw_HMD_Only(draw_HMD_Only), m_rendermodelhandler(NULL){
 	vr::EVRInitError eError = vr::VRInitError_None;
 	m_pHMD = vr::VR_Init( &eError, vr::VRApplication_Scene );
 	int idx = name.find_last_of('/');
 	std::cerr << name.substr(idx + 1) << std::endl;
-	_inputDev = new VROpenVRInputDevice(m_pHMD, name.substr(idx + 1));
+	_inputDev = new VROpenVRInputDevice(m_pHMD, name.substr(idx + 1), this, openvr_plugin_flags);
+	
 
 	vrMain->addInputDevice(_inputDev);
 	if ( eError != vr::VRInitError_None )
@@ -48,18 +50,9 @@ VROpenVRNode::VROpenVRNode(VRMainInterface *vrMain, const std::string &name, dou
 		exit(0);
 	}
 
-	m_pRenderModels = (vr::IVRRenderModels *)vr::VR_GetGenericInterface( vr::IVRRenderModels_Version, &eError );
-	if( !m_pRenderModels )
-	{
-		m_pHMD = NULL;
-		vr::VR_Shutdown();
-
-		char buf[1024];
-		std::cerr <<  "Unable to get render model interface: " << vr::VR_GetVRInitErrorAsEnglishDescription( eError )  << std::endl;
-
-		exit(0);
-	}
-
+	if (m_draw_controller)
+		m_rendermodelhandler = new VROpenVRRenderModelHandler(m_pHMD, _inputDev, hide_tracker);
+	
 	vr::EVRInitError peError = vr::VRInitError_None;
 
 	if ( !vr::VRCompositor() )
@@ -70,6 +63,10 @@ VROpenVRNode::VROpenVRNode(VRMainInterface *vrMain, const std::string &name, dou
 }
 	
 VROpenVRNode::~VROpenVRNode() {	
+	if (m_rendermodelhandler){
+		delete  m_rendermodelhandler;
+		m_rendermodelhandler = NULL;
+	}
 	if( m_pHMD )
 	{
 		vr::VR_Shutdown();
@@ -89,8 +86,9 @@ VROpenVRNode::~VROpenVRNode() {
 		glDeleteTextures( 1, &rightEyeDesc.m_nResolveTextureId );
 		glDeleteFramebuffers( 1, &rightEyeDesc.m_nResolveFramebufferId );
 	}
-}
 
+	
+}
 
 void
 VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
@@ -115,7 +113,11 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 		SetupStereoRenderTargets();
 	}
 		
+	if (m_rendermodelhandler)
+		m_rendermodelhandler->initModels();
+
 	_inputDev->updatePoses();
+
 	VRMatrix4 head_pose = _inputDev->getPose(vr::k_unTrackedDeviceIndex_Hmd).inverse();
 
 	// Left Eye
@@ -136,6 +138,9 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 	else {
 		VRDisplayNode::render(renderState, renderHandler);
 	}
+
+	if (m_rendermodelhandler)
+		m_rendermodelhandler->draw(m_mat4ProjectionLeft, view_left);
 
  	glBindFramebuffer( GL_FRAMEBUFFER, 0 );	
 	glDisable( GL_MULTISAMPLE ); 	
@@ -168,6 +173,9 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 		VRDisplayNode::render(renderState, renderHandler);
 	}
 
+	if (m_rendermodelhandler)
+		m_rendermodelhandler->draw(m_mat4ProjectionRight, view_right);
+
  	glBindFramebuffer( GL_FRAMEBUFFER, 0 );	
 	glDisable( GL_MULTISAMPLE );
  	glBindFramebuffer(GL_READ_FRAMEBUFFER, rightEyeDesc.m_nRenderFramebufferId );
@@ -179,39 +187,80 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0 );
 
 	renderState->popState();
-	glFinish();
 
 	vr::Texture_t leftEyeTexture = { (void*)leftEyeDesc.m_nResolveTextureId, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
 	vr::EVRCompositorError error =  vr::VRCompositor()->Submit(vr::Eye_Left, &leftEyeTexture );
+
 	vr::Texture_t rightEyeTexture = { (void*)rightEyeDesc.m_nResolveTextureId, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
-	error = vr::VRCompositor()->Submit(vr::Eye_Right, &rightEyeTexture );
+	error = vr::VRCompositor()->Submit(vr::Eye_Right, &rightEyeTexture  );
 
-	renderState->pushState();
-	int width = renderState->getValue("/WindowWidth");
-	int height = renderState->getValue("/WindowHeight");
-
-	glViewport(0, 0, width, height);
-	glClearColor(0, 0, 0, 1);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	renderState->addData("/ProjectionMatrix", m_mat4ProjectionRight);
-	renderState->addData("/ViewMatrix", view_right);
-	renderState->addData("/Eye", "Cyclops");
-	if (_children.size() == 0) {
-		renderHandler->onVRRenderScene(renderState, this);
-	}
-	else {
-		VRDisplayNode::render(renderState, renderHandler);
-	}
-	renderState->popState();
-
+	glFlush();
 	vr::VRCompositor()->PostPresentHandoff();
+
+	if (!m_draw_HMD_Only){
+		renderState->pushState();
+		int width = renderState->getValue("/WindowWidth");
+		int height = renderState->getValue("/WindowHeight");
+
+		glViewport(0, 0, width, height);
+		glClearColor(0, 0, 0, 1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		renderState->addData("/ProjectionMatrix", m_mat4ProjectionRight);
+		renderState->addData("/ViewMatrix", view_right);
+		renderState->addData("/Eye", "Cyclops");
+		if (_children.size() == 0) {
+			renderHandler->onVRRenderScene(renderState, this);
+		}
+		else {
+			VRDisplayNode::render(renderState, renderHandler);
+		}
+
+		if (m_rendermodelhandler)
+			m_rendermodelhandler->draw(m_mat4ProjectionRight, view_right);
+
+		renderState->popState();
+	}
 }
 
 VRDisplayNode* VROpenVRNode::create(VRMainInterface *vrMain, VRDataIndex *config,  const std::string &nameSpace) {
 	std::string nodeNameSpace = config->validateNameSpace(nameSpace);
 
-	VRDisplayNode *node = new VROpenVRNode(vrMain, nameSpace, 0.1f, 100000.0f);
+	int drawController = true;
+	if (config->exists("DrawController", nameSpace))
+	{
+		drawController = config->getValue("DrawController", nameSpace);
+	}
+	int hide_tracker = false;
+	if (config->exists("HideTracker", nameSpace))
+	{
+		hide_tracker = config->getValue("HideTracker", nameSpace);
+	}
+
+	unsigned char flags = Pressed | Touched | Axis | Pose;
+	if (config->exists("ReportStatePressed", nameSpace) && !((int) config->getValue("ReportStatePressed", nameSpace)))
+	{
+		flags = flags & ~Pressed;
+	}
+	if (config->exists("ReportStateTouched", nameSpace) && !((int)config->getValue("ReportStateTouched", nameSpace)))
+	{
+		flags = flags & ~Touched;
+	}
+	if (config->exists("ReportStateAxis", nameSpace) && !((int)config->getValue("ReportStateAxis", nameSpace)))
+	{
+		flags = flags & ~Axis;
+	}
+	if (config->exists("ReportStatePose", nameSpace) && !((int)config->getValue("ReportStatePose", nameSpace)))
+	{
+		flags = flags & ~Pose;
+	}
+	bool draw_HMD_Only = false;
+	if (config->exists("DrawHMDOnly", nameSpace) && ((int)config->getValue("DrawHMDOnly", nameSpace)))
+	{
+		draw_HMD_Only = true;
+	}
+
+	VRDisplayNode *node = new VROpenVRNode(vrMain, nameSpace, 0.1f, 100000.0f, drawController, hide_tracker, draw_HMD_Only, flags);
 	
 	return node;
 }
