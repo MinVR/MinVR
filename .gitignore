@@ -13,8 +13,8 @@ Release
 *.pyc
 
 # build files
-build/
-install/
+build*/
+install*/
 CMakeCache.txt
 CMakeFiles
 cmake_install.cmake
