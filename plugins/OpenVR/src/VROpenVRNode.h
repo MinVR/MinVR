@@ -35,7 +35,7 @@ namespace MinVR {
  */
 class VROpenVRNode : public VRDisplayNode {
 public:
-	PLUGIN_API VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double near, double far, bool draw_controller, bool hide_tracker, bool draw_HMD_Only, unsigned char openvr_plugin_flags);
+	PLUGIN_API VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double near, double far, bool draw_controller, bool hide_tracker, bool draw_HMD_Only, unsigned char openvr_plugin_flags, unsigned int MSAA_buffers);
 	
 	PLUGIN_API virtual ~VROpenVRNode();
 
@@ -49,6 +49,7 @@ public:
 	VROpenVRRenderModelHandler* getRenderModelHandler(){ return m_rendermodelhandler; }
 
 private:
+	unsigned int m_MSAA_buffers;
 	VROpenVRInputDevice * _inputDev;
 	VROpenVRRenderModelHandler * m_rendermodelhandler;
 	bool isInitialized;
