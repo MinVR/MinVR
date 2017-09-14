@@ -15,7 +15,7 @@ MyAppController::MyAppController(int argc, char** argv) : VRApp(argc, argv), fra
 MyAppController::~MyAppController() {
 }
 
-void MyAppController::onAnalogChange(const VRAnalogState &state) {
+void MyAppController::onAnalogChange(const VRAnalogEvent &state) {
 
 	//event.print();
 
@@ -35,7 +35,7 @@ void MyAppController::onAnalogChange(const VRAnalogState &state) {
 	}
 }
 
-void MyAppController::onButtonDown(const MinVR::VRButtonState &state) {
+void MyAppController::onButtonDown(const MinVR::VRButtonEvent &state) {
 	// Quit if the escape button is pressed
 	if (state.getName() == "KbdEsc_Down") {
 		shutdown();

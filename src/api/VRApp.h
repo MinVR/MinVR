@@ -9,14 +9,14 @@
 #ifndef VRAPP_H_
 #define VRAPP_H_
 
-#include "VRAnalogState.h"
+#include "VRAnalogEvent.h"
 #include "VRAudioState.h"
-#include "VRButtonState.h"
+#include "VRButtonEvent.h"
 #include "VRConsoleState.h"
-#include "VRCursorState.h"
+#include "VRCursorEvent.h"
 #include "VRGraphicsState.h"
 #include "VRHapticsState.h"
-#include "VRTrackerState.h"
+#include "VRTrackerEvent.h"
 
 namespace MinVR {
 
@@ -111,15 +111,15 @@ public:
 
 	/** USER INTERFACE CALLBACKS **/
 
-    virtual void onAnalogChange(const VRAnalogState &state) {}
+    virtual void onAnalogChange(const VRAnalogEvent &state) {}
     
-	virtual void onButtonDown(const VRButtonState &state) {}
+	virtual void onButtonDown(const VRButtonEvent &state) {}
 
-	virtual void onButtonUp(const VRButtonState &state) {}
+	virtual void onButtonUp(const VRButtonEvent &state) {}
 
-	virtual void onCursorMove(const VRCursorState &state) {}
+	virtual void onCursorMove(const VRCursorEvent &state) {}
 
-	virtual void onTrackerMove(const VRTrackerState &state) {}
+	virtual void onTrackerMove(const VRTrackerEvent &state) {}
 
 
     

@@ -137,27 +137,27 @@ set(vr_input_h
 
 set(vr_api_cpp
   ${vr_src_dir}/api/impl/VRApp.cpp
-  ${vr_src_dir}/api/impl/VRAnalogState.cpp
+  ${vr_src_dir}/api/impl/VRAnalogEvent.cpp
   ${vr_src_dir}/api/impl/VRAudioState.cpp
-  ${vr_src_dir}/api/impl/VRButtonState.cpp
+  ${vr_src_dir}/api/impl/VRButtonEvent.cpp
   ${vr_src_dir}/api/impl/VRConsoleState.cpp
-  ${vr_src_dir}/api/impl/VRCursorState.cpp
+  ${vr_src_dir}/api/impl/VRCursorEvent.cpp
   ${vr_src_dir}/api/impl/VRGraphicsState.cpp
   ${vr_src_dir}/api/impl/VRHapticsState.cpp
-  ${vr_src_dir}/api/impl/VRTrackerState.cpp
+  ${vr_src_dir}/api/impl/VRTrackerEvent.cpp
 )
 
 set(vr_api_h
   ${vr_src_dir}/api/MinVR.h
   ${vr_src_dir}/api/VRApp.h
-  ${vr_src_dir}/api/VRAnalogState.h
+  ${vr_src_dir}/api/VRAnalogEvent.h
   ${vr_src_dir}/api/VRAudioState.h
-  ${vr_src_dir}/api/VRButtonState.h
+  ${vr_src_dir}/api/VRButtonEvent.h
   ${vr_src_dir}/api/VRConsoleState.h
-  ${vr_src_dir}/api/VRCursorState.h
+  ${vr_src_dir}/api/VRCursorEvent.h
   ${vr_src_dir}/api/VRGraphicsState.h
   ${vr_src_dir}/api/VRHapticsState.h
-  ${vr_src_dir}/api/VRTrackerState.h
+  ${vr_src_dir}/api/VRTrackerEvent.h
 )
 
 set(vr_main_cpp

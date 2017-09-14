@@ -13,8 +13,8 @@ Author(s) of Significant Updates/Modifications to the File:
 	... 
 */
 
-#ifndef VRANALOGSTATE_H
-#define VRANALOGSTATE_H
+#ifndef VRButtonEvent_H
+#define VRButtonEvent_H
 
 
 #include <iostream>
@@ -25,17 +25,17 @@ class VRDataIndex;
 
 /** 
 */
-class VRAnalogState {
+class VRButtonEvent {
 public:
-	VRAnalogState(const VRDataIndex &internalIndex);
-	virtual ~VRAnalogState();
+	VRButtonEvent(const VRDataIndex &internalIndex);
+	virtual ~VRButtonEvent();
 
 
-    // A string describing the name of this analog data
+    // A string describing the name of this button
     std::string getName() const;
 
-    // Returns the current value of the default data field
-    float getValue() const;
+    // true if the button is currently in a "pressed down" state
+    bool isDown() const;
     
     
 
@@ -45,6 +45,9 @@ public:
 	 */
 	const VRDataIndex& index() const;
 
+    
+    static VRDataIndex createValidDataIndex(const std::string &eventName, int buttonState);
+    
 private:
 
 	const VRDataIndex &_index;
