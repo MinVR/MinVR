@@ -47,12 +47,12 @@ class VRAppInternal; // forward declaration for implementation details
   ------------------------------------------------------------------------
 
   MinVR's convention for command line arguments is as follows:
-  
+
         -h, --help         Display a help message.
-     
+
         Add any of the following arguments to the command line as many times as
         needed in a space separated list.
-     
+
         -c <configname>, --load-config <configname>
                            Search for and load the pre-installed MinVR config file
                            named <configname>.minvr -- the search looks in:
@@ -62,11 +62,7 @@ class VRAppInternal; // forward declaration for implementation details
                               executables from build/bin or tests/testname
                            4. MINVR_ROOT/config if the MINVR_ROOT envvar is defined
                            5. the install_prefix specified when libMinVR was built.
-        
-        -f <path/file.minvr>, --load-file <path/file.minvr>
-                           Load the exact MinVR config file specified as a complete
-                           relative or absolute path and filename.
-     
+
         -s <key>=<value>, --set-value <key>=<value>
                            Add an entry to the MinVR configuration directly from
                            the command line rather than by specifying it in a
@@ -78,15 +74,15 @@ class VRAppInternal; // forward declaration for implementation details
                            config and then override the WindowHeight and
                            WindowWidth values in the pre-installed desktop
                            configuration with the new values specified.
-     
+
         [nothing]          If no command line arguments are provided, then MinVR
                            will try to load the pre-installed default
                            configuration, whis is the same as running the command
                            'myprogram --load-config default'.
-     
+
         [anything else]    MinVR will silently ignore anything else provided as
                            a command line option.
-     
+
         --MINVR_DATA=xxxx  A special command line argument reserved for internal
                            use by MinVR.
  */
@@ -112,42 +108,40 @@ public:
 	//virtual void onVRRenderAudio(const VRAudioState& state) {}
 
 
-	/** This function is called once for each time a display node requires the scene
-		      to be drawn.  For example, a stereo display node will require the scene to
-		      be drawn twice (once per eye).  For graphics rendering, this is where the
-		      application makes the OpenGL or other graphics calls to draw the scene on
-		      the GPU.  Every graphics program will need to override this function.  Think
-		      of it as the place where you draw your scene.  In some cases MinVR needs to
-		      interact with the graphics card or operating system in order to prepare for
-		      this rendering (e.g., MinVR will open the correct graphics windows for you),
-		      but as much as possible, MinVR attempts to simply pass the relevant state on
-		      to the application programmer to handle as needed in your own shaders.  This
-		      is done through the VRGraphicsState object.  MinVR updates this data structure
-		      as it traverses the display graph so that it contains any information you may
-		      need to draw graphics (e.g., the correct projection matrix to apply in your
-		      shaders in order to support head tracked stereo rendering).
+	/** This function is called once for each time a display node requires the
+      scene to be drawn.  For example, a stereo display node will require the
+      scene to be drawn twice (once per eye).  For graphics rendering, this is
+      where the application makes the OpenGL or other graphics calls to draw the
+      scene on the GPU.  Every graphics program will need to override this
+      function.  Think of it as the place where you draw your scene.  In some
+      cases MinVR needs to interact with the graphics card or operating system
+      in order to prepare for this rendering (e.g., MinVR will open the correct
+      graphics windows for you), but as much as possible, MinVR attempts to
+      simply pass the relevant state on to the application programmer to handle
+      as needed in your own shaders.  This is done through the VRGraphicsState
+      object.  MinVR updates this data structure as it traverses the display
+      graph so that it contains any information you may need to draw graphics
+      (e.g., the correct projection matrix to apply in your shaders in order to
+      support head tracked stereo rendering).
 	 */
 	virtual void onVRRenderGraphics(const VRGraphicsState& state) {}
 
 	/** Whereas onVRRenderGraphics(..) is called once per scene (e.g., twice for a
-	      simple stereo display), onVRRenderGraphicsContext(..) is called once per
-	      rendering context.  For a stereo graphics application, onVRRenderContext(..)
-	      will be called once per frame for each active graphics context (graphics
-	      window), and THEN onVRRenderScene(..) will be called once per eye to draw
-	      the scene multiple times.  Thus, to write optimal graphics rendering code,
-	      onVRRenderContext(..) is the place where programmers should do any
-	      computation that is the same for both eyes, such as loading textures or
-	      mesh data into graphics card memory.
+      simple stereo display), onVRRenderGraphicsContext(..) is called once per
+      rendering context.  For a stereo graphics application, onVRRenderContext()
+      will be called once per frame for each active graphics context (graphics
+      window), and THEN onVRRenderScene() will be called once per eye to draw
+      the scene multiple times.  Thus, to write optimal graphics rendering code,
+      onVRRenderContext() is the place where programmers should do any
+      computation that is the same for both eyes, such as loading textures or
+      mesh data into graphics card memory.
 	 */
 	virtual void onVRRenderGraphicsContext(const VRGraphicsState& state) {}
 
-
 	//virtual void onVRRenderHaptics(const VRHapticsState& state) {}
 
-
-    /** Returns whether or not the application is running. */
-    bool isRunning() const;
-  
+  /** Returns whether or not the application is running. */
+  bool isRunning() const;
 
 	/** Starts the application. */
 	void run();
@@ -155,10 +149,18 @@ public:
 	/** Shuts the application down */
 	void shutdown();
 
+  /** After parsing the command line, the number of arguments unused by MinVR
+      can be retrieved with this function.  */
+  int getLeftoverArgc();
+
+  /** After parsing the command line, the values of arguments unused by MinVR
+      can be retrieved with this function.  */
+  char** getLeftoverArgv();
+
 private:
 
 	VRAppInternal *_internal;  // opaque pointer to internal implementation
-	
+
 };
 
 } /* namespace MinVR */

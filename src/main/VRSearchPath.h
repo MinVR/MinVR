@@ -8,6 +8,12 @@
 #include <list>
 #include <fcntl.h>
 
+#ifdef WIN32
+#include <io.h> // Necessary for open() and write() support in windows
+#endif // WIN32
+
+
+
 #include <config/VRDataIndex.h>
 
 namespace MinVR {
@@ -45,7 +51,8 @@ class VRSearchPath {
 
   /// \brief Create a search path from a single string.
   ///
-  /// Adds a whole path from one colon-separated string.
+  /// Adds a whole path from one colon-separated string.  This will
+  /// add the entries to the beginning of the existing search path.
   void digestPathString(const std::string &searchList);
 
   /// \brief Find a file.

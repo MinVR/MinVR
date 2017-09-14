@@ -16,8 +16,10 @@
 
 namespace MinVR {
 
-VRScalableNode::VRScalableNode(const std::string &name, const std::string _meshName, double _near, double _far) : VRDisplayNode(name) , isInitialized(false), meshName(_meshName)
-		, near(_near), far(_far), isLeftEye(false){
+  VRScalableNode::VRScalableNode(const std::string &name, const std::string _meshName, 
+				 double _near, double _far) : 
+    VRDisplayNode(name),  meshName(_meshName), isInitialized(false),
+    isLeftEye(false), near(_near), far(_far) {
 	
 }
 	
@@ -41,7 +43,7 @@ VRScalableNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 			std::cout << "File is: " << meshName <<std::endl;
 		}
 		
-		if(renderState->exists("Eye", "/") && renderState->getDatum("Eye", "/")->getValueString().compare("Right") == 0){
+		if(renderState->exists("Eye", "/") && ((std::string)renderState->getValue("Eye", "/")).compare("Right") == 0){
 			EasyBlendSDK_SetInputReadBuffer(gMSDK,  GL_BACK_RIGHT);
 			EasyBlendSDK_SetOutputDrawBuffer(gMSDK,  GL_BACK_RIGHT);
 			isLeftEye = false;

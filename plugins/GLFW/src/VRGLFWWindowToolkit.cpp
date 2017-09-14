@@ -178,7 +178,7 @@ VRGLFWWindowToolkit::destroyWindow(int windowID) {
 
 void 
 VRGLFWWindowToolkit::makeWindowCurrent(int windowID) {
-	if ((windowID >=0) && (windowID < _windows.size())) {
+  if ((windowID >=0) && ((unsigned int)windowID < _windows.size())) {
       	glfwMakeContextCurrent(_windows[windowID]);
 	}
 	else {

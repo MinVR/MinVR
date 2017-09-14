@@ -7,7 +7,7 @@
 set (maintests utility)
 # The numbers here correspond to 'case' statements in the respective
 # test program.  See, e.g., utilitytest.cpp
-set (utility_parts 1)
+set (utility_parts 1 2)
 
 # For tests where a list of parts has not been defined we add a default of 1:
 foreach(maintest ${maintests})

@@ -60,8 +60,9 @@ public:
 	void onVRRenderGraphics(const VRGraphicsState &renderState) {
 		if (isRunning()) {
 			// Get projection an view matrices
-			const float* projectionMatrix = renderState.getProjectionMatrix();
-			const float* viewMatrix = renderState.getViewMatrix();
+		  // These are not actually used in this example.
+		  //const float* projectionMatrix = renderState.getProjectionMatrix();
+		  //const float* viewMatrix = renderState.getViewMatrix();
 
 			// Show gradient of red color over four seconds then restart
 			float red = std::fmod(time/4.0,1.0);

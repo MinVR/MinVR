@@ -30,6 +30,8 @@ public:
   virtual VRWindowToolkit* getWindowToolkit(const std::string &name) = 0;
   virtual VRFactory* getFactory() = 0;
   virtual void addPluginSearchPath(const std::string& path) = 0;
+  virtual int getArgc() = 0;
+  virtual char** getArgv() = 0;
 };
 
 

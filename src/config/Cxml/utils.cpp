@@ -5,7 +5,7 @@ namespace MinVR {
 char* concat(char *str,char c)
 {
     char buf[2] ={0};
-    char *ret = NULL;
+    //char *ret = NULL;
     buf[0] = c;
     if((strlen(str) + (2*sizeof(char))) < 256)
     {

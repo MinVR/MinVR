@@ -188,7 +188,7 @@ void VRVRPNTrackerDevice::processEvent(const VRMatrix4 &vrpnEvent, int sensorNum
 
 std::string VRVRPNTrackerDevice::getEventName(int trackerNumber)
 {
-	if (trackerNumber >= _eventNames.size())
+  if (trackerNumber >= (int)_eventNames.size())
 		return std::string("VRPNTrackerDevice_Unknown_Event");
 	else
 		return _eventNames[trackerNumber];
@@ -235,7 +235,7 @@ VRVRPNTrackerDevice::create(VRMainInterface *vrMain, VRDataIndex *config, const 
   
   std::vector<VRMatrix4> p2t;
   std::vector<VRMatrix4> fo;
-  for (int  i = 0; i < eventsToGenerate.size(); i++) {
+  for (size_t  i = 0; i < eventsToGenerate.size(); i++) {
 	  std::string trackerNameSpace = config->validateNameSpace(nameSpace) + eventsToGenerate[i] + "/";
     
     VRMatrix4 m = config->getValue("PropToTracker", trackerNameSpace);

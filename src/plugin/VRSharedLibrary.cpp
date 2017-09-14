@@ -81,9 +81,7 @@ void VRSharedLibrary::load() {
 
     _isLoaded = true;
 
-#ifdef MinVR_DEBUG
-    std::cerr << "Loaded library: " + _filePath << std::endl;
-#endif
+    DEBUGMSG("Loaded library: " + _filePath)
 	}
 }
 
