@@ -13,10 +13,11 @@ Author(s) of Significant Updates/Modifications to the File:
 	... 
 */
 
-#ifndef VRTRACKERSTATE_H
-#define VRTRACKERSTATE_H
+#ifndef VRTrackerEvent_H
+#define VRTrackerEvent_H
 
 #include <iostream>
+#include <vector>
 
 
 namespace MinVR {
@@ -25,10 +26,10 @@ class VRDataIndex;
 
 /** 
 */
-class VRTrackerState {
+class VRTrackerEvent {
 public:
-	VRTrackerState(const VRDataIndex &internalIndex);
-	virtual ~VRTrackerState();
+	VRTrackerEvent(const VRDataIndex &internalIndex);
+	virtual ~VRTrackerEvent();
 
 
     // A string describing the name of this cursor
@@ -58,6 +59,10 @@ public:
 	    accessible via this API. 
 	 */
 	const VRDataIndex& index() const;
+    
+    
+    static VRDataIndex createValidDataIndex(const std::string &eventName,
+                                            std::vector<float> transform);
 
 private:
 

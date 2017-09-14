@@ -10,7 +10,15 @@
 #define MINVR_H_
 
 #include "VRApp.h"
-#include "VREvent.h"
+
+#include "VRAnalogEvent.h"
+#include "VRButtonEvent.h"
+#include "VRCursorEvent.h"
+#include "VRTrackerEvent.h"
+
+#include "VRAudioState.h"
+#include "VRConsoleState.h"
 #include "VRGraphicsState.h"
+#include "VRHapticsState.h"
 
 #endif /* MINVR_H_ */

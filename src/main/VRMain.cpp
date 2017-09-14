@@ -9,6 +9,7 @@
 #include <unistd.h>
 #endif
 
+#include <api/VRAnalogEvent.h>
 #include <display/VRConsoleNode.h>
 #include <display/VRGraphicsWindowNode.h>
 #include <display/VRGroupNode.h>
@@ -314,6 +315,7 @@ VRMain::~VRMain()
 void VRMain::loadConfig(const std::string &configName) {
 
   std::string fileName = _configPath.findFile(configName);
+
   if (fileName.empty()) {
 
     VRERROR("Cannot find a configuration named " + configName + ".",
@@ -762,10 +764,16 @@ VRMain::synchronizeAndProcessEvents() {
   VRDataQueue eventQueue;
 
   // Add a standard "FrameStart" event at the beginning of each frame
-  VRDataIndex frameStartEvent("FrameStart");
-  frameStartEvent.addData("ElapsedSeconds", (float)VRSystem::getTime());
-  frameStartEvent.addData("EventType", "AnalogChange");
-  frameStartEvent.linkNode("ElapsedSeconds", "DefaultData");
+  VRDataIndex frameStartEvent =
+      VRAnalogEvent::createValidDataIndex("FrameStart", (float)VRSystem::getTime());
+  // by default the data will be placed in a field called "AnalogValue".  The
+  // next line is not strictly necessary, but it demonstrates how to add an
+  // entry to the index with a more descriptive name for event's data payload
+  // additional entries could also be added here, for example, might be useful
+  // to include delta time since last frame and even the current framerate.
+  // Adding more fields is fine as long as the VRSystem::getTime() remains the
+  // default data stored in the AnalogValue field.
+  frameStartEvent.linkNode("AnalogValue", "ElapsedSeconds");
   eventQueue.push(frameStartEvent);
 
   for (int f = 0; f < _inputDevices.size(); f++) {

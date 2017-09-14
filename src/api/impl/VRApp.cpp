@@ -8,12 +8,12 @@
 
 #include "api/VRApp.h"
 #include "api/VRAudioState.h"
-#include "api/VRButtonState.h"
+#include "api/VRButtonEvent.h"
 #include "api/VRConsoleState.h"
-#include "api/VRCursorState.h"
+#include "api/VRCursorEvent.h"
 #include "api/VRGraphicsState.h"
 #include "api/VRHapticsState.h"
-#include "api/VRTrackerState.h"
+#include "api/VRTrackerEvent.h"
 
 #include <main/VRMain.h>
 
@@ -54,26 +54,26 @@ public:
                     "All events should have a data field named EventType but none was found for this event.");
         }
 
-        if (type == "AnalogChange") {
-            _app->onAnalogChange(VRAnalogState(eventData));
+        if (type == "AnalogUpdate") {
+            _app->onAnalogChange(VRAnalogEvent(eventData));
         }
         else if (type == "ButtonDown") {
-            _app->onButtonDown(VRButtonState(eventData));
+            _app->onButtonDown(VRButtonEvent(eventData));
         }
         else if (type == "ButtonUp") {
-            _app->onButtonUp(VRButtonState(eventData));
+            _app->onButtonUp(VRButtonEvent(eventData));
         }
         else if (type == "CursorMove") {
-            _app->onCursorMove(VRCursorState(eventData));
+            _app->onCursorMove(VRCursorEvent(eventData));
         }
         else if (type == "TrackerMove") {
-            _app->onTrackerMove(VRTrackerState(eventData));
+            _app->onTrackerMove(VRTrackerEvent(eventData));
         }
         else if (type == "ButtonRepeat") {
             // ignore, this doesn't seem to be supported on all platforms.
         }
         else {
-            VRERROR("VRAppInternal::onVREvent() received an event of unknown type: " + eventData.getName(),
+            VRERROR("VRAppInternal::onVREvent() received an event of unknown type: " + type,
                     "Perhaps an input device that sends a new type of event was rencently added.");
         }
 	}
@@ -103,10 +103,13 @@ public:
             _app->onRenderGraphicsScene(VRGraphicsState(renderData));
         }
         else if (renderData.exists("IsAudio")) {
+            // nothing to do, already called onRenderAudio() during onVRRenderContext
         }
         else if (renderData.exists("IsConsole")) {
+            // nothing to do, already called onRenderConsole() during onVRRenderContext
         }
         else if (renderData.exists("IsHaptics")) {
+            // nothing to do, already called onRenderHaptics() during onVRRenderContext
         }
         else {
             VRERROR("VRAppInternal::onRenderScene() received an unknown type of render callback",

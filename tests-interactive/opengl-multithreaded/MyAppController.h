@@ -28,8 +28,8 @@ public:
 	virtual ~MyAppController();
 
     
-    void onAnalogChange(const VRAnalogState &state);
-    void onButtonDown(const VRButtonState &state);
+    void onAnalogChange(const VRAnalogEvent &state);
+    void onButtonDown(const VRButtonEvent &state);
 
     
     void onRenderGraphicsScene(const VRGraphicsState& state);
