@@ -33,7 +33,8 @@
 				<ReportStateTouched>1</ReportStateTouched>
 				<ReportStateAxis>1</ReportStateAxis>
 				<ReportStatePose>1</ReportStatePose>
-				<DrawHMDOnly>0</DrawHMDOnly	
+				<DrawHMDOnly>0</DrawHMDOnly>
+				<MSAA_buffers>4</MSAA_buffers>	
 			</HTC>
 		</RootNode>
 		</Desktop>

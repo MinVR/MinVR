@@ -391,7 +391,7 @@ bool VRMain::_startLocalProcess(const std::string &setupName) {
   ZeroMemory(&si, sizeof(si));
   si.cb = sizeof(si);
   ZeroMemory(&pi, sizeof(pi));
-  LPSTR title = new char[setupName + 1];
+  LPSTR title = new char[setupName.size() + 1];
   strcpy(title, (setupName).c_str());
   si.lpTitle = title;
 

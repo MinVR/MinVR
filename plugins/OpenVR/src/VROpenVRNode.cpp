@@ -32,7 +32,7 @@
 
 namespace MinVR {
 
-	VROpenVRNode::VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double _near, double _far, bool draw_controller, bool hide_tracker, bool draw_HMD_Only, unsigned char openvr_plugin_flags) : VRDisplayNode(name), isInitialized(false), m_fNearClip(_near), m_fFarClip(_far), m_draw_controller(draw_controller), m_draw_HMD_Only(draw_HMD_Only), m_rendermodelhandler(NULL){
+	VROpenVRNode::VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double _near, double _far, bool draw_controller, bool hide_tracker, bool draw_HMD_Only, unsigned char openvr_plugin_flags, unsigned int MSAA_buffers) : VRDisplayNode(name), isInitialized(false), m_fNearClip(_near), m_fFarClip(_far), m_draw_controller(draw_controller), m_draw_HMD_Only(draw_HMD_Only), m_rendermodelhandler(NULL), m_MSAA_buffers(MSAA_buffers){
 	vr::EVRInitError eError = vr::VRInitError_None;
 	m_pHMD = vr::VR_Init( &eError, vr::VRApplication_Scene );
 	int idx = name.find_last_of('/');
@@ -75,16 +75,16 @@ VROpenVRNode::~VROpenVRNode() {
 	
 	if(isInitialized){
 		glDeleteRenderbuffers( 1, &leftEyeDesc.m_nDepthBufferId );
-		glDeleteTextures( 1, &leftEyeDesc.m_nRenderTextureId );
+		if (m_MSAA_buffers > 1) glDeleteTextures(1, &leftEyeDesc.m_nRenderTextureId);
 		glDeleteFramebuffers( 1, &leftEyeDesc.m_nRenderFramebufferId );
 		glDeleteTextures( 1, &leftEyeDesc.m_nResolveTextureId );
-		glDeleteFramebuffers( 1, &leftEyeDesc.m_nResolveFramebufferId );
+		if (m_MSAA_buffers > 1) glDeleteFramebuffers(1, &leftEyeDesc.m_nResolveFramebufferId);
 
 		glDeleteRenderbuffers( 1, &rightEyeDesc.m_nDepthBufferId );
-		glDeleteTextures( 1, &rightEyeDesc.m_nRenderTextureId );
+		if (m_MSAA_buffers > 1) glDeleteTextures(1, &rightEyeDesc.m_nRenderTextureId);
 		glDeleteFramebuffers( 1, &rightEyeDesc.m_nRenderFramebufferId );
 		glDeleteTextures( 1, &rightEyeDesc.m_nResolveTextureId );
-		glDeleteFramebuffers( 1, &rightEyeDesc.m_nResolveFramebufferId );
+		if (m_MSAA_buffers > 1) glDeleteFramebuffers(1, &rightEyeDesc.m_nResolveFramebufferId);
 	}
 
 	
@@ -122,7 +122,7 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 
 	// Left Eye
 	renderState->pushState();
-	glEnable( GL_MULTISAMPLE );
+	if (m_MSAA_buffers > 1) glEnable(GL_MULTISAMPLE);
 	glBindFramebuffer( GL_FRAMEBUFFER, leftEyeDesc.m_nRenderFramebufferId );
  	glViewport(0, 0, m_nRenderWidth, m_nRenderHeight );
  	glClearColor( 0, 0, 0, 1 );
@@ -143,19 +143,21 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 		m_rendermodelhandler->draw(m_mat4ProjectionLeft, view_left);
 
  	glBindFramebuffer( GL_FRAMEBUFFER, 0 );	
-	glDisable( GL_MULTISAMPLE ); 	
- 	glBindFramebuffer(GL_READ_FRAMEBUFFER, leftEyeDesc.m_nRenderFramebufferId);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, leftEyeDesc.m_nResolveFramebufferId );
-    glBlitFramebuffer( 0, 0, m_nRenderWidth, m_nRenderHeight, 0, 0, m_nRenderWidth, m_nRenderHeight, 
-		GL_COLOR_BUFFER_BIT,
- 		GL_LINEAR );
- 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0 );	
+	if (m_MSAA_buffers > 1) {
+		glDisable(GL_MULTISAMPLE);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, leftEyeDesc.m_nRenderFramebufferId);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, leftEyeDesc.m_nResolveFramebufferId);
+		glBlitFramebuffer(0, 0, m_nRenderWidth, m_nRenderHeight, 0, 0, m_nRenderWidth, m_nRenderHeight,
+			GL_COLOR_BUFFER_BIT,
+			GL_LINEAR);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	}
 	renderState->popState();
 	
 	// Right Eye
 	renderState->pushState();
-	glEnable( GL_MULTISAMPLE );
+	if (m_MSAA_buffers > 1) glEnable(GL_MULTISAMPLE);
 	glBindFramebuffer( GL_FRAMEBUFFER, rightEyeDesc.m_nRenderFramebufferId );
  	glViewport(0, 0, m_nRenderWidth, m_nRenderHeight );
 	glClearColor( 0, 0, 0, 1 );
@@ -177,15 +179,16 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 		m_rendermodelhandler->draw(m_mat4ProjectionRight, view_right);
 
  	glBindFramebuffer( GL_FRAMEBUFFER, 0 );	
-	glDisable( GL_MULTISAMPLE );
- 	glBindFramebuffer(GL_READ_FRAMEBUFFER, rightEyeDesc.m_nRenderFramebufferId );
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, rightEyeDesc.m_nResolveFramebufferId );
-    glBlitFramebuffer( 0, 0, m_nRenderWidth, m_nRenderHeight, 0, 0, m_nRenderWidth, m_nRenderHeight, 
-		GL_COLOR_BUFFER_BIT,
- 		GL_LINEAR  );
- 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0 );
-
+	if (m_MSAA_buffers > 1) {
+		glDisable(GL_MULTISAMPLE);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, rightEyeDesc.m_nRenderFramebufferId);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, rightEyeDesc.m_nResolveFramebufferId);
+		glBlitFramebuffer(0, 0, m_nRenderWidth, m_nRenderHeight, 0, 0, m_nRenderWidth, m_nRenderHeight,
+			GL_COLOR_BUFFER_BIT,
+			GL_LINEAR);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	}
 	renderState->popState();
 
 	vr::Texture_t leftEyeTexture = { (void*)leftEyeDesc.m_nResolveTextureId, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
@@ -259,8 +262,13 @@ VRDisplayNode* VROpenVRNode::create(VRMainInterface *vrMain, VRDataIndex *config
 	{
 		draw_HMD_Only = true;
 	}
-
-	VRDisplayNode *node = new VROpenVRNode(vrMain, nameSpace, 0.1f, 100000.0f, drawController, hide_tracker, draw_HMD_Only, flags);
+	int MSAA_buffers = 4;
+	if (config->exists("MSAA_buffers", nameSpace))
+	{
+		MSAA_buffers = config->getValue("MSAA_buffers", nameSpace);
+		MSAA_buffers = (MSAA_buffers < 1) ? 1 : MSAA_buffers;
+	}
+	VRDisplayNode *node = new VROpenVRNode(vrMain, nameSpace, 0.1f, 100000.0f, drawController, hide_tracker, draw_HMD_Only, flags, MSAA_buffers);
 	
 	return node;
 }
@@ -272,17 +280,25 @@ bool VROpenVRNode::CreateFrameBuffer( int nWidth, int nHeight, FramebufferDesc &
 
 	glGenRenderbuffers(1, &framebufferDesc.m_nDepthBufferId);
 	glBindRenderbuffer(GL_RENDERBUFFER, framebufferDesc.m_nDepthBufferId);
-	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH_COMPONENT, nWidth, nHeight );
+	if (m_MSAA_buffers > 1){
+		glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH_COMPONENT, nWidth, nHeight);
+	}
+	else
+	{
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, nWidth, nHeight);
+	}
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER,	framebufferDesc.m_nDepthBufferId );
+	
+	if (m_MSAA_buffers > 1){
+		glGenTextures(1, &framebufferDesc.m_nRenderTextureId);
+		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, framebufferDesc.m_nRenderTextureId);
+		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8, nWidth, nHeight, true);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, framebufferDesc.m_nRenderTextureId, 0);
 
-	glGenTextures(1, &framebufferDesc.m_nRenderTextureId );
-	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, framebufferDesc.m_nRenderTextureId );
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8, nWidth, nHeight, true);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, framebufferDesc.m_nRenderTextureId, 0);
-
-	glGenFramebuffers(1, &framebufferDesc.m_nResolveFramebufferId );
-	glBindFramebuffer(GL_FRAMEBUFFER, framebufferDesc.m_nResolveFramebufferId);
-
+		glGenFramebuffers(1, &framebufferDesc.m_nResolveFramebufferId);
+		glBindFramebuffer(GL_FRAMEBUFFER, framebufferDesc.m_nResolveFramebufferId);
+	}
+	
 	glGenTextures(1, &framebufferDesc.m_nResolveTextureId );
 	glBindTexture(GL_TEXTURE_2D, framebufferDesc.m_nResolveTextureId );
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
