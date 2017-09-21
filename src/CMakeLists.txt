@@ -242,7 +242,12 @@ source_group("Config Files" FILES ${vr_config_files})
 
 
 add_library(MinVR ${vr_sources})
-target_link_libraries(MinVR dl)
+
+# Needed for some Linux machines
+# TODO: confirm that it is really necessary
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+	target_link_libraries(MinVR dl)
+endif()
 
 install(TARGETS MinVR
         LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
