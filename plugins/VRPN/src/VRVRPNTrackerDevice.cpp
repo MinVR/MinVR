@@ -52,7 +52,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <quat.h>
 
 #include <math/VRMath.h>
-
+#include <api/VRTrackerEvent.h>
 
 #include <iostream>
 using namespace std;
@@ -180,10 +180,9 @@ void VRVRPNTrackerDevice::processEvent(const VRMatrix4 &vrpnEvent, int sensorNum
 		std::cout << translation << std::endl;
 	}
 
-	VRDataIndex di;
     std::string name = getEventName(sensorNum) + "_Move";
-	di.addData(name + "/Transform", eventRoom);
-    _pendingEvents.push(di.serialize(name));
+    VRDataIndex event = VRTrackerEvent::createValidDataIndex(name, eventRoom.toVRFloatArray());
+    _pendingEvents.push_back(event);
 }
 
 std::string VRVRPNTrackerDevice::getEventName(int trackerNumber)
@@ -212,7 +211,9 @@ void VRVRPNTrackerDevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEv
     _vrpnDevice->mainloop();
   }
 
-  inputEvents->addQueue(_pendingEvents);
+  for (int f = 0; f < _pendingEvents.size(); f++) {
+    inputEvents->push(_pendingEvents[f].serialize());
+  }
   _pendingEvents.clear();
 }
 

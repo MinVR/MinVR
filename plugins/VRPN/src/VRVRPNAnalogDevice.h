@@ -84,7 +84,7 @@ private:
 	vrpn_Analog_Remote        *_vrpnDevice;
 	std::vector<std::string>   _eventNames;
 	std::vector<float>        _channelValues;
-	VRDataQueue                _pendingEvents;
+    std::vector<VRDataIndex>  _pendingEvents;
 };
 
 

@@ -54,11 +54,18 @@ const VRDataIndex& VRButtonEvent::index() const {
     
 VRDataIndex VRButtonEvent::createValidDataIndex(const std::string &eventName, int buttonState) {
     VRDataIndex di(eventName);
-    if (buttonState) {
+    if (buttonState == 0) {
+        di.addData("EventType", "ButtonUp");
+    }
+    else if (buttonState == 1) {
         di.addData("EventType", "ButtonDown");
     }
+    else if (buttonState == 2) {
+        di.addData("EventType", "ButtonRepeat");
+    }
     else {
-        di.addData("EventType", "ButtonUp");
+        VRERROR("VRButtonEvent cannot create a valid data index because it received an unrecognized value for buttonState.",
+                "Maybe an input device is reporting something other than standard up/down/repeat events.");
     }
     di.addData("ButtonState", buttonState);
     return di;

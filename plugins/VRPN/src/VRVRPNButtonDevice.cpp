@@ -50,6 +50,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vrpn_Button.h>
 #include <iostream>
 
+#include <api/VRButtonEvent.h>
+
 
 #ifndef VRPN_CALLBACK
 #define VRPN_CALLBACK
@@ -96,24 +98,23 @@ std::string VRVRPNButtonDevice::getEventName(int buttonNumber)
 
 void VRVRPNButtonDevice::sendEvent(int buttonNumber, bool down)
 {
-    VRDataIndex di;
-	std::string name = getEventName(buttonNumber);
-	if (down) {
+    std::string name = getEventName(buttonNumber);
+    if (down) {
         name = name + "_Down";
-		di.addData(name + "/id", buttonNumber);
-	    _pendingEvents.push(di.serialize(name));
-	}
-	else {
+    }
+    else {
         name = name + "_Up";
-		di.addData(name + "/id", buttonNumber);
-	    _pendingEvents.push(di.serialize(name));
-	}
+    }
+    VRDataIndex di = VRButtonEvent::createValidDataIndex("name", down);
+    _pendingEvents.push_back(di);
 }
 
 void VRVRPNButtonDevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents) {
-	_vrpnDevice->mainloop();
-  inputEvents->addQueue(_pendingEvents);
-  _pendingEvents.clear();
+    _vrpnDevice->mainloop();
+    for (int f = 0; f < _pendingEvents.size(); f++) {
+        inputEvents->push(_pendingEvents[f].serialize());
+    }
+    _pendingEvents.clear();
 }
 
 

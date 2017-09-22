@@ -1,6 +1,7 @@
 
 #include "VRFakeTrackerDevice.h"
 #include <math/VRMath.h>
+#include <api/VRTrackerEvent.h>
 
 namespace MinVR {
 

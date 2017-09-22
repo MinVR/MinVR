@@ -139,7 +139,7 @@ private:
 	bool                      _convertLHtoRH;
 	bool                      _ignoreZeroes;
 	bool                      _newReportFlag;
-	VRDataQueue               _pendingEvents;
+    std::vector<VRDataIndex>  _pendingEvents;
 };
 
 

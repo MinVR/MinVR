@@ -63,14 +63,17 @@ public:
         else if (type == "ButtonUp") {
             _app->onButtonUp(VRButtonEvent(eventData));
         }
+        else if (type == "ButtonRepeat") {
+            // intentionally not forwarding ButtonRepeat events since repeats are
+            // not reported consistently on all systems and for VR apps we generally
+            // just listen for downs and ups, it's an automatic repeat if you
+            // have received a down and have not received a corresponding up.
+        }
         else if (type == "CursorMove") {
             _app->onCursorMove(VRCursorEvent(eventData));
         }
         else if (type == "TrackerMove") {
             _app->onTrackerMove(VRTrackerEvent(eventData));
-        }
-        else if (type == "ButtonRepeat") {
-            // ignore, this doesn't seem to be supported on all platforms.
         }
         else {
             VRERROR("VRAppInternal::onVREvent() received an event of unknown type: " + type,
