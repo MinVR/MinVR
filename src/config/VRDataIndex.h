@@ -1060,11 +1060,10 @@ public:
   /// of the names in some container, use getValue().
   std::list<std::string> findAllNames();
 
-  /// \brief Does the index have any entries?
+   /// \brief Does the index have any entries?
   ///
   /// \return A boolean value, true if empty.
   bool empty() { return _theIndex.empty(); };
-
   ///@}
 
 
@@ -1239,6 +1238,29 @@ private:
 
   // If this is false, we don't need to do linkNodes() or linkContent().
   bool _linkNeeded;
+
+public:
+ 
+  /**
+   * An alternate version of getValue() designed to return a default value
+   * instead of throwing an error.
+   */
+  template<typename T>
+  T getValueWithDefault(const std::string &key,
+                                const T defaultValue,
+                                const std::string nameSpace = "",
+                                const bool inherit = true) {
+    VRDataMap::iterator p = _getEntry(key, nameSpace, inherit);
+    if (p == _theIndex.end()) {
+      return defaultValue;
+    }
+    else{
+      return p->second->getValue();
+    }
+  }
+ 
+
+  
 };
 
 

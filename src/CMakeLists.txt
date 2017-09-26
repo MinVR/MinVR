@@ -56,7 +56,7 @@ set(vr_config_files
   ${vr_src_dir}/../config/ivlabcave.minvr
   ${vr_src_dir}/../config/ivlabcavefront.minvr
   ${vr_src_dir}/../config/ivlabcave-desktop.minvr
-  ${vr_src_dir}/../config/YURT.minvr
+  ${vr_src_dir}/../config/YURT_config.minvr
 )
 
 
@@ -106,6 +106,7 @@ set(vr_display_cpp
   ${vr_src_dir}/display/VRGraphicsWindowNode.cpp
   ${vr_src_dir}/display/VRGroupNode.cpp
   ${vr_src_dir}/display/VROffAxisProjectionNode.cpp
+  ${vr_src_dir}/display/VRProjectionNode.cpp
   ${vr_src_dir}/display/VRStereoNode.cpp
   ${vr_src_dir}/display/VRViewportNode.cpp
   ${vr_src_dir}/display/VRLookAtNode.cpp
@@ -119,6 +120,7 @@ set(vr_display_h
   ${vr_src_dir}/display/VRGraphicsWindowNode.h
   ${vr_src_dir}/display/VRGroupNode.h
   ${vr_src_dir}/display/VROffAxisProjectionNode.h
+  ${vr_src_dir}/display/VRProjectionNode.h
   ${vr_src_dir}/display/VRStereoNode.h
   ${vr_src_dir}/display/VRViewportNode.h
   ${vr_src_dir}/display/VRWindowToolkit.h
@@ -128,10 +130,12 @@ set(vr_display_h
 
 set(vr_input_cpp
   ${vr_src_dir}/input/VRFakeTrackerDevice.cpp
+  ${vr_src_dir}/input/VRFakeTrackerDeviceRelative.cpp
 )
 
 set(vr_input_h
   ${vr_src_dir}/input/VRFakeTrackerDevice.h
+  ${vr_src_dir}/input/VRFakeTrackerDeviceRelative.h
   ${vr_src_dir}/input/VRInputDevice.h
 )
 

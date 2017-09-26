@@ -58,7 +58,7 @@ extern "C" {
 	PLUGIN_API VRMain* VRMain_init(char* searchPath, int argc, char** argv) {
 		VRMain* vrmain = new VRMain();
 		vrmain->addPluginSearchPath(std::string(searchPath));
-		vrmain->initializeWithMinVRCommandLineParsing(argc, argv);
+		vrmain->initialize(argc, argv);
 		std::cout << "Plugin directory: " << std::string(searchPath) << std::endl;
 		return vrmain;
 	}
