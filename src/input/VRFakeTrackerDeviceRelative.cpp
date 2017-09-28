@@ -96,7 +96,6 @@ void VRFakeTrackerDeviceRelative::onVREvent(const MinVR::VREvent &event)
     if (event.getName() == _toggleEvent) {
         _tracking = !_tracking;
         if (_tracking) {
-            std::cout << "Starting Tracking" << std::endl;
             _state = VRFakeTrackerDeviceRelative::None;
         }
     }
@@ -182,6 +181,8 @@ void VRFakeTrackerDeviceRelative::appendNewInputEventsSinceLastCall(VRDataQueue 
 VRInputDevice*
 VRFakeTrackerDeviceRelative::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
     std::string devNameSpace = nameSpace;
+
+    //std::cout << "devNameSpace:" << nameSpace << std::endl;
   
     std::string trackerName = config->getValue("TrackerName", devNameSpace);
     std::string toggleEvent = config->getValue("ToggleOnOffEvent", devNameSpace);
@@ -194,8 +195,8 @@ VRFakeTrackerDeviceRelative::create(VRMainInterface *vrMain, VRDataIndex *config
     float rScale = config->getValueWithDefault("RotationScale", 1.0f, devNameSpace);
     int rotationSticky = config->getValueWithDefault("RotationSticky", 0, devNameSpace);
     int rollSticky = config->getValueWithDefault("RollSticky", 0, devNameSpace);
-    int translateSticky = config->getValueWithDefault("TranslateSticky", 1, devNameSpace);
-    int translateZSticky = config->getValueWithDefault("TranslateZSticky", 1, devNameSpace);
+    int translateSticky = config->getValueWithDefault("TranslateSticky", 0, devNameSpace);
+    int translateZSticky = config->getValueWithDefault("TranslateZSticky", 0, devNameSpace);
 //    VRFloatArray defaultPos {0, 0, -1};
 //    VRFloatArray defaultDir {0, 0, 1};
 //    VRFloatArray defaultUp  {0, 1, 0};//TODO: Find better constructors that don't require c++ 11

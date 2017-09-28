@@ -26,13 +26,30 @@
 
 namespace MinVR {
 
-/** A "virtual input device" that converts mouse and keyboard events into
-    6 Degree-of-Freedom tracker events.  This facilitates debugging
-    VR programs on a desktop computer.  Move the mouse to move the tracker
+/** A "virtual input device" that converts mouse and keyboard events into 6
+    Degree-of-Freedom tracker events.  This facilitates debugging VR programs
+    on a desktop computer.  You can set up any number of devices, with
+    different names.  The events will be issued as <name>_Move events.  So if
+    your fake tracker is called "Head", it will issue "Head_Move" events.  A
+    keyboard event is nominated to turn on and off the various trackers.
+
+    There are four different modes enabled: XY translate, Z translate, XY
+    rotate and Z rotate.  While in a mode, mouse movements control the 
+
+The modes can be set and unset using keyboard
+    events.  The keyboard events that control the tracker are all
+    configurable.  The keys can be configured to be toggles, where pressing
+    the key enters the mode and pressing it again exits, or as states, where
+    the mode is only enabled while the key is pressed.  There are also scale
+    factors you can set to adjust the sensitivity of the tracker to mouse
+    movements.
+
+
+
+Move the mouse to move the tracker
     in the XY-plane parallel to the scrren.  Hold z to move the tracker
     in/out of the screen.  Hold 'r' to rotate the tracker with the mouse.
-    The scale factors set in the constructor adjust the sensitivity of the
-    tracker to each of these mouse movements.
+    The scale factors set in the constructor 
   */
 class VRFakeTrackerDeviceRelative : public VRInputDevice, public VREventHandler {
 public:

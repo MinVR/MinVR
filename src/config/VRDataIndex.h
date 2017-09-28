@@ -1239,28 +1239,6 @@ private:
   // If this is false, we don't need to do linkNodes() or linkContent().
   bool _linkNeeded;
 
-public:
- 
-  /**
-   * An alternate version of getValue() designed to return a default value
-   * instead of throwing an error.
-   */
-  template<typename T>
-  T getValueWithDefault(const std::string &key,
-                                const T defaultValue,
-                                const std::string nameSpace = "",
-                                const bool inherit = true) {
-    VRDataMap::iterator p = _getEntry(key, nameSpace, inherit);
-    if (p == _theIndex.end()) {
-      return defaultValue;
-    }
-    else{
-      return p->second->getValue();
-    }
-  }
- 
-
-  
 };
 
 
