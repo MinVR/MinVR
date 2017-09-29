@@ -34,22 +34,22 @@ namespace MinVR {
     keyboard event is nominated to turn on and off the various trackers.
 
     There are four different modes enabled: XY translate, Z translate, XY
-    rotate and Z rotate.  While in a mode, mouse movements control the 
+    rotate and Z rotate.  While in a mode, mouse movements control the
+    rotation or translation.
 
-The modes can be set and unset using keyboard
-    events.  The keyboard events that control the tracker are all
-    configurable.  The keys can be configured to be toggles, where pressing
-    the key enters the mode and pressing it again exits, or as states, where
-    the mode is only enabled while the key is pressed.  There are also scale
-    factors you can set to adjust the sensitivity of the tracker to mouse
-    movements.
+    The tracker is chosen and modes are set and unset using keyboard events,
+    which are all configurable.  The keys can be configured to be toggles,
+    where pressing the key enters the mode and pressing it again exits, or as
+    states, where the mode is only enabled while the key is pressed.  There
+    are also scale factors you can set to adjust the sensitivity of the
+    tracker to mouse movements.
 
-
-
-Move the mouse to move the tracker
-    in the XY-plane parallel to the scrren.  Hold z to move the tracker
-    in/out of the screen.  Hold 'r' to rotate the tracker with the mouse.
-    The scale factors set in the constructor 
+    To operate in 'sticky' mode, press the toggleOnOff key, then use the
+    translateEvent (default: 'w'), translateZEvent (default: 'z'),
+    rotateEvent (default 'r'), and rollEvent (default: 'e') keys to change
+    modes of operation.  The mouse will move the tracked object accordingly.
+    To operate in non-sticky mode, hold down the relevant key while moving
+    the mouse.
   */
 class VRFakeTrackerDeviceRelative : public VRInputDevice, public VREventHandler {
 public:
@@ -63,10 +63,7 @@ public:
                         float xyScale,
                         float zScale,
                         float rotScale,
-                        bool rotateSticky,
-                        bool rollSticky,
-                        bool translateSticky,
-                        bool translateZSticky,
+                        bool sticky,
                         VRVector3 startPos,
                         VRVector3 startDir,
                         VRVector3 startUp);
@@ -80,8 +77,11 @@ public:
     static VRInputDevice* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
     
 private:
-    
+
     std::string _eventName;
+
+    // These contain the key names of the events that will trigger the given
+    // behavior.
     std::string _toggleEvent;
     std::string _rotateOnEvent;
     std::string _rotateOffEvent;
@@ -91,14 +91,15 @@ private:
     std::string _translateZOffEvent;
     std::string _rollOnEvent;
     std::string _rollOffEvent;
+    
     float _xyScale;
     float _zScale;
     float _rScale;
-    bool _rotateSticky;
-    bool _rollSticky;
-    bool _translateSticky;
-    bool _translateZSticky;
-    
+
+    // Are the key events toggles or on/off with down/up?
+    bool _sticky;
+
+    // These are the possible states of the tracked device.
     enum TrackingState {
         XYTranslating,
         ZTranslating,
@@ -106,13 +107,19 @@ private:
         Rolling,
         None
     };
-    
     TrackingState _state;
+
+    // Is the device currently listening for mouse input?
     bool _tracking;
-    float _z;
-    VRMatrix4 _R;
-    VRVector3 _pos;
+
+    // The current state of affairs is given by the position vector and the
+    // rotation matrix.  The _transform is the result of the two.
+    VRMatrix4 _stateRot;
+    VRVector3 _statePos;
     VRMatrix4 _transform;
+
+    // We are mostly interested in the delta of the mouse movements, so we
+    // keep track of the last measured location.
     float _lastMouseX, _lastMouseY;
     
     VRDataQueue _pendingEvents;
