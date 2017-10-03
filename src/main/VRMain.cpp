@@ -270,7 +270,7 @@ VRMain::VRMain() : _initialized(false), _config(NULL), _net(NULL), _factory(NULL
 	_factory->registerItemType<VRDisplayNode, VRLookAtNode>("VRLookAtNode");
 	_factory->registerItemType<VRDisplayNode, VRTrackedLookAtNode>("VRTrackedLookAtNode");
   _factory->registerItemType<VRInputDevice, VRFakeTrackerDevice>("VRFakeTrackerDevice");
-      _factory->registerItemType<VRInputDevice, VRFakeTrackerDeviceRelative>("VRFakeTrackerDeviceRelative");
+
     _pluginMgr = new VRPluginManager(this);
 }
 
