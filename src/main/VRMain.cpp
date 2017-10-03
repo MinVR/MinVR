@@ -22,9 +22,9 @@
 #include <net/VRNetClient.h>
 #include <net/VRNetServer.h>
 #include <plugin/VRPluginManager.h>
-#include <input/VRFakeTrackerDeviceRelative.h>
-#include <sstream>
 #include <main/VREventInternal.h>
+
+#include <sstream>
 #include <cstdlib>
 
 // TESTARG is true is the strings match and are not empty.
