@@ -164,7 +164,7 @@ MinVR::VRDataIndex * setupIndex() {
   // This file is specified using the WORKING_DIRECTORY option in the
   // ctest framework.  See the CMakeLists.txt file in this directory,
   // and look for the add_test command.
-  n->processXMLFile("test.xml", "/");
+  n->processXMLFile(std::string(MINVRTESTBATCHDIR) + "/config/test.xml", "/");
 
   return n;
 }
