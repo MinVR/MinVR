@@ -951,22 +951,6 @@ VRDatumPtr VRDataIndex::_getDatum(const std::string &key,
     return p->second;
   }
 }
-/*
-template<typename T>
-VRAnyCoreType VRDataIndex::getValueDefault(const std::string &key,
-                              const T defaultValue,
-                              const std::string nameSpace,
-                              const bool inherit) {
-  VRDataMap::iterator p = _getEntry(key, nameSpace, inherit);
-  if (p == _theIndex.end()) {
-    return defaultValue;
-  }
-  else{
-    return p->second->getValue();
-  }
-}
-*/
-
 
 // an int should be <nWindows type="int">6</nWindows>
 std::string VRDataIndex::addSerializedValue(const std::string serializedData,
