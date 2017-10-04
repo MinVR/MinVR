@@ -146,7 +146,7 @@ int testDatumInt() {
 
     out += (37 == b) ? 0 : 1;
 
-    int* pb = a.getValue();
+    const int* pb = a.getValue();
     out += (37 == (*pb)) ? 0 : 1;
 
     float x = a.getValue();
@@ -194,6 +194,9 @@ int testDatumFloat() {
 
     out += (37.123f == b) ? 0 : 1;
 
+    const float* pb = a.getValue();
+    out += (37.123f == (*pb)) ? 0 : 1;
+    
     out += (a.getType() == MinVR::VRCORETYPE_FLOAT) ? 0 : 1;
 
     out += a.getValueString().compare("37.123001");
@@ -229,6 +232,9 @@ int testDatumString() {
 
     out += c.compare(b);
 
+    const std::string* pb = a.getValue();
+    out += c.compare(*pb);
+    
     out += (a.getType() == MinVR::VRCORETYPE_STRING) ? 0 : 1;
 
     out += a.getValueString().compare("this is a string");
@@ -261,6 +267,13 @@ int testDatumIntArray() {
     out += (77 == b[2]) ? 0 : 1;
     out += (29 == b[3]) ? 0 : 1;
 
+    const std::vector<int>* pb = a.getValue();
+
+    out += (16 == (*pb)[0]) ? 0 : 1;
+    out += (2 == (*pb)[1]) ? 0 : 1;
+    out += (77 == (*pb)[2]) ? 0 : 1;
+    out += (29 == (*pb)[3]) ? 0 : 1;
+
     out += (a.getType() == MinVR::VRCORETYPE_INTARRAY) ? 0 : 1;
 
     out += a.getValueString().compare("16,2,77,29");
@@ -290,6 +303,9 @@ int testDatumFloatArray() {
 
     out += (b[2] == 77.3f) ? 0 : 1;
     //std::cout << "b[2]=" << b[2] << std::endl;
+
+    const std::vector<float>* pb = a.getValue();
+    out += ((*pb)[2] == 77.3f) ? 0 : 1;
 
     out += (a.getType() == MinVR::VRCORETYPE_FLOATARRAY) ? 0 : 1;
 
@@ -334,6 +350,14 @@ int testDatumStringArray() {
     out += b[2].compare("three");
     out += b[3].compare("four");
     out += b[4].compare("five");
+
+    const MinVR::VRStringArray* pb = a.getValue();
+
+    out += (*pb)[0].compare("one");
+    out += (*pb)[1].compare("two");
+    out += (*pb)[2].compare("three");
+    out += (*pb)[3].compare("four");
+    out += (*pb)[4].compare("five");
 
     out += (a.getType() == MinVR::VRCORETYPE_STRINGARRAY) ? 0 : 1;
 
