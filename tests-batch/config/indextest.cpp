@@ -712,7 +712,21 @@ int testGetPointers() {
     out += (0.001 > (*pb) - 3.1415926f) ? 0 : 1;
     std::cout << "*pb: " << *pb << std::endl;
 
-    
+    // How to ask for a pointer, and ask it not to fail if not found.
+    if (n->exists("/martha/b29")) {
+      const float* pbfail = n->getValue();
+      if (pbfail != NULL) {
+        out += 1;
+      }
+    }
+    // Here's one that actually exists.
+    if (n->exists("/martha/b7")) {
+      const float* pbsucceed = n->getValue();
+
+      out += (0.001 > ((*pbsucceed) / 7.0f) - 3.1415926f) ? 0 : 1;
+      std::cout << "*pbsucceed: " << *pbsucceed << std::endl;
+    }
+
     const int* pa = n->getValue("/george/a8");
     out += ((*pa) == 12) ? 0 : 1;
     std::cout << "*pa: " << (*pa) << std::endl;
