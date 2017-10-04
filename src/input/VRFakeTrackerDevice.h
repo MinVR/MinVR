@@ -50,6 +50,15 @@ namespace MinVR {
     modes of operation.  The mouse will move the tracked object accordingly.
     To operate in non-sticky mode, hold down the relevant key while moving
     the mouse.
+
+    The rotations and translations happen in a 'Seeker' mode, or a 'Looker' mode.
+    In a head-tracked context, the 'Seeker' mode is what you would use to explore
+    a landscape.  When translating, the mouse movements move the position in the
+    horizontal plane, more or less, or up and down.  In the 'Looker' mode, the
+    same mouse movements move the viewer in a vertical plane, or forward and
+    back.  In the 'Seeker' mode, the horizontal rotations spin the viewer, while
+    in the 'Looker' mode, they spin the viewer around the origin.  
+
   */
 class VRFakeTrackerDevice : public VRInputDevice, public VREventHandler {
 public:
@@ -64,6 +73,7 @@ public:
                         float zScale,
                         float rotScale,
                         bool sticky,
+                        bool seeker,
                         VRVector3 startPos,
                         VRVector3 startDir,
                         VRVector3 startUp);
@@ -99,6 +109,10 @@ private:
     // Are the key events toggles or on/off with down/up?
     bool _sticky;
 
+    // Which style of tracker device are we using? (Seeker or looker) A seeker is
+    // for looking around landscapes while a looker is for examining objects.
+    bool _seeker;
+    
     // These are the possible states of the tracked device.
     enum TrackingState {
         XYTranslating,

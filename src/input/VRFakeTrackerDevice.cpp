@@ -14,6 +14,7 @@ VRFakeTrackerDevice::VRFakeTrackerDevice(const std::string &trackerName,
                                          float zScale,
                                          float rotScale,
                                          bool sticky,
+                                         bool seeker,
                                          VRVector3 startPos,
                                          VRVector3 startDir,
                                          VRVector3 startUp)
@@ -32,6 +33,7 @@ VRFakeTrackerDevice::VRFakeTrackerDevice(const std::string &trackerName,
     _zScale = zScale;
     _rScale = rotScale;
     _sticky = sticky;
+    _seeker = seeker;
 
     _tracking = false;
     _state = VRFakeTrackerDevice::XYTranslating;
@@ -125,8 +127,8 @@ void VRFakeTrackerDevice::onVREvent(const MinVR::VREvent &event)
     if (screenPos != NULL) {
 
       // Transform range from [0,1] to [-1,1].
-      float mousex = 2.0*(screenPos[0] - 0.5);
-      float mousey = 2.0*((1.0-screenPos[1]) - 0.5);
+      float mousex = 2.0 * (screenPos[0] - 0.5);
+      float mousey = 2.0 * ((1.0 - screenPos[1]) - 0.5);
 
       // If we're not currently tracking, ignore the mouse.
       if (_tracking) {
@@ -134,10 +136,33 @@ void VRFakeTrackerDevice::onVREvent(const MinVR::VREvent &event)
         float deltaY = mousey - _lastMouseY;
             
         if (_state == VRFakeTrackerDevice::ZTranslating) {
-          _statePos =  VRVector3(0, 0, _zScale * deltaY) + _statePos;
+          // If we're Z translating, that's up and down in the seeker mode, but
+          // forward and backward in the looker mode.
+          if (_seeker) {
+            _statePos =  VRVector3(0, _zScale * deltaY, 0) + _statePos;
+          } else {
+            _statePos =  VRVector3(0, 0, _zScale * deltaY) + _statePos;
+          }          
         }
         else if (_state == VRFakeTrackerDevice::Rotating) {
-          VRMatrix4 r = VRMatrix4::rotationY(_rScale * deltaX) * VRMatrix4::rotationX(-_rScale * deltaY);
+          // The seeker mode turns the viewer around in place, while the looker
+          // mode rotates the object in front of the viewer.  More or less.
+          
+          VRMatrix4 r;
+          
+          if (_seeker) {
+            VRVector3 up = _stateRot * VRVector3(0.0f, 1.0f, 0.0f);
+            // Not sure why these coordinates have to be negated.
+            VRPoint3 here = VRPoint3(-_statePos[0], -_statePos[1], -_statePos[2]);
+            VRVector3 over = up.cross(_statePos);
+
+            r = VRMatrix4::rotation(here, up, _rScale * deltaX) *
+              VRMatrix4::rotation(here, over, _rScale * deltaY);
+              
+          } else {          
+            r = VRMatrix4::rotationY(_rScale * deltaX) *
+              VRMatrix4::rotationX(-_rScale * deltaY);
+          }
           _stateRot = r * _stateRot;
         }
         else if (_state == VRFakeTrackerDevice::Rolling) {
@@ -145,14 +170,19 @@ void VRFakeTrackerDevice::onVREvent(const MinVR::VREvent &event)
           _stateRot = r * _stateRot;
         }
         else if (_state == VRFakeTrackerDevice::XYTranslating){
-          _statePos =  _xyScale * VRVector3(deltaX, deltaY, 0) + _statePos;
+          // The seeker mode moves us in the horizontal plane, while the looker
+          // mode moves us in a vertical plane.
+          if (_seeker) {
+            _statePos =  _xyScale * VRVector3(deltaX, 0, deltaY) + _statePos;
+          } else {
+            _statePos =  _xyScale * VRVector3(deltaX, deltaY, 0) + _statePos;
+          }
         }
         
         _transform = VRMatrix4::translation(_statePos) * _stateRot;
-        VRMatrix4 xform  = _transform;
 
         VRDataIndex di;
-        di.addData(_eventName + "/Transform", xform);
+        di.addData(_eventName + "/Transform", _transform);
         _pendingEvents.push(di.serialize(_eventName));
       }
             
@@ -199,6 +229,12 @@ VRFakeTrackerDevice::create(VRMainInterface *vrMain, VRDataIndex *config, const 
                                                3.1415926f, devNameSpace);
 
     int sticky = config->getValueWithDefault("Sticky", 0, devNameSpace);
+    std::string style = config->getValueWithDefault("Style",
+                                                    std::string("Looker"),
+                                                    devNameSpace);
+    // We only have two styles, so we can use a boolean for it.  (Note that the
+    // 'compare()' method returns a zero when the strings match.)
+    bool seeker = !style.compare("Seeker");
 
     int pos[] = {0, 0, -1};
     int dir[] = {0, 0, 1};
@@ -214,7 +250,20 @@ VRFakeTrackerDevice::create(VRMainInterface *vrMain, VRDataIndex *config, const 
                                                     defaultUp, devNameSpace);
 
     // Make a new object.
-    VRFakeTrackerDevice *dev = new VRFakeTrackerDevice(trackerName, toggleEvent, rotateEvent, rollEvent, translateEvent, translateZEvent, xyScale, zScale, rScale, sticky, startPos, startDir, startUp);
+    VRFakeTrackerDevice *dev = new VRFakeTrackerDevice(trackerName,
+                                                       toggleEvent,
+                                                       rotateEvent,
+                                                       rollEvent,
+                                                       translateEvent,
+                                                       translateZEvent,
+                                                       xyScale,
+                                                       zScale,
+                                                       rScale,
+                                                       sticky,
+                                                       seeker,
+                                                       startPos,
+                                                       startDir,
+                                                       startUp);
     vrMain->addEventHandler(dev);
 
     return dev;
