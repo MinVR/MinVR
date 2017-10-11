@@ -189,17 +189,21 @@ message(STATUS "Examining source.")
 add_subdirectory(src)
 message(STATUS "Configuring plugins.")
 add_subdirectory(plugins)
+message(STATUS "Configuring batch tests.")
 add_subdirectory(tests-batch)
+message(STATUS "Configuring interactive tests.")
 add_subdirectory(tests-interactive)
+message(STATUS "Configuring utility applications.")
 add_subdirectory(utils)
 
 
 ## ************************************************ HOW ARE WE BUILDING?
 
 # The following sorts through all the cmake variables, and stores the ones
-# whose help strings include the string "If enabled", plus the cmake build
-# type (Debug, Release, etc.).  It then stores a simulacrum of the cmake
-# invocation in a shell script, so you can run it again if you like.
+# whose help strings include the magic string "If enabled", plus the cmake
+# build type (Debug, Release, etc.) and install directory.  It then stores a
+# simulacrum of the cmake invocation in a shell script, so you can run it
+# again if you like.
 #
 # This also means that if you add options, make their help strings include
 # the magic string.
@@ -227,6 +231,6 @@ foreach(CACHE_VAR ${CACHE_VARS})
     set(CMAKE_INVOCATION "${CMAKE_INVOCATION} -D${CACHE_VAR}${CACHE_VAR_TYPE}=\"${${CACHE_VAR}}\"")
   endif()
 endforeach()
-file(WRITE ${CMAKE_BINARY_DIR}/cmake-repeat.sh "#!/usr/bin/env bash\n${CMAKE_INVOCATION}\n")
+file(WRITE ${CMAKE_BINARY_DIR}/cmake-repeat.sh "#!/usr/bin/env bash\n# Feel free to edit this file before executing it. The file will be\n# overwritten with each cmake invocation, but the saved version will\n# reflect your changes.\n${CMAKE_INVOCATION}\n")
 
 message(STATUS "CMAKE invocation stored in ${CMAKE_BINARY_DIR}/cmake-repeat.sh.\n     Feel free to edit, then execute that file.")
