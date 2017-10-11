@@ -73,7 +73,8 @@ if(NOT OPENVR_FOUND)
 	set(${DepName}_tmp_dir ${${DepName}_build_dir}/tmp)
 	
 	set(${DepName}_PREFIX "${${DepName}_checkout_Dir}")
-	set(${DepName}_INSTALL_DIR "${CMAKE_BINARY_DIR}/deps/${DepName}")
+  make_directory(${CMAKE_INSTALL_PREFIX}/ext/${DepName})
+	set(${DepName}_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/ext/${DepName}")
 	
 	set(${DepName}_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${${DepName}_INSTALL_DIR} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_C_FLAGS=-fPIC -DQNANHIBIT=1)
 	set(${DepName}_DIR "${${DepName}_INSTALL_DIR}")
