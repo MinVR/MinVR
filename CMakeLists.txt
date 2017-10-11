@@ -215,7 +215,9 @@ set(CMAKE_INVOCATION "cmake ${CMAKE_SOURCE_DIR} ")
 foreach(CACHE_VAR ${CACHE_VARS})
   get_property(CACHE_VAR_HELPSTRING CACHE ${CACHE_VAR} PROPERTY HELPSTRING)
   if ("${CACHE_VAR_HELPSTRING}" MATCHES "If enabled" OR
-      "${CACHE_VAR}" STREQUAL "CMAKE_BUILD_TYPE")
+      # There are also a few commonly-used cmake variables worth recording.
+      "${CACHE_VAR}" STREQUAL "CMAKE_BUILD_TYPE" OR
+      "${CACHE_VAR}" STREQUAL "CMAKE_INSTALL_PREFIX")
     get_property(CACHE_VAR_TYPE CACHE ${CACHE_VAR} PROPERTY TYPE)
     if(CACHE_VAR_TYPE STREQUAL "UNINITIALIZED")
       set(CACHE_VAR_TYPE)
@@ -225,6 +227,6 @@ foreach(CACHE_VAR ${CACHE_VARS})
     set(CMAKE_INVOCATION "${CMAKE_INVOCATION} -D${CACHE_VAR}${CACHE_VAR_TYPE}=\"${${CACHE_VAR}}\"")
   endif()
 endforeach()
-file(WRITE ${CMAKE_BINARY_DIR}/repeat.sh "#!/usr/bin/env bash\n${CMAKE_INVOCATION}\n")
+file(WRITE ${CMAKE_BINARY_DIR}/cmake-repeat.sh "#!/usr/bin/env bash\n${CMAKE_INVOCATION}\n")
 
-message(STATUS "CMAKE invocation stored in ${CMAKE_BINARY_DIR}/repeat.sh.\n     Feel free to edit, then execute that file.")
+message(STATUS "CMAKE invocation stored in ${CMAKE_BINARY_DIR}/cmake-repeat.sh.\n     Feel free to edit, then execute that file.")
