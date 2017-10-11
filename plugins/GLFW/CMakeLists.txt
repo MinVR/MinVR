@@ -1,7 +1,5 @@
 project(MinVR_GLFW)
 
-message(STATUS, "Installing the GLFW Plugin")
-
 set (SOURCEFILES 
   ${CMAKE_SOURCE_DIR}/third-party/GLEW/glew.c
   src/VRGLFWInputDevice.cpp
