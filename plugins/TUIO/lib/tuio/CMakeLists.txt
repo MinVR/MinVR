@@ -37,7 +37,10 @@ set(${DepName}_DIR "${${DepName}_INSTALL_DIR}")
 		STAMP_DIR ${${DepName}_stamp_dir}
 		BINARY_DIR ${${DepName}_build_dir}
 	 )		
- 
+
+ message(STATUS "Building ${DepName} from: ${${DepName}_PREFIX}.")
+ message(STATUS "Installing ${DepName} to: ${${DepName}_INSTALL_DIR}.")
+
 set_property(TARGET ${DepName} PROPERTY FOLDER "Dependencies")
 
 #install(DIRECTORY ${${DepName}_checkout_Dir}/plugin/include/ DESTINATION "${${DepName}_INSTALL_DIR}/include")

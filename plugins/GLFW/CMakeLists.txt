@@ -1,5 +1,7 @@
 project(MinVR_GLFW)
 
+message(STATUS, "Installing the GLFW Plugin")
+
 set (SOURCEFILES 
   ${CMAKE_SOURCE_DIR}/third-party/GLEW/glew.c
   src/VRGLFWInputDevice.cpp
@@ -48,7 +50,10 @@ ExternalProject_add(glfw
 		TMP_DIR ${glfw_tmp_dir}
 		STAMP_DIR ${glfw_stamp_dir}
 		BINARY_DIR ${glfw_build_dir}
-)
+    )
+
+  message(STATUS "Building GLFW from: ${glfw_PREFIX}.")
+  message(STATUS "Installing GLFW to: ${glfw_INSTALL_DIR}.")
  
 #set_property(TARGET glfw PROPERTY FOLDER "Dependencies")
 
@@ -59,6 +64,9 @@ else()
 	set(GLFW_LIBRARY ${glfw_INSTALL_DIR}/lib/libglfw3.a CACHE INTERNAL "GLFW lib file")
 endif()	
 include_directories(${GLFW_INCLUDE_DIR})
+
+message(STATUS "GLFW includes: " ${GLFW_INCLUDE_DIR})
+message(STATUS "GLFW Library: " ${GLFW_LIBRARY})
 
 # OpenGL
 find_package(OpenGL REQUIRED)
@@ -93,26 +101,12 @@ include_directories (
 
 # Windows Section #
 if (MSVC)
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-    # Tell MSVC to use main instead of WinMain for Windows subsystem executables
-    set_target_properties(${WINDOWS_BINARIES} PROPERTIES LINK_FLAGS "/ENTRY:mainCRTStartup")
 endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
-	set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
-	find_library(COCOA_LIB Cocoa)
-	find_library(IOKIT_LIB IOKit)
-	find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
-    	find_library(CORE_VIDEO_FRAMEWORK CoreVideo)
-	set(LIBS_ALL ${LIBS_ALL} ${COCOA_LIB} ${IOKIT_LIB} ${CORE_FOUNDATION_FRAMEWORK} ${CORE_VIDEO_FRAMEWORK})
-	message(STATUS "${CORE_VIDEO_FRAMEWORK}")
 endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	find_package(Threads)
-	find_package(X11)
-	set(LIBS_ALL ${LIBS_ALL} ${CMAKE_THREAD_LIBS_INIT} rt Xrandr Xxf86vm Xi m dl ${X11_LIBRARIES})
 endif()
 
 #------------------------------------------

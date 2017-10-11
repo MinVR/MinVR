@@ -244,8 +244,12 @@ source_group("Config Files" FILES ${vr_config_files})
 
 
 add_library(MinVR ${vr_sources})
-target_link_libraries(MinVR dl)
 
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+  message("-- Using libdl.")
+  target_link_libraries(MinVR dl)
+endif()
+  
 install(TARGETS MinVR
         LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
 	ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
@@ -265,10 +269,4 @@ install(FILES ${vr_net_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/net)
 install(FILES ${vr_plugin_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/plugin)
 
 install(FILES ${vr_config_files} DESTINATION ${CMAKE_INSTALL_PREFIX}/config)
-
-# TODO: move this to a test or examples directory
-#add_executable(MVRLookup ${vr_src_dir}/config/MVRLookup.cpp)
-#target_link_libraries(MVRLookup MinVR)
-#install(TARGETS MVRLookup
-#	RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 

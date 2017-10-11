@@ -54,8 +54,6 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(
 IF(FREEGLUT_FOUND)
 	SET(FREEGLUT_LIBRARIES ${FREEGLUT_LIBRARY})
 	SET(FREEGLUT_INCLUDE_DIRS ${FREEGLUT_INCLUDE_DIR})
-  message("-- FreeGLUT includes: " ${FREEGLUT_INCLUDE_DIR})
-  message("-- FreeGLUT library:  " ${FREEGLUT_LIBRARY})
 ELSE(FREEGLUT_FOUND)
 	SET(FREEGLUT_LIBRARIES)
 	SET(FREEGLUT_INCLUDE_DIRS)
@@ -69,9 +67,6 @@ ENDIF(FREEGLUT_FOUND)
 ## Uncomment and edit these lines for your machine if there seems to be no hope.
 ## set(FREEGLUT_LIBRARIES /path/to/libglut)
 ## set(FREEGLUT_INCLUDE_DIRS /path/to/freeglut/include/files)
-
-message("-- FreeGLUT libraries: " ${FREEGLUT_LIBRARIES})
-message("-- FreeGLUT includes:  " ${FREEGLUT_INCLUDE_DIRS})
 
 MARK_AS_ADVANCED(FREEGLUT_INCLUDE_DIRS FREEGLUT_LIBRARIES)
 
