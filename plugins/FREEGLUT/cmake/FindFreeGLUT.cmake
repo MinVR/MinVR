@@ -54,9 +54,13 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(
 IF(FREEGLUT_FOUND)
 	SET(FREEGLUT_LIBRARIES ${FREEGLUT_LIBRARY})
 	SET(FREEGLUT_INCLUDE_DIRS ${FREEGLUT_INCLUDE_DIR})
+  message("-- FreeGLUT includes: " ${FREEGLUT_INCLUDE_DIR})
+  message("-- FreeGLUT library:  " ${FREEGLUT_LIBRARY})
 ELSE(FREEGLUT_FOUND)
 	SET(FREEGLUT_LIBRARIES)
 	SET(FREEGLUT_INCLUDE_DIRS)
+
+  message("** FreeGLUT library not found.")
   message("You can specify the FreeGLUT paths with -DFREEGLUT_INCLUDE_DIR=/path")
   message("and -DFREEGLUT_LIBRARY=/path/to/libglut")
   message("Or set the variables in MinVR/plugins/FREEGLUT/FindFreeGLUT.cmake.")
@@ -70,3 +74,4 @@ message("-- FreeGLUT libraries: " ${FREEGLUT_LIBRARIES})
 message("-- FreeGLUT includes:  " ${FREEGLUT_INCLUDE_DIRS})
 
 MARK_AS_ADVANCED(FREEGLUT_INCLUDE_DIRS FREEGLUT_LIBRARIES)
+

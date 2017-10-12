@@ -106,6 +106,7 @@ set(vr_display_cpp
   ${vr_src_dir}/display/VRGraphicsWindowNode.cpp
   ${vr_src_dir}/display/VRGroupNode.cpp
   ${vr_src_dir}/display/VROffAxisProjectionNode.cpp
+  ${vr_src_dir}/display/VRProjectionNode.cpp
   ${vr_src_dir}/display/VRStereoNode.cpp
   ${vr_src_dir}/display/VRViewportNode.cpp
   ${vr_src_dir}/display/VRLookAtNode.cpp
@@ -119,6 +120,7 @@ set(vr_display_h
   ${vr_src_dir}/display/VRGraphicsWindowNode.h
   ${vr_src_dir}/display/VRGroupNode.h
   ${vr_src_dir}/display/VROffAxisProjectionNode.h
+  ${vr_src_dir}/display/VRProjectionNode.h
   ${vr_src_dir}/display/VRStereoNode.h
   ${vr_src_dir}/display/VRViewportNode.h
   ${vr_src_dir}/display/VRWindowToolkit.h
