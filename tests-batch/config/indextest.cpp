@@ -23,6 +23,7 @@ int testLinkNode();
 int testLinkContent();
 int testDepthOfCopy();
 int testIsChild();
+int testGetPointers();
 
 // Make this a large number to get decent timing data.
 #define LOOP for (int loopctr = 0; loopctr < 1; loopctr++)
@@ -101,6 +102,10 @@ int indextest(int argc, char* argv[]) {
 
   case 15:
     output = testIndexGetDefaultValues();
+    break;
+
+  case 16:
+    output = testGetPointers();
     break;
     
   default:
@@ -690,6 +695,51 @@ int testIndexGetDefaultValues() {
     delete n;
   }
 
+  return out;
+}
+
+int testGetPointers() {
+
+  int out = 0;
+
+  LOOP {
+
+    MinVR::VRDataIndex *n = setupIndex();
+
+    std::cout << n->printStructure();
+
+    const float* pb = n->getValue("/martha/b0");
+    out += (0.001 > (*pb) - 3.1415926f) ? 0 : 1;
+    std::cout << "*pb: " << *pb << std::endl;
+
+    // How to ask for a pointer, and ask it not to fail if not found.
+    if (n->exists("/martha/b29")) {
+      const float* pbfail = n->getValue();
+      if (pbfail != NULL) {
+        out += 1;
+      }
+    }
+    // Here's one that actually exists.
+    if (n->exists("/martha/b7")) {
+      const float* pbsucceed = n->getValue();
+
+      out += (0.001 > ((*pbsucceed) / 7.0f) - 3.1415926f) ? 0 : 1;
+      std::cout << "*pbsucceed: " << *pbsucceed << std::endl;
+    }
+
+    const int* pa = n->getValue("/george/a8");
+    out += ((*pa) == 12) ? 0 : 1;
+    std::cout << "*pa: " << (*pa) << std::endl;
+
+    const MinVR::VRString* pc = n->getValue("/john/c3");
+    out += pc->compare("abigail3");
+    std::cout << "*pc: " << (*pc) << std::endl;
+
+    const MinVR::VRFloatArray* pd = n->getValue("/donna/d0");
+    out += (0.001 > (*pd)[2] - 3.400f) ? 0 : 1;
+    std::cout << "(*pd)[2]: " << (*pd)[2] << std::endl;
+    
+  }
   return out;
 }
 

@@ -26,6 +26,8 @@ VRDatumFactory VRDataIndex::_factory = VRDataIndex::_initializeFactory();
 VRDataIndex::VRDataIndex(const std::string serializedData)  :
   _indexName("MVR"), _overwrite(1), _linkNeeded(false) {
 
+  _lastDatum = _theIndex.end();
+  
   Cxml *xml = new Cxml();
   xml->parse_string((char*)serializedData.c_str());
   element *xml_node = xml->get_root_element();
@@ -79,6 +81,9 @@ VRDataIndex::VRDataIndex(const VRDataIndex& orig) {
   for (VRDataMap::iterator it = _theIndex.begin(); it != _theIndex.end(); it++) {
     it->second = it->second.clone();
   }
+
+  // This part is not copied, but it's only a convenience, not part of the data.
+  _lastDatum = _theIndex.end();
 
   // Then recreate the links.
   for (std::map<std::string, std::string>::const_iterator it = orig._linkRegister.begin();
@@ -868,19 +873,19 @@ VRDataIndex::_getEntry(const std::string &key,
                        const std::string nameSpace,
                        const bool inherit) {
 
-  VRDataMap::iterator outIt;
-
   // If the input key begins with a "/", it is a fully qualified
   // name already.  That is, it already includes the name space.
   if (key[0] == '/') {
 
-    return _theIndex.find(key);
+    _lastDatum = _theIndex.find(key);
+    return _lastDatum;
 
   } else if ((nameSpace.size() == 1) && (nameSpace.compare("/") == 0)) {
     // If we are looking for something in the root name space, that's
     // not so different than using a fully-qualified name.
 
-    return _theIndex.find(nameSpace + key);
+    _lastDatum = _theIndex.find(nameSpace + key);
+    return _lastDatum;
 
   } else {
 
@@ -893,7 +898,10 @@ VRDataIndex::_getEntry(const std::string &key,
     std::string validatedNameSpace = validateNameSpace(nameSpace);
 
     // If inheritance is turned off, just check if this name exists.
-    if (!inherit) return _theIndex.find(validatedNameSpace + key);
+    if (!inherit) {
+      _lastDatum = _theIndex.find(validatedNameSpace + key);
+      return _lastDatum;
+    }    
 
     // Separate the name space into its constituent elements.
     std::vector<std::string> elems = _explodeName(validatedNameSpace);
@@ -914,14 +922,15 @@ VRDataIndex::_getEntry(const std::string &key,
         testSpace += *it + "/" ;
       }
 
-      outIt = _theIndex.find(testSpace + key);
-      if (outIt != _theIndex.end()) {
-        return outIt;
+      _lastDatum = _theIndex.find(testSpace + key);
+      if (_lastDatum != _theIndex.end()) {
+        return _lastDatum;
       }
     }
 
     // If we are here, there is no matching name in the index.
-    return _theIndex.end();
+    _lastDatum = _theIndex.end();
+    return _lastDatum;
   }
 }
 
@@ -932,7 +941,7 @@ std::string VRDataIndex::getName(const std::string &key,
   VRDataMap::iterator p = _getEntry(key, nameSpace, inherit);
 
   if (p == _theIndex.end()) {
-    VRERRORNOADV("Never heard of " + key + " in namespace " + nameSpace);
+      VRERRORNOADV("Never heard of " + key + " in namespace " + nameSpace);
   } else {
     return p->first;
   }

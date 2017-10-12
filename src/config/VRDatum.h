@@ -61,6 +61,14 @@ public:
   operator VRFloatArray() const { return datum->getValueFloatArray(); }
   operator VRStringArray() const { return datum->getValueStringArray(); }
   operator VRContainer() const { return datum->getValueContainer(); }
+
+  operator const VRInt*() {return datum->getPointerInt(); }
+  operator const VRFloat*() const { return datum->getPointerFloat(); }
+  operator const VRString*() const { return datum->getPointerString(); }
+  operator const VRIntArray*() const { return datum->getPointerIntArray(); }
+  operator const VRFloatArray*() const { return datum->getPointerFloatArray(); }
+  operator const VRStringArray*() const { return datum->getPointerStringArray(); }
+  operator const VRContainer*() const { return datum->getPointerContainer(); }
 };
 
 
@@ -235,22 +243,43 @@ public:
   virtual VRInt getValueInt() const {
     VRERROR("This datum is not a VRInt.", "It is a " + description + ".");
   }
+  virtual const VRInt* getPointerInt() const {
+    VRERROR("This datum is not a VRInt.", "It is a " + description + ".");
+  }
   virtual VRFloat getValueFloat() const {
+    VRERROR("This datum is not a VRFloat.", "It is a " + description + ".");
+  }
+  virtual const VRFloat* getPointerFloat() const {
     VRERROR("This datum is not a VRFloat.", "It is a " + description + ".");
   }
   // There is a getValueString() implemented for each data type to
   // allow easy string conversions.  It is defined as a pure virtual
   // member function above.
+  virtual const VRString* getPointerString() const {
+    VRERROR("This datum is not a VRString.", "It is a " + description + ".");
+  }
   virtual VRIntArray getValueIntArray() const {
+    VRERROR("This datum is not a VRIntArray.", "It is a " + description + ".");
+  }
+  virtual const VRIntArray* getPointerIntArray() const {
     VRERROR("This datum is not a VRIntArray.", "It is a " + description + ".");
   }
   virtual VRFloatArray getValueFloatArray() const {
     VRERROR("This datum is not a VRFloatArray.", "It is a " + description + ".");
   }
+  virtual const VRFloatArray* getPointerFloatArray() const {
+    VRERROR("This datum is not a VRFloatArray.", "It is a " + description + ".");
+  }
   virtual VRStringArray getValueStringArray() const {
     VRERROR("This datum is not a VRStringArray.", "It is a " + description + ".");
   }
+  virtual const VRStringArray* getPointerStringArray() const {
+    VRERROR("This datum is not a VRStringArray.", "It is a " + description + ".");
+  }
   virtual VRContainer getValueContainer() const {
+    VRERROR("This datum is not a VRContainer.", "It is a " + description + ".");
+  }
+  virtual const VRContainer* getPointerContainer() const {
     VRERROR("This datum is not a VRContainer.", "It is a " + description + ".");
   }
 };
@@ -331,6 +360,7 @@ public:
     VRDatumSpecialized<VRInt, VRCORETYPE_INT>(inVal) {};
   std::string getValueString() const;
   VRInt getValueInt() const { return value.front(); };
+  const VRInt* getPointerInt() const { return &(value.front()); };
   VRIntArray getValueIntArray() const {
     VRIntArray out;  out.push_back(value.front());  return out; };
   VRFloat getValueFloat() const { return (int)value.front(); };
@@ -343,6 +373,7 @@ public:
     VRDatumSpecialized<VRFloat, VRCORETYPE_FLOAT>(inVal) {};
   std::string getValueString() const;
   VRFloat getValueFloat() const { return value.front(); };
+  const VRFloat* getPointerFloat() const { return &(value.front()); };
   VRFloatArray getValueFloatArray() const {
     VRFloatArray out;  out.push_back(value.front());  return out; };
   VRInt getValueInt() const { return (float)value.front(); };
@@ -354,6 +385,7 @@ public:
   VRDatumString(const VRString inVal) :
     VRDatumSpecialized<VRString, VRCORETYPE_STRING>(inVal) {};
   VRString getValueString() const { return value.front(); };
+  const VRString* getPointerString() const { return &(value.front()); };
   VRStringArray getValueStringArray() const {
     VRStringArray out;  out.push_back(value.front());  return out; };
 };
@@ -365,6 +397,7 @@ public:
     VRDatumSpecialized<VRIntArray, VRCORETYPE_INTARRAY>(inVal) {};
   std::string getValueString() const;
   VRIntArray getValueIntArray() const { return value.front(); };
+  const VRIntArray* getPointerIntArray() const { return &(value.front()); };
 };
 
 // Specialization for a vector of floats
@@ -374,6 +407,7 @@ public:
     VRDatumSpecialized<VRFloatArray, VRCORETYPE_FLOATARRAY>(inVal) {};
   std::string getValueString() const;
   VRFloatArray getValueFloatArray() const { return value.front(); };
+  const VRFloatArray* getPointerFloatArray() const { return &(value.front()); };
 };
 
 // Specialization for a vector of strings
@@ -383,6 +417,7 @@ public:
     VRDatumSpecialized<VRStringArray, VRCORETYPE_STRINGARRAY>(inVal) {};
   std::string getValueString() const;
   VRStringArray getValueStringArray() const { return value.front(); };
+  const VRStringArray* getPointerStringArray() const { return &(value.front()); };
 };
 
 // Specialization for a container
@@ -392,6 +427,7 @@ public:
     VRDatumSpecialized<VRContainer, VRCORETYPE_CONTAINER>(inVal) {};
   std::string getValueString() const;
   VRContainer getValueContainer() const { return value.front(); };
+  const VRContainer* getPointerContainer() const { return &(value.front()); };
 
   bool addToValue(const VRContainer inVal);
 
