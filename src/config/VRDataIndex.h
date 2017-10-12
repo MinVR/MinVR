@@ -398,7 +398,9 @@ public:
   ///
   /// The created index has the default name "MVR", which can be changed with
   /// setName().  The index name is used when the index is serialized.
-  VRDataIndex()  : _indexName("MVR"), _overwrite(1), _linkNeeded(false) {}
+  VRDataIndex()  : _indexName("MVR"), _overwrite(1), _linkNeeded(false) {
+    _lastDatum = _theIndex.end();
+  }
 
   /// \brief Creates an index containing the given data.
   ///
@@ -621,9 +623,34 @@ public:
   VRAnyCoreType getValue(const std::string &key,
                          const std::string nameSpace = "",
                          const bool inherit = true) {
-    return _getDatum(key, nameSpace, inherit)->getValue();
+    VRDataMap::iterator p = _getEntry(key, nameSpace, inherit);
+
+    if (p == _theIndex.end()) {
+      VRERRORNOADV("Never heard of " + key + " in namespace " + nameSpace + ".");
+    } else {
+      return p->second->getValue();
+    }
   }
 
+  /// \brief Returns the last value requested.
+  ///
+  /// Use this version to achieve a slight optimization.  If you do a
+  /// getEntry(), the result will be stored in _lastDatum, so you can
+  /// use this call immediately after to save doing the lookup twice.
+  ///
+  /// For example:
+  /// ~~~
+  /// if (index->exists("MyValue")) return getValue();
+  /// ~~~
+  VRAnyCoreType getValue() {
+
+    if (_lastDatum == _theIndex.end()) {
+      VRERRORNOADV("Bad key access in data index.");
+    } else {
+      return _lastDatum->second->getValue();
+    }
+  }
+  
 
   /// \brief Returns an index value, with a default value.
   ///
@@ -673,6 +700,18 @@ public:
     return _getDatum(key, nameSpace, inherit)->getType();
   }
 
+  /// \brief Returns the type of the last searched value.
+  ///
+  /// This is comparable to the argument-free getValue().  Use it to
+  /// get the type of whatever you looked for last.
+  VRCORETYPE_ID getType() {
+    if (_lastDatum == _theIndex.end()) {
+      VRERRORNOADV("Bad key access in data index.");
+    } else {
+      return _lastDatum->second->getType();
+    }
+  }
+
   /// \brief Returns the type of the specified name, formatted as a string.
   ///
   /// \param key Can be a full name (namespace + data field name) or just a
@@ -684,6 +723,17 @@ public:
     return _getDatum(key, nameSpace, inherit)->getDescription();
   }
 
+  /// \brief Returns the description of the last searched value.
+  ///
+  /// This is comparable to the argument-free getValue().  Use it to
+  /// get the description of whatever you looked for last.
+  std::string getTypeString() {
+    if (_lastDatum == _theIndex.end()) {
+      VRERRORNOADV("Bad key access in data index.");
+    } else {
+      return _lastDatum->second->getDescription();
+    }
+  };
 
   /// \brief Returns the full name of the specified value.
   ///
@@ -692,6 +742,18 @@ public:
   std::string getName(const std::string &key,
                       const std::string nameSpace = "",
                       const bool inherit = true);
+
+  /// \brief Returns the full name of the last searched value.
+  ///
+  /// This is comparable to the argument-free getValue().  Use it to
+  /// get the full name of whatever you looked for last.
+  std::string getName() {
+    if (_lastDatum == _theIndex.end()) {
+      VRERRORNOADV("Bad key access in data index.");
+    } else {
+      return _lastDatum->first;
+    }
+  };
 
   /// \brief Selects the first value found with the given attribute.
   ///
@@ -1075,7 +1137,8 @@ private:
   // Aspirational:
   //typedef std::map<std::string, std::vector<VRDatumPtr> > VRDataMap;
   VRDataMap _theIndex;
-
+  VRDataMap::iterator _lastDatum;
+  
   // This is the name of the data index itself.
   std::string _indexName;
 
@@ -1151,8 +1214,6 @@ private:
   VRDatumPtr _getDatum(const std::string &key,
                        const std::string nameSpace = "",
                        const bool inherit = true);
-
-
 
   // These are specialized set methods.  They seem a little unhip, but
   // it's because I find this easier than remembering how to spell the

@@ -5,11 +5,15 @@ set(SOURCEFILES
   src/VROpenVRNodePlugin.cpp
   src/VROpenVRNode.cpp
   src/VROpenVRInputDevice.cpp
+  src/VROpenVRRenderModel.cpp
+  src/VROpenVRRenderModelHandler.cpp
 )
 
 set (HEADERFILES
 	src/VROpenVRNode.h
 	src/VROpenVRInputDevice.h
+	src/VROpenVRRenderModel.h
+	src/VROpenVRRenderModelHandler.h
 )
 
 source_group("Header Files" FILES ${HEADERFILES})
