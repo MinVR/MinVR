@@ -48,9 +48,6 @@ The goal of MinVR is to facilitate a variety of data visualization and virtual r
   # Build debug (makefile build)
   cmake .. -DCMAKE_BUILD_TYPE=DEBUG
   
-  # Build without any plugins (base plugins will be not built)
-  cmake .. -DBASE_PLUGINS=OFF
-  
   # Build with VRPN plugin
   cmake .. -DMINVR_VRPN_PLUGIN=ON
 

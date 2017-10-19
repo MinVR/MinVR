@@ -41,31 +41,34 @@
 # ================================================================================
 
 project(MinVR_Project)
+cmake_minimum_required (VERSION 2.8.2)
+
+# This policy has to do with how to compare variable values and strings.
+# The change from old behavior to new happened in 3.1, so in order to
+# support earlier and later version of cmake, we set a policy here.
+cmake_policy(SET CMP0054 NEW)
 
 
 # CMakeLists files in this project can refer to the root source directory of the
 # project as ${MINVR_SOURCE_DIR} and to the root binary directory of the project
 # as ${MINVR_BINARY_DIR}.
 
-cmake_minimum_required (VERSION 2.8.2)
+
+## ************************************************ WHAT ARE WE BUILDING?
 
 if(NOT CMAKE_BUILD_TYPE)
   set( CMAKE_BUILD_TYPE Release CACHE STRING
-       "Choose the type of build, options are: None Debug Release RelWithDebInfo
-#MinSizeRel." FORCE)
+    "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif()
 
-if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set (CMAKE_INSTALL_PREFIX "${${PROJECT_NAME}_SOURCE_DIR}/build/install" CACHE PATH "default install path" FORCE )
-endif()
+message(STATUS "Building the '" ${CMAKE_BUILD_TYPE} "' version of MinVR.")
+message(STATUS "If you want something different, use -DCMAKE_BUILD_TYPE=Debug, Release, etc.")
 
-
-# Let's follow the convention of putting all of the libs in "build/lib" and all
-# of the exes in "build/bin".  To distinguish between debugging, release, and
-# other builds, we'll add a postfix to the name of the lib or exe that we generate.
+# To distinguish between debugging, release, and other builds, we'll
+# add a postfix to the name of the lib or exe that we generate.
 
 if(NOT CMAKE_DEBUG_POSTFIX)
-  set(CMAKE_DEBUG_POSTFIX "")
+  set(CMAKE_DEBUG_POSTFIX "d")
 endif()
 set(CMAKE_RELEASE_POSTFIX "")
 set(CMAKE_RELWITHDEBINFO_POSTFIX "rd")
@@ -83,9 +86,18 @@ else()
   set(CMAKE_BUILD_POSTFIX "")
 endif()
 
+if (CMAKE_BUILD_POSTFIX)
+  message(STATUS "Appending '" ${CMAKE_BUILD_POSTFIX} "' to the built library file name.")
+endif()
+  
+# Add 'MinVR_DEBUG' to the symbols you can use in the code.
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DMinVR_DEBUG")
-add_definitions(-DINSTALLPATH="${CMAKE_INSTALL_PREFIX}")
-add_definitions(-DMINVRTESTBATCHDIR="${CMAKE_SOURCE_DIR}/tests-batch")
+
+
+## ************************************************ WHERE ARE WE PUTTING IT?
+
+# Let's follow the convention of putting all of the libs in "build/lib" and all
+# of the exes in "build/bin". 
 
 make_directory(${CMAKE_BINARY_DIR}/lib)
 make_directory(${CMAKE_BINARY_DIR}/bin)
@@ -99,6 +111,25 @@ foreach (CONF ${CMAKE_CONFIGURATION_TYPES})
   set (CMAKE_LIBRARY_OUTPUT_DIRECTORY_${CONF} ${CMAKE_BINARY_DIR}/lib)
 endforeach(CONF CMAKE_CONFIGURATION_TYPES)
 
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set (CMAKE_INSTALL_PREFIX "${${PROJECT_NAME}_SOURCE_DIR}/build/install" CACHE PATH "default install path" FORCE )
+endif()
+
+message(STATUS "Libraries and include files will be installed to " ${CMAKE_INSTALL_PREFIX})
+
+# Organize folder structure for Xcode, Visual Studio, etc.
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+# You can use these symbol definitions in your code if you want to refer to a file
+# location.  This is only really useful for the testing code, but knowing where the
+# installed code is also plays a role in providing sensible default search paths.
+add_definitions(-DINSTALLPATH="${CMAKE_INSTALL_PREFIX}")
+add_definitions(-DMINVRTESTBATCHDIR="${CMAKE_SOURCE_DIR}/tests-batch")
+
+
+## ************************************************ HOW ARE WE BUILDING IT?
+
+message(STATUS "Building for " ${CMAKE_SYSTEM_NAME} ".")
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   # Linux specific code
@@ -115,36 +146,19 @@ if (WIN32)
   # Windows-specific
 endif (WIN32)
 
+## ************************************************ WHAT ABOUT DOCUMENTATION?
 
-enable_testing()
-
-set(vr_src_dir ${CMAKE_CURRENT_SOURCE_DIR}/src)
-
-include_directories(
-  ${vr_src_dir}
-)
-
-add_subdirectory(src)
-add_subdirectory(plugins)
-add_subdirectory(tests-batch)
-add_subdirectory(tests-interactive)
-add_subdirectory(utils)
-
-
-# Organize folder structure for Xcode, Visual Studio, etc.
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-# add a target to generate API documentation with Doxygen
+# Add a target to generate API documentation with Doxygen
 find_package(Doxygen)
 
-option(BUILD_DOCUMENTATION "Create and install the HTML based API documentation (requires Doxygen)")
+option(BUILD_DOCUMENTATION "If enabled, creates and installs the HTML based API documentation (requires Doxygen).")
 
 if(BUILD_DOCUMENTATION)
   if(NOT DOXYGEN_FOUND)
     message(FATAL_ERROR "Doxygen is needed to build the documentation.")
   endif()
 
-  message("-- Configured to build documentation.  Use 'make doc'.")
+  message(STATUS "Configured to build documentation.  Use 'make doc'.")
 
   # Process the config file and put it in the build directory.
   set(doxyfile_in ${CMAKE_CURRENT_SOURCE_DIR}/doc/MinVR.doxygen.in)
@@ -160,8 +174,63 @@ if(BUILD_DOCUMENTATION)
   install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html DESTINATION share/doc)
 
 else()
-  message("-- NOT building MinVR library documentation.")
-  message("   Use 'cmake -DBUILD_DOCUMENTATION=on' to build.")
+  message(STATUS "NOT building MinVR library documentation.\n     Use 'cmake -DBUILD_DOCUMENTATION=on' to build.")
 
 endif()
 
+enable_testing()
+message(STATUS "Testing enabled, try 'make test'.")
+
+
+set(vr_src_dir ${CMAKE_CURRENT_SOURCE_DIR}/src)
+include_directories( ${vr_src_dir} )
+
+message(STATUS "Examining source.")
+add_subdirectory(src)
+message(STATUS "Configuring plugins.")
+add_subdirectory(plugins)
+message(STATUS "Configuring batch tests.")
+add_subdirectory(tests-batch)
+message(STATUS "Configuring interactive tests.")
+add_subdirectory(tests-interactive)
+message(STATUS "Configuring utility applications.")
+add_subdirectory(utils)
+
+
+## ************************************************ HOW ARE WE BUILDING?
+
+# The following sorts through all the cmake variables, and stores the ones
+# whose help strings include the magic string "If enabled", plus the cmake
+# build type (Debug, Release, etc.) and install directory.  It then stores a
+# simulacrum of the cmake invocation in a shell script, so you can run it
+# again if you like.
+#
+# This also means that if you add options, make their help strings include
+# the magic string.
+
+# Get a list of all the cmake variables.
+get_cmake_property(CACHE_VARS CACHE_VARIABLES)
+
+# Start our invocation string.
+set(CMAKE_INVOCATION "cmake ${CMAKE_SOURCE_DIR} ")
+
+# Loop through all the variables, and if they match the magic string, or if
+# they are the build type, add them to the invocation string.
+foreach(CACHE_VAR ${CACHE_VARS})
+  get_property(CACHE_VAR_HELPSTRING CACHE ${CACHE_VAR} PROPERTY HELPSTRING)
+  if ("${CACHE_VAR_HELPSTRING}" MATCHES "If enabled" OR
+      # There are also a few commonly-used cmake variables worth recording.
+      "${CACHE_VAR}" STREQUAL "CMAKE_BUILD_TYPE" OR
+      "${CACHE_VAR}" STREQUAL "CMAKE_INSTALL_PREFIX")
+    get_property(CACHE_VAR_TYPE CACHE ${CACHE_VAR} PROPERTY TYPE)
+    if(CACHE_VAR_TYPE STREQUAL "UNINITIALIZED")
+      set(CACHE_VAR_TYPE)
+    else()
+      set(CACHE_VAR_TYPE :${CACHE_VAR_TYPE})
+    endif()
+    set(CMAKE_INVOCATION "${CMAKE_INVOCATION} -D${CACHE_VAR}${CACHE_VAR_TYPE}=\"${${CACHE_VAR}}\"")
+  endif()
+endforeach()
+file(WRITE ${CMAKE_BINARY_DIR}/cmake-repeat.sh "#!/usr/bin/env bash\n# Feel free to edit this file before executing it. The file will be\n# overwritten with each cmake invocation, but the saved version will\n# reflect your changes.\n${CMAKE_INVOCATION}\n")
+
+message(STATUS "CMAKE invocation stored in ${CMAKE_BINARY_DIR}/cmake-repeat.sh.\n     Feel free to edit, then execute that file.")
