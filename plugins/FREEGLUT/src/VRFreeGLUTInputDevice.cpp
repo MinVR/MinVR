@@ -11,6 +11,7 @@
 #include <ctime>
 #include <cctype>
 
+#include <api/VRAnalogEvent.h>
 #include <api/VRButtonEvent.h>
 #include <api/VRCursorEvent.h>
 
@@ -35,8 +36,8 @@ static void freeglut_specialkey_callback(int key, int x, int y) {
 
 static void freeglut_specialkey_callback_up(int key, int x, int y) {
     device->keyCallback(key, x, y,false,true);
-}  
-  
+}
+
 static void freeglut_mousemove_callback(int xpos, int ypos) {
     device->cursorPositionCallback(xpos,ypos, true);
 }
@@ -52,7 +53,7 @@ static void freeglut_mouse_callback(int button, int state, int x, int y){
 void freeglut_mousewheel_callback(int wheel, int direction, int x, int y) {
 	device->mouseWheelCallback(wheel,direction, x, y);
 }
-                               
+
 VRFreeGLUTInputDevice::VRFreeGLUTInputDevice() {
 	device = this;
 }
@@ -65,7 +66,7 @@ void VRFreeGLUTInputDevice::appendNewInputEventsSinceLastCall(VRDataQueue* queue
 			glutSetWindow(*it);
 			glutMainLoopEvent();
 	}
-	
+
 
     for (size_t f = 0; f < _events.size(); f++)
     {
@@ -89,24 +90,24 @@ void VRFreeGLUTInputDevice::addWindow(int window) {
 void VRFreeGLUTInputDevice::keyCallback(int key, int x, int y, bool isDown, bool isSpecial) {
     std::string actionName = isDown? "Down" : "Up";
     std::string name = "Kbd" + getKeyName(key,isSpecial) + "_" + actionName;
-    
+
     VRDataIndex event = VRButtonEvent::createValidDataIndex(name, (int)isDown);
     _events.push_back(event);
 }
 
 
 void VRFreeGLUTInputDevice::cursorPositionCallback(int xpos, int ypos, bool isActive) {
-    
+
     std::vector<float> pos;
     pos.push_back(xpos);
     pos.push_back(ypos);
-    
+
     std::vector<float> npos;
     int width = glutGet(GLUT_WINDOW_WIDTH);
     int height = glutGet(GLUT_WINDOW_HEIGHT);
     npos[0] /= (float)width;
     npos[1] /= (float)height;
-    
+
     VRDataIndex event = VRCursorEvent::createValidDataIndex("Mouse_Move", pos, npos);
     _events.push_back(event);
 }
@@ -118,10 +119,10 @@ void VRFreeGLUTInputDevice::mouseWheelCallback(int wheel, int direction, int x, 
     event.addData("Direction", direction);
     event.addData("Turns", direction*wheel);
     _events.push_back(event);
-}  
-  
+}
+
 void VRFreeGLUTInputDevice::mouseButtonCallback(int button, int state, int x, int y) {
-    
+
     std::string buttonStr;
     if (button == GLUT_LEFT_BUTTON) {
         buttonStr = "MouseBtnLeft_";
@@ -137,7 +138,7 @@ void VRFreeGLUTInputDevice::mouseButtonCallback(int button, int state, int x, in
         os << button;
         buttonStr = "MouseBtn" + os.str() + "_";
     }
-    
+
     std::string actionStr;
     if (state == GLUT_DOWN) {
         actionStr = "Down";
@@ -145,21 +146,21 @@ void VRFreeGLUTInputDevice::mouseButtonCallback(int button, int state, int x, in
     else if (state == GLUT_UP) {
         actionStr = "Up";
     }
-    
+
     std::string name = buttonStr + actionStr;
-    VRDataIndex event = VRButtonEvent::createValidDataIndex(name, action);
+    VRDataIndex event = VRButtonEvent::createValidDataIndex(name, state);
     _events.push_back(event);
 }
 
-  
+
 std::string getKeyName(int key, bool isSpecial) {
 	if(!isSpecial){
 		switch ((unsigned char) key)
 		{
-			case 27:       				  
+			case 27:
 				return "Esc";
-			
-			default: 
+
+			default:
 				stringstream s;
 				s << (unsigned char) key;
 				return s.str();
