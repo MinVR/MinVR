@@ -107,7 +107,7 @@ int indextest(int argc, char* argv[]) {
   case 16:
     output = testGetPointers();
     break;
-    
+
   default:
     std::cout << "Test #" << choice << " does not exist!\n";
     output = -1;
@@ -550,7 +550,11 @@ int testIndexSerialize() {
 
     delete n;
 
+    //    std::cout << output << std::endl;
+
     out += output.compare(testString);
+
+    std::cout << "one:" << out << std::endl;
 
     // We can also use the alternate constructor.
     MinVR::VRDataIndex *anotherIndex = new MinVR::VRDataIndex(testString);
@@ -559,13 +563,23 @@ int testIndexSerialize() {
     output = anotherIndex->serialize("Server");
     out += output.compare(serverTestString);
 
+    std::cout << "two:" << out << std::endl;
+
     // There is also a name to the index.
     out += anotherIndex->getName().compare("MVR");
+
+    std::cout << *anotherIndex << std::endl;
+
+    std::cout << "the name of anotherIndex: " << anotherIndex->getName() << std::endl;
+
+    std::cout << "three:" << out << std::endl;
 
     // But we can also serialize the whole thing, in which case it
     // gets wrapped up, just like the starting test string.
     output = anotherIndex->serialize();
     out += output.compare(anotherTestString);
+
+    std::cout << "four:" << out << std::endl;
 
     delete anotherIndex;
 
@@ -675,7 +689,7 @@ int testIndexGetDefaultValues() {
 
     std::cout << "returning: " << (float)n->getValueWithDefault("/martha/b0", 3.0f) << "(" << out << ")" << std::endl;
     std::cout << "should be: " << (float)n->getValue("/martha/b0") << "(" << out << ")" << std::endl;
-    
+
     out += (n->getValueWithDefault("/martha/b10", 3.0f) == 3.0) ? 0 : 1;
 
     std::cout << "returning: " << (float)n->getValueWithDefault("/martha/b10", 3.0f) << "(" << out << ")" << std::endl;
@@ -691,7 +705,7 @@ int testIndexGetDefaultValues() {
     out += n->getValueWithDefault("/john/c15", std::string("hello")).compare("hello");
 
 
-    
+
     delete n;
   }
 
@@ -738,7 +752,7 @@ int testGetPointers() {
     const MinVR::VRFloatArray* pd = n->getValue("/donna/d0");
     out += (0.001 > (*pd)[2] - 3.400f) ? 0 : 1;
     std::cout << "(*pd)[2]: " << (*pd)[2] << std::endl;
-    
+
   }
   return out;
 }

@@ -37,7 +37,7 @@ public:
 
         _main->addEventHandler(this);
         _main->addRenderHandler(this);
-        _main->initializeWithMinVRCommandLineParsing(argc, argv);
+        _main->initialize(argc, argv);
 	}
 
 	virtual ~VRAppInternal() {

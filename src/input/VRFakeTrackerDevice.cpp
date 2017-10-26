@@ -58,9 +58,9 @@ VRFakeTrackerDevice::VRFakeTrackerDevice(const std::string &trackerName,
     _transform = VRMatrix4::translation(_statePos) * _stateRot;
     VRMatrix4 xform  = _transform;
 
-    VRDataIndex di;
+    VRDataIndex di(_eventName);
     di.addData(_eventName + "/Transform", xform);
-    _pendingEvents.push(di.serialize(_eventName));
+    _pendingEvents.push(di);
 
 }
 
@@ -70,10 +70,9 @@ VRFakeTrackerDevice::~VRFakeTrackerDevice()
 {
 }
 
-
 void VRFakeTrackerDevice::onVREvent(const VRDataIndex &eventData)
 {
-  if (event.getName() == _toggleEvent) {
+  if (eventData.getName() == _toggleEvent) {
     _tracking = !_tracking;
     if (_tracking) {
       if (_sticky) {
@@ -83,49 +82,49 @@ void VRFakeTrackerDevice::onVREvent(const VRDataIndex &eventData)
       }
     }
   }
-  else if (event.getName() == _translateZOnEvent) {
+  else if (eventData.getName() == _translateZOnEvent) {
     if (_state !=  VRFakeTrackerDevice::ZTranslating) {
       _state = VRFakeTrackerDevice::ZTranslating;
     } else {
       _state = VRFakeTrackerDevice::None;
     }
   }
-  else if (event.getName() == _translateOnEvent) {
+  else if (eventData.getName() == _translateOnEvent) {
     if (_state != VRFakeTrackerDevice::XYTranslating) {
       _state = VRFakeTrackerDevice::XYTranslating;
     } else {
       _state = VRFakeTrackerDevice::None;
     }
   }
-  else if (event.getName() == _rotateOnEvent) {
+  else if (eventData.getName() == _rotateOnEvent) {
     if (_state != VRFakeTrackerDevice::Rotating) {
       _state = VRFakeTrackerDevice::Rotating;
     } else {
       _state = VRFakeTrackerDevice::None;
     }
   }
-  else if (event.getName() == _rollOnEvent) {
+  else if (eventData.getName() == _rollOnEvent) {
     if (_state != VRFakeTrackerDevice::Rolling) {
       _state = VRFakeTrackerDevice::Rolling;
     } else {
       _state = VRFakeTrackerDevice::None;
     }
   }
-  else if (event.getName() == _translateZOffEvent && !_sticky) {
+  else if (eventData.getName() == _translateZOffEvent && !_sticky) {
     _state = VRFakeTrackerDevice::None;
   }
-  else if (event.getName() == _translateOffEvent && !_sticky) {
+  else if (eventData.getName() == _translateOffEvent && !_sticky) {
     _state = VRFakeTrackerDevice::None;
   }
-  else if (event.getName() == _rotateOffEvent && !_sticky) {
+  else if (eventData.getName() == _rotateOffEvent && !_sticky) {
     _state = VRFakeTrackerDevice::None;
   }
-  else if (event.getName() == _rollOffEvent && !_sticky) {
+  else if (eventData.getName() == _rollOffEvent && !_sticky) {
     _state = VRFakeTrackerDevice::None;
   }
-  else if (event.getName() == "Mouse_Move") {
-    const float *screenPos = event.getDataAsFloatArray("NormalizedPosition");
-    if (screenPos != NULL) {
+  else if (eventData.getName() == "Mouse_Move") {
+    const VRFloatArray screenPos = eventData.getValue("NormalizedPosition");
+    if (!screenPos.empty()) {
 
       // Transform range from [0,1] to [-1,1].
       float mousex = 2.0 * (screenPos[0] - 0.5);
@@ -182,9 +181,9 @@ void VRFakeTrackerDevice::onVREvent(const VRDataIndex &eventData)
 
         _transform = VRMatrix4::translation(_statePos) * _stateRot;
 
-        VRDataIndex di;
+        VRDataIndex di(_eventName);
         di.addData(_eventName + "/Transform", _transform);
-        _pendingEvents.push(di.serialize(_eventName));
+        _pendingEvents.push(di);
       }
 
       _lastMouseX = mousex;
@@ -194,13 +193,10 @@ void VRFakeTrackerDevice::onVREvent(const VRDataIndex &eventData)
 }
 
 
-void VRFakeTrackerDevice::appendNewInputEventsSinceLastCall(std::vector<VRDataIndex> *inputEvents)
+void VRFakeTrackerDevice::appendNewInputEventsSinceLastCall(VRDataQueue* inputEvents)
 {
-    for (std::vector<VRDataIndex>::iterator evt = _pendingEvents.begin();
-         evt < _pendingEvents.end(); ++evt) {
-      queue->push(evt->serialize());
-    }
-    _pendingEvents.clear();
+  inputEvents->addQueue(_pendingEvents);
+  _pendingEvents.clear();
 }
 
 

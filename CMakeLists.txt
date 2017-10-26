@@ -125,7 +125,6 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 add_definitions(-DINSTALLPATH="${CMAKE_INSTALL_PREFIX}")
 add_definitions(-DMINVRTESTBATCHDIR="${CMAKE_SOURCE_DIR}/tests-batch")
 
-
 ## ************************************************ HOW ARE WE BUILDING IT?
 
 message(STATUS "Building for " ${CMAKE_SYSTEM_NAME} ".")

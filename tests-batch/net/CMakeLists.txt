@@ -8,6 +8,8 @@
 ## 'ctest -R test_network_2 -VV'.  The -R is a regex match, so you can use
 ## -R network_2 or something smaller, too.
 
+add_definitions(-DBINARYPATH="${CMAKE_BINARY_DIR}")
+
 set (networktests network)
 # The numbers here correspond to 'case' statements in the respective
 # test program.  See, e.g., datumtest.cpp

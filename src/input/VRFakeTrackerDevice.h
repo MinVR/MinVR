@@ -8,12 +8,8 @@
 
  Original Author(s) of this File:
 	Dan Keefe, 2017, University of Minnesota
-<<<<<<< HEAD
   Josh Tveite, 2017, Brown University
 
-=======
-
->>>>>>> reversed some of Dan's queue changes to remake them
  Author(s) of Significant Updates/Modifications to the File:
 	...
  */
@@ -85,7 +81,7 @@ public:
 
     void onVREvent(const VRDataIndex &eventData);
 
-    void appendNewInputEventsSinceLastCall(VRDataQueue* queue);
+    void appendNewInputEventsSinceLastCall(VRDataQueue* inputEvents);
 
     static VRInputDevice* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 
@@ -140,7 +136,7 @@ private:
     // keep track of the last measured location.
     float _lastMouseX, _lastMouseY;
 
-    std::vector<VRDataIndex> _pendingEvents;
+    VRDataQueue _pendingEvents;
 };
 
 } // end namespace

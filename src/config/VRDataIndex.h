@@ -626,8 +626,9 @@ public:
   /// container/namespace and not inherit from any namespace above.
   VRAnyCoreType getValue(const std::string &key,
                          const std::string nameSpace = "",
-                         const bool inherit = true) {
-    VRDataMap::iterator p = _getEntry(key, nameSpace, inherit);
+                         const bool inherit = true) const {
+    VRDataMap::iterator p =
+      const_cast<VRDataIndex*>(this)->_getEntry(key, nameSpace, inherit);
 
     if (p == _theIndex.end()) {
       VRERRORNOADV("Never heard of " + key + " in namespace " + nameSpace + ".");
@@ -646,7 +647,7 @@ public:
   /// ~~~
   /// if (index->exists("MyValue")) return getValue();
   /// ~~~
-  VRAnyCoreType getValue() {
+  VRAnyCoreType getValue() const {
 
     if (_lastDatum == _theIndex.end()) {
       VRERRORNOADV("Bad key access in data index.");
@@ -751,7 +752,7 @@ public:
   ///
   /// This is comparable to the argument-free getValue().  Use it to
   /// get the full name of whatever you looked for last.
-  std::string getName() {
+  std::string getLastName() {
     if (_lastDatum == _theIndex.end()) {
       VRERRORNOADV("Bad key access in data index.");
     } else {
@@ -779,7 +780,7 @@ public:
   bool exists(const std::string &key,
               const std::string nameSpace = "",
               const bool inherit = true) const {
-	  return _getEntry(key, nameSpace, inherit) != _theIndex.end();
+	  return const_cast<VRDataIndex*>(this)->_getEntry(key, nameSpace, inherit) != _theIndex.end();
   }
 
   ///@}
@@ -1116,7 +1117,7 @@ public:
   /// \param lim The maximum number of characters to output on each line.  If
   ///            exceeded, the text will be truncated.
   std::string printStructure(const std::string itemName = "/",
-                             const size_y lim = 80) const;
+                             const size_t lim = 80) const;
 
   /// \brief Returns a list of all the fully-qualified names in the index.
   ///
@@ -1210,13 +1211,17 @@ private:
   /// Returns an iterator pointing to an entry in the DataMap.  The
   /// return value is a pair<string, VRDatumPtr>, so it->first is the
   /// name and it->second is the datum object.
+  ///
+  /// Note that this does not return a const iterator, so runs afoul
+  /// of C++ const-ness rules when it's used inside a const method
+  /// like exists().  You can get around this with a cast, spelled
+  /// like this:
+  ///  ~~~
+  ///  const_cast<VRDataIndex*>(this)->_getEntry(...)
+  ///  ~~~
   VRDataMap::iterator _getEntry(const std::string &key,
                                 const std::string nameSpace = "",
                                 const bool inherit = true);
-
-  VRDataMap::const_iterator _getEntry(const std::string &key,
-                                      const std::string nameSpace = "",
-                                      const bool inherit = true) const;
 
   // Returns a pointer to the value with a given name (and namespace)
   VRDatumPtr _getDatum(const std::string &key,

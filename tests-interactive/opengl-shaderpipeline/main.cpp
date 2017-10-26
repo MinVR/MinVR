@@ -42,15 +42,15 @@ public:
         vrMain = new VRMain();
         vrMain->addEventHandler(this);
         vrMain->addRenderHandler(this);
-        vrMain->initializeWithMinVRCommandLineParsing(argc,argv);
+        vrMain->initialize(argc,argv);
     }
 
-    
+
 	/// onVREvent is called when a new intput event happens.
 	void onVREvent(const VRDataIndex &event) {
-        
+
         //event.printStructure();
-        
+
 		// Set time since application began
 		if (event.getName() == "FrameStart") {
             float time = event.getValue("ElapsedSeconds");
@@ -69,7 +69,7 @@ public:
 		}
 	}
 
-    
+
 	/// onVRRenderContext is the override which allows users to setup context specific
 	/// variables like VBO's, VAO's, textures, framebuffers, and shader programs.
     void onVRRenderContext(const VRDataIndex &stateData) {
@@ -204,10 +204,10 @@ public:
 
             // Destroy context items if the program is no longer running
             /*
-             
+
              DAN K. to DAN O.:  I don't understand the isRunning(), why would
              onRender() be called if the app is not running?
-             
+
             if (!isRunning()) {
                 glDeleteBuffers(1, &vbo);
                 glDeleteVertexArrays(1, &vao);
@@ -227,7 +227,7 @@ public:
         if (stateData.exists("IsGraphics")) {
             VRFloatArray projMat = stateData.getValue("ProjectionMatrix");
             VRFloatArray viewMat = stateData.getValue("ViewMatrix");
-            
+
             // clear screen
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
@@ -283,7 +283,7 @@ public:
 			std::cerr << "Error compiling program: " << &log[0] << std::endl;
 		}
 	}
-    
+
     void run() {
         while (vrMain->mainloop()) {}
     }
