@@ -752,7 +752,7 @@ public:
   ///
   /// This is comparable to the argument-free getValue().  Use it to
   /// get the full name of whatever you looked for last.
-  std::string getLastName() {
+  std::string getFullKey() {
     if (_lastDatum == _theIndex.end()) {
       VRERRORNOADV("Bad key access in data index.");
     } else {
