@@ -9,6 +9,7 @@
 #ifndef VRAPP_H_
 #define VRAPP_H_
 
+#include "main/VRMain.h"
 #include "VRAnalogEvent.h"
 #include "VRAudioState.h"
 #include "VRButtonEvent.h"

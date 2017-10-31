@@ -260,6 +260,7 @@ install(TARGETS MinVR
         LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
 	ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
+install(FILES ${vr_api_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/api)
 install(FILES ${vr_config_h_config}
   DESTINATION ${CMAKE_INSTALL_PREFIX}/include/config)
 install(FILES ${vr_config_h_cxml}
