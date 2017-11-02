@@ -28,6 +28,9 @@ set(OPENGL_LIBRARIES ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY})
 set(OPENGL_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
 include_directories(${OPENGL_INCLUDE_DIRS})
 
+message(STATUS "OpenGL includes (for OpenVR): " ${OPENGL_INCLUDE_DIRS})
+message(STATUS "OpenGL library (for OpenVR): " ${OPENGL_LIBRARIES})
+
 #------------------------------------------
 # MinVR Dependencies
 #------------------------------------------
@@ -60,6 +63,9 @@ include_directories (
 SET(CMAKE_MODULE_PATH  ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH} )
 find_package(OpenVR QUIET)
 if(NOT OPENVR_FOUND)
+
+  message(STATUS "OpenVR not found.  Will try building it.")
+  
 	set(DepName OpenVR) 
 
 	set(${DepName}_checkout_Dir ${PROJECT_SOURCE_DIR}/lib/${DepName}/src)
@@ -71,7 +77,8 @@ if(NOT OPENVR_FOUND)
 	set(${DepName}_tmp_dir ${${DepName}_build_dir}/tmp)
 	
 	set(${DepName}_PREFIX "${${DepName}_checkout_Dir}")
-	set(${DepName}_INSTALL_DIR "${CMAKE_BINARY_DIR}/deps/${DepName}")
+  make_directory(${CMAKE_INSTALL_PREFIX}/ext/${DepName})
+	set(${DepName}_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/ext/${DepName}")
 	
 	set(${DepName}_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${${DepName}_INSTALL_DIR} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_C_FLAGS=-fPIC -DQNANHIBIT=1)
 	set(${DepName}_DIR "${${DepName}_INSTALL_DIR}")
@@ -95,7 +102,10 @@ if(NOT OPENVR_FOUND)
 		STAMP_DIR ${${DepName}_stamp_dir}
 		BINARY_DIR ${${DepName}_build_dir}
 	)
-	
+
+  message(STATUS "Building ${DepName} from: ${${DepName}_PREFIX}.")
+  message(STATUS "Installing ${DepName} to: ${${DepName}_INSTALL_DIR}.")
+
 	set(OPENVR_INCLUDE_DIRS ${${DepName}_checkout_Dir}/headers)
              
     if(MSVC)
@@ -112,19 +122,20 @@ endif()
 #add_definitions(-D_EASYBLENDSDK_LINUX)
 include_directories(${OPENVR_INCLUDE_DIRS})
 
+message(STATUS "OpenVR includes: " ${OPENVR_INCLUDE_DIRS})
+message(STATUS "OpenVR library: " ${OPENVR_LIBRARIES})
+
+
 #------------------------------------------
 # Specific preprocessor defines
 #------------------------------------------
 
 # Windows Section #
 if (MSVC)
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-    # Tell MSVC to use main instead of WinMain for Windows subsystem executables
-    set_target_properties(${WINDOWS_BINARIES} PROPERTIES LINK_FLAGS "/ENTRY:mainCRTStartup")
 endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 	find_package(X11)
 	set(LIBS_ALL ${LIBS_ALL} ${CMAKE_THREAD_LIBS_INIT} rt Xrandr Xxf86vm Xi m dl ${X11_LIBRARIES})
 endif()
@@ -133,8 +144,6 @@ endif()
 # Set output directories to lib, and bin
 #------------------------------------------
 
-make_directory(${CMAKE_BINARY_DIR}/plugins/${PROJECT_NAME}/lib)
-make_directory(${CMAKE_BINARY_DIR}/plugins/${PROJECT_NAME}/bin)
 set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/${PROJECT_NAME}/lib)
 set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/${PROJECT_NAME}/lib)
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/${PROJECT_NAME}/bin)
@@ -144,24 +153,6 @@ foreach (CONF ${CMAKE_CONFIGURATION_TYPES})
 	set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${CONF} ${CMAKE_BINARY_DIR}/plugins/${PROJECT_NAME}/lib)
 	set (CMAKE_LIBRARY_OUTPUT_DIRECTORY_${CONF} ${CMAKE_BINARY_DIR}/plugins/${PROJECT_NAME}/lib)
 endforeach(CONF CMAKE_CONFIGURATION_TYPES)
-
-set(CMAKE_DEBUG_POSTFIX "d")
-set(CMAKE_RELEASE_POSTFIX "")
-set(CMAKE_RELWITHDEBINFO_POSTFIX "rd")
-set(CMAKE_MINSIZEREL_POSTFIX "s")
-
-#set the build postfix extension according to the current configuration
-if (CMAKE_BUILD_TYPE MATCHES "Release")
-	set(CMAKE_BUILD_POSTFIX "${CMAKE_RELEASE_POSTFIX}")
-elseif (CMAKE_BUILD_TYPE MATCHES "MinSizeRel")
-	set(CMAKE_BUILD_POSTFIX "${CMAKE_MINSIZEREL_POSTFIX}")
-elseif (CMAKE_BUILD_TYPE MATCHES "RelWithDebInfo")
-	set(CMAKE_BUILD_POSTFIX "${CMAKE_RELWITHDEBINFO_POSTFIX}")
-elseif (CMAKE_BUILD_TYPE MATCHES "Debug")
-	set(CMAKE_BUILD_POSTFIX "${CMAKE_DEBUG_POSTFIX}")
-else()
-	set(CMAKE_BUILD_POSTFIX "")
-endif()
 
 #------------------------------------------
 # Build Target

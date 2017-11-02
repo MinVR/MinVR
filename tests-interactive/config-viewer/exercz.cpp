@@ -123,7 +123,7 @@ int main(int argc, char** argv) {
     ////// command: name
     } else if (elems[0].compare("name") == 0) {
 
-      std::cout << "The name of this index is: '" << index->getIndexName() << "'" << std::endl;
+      std::cout << "The name of this index is: '" << index->getName() << "'" << std::endl;
 
     ////// command: push
     } else if (elems[0].compare("push") == 0) {

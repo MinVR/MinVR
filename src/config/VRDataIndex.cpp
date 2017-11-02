@@ -26,6 +26,16 @@ VRDatumFactory VRDataIndex::_factory = VRDataIndex::_initializeFactory();
 VRDataIndex::VRDataIndex(const std::string serializedData)  :
   _indexName("MVR"), _overwrite(1), _linkNeeded(false) {
 
+  _lastDatum = _theIndex.end();
+
+  // If this is just a name, we just need an empty data index with the
+  // given name.
+  if (serializedData[0] != '<') {
+    _indexName = serializedData;
+    return;
+  }
+
+  // If you're here, the input data looks like XML. So parse it.
   Cxml *xml = new Cxml();
   xml->parse_string((char*)serializedData.c_str());
   element *xml_node = xml->get_root_element();
@@ -80,6 +90,9 @@ VRDataIndex::VRDataIndex(const VRDataIndex& orig) {
     it->second = it->second.clone();
   }
 
+  // This part is not copied, but it's only a convenience, not part of the data.
+  _lastDatum = _theIndex.end();
+
   // Then recreate the links.
   for (std::map<std::string, std::string>::const_iterator it = orig._linkRegister.begin();
        it != orig._linkRegister.end(); it++) {
@@ -107,11 +120,11 @@ std::string VRDataIndex::_getTrimName(const std::string &key,
 }
 
 
-std::string VRDataIndex::serialize() {
+std::string VRDataIndex::serialize() const {
 
     std::string serialized;
 
-    serialized = "<" + getIndexName() + " type=\"container\"" ;
+    serialized = "<" + getName() + " type=\"container\"" ;
 
     // This makes a list of *all* the names in the data index.
     // Unfortunately, we only want the first-level names, and want
@@ -140,7 +153,7 @@ std::string VRDataIndex::serialize() {
           serialized += serialize(*lt);
         };
       }
-      serialized += "</" + getIndexName() + ">";
+      serialized += "</" + getName() + ">";
     }
 
     return serialized;
@@ -151,14 +164,15 @@ std::string VRDataIndex::serialize() {
 // in which case the index name will be used as the root name.
 std::string VRDataIndex::serialize(const std::string key,
                                    const std::string nameSpace,
-                                   const bool inherit) {
+                                   const bool inherit) const {
 
   if (key == "/") {
 
     return serialize();
 
   } else {
-    VRDataMap::iterator it = _getEntry(key, nameSpace, inherit);
+    VRDataMap::const_iterator it =
+      const_cast<VRDataIndex*>(this)->_getEntry(key, nameSpace, inherit);
 
     if (it != _theIndex.end()) {
 
@@ -175,7 +189,7 @@ std::string VRDataIndex::serialize(const std::string key,
 
 
 std::string VRDataIndex::_serialize(const std::string &name,
-                                    VRDatumPtr &pdata ) {
+                                    const VRDatumPtr &pdata ) const {
 
   std::string trimName = _getTrimName(name);
 
@@ -474,12 +488,12 @@ std::string VRDataIndex::_walkXML(element* node, std::string nameSpace) {
 }
 
   bool VRDataIndex::hasAttribute(const std::string &fullKey,
-                                 const std::string &attributeName) {
+                                 const std::string &attributeName) const {
     return (_getDatum(fullKey)->getAttributeValue(attributeName).size() > 0);
   }
 
   std::string VRDataIndex::getAttributeValue(const std::string &fullKey,
-                                             const std::string &attributeName) {
+                                             const std::string &attributeName) const {
     return _getDatum(fullKey)->getAttributeValue(attributeName);
   }
 
@@ -494,7 +508,7 @@ std::string VRDataIndex::_walkXML(element* node, std::string nameSpace) {
 // This is really just part of trying to make the package easy to use
 // for configuration files.  For the serialize/deserialize pair, it's
 // not an issue.
-VRCORETYPE_ID VRDataIndex::_inferType(const std::string &valueString) {
+VRCORETYPE_ID VRDataIndex::_inferType(const std::string &valueString) const {
 /// Step 10 -- Add some functionality to this method to help identify
 /// your new data type.
 
@@ -533,9 +547,9 @@ VRCORETYPE_ID VRDataIndex::_inferType(const std::string &valueString) {
 // command, or something like it.  If you want a list of names within
 // a container (or within a namespace, pretty much the same thing),
 // just use getValue().
-std::list<std::string> VRDataIndex::findAllNames() {
+std::list<std::string> VRDataIndex::findAllNames() const {
   VRContainer outList;
-  for (VRDataMap::iterator it = _theIndex.begin(); it != _theIndex.end(); it++) {
+  for (VRDataMap::const_iterator it = _theIndex.begin(); it != _theIndex.end(); it++) {
     outList.push_back(it->first);
   }
   return outList;
@@ -545,12 +559,12 @@ std::list<std::string> VRDataIndex::findAllNames() {
 VRContainer VRDataIndex::selectByAttribute(const std::string &attrName,
                                            const std::string &attrVal,
                                            const std::string nameSpace,
-                                           const bool childOnly) {
+                                           const bool childOnly) const {
 
   std::string validatedNameSpace = validateNameSpace(nameSpace);
 
   std::list<std::string> outList;
-	for (VRDataMap::iterator it = _theIndex.begin(); it != _theIndex.end(); it++) {
+	for (VRDataMap::const_iterator it = _theIndex.begin(); it != _theIndex.end(); it++) {
 		VRDatum::VRAttributeList al = it->second->getAttributeList();
 
     // Use a string comparison to check if this name is within the given scope.
@@ -583,7 +597,7 @@ VRContainer VRDataIndex::selectByAttribute(const std::string &attrName,
 
 std::string VRDataIndex::getByAttribute(const std::string &attrName,
                                         const std::string &attrVal,
-                                        const std::string nameSpace) {
+                                        const std::string nameSpace) const {
 
   std::string out = "";
   std::string validatedNameSpace = validateNameSpace(nameSpace);
@@ -592,7 +606,7 @@ std::string VRDataIndex::getByAttribute(const std::string &attrName,
   // We are going to loop through all the names in the index to find the
   // longest string match to the input name space.  That *is* the match at the
   // lowest nested level.
-	for (VRDataMap::iterator it = _theIndex.begin(); it != _theIndex.end(); it++) {
+	for (VRDataMap::const_iterator it = _theIndex.begin(); it != _theIndex.end(); it++) {
 
     // Use a string comparison to check if this name is within the given scope.
     std::string ns = _getNameSpace(it->first);
@@ -633,10 +647,10 @@ std::string VRDataIndex::getByAttribute(const std::string &attrName,
 
 VRContainer VRDataIndex::selectByType(const VRCORETYPE_ID &typeID,
                                       const std::string nameSpace,
-                                      const bool childOnly) {
+                                      const bool childOnly) const {
 
   VRContainer outList;
-  for (VRDataMap::iterator it = _theIndex.begin(); it != _theIndex.end(); it++) {
+  for (VRDataMap::const_iterator it = _theIndex.begin(); it != _theIndex.end(); it++) {
 
     // Check to see if the type is the type we're looking for.
     if (typeID == it->second->getType()) {
@@ -653,14 +667,14 @@ VRContainer VRDataIndex::selectByType(const VRCORETYPE_ID &typeID,
   return outList;
 }
 
-VRContainer VRDataIndex::selectByName(const std::string &inName,
-                                      const std::string nameSpace) {
+VRContainer VRDataIndex::selectByKey(const std::string &inName,
+                                     const std::string nameSpace) const {
 
   std::vector<std::string> inNameParts = _explodeName(nameSpace + inName);
   VRContainer outList;
 
   // Sort through the whole index.
-  for (VRDataMap::iterator it = _theIndex.begin(); it != _theIndex.end(); it++) {
+  for (VRDataMap::const_iterator it = _theIndex.begin(); it != _theIndex.end(); it++) {
 
     // This is our indicator.  If a name gets through all the
     // comparisons with test still equal to zero, it's a match.
@@ -741,7 +755,7 @@ std::vector<std::string> VRDataIndex::_explodeName(const std::string &fullName) 
 //   1. Namespace begins with a "/"
 //   2. Namespace references an actually existing container.
 //   3. Namespace ends with a "/" so keys can just be appended.
-std::string VRDataIndex::validateNameSpace(const std::string &nameSpace) {
+std::string VRDataIndex::validateNameSpace(const std::string &nameSpace) const {
 
   std::string out = nameSpace;
 
@@ -868,24 +882,24 @@ VRDataIndex::_getEntry(const std::string &key,
                        const std::string nameSpace,
                        const bool inherit) {
 
-  VRDataMap::iterator outIt;
-
   // If the input key begins with a "/", it is a fully qualified
   // name already.  That is, it already includes the name space.
   if (key[0] == '/') {
 
-    return _theIndex.find(key);
+    _lastDatum = _theIndex.find(key);
+    return _lastDatum;
 
   } else if ((nameSpace.size() == 1) && (nameSpace.compare("/") == 0)) {
     // If we are looking for something in the root name space, that's
     // not so different than using a fully-qualified name.
 
-    return _theIndex.find(nameSpace + key);
+    _lastDatum = _theIndex.find(nameSpace + key);
+    return _lastDatum;
 
   } else {
 
     // If you're asking whether a fully-qualified name works, you want
-    // a yes or no.  If you're asking about a relative name, you will
+    // a yes or no answer.  If you're asking about a relative name, you will
     // accept a name defined in a namespace senior to the one
     // specified.  So answering the query for an entry to match the
     // given name requires looking through the senior namespaces.
@@ -893,7 +907,10 @@ VRDataIndex::_getEntry(const std::string &key,
     std::string validatedNameSpace = validateNameSpace(nameSpace);
 
     // If inheritance is turned off, just check if this name exists.
-    if (!inherit) return _theIndex.find(validatedNameSpace + key);
+    if (!inherit) {
+      _lastDatum = _theIndex.find(validatedNameSpace + key);
+      return _lastDatum;
+    }
 
     // Separate the name space into its constituent elements.
     std::vector<std::string> elems = _explodeName(validatedNameSpace);
@@ -914,25 +931,27 @@ VRDataIndex::_getEntry(const std::string &key,
         testSpace += *it + "/" ;
       }
 
-      outIt = _theIndex.find(testSpace + key);
-      if (outIt != _theIndex.end()) {
-        return outIt;
+      _lastDatum = _theIndex.find(testSpace + key);
+      if (_lastDatum != _theIndex.end()) {
+        return _lastDatum;
       }
     }
 
     // If we are here, there is no matching name in the index.
-    return _theIndex.end();
+    _lastDatum = _theIndex.end();
+    return _lastDatum;
   }
 }
 
-std::string VRDataIndex::getName(const std::string &key,
-                                 const std::string nameSpace,
-                                 const bool inherit) {
+std::string VRDataIndex::getFullKey(const std::string &key,
+                                    const std::string nameSpace,
+                                    const bool inherit) const {
 
-  VRDataMap::iterator p = _getEntry(key, nameSpace, inherit);
+  VRDataMap::const_iterator p =
+    const_cast<VRDataIndex*>(this)->_getEntry(key, nameSpace, inherit);
 
   if (p == _theIndex.end()) {
-    VRERRORNOADV("Never heard of " + key + " in namespace " + nameSpace);
+      VRERRORNOADV("Never heard of " + key + " in namespace " + nameSpace);
   } else {
     return p->first;
   }
@@ -950,6 +969,21 @@ VRDatumPtr VRDataIndex::_getDatum(const std::string &key,
   } else {
     return p->second;
   }
+}
+
+// Returns the data object for this name.
+const VRDatumPtr VRDataIndex::_getDatum(const std::string &key,
+                                  const std::string nameSpace,
+                                  const bool inherit) const {
+
+    VRDataMap::const_iterator p =
+      const_cast<VRDataIndex*>(this)->_getEntry(key, nameSpace, inherit);
+
+    if (p == _theIndex.end()) {
+        VRERRORNOADV("Never heard of " + key + " in namespace " + nameSpace);
+    } else {
+        return p->second;
+    }
 }
 
 // an int should be <nWindows type="int">6</nWindows>
@@ -1167,17 +1201,19 @@ std::string VRDataIndex::addData(const std::string &keyAndValue) {
 // serialize() method does not use white space formatting and
 // newlines.
 std::string VRDataIndex::printStructure(const std::string itemName,
-                                        const size_t lim) {
-
+                                        const size_t lim) const {
   size_t i;
   std::string outBuffer;
 
   // Get the pieces of the input name.
   std::vector<std::string> itemElems = _explodeName( itemName );
 
+  // If we're printing the entire index, prepend the index name.
+  if (itemName.compare("/") == 0) outBuffer += _indexName + "\n";
+
   // We loop through *all* the values in the _theIndex, and only print
   // the ones that are asked for.
-  for (VRDataMap::iterator it = _theIndex.begin(); it != _theIndex.end(); ++it) {
+  for (VRDataMap::const_iterator it = _theIndex.begin(); it != _theIndex.end(); ++it) {
 
     bool printMe = true;
 
@@ -1343,7 +1379,7 @@ bool VRDataIndex::_linkContent() {
   // Sift through them.
   for (VRContainer::iterator it = targets.begin(); it != targets.end(); it++) {
 
-    VRDataMap::iterator target = _getEntry(*it);
+    VRDataMap::const_iterator target = _getEntry(*it);
     std::string targetNameSpace = _getNameSpace(target->first);
 
     // Identify the source name (for the namespace) and the node.

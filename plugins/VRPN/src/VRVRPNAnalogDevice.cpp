@@ -1,14 +1,14 @@
 /* ================================================================================
 
-This file is part of the MinVR Open Source Project, which is developed and 
-maintained collaboratively by the University of Minnesota's Interactive 
+This file is part of the MinVR Open Source Project, which is developed and
+maintained collaboratively by the University of Minnesota's Interactive
 Visualization Lab and the Brown University Visualization Research Lab.
 
 File: VRVRPNAnalogDevice.cpp
 
-Original Author(s) of this File: 
+Original Author(s) of this File:
 	Daniel Keefe, 2004, Brown University (originally VRG3D/VRPNAnalogDevice.cpp)
-	
+
 Author(s) of Significant Updates/Modifications to the File:
 	Bret Jackson, 2013, University of Minnesota (adapted to MinVR)
 	Dan Keefe, 2016, University of Minnesota (adapted to MinVR2)
@@ -49,6 +49,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "VRVRPNAnalogDevice.h"
 #include <vrpn_Analog.h>
 #include <iostream>
+
+#include <api/VRTrackerEvent.h>
 
 
 #ifndef VRPN_CALLBACK
@@ -103,10 +105,9 @@ void VRVRPNAnalogDevice::sendEventIfChanged(int channelNumber, float data)
 {
 	if (_channelValues[channelNumber] != data) {
 		//_pendingEvents.push_back(EventRef(new Event(_eventNames[channelNumber], data, nullptr, channelNumber, msg_time)));
-		VRDataIndex di;
-        std::string name = _eventNames[channelNumber] + "_Change";
-		di.addData(name + "/AnalogValue", data);
-		_pendingEvents.push(di.serialize(name));
+        std::string name = _eventNames[channelNumber] + "_Update";
+        VRDataIndex di = VRAnalogEvent::createValidDataIndex(name, data);
+		_pendingEvents.push(di);
 		_channelValues[channelNumber] = data;
 	}
 }
@@ -114,10 +115,10 @@ void VRVRPNAnalogDevice::sendEventIfChanged(int channelNumber, float data)
 void VRVRPNAnalogDevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents)
 {
 	_vrpnDevice->mainloop();
-	while (_pendingEvents.notEmpty()) {
-		inputEvents->push(_pendingEvents.getSerializedObject());
-		_pendingEvents.pop();
-	}
+    for (int f = 0; f < _pendingEvents.size(); f++) {
+        inputEvents->push(_pendingEvents[f].serialize());
+    }
+    _pendingEvents.clear();
 }
 
 

@@ -23,7 +23,7 @@
 
 namespace MinVR {
 
-/** A VRInputDevice that polls input events (mouse, keyboard, window resize, etc.) 
+/** A VRInputDevice that polls input events (mouse, keyboard, window resize, etc.)
     for all of the active GLFWWindows and returns input in MinVR event format.
  */
 class VRGLFWInputDevice : public VRInputDevice {
@@ -31,7 +31,7 @@ public:
 	PLUGIN_API VRGLFWInputDevice();
 	PLUGIN_API virtual ~VRGLFWInputDevice();
 
-	PLUGIN_API void appendNewInputEventsSinceLastCall(VRDataQueue* queue);
+    PLUGIN_API void appendNewInputEventsSinceLastCall(VRDataQueue* queue);
 
     PLUGIN_API void addWindow(::GLFWwindow* window);
 	// TODO: removeWindow()?
@@ -42,10 +42,9 @@ public:
 	PLUGIN_API void sizeCallback(GLFWwindow* window, int width, int height);
     PLUGIN_API void cursorPositionCallback(GLFWwindow* window, float xpos, float ypos);
   	PLUGIN_API void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
-  
+
 private:
-	std::vector<std::string> _events;
-	VRDataIndex _dataIndex;
+	std::vector<VRDataIndex> _events;
     std::vector< ::GLFWwindow*> _windows;
 };
 

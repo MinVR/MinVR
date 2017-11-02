@@ -20,7 +20,7 @@ Author(s) of Significant Updates/Modifications to the File:
 
 namespace MinVR {
 
-class VRGraphicsStateInternal; // forward delcaration needed for MinVR's implementation
+class VRDataIndex;
 
 
 
@@ -31,7 +31,10 @@ class VRGraphicsStateInternal; // forward delcaration needed for MinVR's impleme
 */
 class VRGraphicsState {
 public:
-
+    
+    VRGraphicsState(const VRDataIndex &internalIndex);
+    virtual ~VRGraphicsState();
+    
 	/** Returns a pointer to a 16 element array that stores the current projection
 	    matrix, calculated by MinVR taking into account the current display geometry
 	    head tracking data, and stereo rendering state.  The pointer is valid as long
@@ -65,13 +68,13 @@ public:
 	/** Resturns the shared context ID.  Windows can share context items like VBO and Textures.
 	 * Returns -1 if the context is not shared.
 		*/
-	const int getSharedContextId() const;
+	int getSharedContextId() const;
 
 	/** Resturns the window / context ID that can be used for thread synchronization and
 	    window specific rendering.  It is also necessary for allowing users to know which
 		view they are rendering to in a model view controller type application.
 	*/
-	const int getWindowId() const;
+	int getWindowId() const;
 //
 //	const float const * getLookVec() const;
 //
@@ -95,28 +98,23 @@ public:
 	bool isInitialRenderCall() const;
 
 
-	/** Returns a pointer to the raw data type used internally by MinVR to
-		create this VRGraphicsState.  Advanced users may use this pointer to 
-		access additional raw state data and graphics devices not exposed by
-		this API.
-	*/
-	VRGraphicsStateInternal* getInternal() const;
-
+    
+    /** For advanced use, provides access to the VRDataIndex used internally by
+	    MinVR, which may contain some additional data fields beyond those
+	    accessible via this API.
+     */
+    const VRDataIndex& index();
 
 private:
+    
+    const VRDataIndex &_index;
+    
+    static float defaultProjMat[16];
+    static float defaultViewMat[16];
+    static float defaultEyePos[3];
+    static int defaultSharedContextID;
+    static int defaultWindowID;
 
-	// Users should never create a VRGraphicsState directly.
-
-	// Constructor used by friend class VRGraphicsStateInternal
-	VRGraphicsState(VRGraphicsStateInternal *internalState); 
-	// Private to prevent creating VRGraphicsStates directly
-	VRGraphicsState(); 
-	// Private to prevent copies, which should be handed by VRGraphicsStateInternal
-	VRGraphicsState(const VRGraphicsState&);
-
-	friend class VRGraphicsStateInternal;
-
-	VRGraphicsStateInternal *_internal;
 };
 
 

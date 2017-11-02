@@ -57,6 +57,8 @@ IF(FREEGLUT_FOUND)
 ELSE(FREEGLUT_FOUND)
 	SET(FREEGLUT_LIBRARIES)
 	SET(FREEGLUT_INCLUDE_DIRS)
+
+  message("** FreeGLUT library not found.")
   message("You can specify the FreeGLUT paths with -DFREEGLUT_INCLUDE_DIR=/path")
   message("and -DFREEGLUT_LIBRARY=/path/to/libglut")
   message("Or set the variables in MinVR/plugins/FREEGLUT/FindFreeGLUT.cmake.")
@@ -66,7 +68,5 @@ ENDIF(FREEGLUT_FOUND)
 ## set(FREEGLUT_LIBRARIES /path/to/libglut)
 ## set(FREEGLUT_INCLUDE_DIRS /path/to/freeglut/include/files)
 
-message("-- FreeGLUT libraries: " ${FREEGLUT_LIBRARIES})
-message("-- FreeGLUT includes:  " ${FREEGLUT_INCLUDE_DIRS})
-
 MARK_AS_ADVANCED(FREEGLUT_INCLUDE_DIRS FREEGLUT_LIBRARIES)
+

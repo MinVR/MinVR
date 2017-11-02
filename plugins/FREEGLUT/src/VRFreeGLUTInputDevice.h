@@ -39,8 +39,7 @@ public:
   	PLUGIN_API void mouseWheelCallback(int wheel, int direction, int x, int y);
   
 private:
-	std::vector<std::string> _events;
-	VRDataIndex _dataIndex;
+	std::vector<VRDataIndex> _events;
     std::vector<int > _windows;
 };
 

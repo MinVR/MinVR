@@ -156,7 +156,7 @@ int testSearchPath() {
   // Now we search for plugins and config files, which have some extra
   // semantic issues.
 
-  std::cout << "libRoot:" << libRoot<< "libName:" << libName << std::endl;
+  std::cout << "libRoot:" << libRoot<< "->libName:" << libName << std::endl;
 
   // Look for a plugin, using the root name.
   MinVR::VRSearchPlugin spp;
@@ -165,7 +165,18 @@ int testSearchPath() {
   std::cout << "spp:" << spp.findFile(libRoot) << std::endl;
 
   // Did we find it?
-  out += spp.findFile(libRoot).compare("testSearch/test2/test4/Henry/lib/" + libName);
+  std::string compareString = "testSearch/test2/test4/Henry/lib/lib" + libRoot +
+#ifdef MinVR_DEBUG
+    "d" +
+#endif
+#ifdef __APPLE__
+    ".dylib"
+#else
+    ".so"
+#endif
+    ;
+
+  out += spp.findFile(libRoot).compare(compareString);
 
   MinVR::VRSearchConfig spc;
   spc.digestPathString(sp.getPath());

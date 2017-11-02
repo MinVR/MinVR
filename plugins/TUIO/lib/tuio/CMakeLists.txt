@@ -13,7 +13,8 @@ set(${DepName}_stamp_dir ${${DepName}_build_dir}/stamp)
 set(${DepName}_tmp_dir ${${DepName}_build_dir}/tmp)
 
 set(${DepName}_PREFIX "${${DepName}_checkout_Dir}")
-set(${DepName}_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/deps/${DepName}")
+make_directory("${CMAKE_INSTALL_PREFIX}/ext/${DepName}")
+set(${DepName}_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/ext/${DepName}")
 
 set(${DepName}_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${${DepName}_INSTALL_DIR} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
 set(${DepName}_DIR "${${DepName}_INSTALL_DIR}")
@@ -37,7 +38,10 @@ set(${DepName}_DIR "${${DepName}_INSTALL_DIR}")
 		STAMP_DIR ${${DepName}_stamp_dir}
 		BINARY_DIR ${${DepName}_build_dir}
 	 )		
- 
+
+ message(STATUS "Building ${DepName} from: ${${DepName}_PREFIX}.")
+ message(STATUS "Installing ${DepName} to: ${${DepName}_INSTALL_DIR}.")
+
 set_property(TARGET ${DepName} PROPERTY FOLDER "Dependencies")
 
 #install(DIRECTORY ${${DepName}_checkout_Dir}/plugin/include/ DESTINATION "${${DepName}_INSTALL_DIR}/include")

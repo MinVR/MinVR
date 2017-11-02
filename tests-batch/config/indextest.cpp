@@ -23,6 +23,7 @@ int testLinkNode();
 int testLinkContent();
 int testDepthOfCopy();
 int testIsChild();
+int testGetPointers();
 
 // Make this a large number to get decent timing data.
 #define LOOP for (int loopctr = 0; loopctr < 1; loopctr++)
@@ -102,7 +103,11 @@ int indextest(int argc, char* argv[]) {
   case 15:
     output = testIndexGetDefaultValues();
     break;
-    
+
+  case 16:
+    output = testGetPointers();
+    break;
+
   default:
     std::cout << "Test #" << choice << " does not exist!\n";
     output = -1;
@@ -164,7 +169,7 @@ MinVR::VRDataIndex * setupIndex() {
   // This file is specified using the WORKING_DIRECTORY option in the
   // ctest framework.  See the CMakeLists.txt file in this directory,
   // and look for the add_test command.
-  n->processXMLFile("test.xml", "/");
+  n->processXMLFile(std::string(MINVRTESTBATCHDIR) + "/config/test.xml", "/");
 
   return n;
 }
@@ -290,7 +295,7 @@ int testSelections() {
 
 
     // Test selection by fully qualified name.
-    MinVR::VRContainer fourthList = index->selectByName("/MVR/John/Isabella/Eleanor");
+    MinVR::VRContainer fourthList = index->selectByKey("/MVR/John/Isabella/Eleanor");
 
     jt = fourthTestList.begin();
     for (MinVR::VRContainer::iterator it = fourthList.begin();
@@ -300,7 +305,7 @@ int testSelections() {
     }
 
     // Test selection by partial name.
-    MinVR::VRContainer fifthList = index->selectByName("John/Isabella");
+    MinVR::VRContainer fifthList = index->selectByKey("John/Isabella");
 
     jt = fifthTestList.begin();
     for (MinVR::VRContainer::iterator it = fifthList.begin();
@@ -311,7 +316,7 @@ int testSelections() {
 
 
     // Test selection by partial name with wildcard.
-    MinVR::VRContainer sixthList = index->selectByName("John/*/Isabella");
+    MinVR::VRContainer sixthList = index->selectByKey("John/*/Isabella");
 
     jt = sixthTestList.begin();
     for (MinVR::VRContainer::iterator it = sixthList.begin();
@@ -372,8 +377,8 @@ int testSelectionFirst() {
   std::cout << "6:" << n.getByAttribute("title", "Earl", "/A") << std::endl;
   out += n.getByAttribute("title", "Earl", "/A").empty()? 0 : 1 ;
 
-  std::cout << n.getIndexName() << std::endl;
-  out += n.getIndexName().compare("example");
+  std::cout << n.getName() << std::endl;
+  out += n.getName().compare("example");
 
   return out;
 }
@@ -545,7 +550,11 @@ int testIndexSerialize() {
 
     delete n;
 
+    //    std::cout << output << std::endl;
+
     out += output.compare(testString);
+
+    std::cout << "one:" << out << std::endl;
 
     // We can also use the alternate constructor.
     MinVR::VRDataIndex *anotherIndex = new MinVR::VRDataIndex(testString);
@@ -554,13 +563,23 @@ int testIndexSerialize() {
     output = anotherIndex->serialize("Server");
     out += output.compare(serverTestString);
 
+    std::cout << "two:" << out << std::endl;
+
     // There is also a name to the index.
-    out += anotherIndex->getIndexName().compare("MVR");
+    out += anotherIndex->getName().compare("MVR");
+
+    std::cout << *anotherIndex << std::endl;
+
+    std::cout << "the name of anotherIndex: " << anotherIndex->getName() << std::endl;
+
+    std::cout << "three:" << out << std::endl;
 
     // But we can also serialize the whole thing, in which case it
     // gets wrapped up, just like the starting test string.
     output = anotherIndex->serialize();
     out += output.compare(anotherTestString);
+
+    std::cout << "four:" << out << std::endl;
 
     delete anotherIndex;
 
@@ -592,7 +611,7 @@ int testIndexSerializeEntire() {
     out += test1.compare("glfw_display");
     out += test2.compare("heavy");
     out += 2871 - output.size();
-    out += n->getIndexName().compare("MVR");
+    out += n->getName().compare("MVR");
 
     delete n;
   }
@@ -670,7 +689,7 @@ int testIndexGetDefaultValues() {
 
     std::cout << "returning: " << (float)n->getValueWithDefault("/martha/b0", 3.0f) << "(" << out << ")" << std::endl;
     std::cout << "should be: " << (float)n->getValue("/martha/b0") << "(" << out << ")" << std::endl;
-    
+
     out += (n->getValueWithDefault("/martha/b10", 3.0f) == 3.0) ? 0 : 1;
 
     std::cout << "returning: " << (float)n->getValueWithDefault("/martha/b10", 3.0f) << "(" << out << ")" << std::endl;
@@ -686,10 +705,55 @@ int testIndexGetDefaultValues() {
     out += n->getValueWithDefault("/john/c15", std::string("hello")).compare("hello");
 
 
-    
+
     delete n;
   }
 
+  return out;
+}
+
+int testGetPointers() {
+
+  int out = 0;
+
+  LOOP {
+
+    MinVR::VRDataIndex *n = setupIndex();
+
+    std::cout << n->printStructure();
+
+    const float* pb = n->getValue("/martha/b0");
+    out += (0.001 > (*pb) - 3.1415926f) ? 0 : 1;
+    std::cout << "*pb: " << *pb << std::endl;
+
+    // How to ask for a pointer, and ask it not to fail if not found.
+    if (n->exists("/martha/b29")) {
+      const float* pbfail = n->getValue();
+      if (pbfail != NULL) {
+        out += 1;
+      }
+    }
+    // Here's one that actually exists.
+    if (n->exists("/martha/b7")) {
+      const float* pbsucceed = n->getValue();
+
+      out += (0.001 > ((*pbsucceed) / 7.0f) - 3.1415926f) ? 0 : 1;
+      std::cout << "*pbsucceed: " << *pbsucceed << std::endl;
+    }
+
+    const int* pa = n->getValue("/george/a8");
+    out += ((*pa) == 12) ? 0 : 1;
+    std::cout << "*pa: " << (*pa) << std::endl;
+
+    const MinVR::VRString* pc = n->getValue("/john/c3");
+    out += pc->compare("abigail3");
+    std::cout << "*pc: " << (*pc) << std::endl;
+
+    const MinVR::VRFloatArray* pd = n->getValue("/donna/d0");
+    out += (0.001 > (*pd)[2] - 3.400f) ? 0 : 1;
+    std::cout << "(*pd)[2]: " << (*pd)[2] << std::endl;
+
+  }
   return out;
 }
 

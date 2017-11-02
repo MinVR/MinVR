@@ -14,12 +14,11 @@ VRDataQueue::VRDataQueue(const VRDataQueue::serialData serializedQueue) {
 
 }
 
-// This function does *not* process arbitrary XML, but it *does*
-// process XML that was produced by the serialize() method below.
-// This is why it looks a bit hacky, with mysterious constants like
-// the number 18.  This serialization is only intended to transmit
-// from one instance of this class to another, even if it more or less
-// honors the look and feel of XML.
+// This function does *not* process arbitrary XML, but it *does* process XML
+// that was produced by the serialize() method below.  This is why it looks a
+// bit hacky, with mysterious constants like the number 18.  This
+// serialization is only intended to transmit from one instance of this class
+// to another, even if it more or less honors the look and feel of XML.
 void VRDataQueue::addSerializedQueue(const VRDataQueue::serialData serializedQueue) {
 
   // Looking for the number in <VRDataQueue num="X">
@@ -61,22 +60,35 @@ void VRDataQueue::addSerializedQueue(const VRDataQueue::serialData serializedQue
   }
 }
 
-VRDataQueue::serialData VRDataQueue::getSerializedObject() {
-  if (dataMap.empty()) {
+void VRDataQueue::addQueue(const VRDataQueue newQueue) {
 
-    return "";
+  if (newQueue.notEmpty()) {
+
+    for (VRDataQueue::const_iterator it = newQueue.begin();
+         it != newQueue.end(); it++) {
+      // We only want the time value of the timestamp, not the disambiguation
+      // value.
+      push(it->first.first, it->second);
+    }
+  }
+}
+
+VRDataIndex VRDataQueue::getFirst() const {
+  if (_dataMap.empty()) {
+
+    return VRDataIndex();
   } else {
 
-    return dataMap.begin()->second;
+    return _dataMap.begin()->second.getData();
   }
 }
 
 void VRDataQueue::pop() {
-  dataMap.erase(dataMap.begin());
+  _dataMap.erase(_dataMap.begin());
 }
 
 void VRDataQueue::clear() {
-  dataMap.clear();
+  _dataMap.clear();
 }
 
 // Suggested on Stackoverflow:
@@ -100,7 +112,7 @@ void VRDataQueue::clear() {
 // makes lots of events have the same time stamp.
 
 
-void VRDataQueue::push(const VRDataQueue::serialData serializedData) {
+long long VRDataQueue::makeTimeStamp() {
 
 #ifdef WIN32
 	LARGE_INTEGER frequency;        // ticks per second
@@ -121,35 +133,48 @@ void VRDataQueue::push(const VRDataQueue::serialData serializedData) {
 
 #endif
 
-  push(timeStamp, serializedData);
+  return timeStamp;
+}
+
+void VRDataQueue::push(const VRDataQueue::serialData serializedData) {
+  push(makeTimeStamp(), serializedData);
+}
+
+void VRDataQueue::push(const VRDataIndex event) {
+  VRDataIndex* eventPtr = new VRDataIndex(event);
+  push(makeTimeStamp(), VRDataQueueItem(eventPtr));
 }
 
 void VRDataQueue::push(const long long timeStamp,
                        const VRDataQueue::serialData serializedData) {
+  push(timeStamp, VRDataQueueItem(serializedData));
+}
+
+void VRDataQueue::push(const long long timeStamp,
+                       const VRDataQueueItem queueItem) {
 
   VRTimeStamp testStamp = VRTimeStamp(timeStamp, 0);
-  while (dataMap.find(testStamp) != dataMap.end()) {
+  while (_dataMap.find(testStamp) != _dataMap.end()) {
     testStamp = VRTimeStamp(timeStamp, testStamp.second + 1);
   }
 
-  dataMap.insert(std::pair<VRTimeStamp,VRDataQueue::serialData>
-                 (testStamp, serializedData));
+  _dataMap.insert(VRDataListItem(testStamp, queueItem));
 }
 
 
 VRDataQueue::serialData VRDataQueue::serialize() {
 
   std::ostringstream lenStr;
-  lenStr << dataMap.size();
+  lenStr << _dataMap.size();
 
   VRDataQueue::serialData out;
 
   out = "<VRDataQueue num=\"" + lenStr.str() + "\">";
-  for (VRDataList::iterator it = dataMap.begin(); it != dataMap.end(); ++it) {
+  for (VRDataList::iterator it = _dataMap.begin(); it != _dataMap.end(); ++it) {
     std::ostringstream timeStamp;
     timeStamp << it->first.first << "-" << std::setfill('0') << std::setw(3) << it->first.second;
     out += "<VRDataQueueItem timeStamp=\"" + timeStamp.str() + "\">" +
-      it->second + "</VRDataQueueItem>";
+      it->second.serialize() + "</VRDataQueueItem>";
   }
   out += "</VRDataQueue>";
 
@@ -157,15 +182,22 @@ VRDataQueue::serialData VRDataQueue::serialize() {
 }
 
 // DEBUG only
-std::string VRDataQueue::printQueue() {
+std::string VRDataQueue::printQueue() const {
 
   std::string out;
 
-  char buf[3];
+  char buf[6];  // No queues more than a million entries long.
   int i = 0;
-  for (VRDataList::iterator it = dataMap.begin(); it != dataMap.end(); ++it) {
+  for (VRDataList::const_iterator it = _dataMap.begin();
+       it != _dataMap.end(); ++it) {
     sprintf(buf, "%d", ++i);
-    out += "element " + std::string(buf) + ": " + it->second + "\n";
+    std::string identifier = "element";
+    if (it->second.isSerialized()) {
+      identifier += "*";
+    } else {
+      identifier += " ";
+    }
+    out += identifier + std::string(buf) + ": " + it->second.serialize() + "\n";
   }
 
   return out;

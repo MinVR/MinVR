@@ -15,14 +15,14 @@ MyAppController::MyAppController(int argc, char** argv) : VRApp(argc, argv), fra
 MyAppController::~MyAppController() {
 }
 
-void MyAppController::onVREvent(const VREvent &event) {
+void MyAppController::onAnalogChange(const VRAnalogEvent &state) {
 
 	//event.print();
 
 	// Set time since application began
-	if (event.getName() == "FrameStart") {
+	if (state.getName() == "FrameStart") {
 		frame++;
-		float time = event.getDataAsFloat("ElapsedSeconds");
+        float time = state.getValue();
 		// Calculate model matrix based on time
 		float* m = &model.modelMatrix[0];
 		const float cosTheta = std::cos(time);
@@ -33,16 +33,18 @@ void MyAppController::onVREvent(const VREvent &event) {
 		m[3]=0.0; m[7]=0.0; m[11]=0.0; m[15]=1.0;
 		return;
 	}
+}
 
+void MyAppController::onButtonDown(const MinVR::VRButtonEvent &state) {
 	// Quit if the escape button is pressed
-	if (event.getName() == "KbdEsc_Down") {
+	if (state.getName() == "KbdEsc_Down") {
 		shutdown();
 	}
 }
 
 /// onVRRenderContext is the override which allows users to setup context specific
 /// variables like VBO's, VAO's, textures, framebuffers, and shader programs.
-void MyAppController::onVRRenderGraphicsContext(const VRGraphicsState &renderState) {
+void MyAppController::onRenderGraphicsContext(const VRGraphicsState &renderState) {
 	int windowId = renderState.getWindowId();
 	int sharedContextId = renderState.getSharedContextId();
 
@@ -91,6 +93,9 @@ void MyAppController::onVRRenderGraphicsContext(const VRGraphicsState &renderSta
 	}
 
 	// Destroy context items if the program is no longer running
+    /** 
+     DAN K. to DAN O. -- not sure about isRunning()????
+     
 	if (!isRunning()) {
 		// Need to lock for deleting
 		std::unique_lock<std::mutex> lock(mutex);
@@ -121,15 +126,20 @@ void MyAppController::onVRRenderGraphicsContext(const VRGraphicsState &renderSta
 
 		return;
 	}
+     */
 }
 
 /// onVRRenderScene will run draw calls on each viewport inside a context.
-void MyAppController::onVRRenderGraphics(const VRGraphicsState &renderState) {
+void MyAppController::onRenderGraphicsScene(const VRGraphicsState &renderState) {
 	// Only draw if the application is still running.
-	if (isRunning()) {
+    
+    /**
+     DAN K. to DAN O. -- not sure about isRunning()????
+
+	if (isRunning()) {*/
 		int windowId = renderState.getWindowId();
 
 		// Render on view
 		views[windowId]->render(renderState);
-	}
+    //}
 }
