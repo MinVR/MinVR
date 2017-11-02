@@ -31,7 +31,7 @@ public:
 
 	virtual void render(VRDataIndex *renderState, VRRenderHandler *renderHandler);
 
-    virtual void onVREvent(const VREvent &event);
+    virtual void onVREvent(const VRDataIndex &eventData);
   
 	static VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 

@@ -1,15 +1,15 @@
 /**
  This file is part of the MinVR Open Source Project, which is developed and
  maintained collaboratively by the University of Minnesota and Brown University.
- 
+
  Copyright (c) 2016 Regents of the University of Minnesota and Brown University.
  This software is distributed under the BSD-3 Clause license, which can be found
  at: MinVR/LICENSE.txt.
- 
+
  Original Author(s) of this File:
 	Dan Keefe, 2017, University of Minnesota
   Josh Tveite, 2017, Brown University
-	
+
  Author(s) of Significant Updates/Modifications to the File:
 	...
  */
@@ -17,7 +17,6 @@
 #ifndef VRFAKETRACKERDEVICE_H
 #define VRFAKETRACKERDEVICE_H
 
-#include <api/VREvent.h>
 #include <config/VRDataIndex.h>
 #include <config/VRDataQueue.h>
 #include <input/VRInputDevice.h>
@@ -57,12 +56,12 @@ namespace MinVR {
     horizontal plane, more or less, or up and down.  In the 'Looker' mode, the
     same mouse movements move the viewer in a vertical plane, or forward and
     back.  In the 'Seeker' mode, the horizontal rotations spin the viewer, while
-    in the 'Looker' mode, they spin the viewer around the origin.  
+    in the 'Looker' mode, they spin the viewer around the origin.
 
   */
 class VRFakeTrackerDevice : public VRInputDevice, public VREventHandler {
 public:
-    
+
     VRFakeTrackerDevice(const std::string &trackerName,
                         const std::string &toggleOnOffEventName,
                         const std::string &rotateEventName,
@@ -77,15 +76,15 @@ public:
                         VRVector3 startPos,
                         VRVector3 startDir,
                         VRVector3 startUp);
-    
-    virtual ~VRFakeTrackerDevice();
-    
-    void onVREvent(const VREvent &event);
 
-    void appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents);
+    virtual ~VRFakeTrackerDevice();
+
+    void onVREvent(const VRDataIndex &eventData);
+
+    void appendNewInputEventsSinceLastCall(VRDataQueue* inputEvents);
 
     static VRInputDevice* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
-    
+
 private:
 
     std::string _eventName;
@@ -101,7 +100,7 @@ private:
     std::string _translateZOffEvent;
     std::string _rollOnEvent;
     std::string _rollOffEvent;
-    
+
     float _xyScale;
     float _zScale;
     float _rScale;
@@ -112,7 +111,7 @@ private:
     // Which style of tracker device are we using? (Seeker or looker) A seeker is
     // for looking around landscapes while a looker is for examining objects.
     bool _seeker;
-    
+
     // These are the possible states of the tracked device.
     enum TrackingState {
         XYTranslating,
@@ -121,6 +120,7 @@ private:
         Rolling,
         None
     };
+
     TrackingState _state;
 
     // Is the device currently listening for mouse input?
@@ -135,10 +135,10 @@ private:
     // We are mostly interested in the delta of the mouse movements, so we
     // keep track of the last measured location.
     float _lastMouseX, _lastMouseY;
-    
+
     VRDataQueue _pendingEvents;
 };
-    
+
 } // end namespace
 
 #endif

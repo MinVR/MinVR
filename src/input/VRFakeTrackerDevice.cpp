@@ -1,6 +1,7 @@
 
 #include "VRFakeTrackerDevice.h"
 #include <math/VRMath.h>
+#include <api/VRTrackerEvent.h>
 
 namespace MinVR {
 
@@ -57,22 +58,21 @@ VRFakeTrackerDevice::VRFakeTrackerDevice(const std::string &trackerName,
     _transform = VRMatrix4::translation(_statePos) * _stateRot;
     VRMatrix4 xform  = _transform;
 
-    VRDataIndex di;
+    VRDataIndex di(_eventName);
     di.addData(_eventName + "/Transform", xform);
-    _pendingEvents.push(di.serialize(_eventName));
+    _pendingEvents.push(di);
 
 }
-    
+
 
 
 VRFakeTrackerDevice::~VRFakeTrackerDevice()
 {
 }
 
-
-void VRFakeTrackerDevice::onVREvent(const MinVR::VREvent &event)
+void VRFakeTrackerDevice::onVREvent(const VRDataIndex &eventData)
 {
-  if (event.getName() == _toggleEvent) {
+  if (eventData.getName() == _toggleEvent) {
     _tracking = !_tracking;
     if (_tracking) {
       if (_sticky) {
@@ -82,49 +82,49 @@ void VRFakeTrackerDevice::onVREvent(const MinVR::VREvent &event)
       }
     }
   }
-  else if (event.getName() == _translateZOnEvent) {
+  else if (eventData.getName() == _translateZOnEvent) {
     if (_state !=  VRFakeTrackerDevice::ZTranslating) {
       _state = VRFakeTrackerDevice::ZTranslating;
     } else {
       _state = VRFakeTrackerDevice::None;
     }
   }
-  else if (event.getName() == _translateOnEvent) {
+  else if (eventData.getName() == _translateOnEvent) {
     if (_state != VRFakeTrackerDevice::XYTranslating) {
       _state = VRFakeTrackerDevice::XYTranslating;
     } else {
       _state = VRFakeTrackerDevice::None;
     }
   }
-  else if (event.getName() == _rotateOnEvent) {
+  else if (eventData.getName() == _rotateOnEvent) {
     if (_state != VRFakeTrackerDevice::Rotating) {
       _state = VRFakeTrackerDevice::Rotating;
     } else {
       _state = VRFakeTrackerDevice::None;
     }
   }
-  else if (event.getName() == _rollOnEvent) {
+  else if (eventData.getName() == _rollOnEvent) {
     if (_state != VRFakeTrackerDevice::Rolling) {
       _state = VRFakeTrackerDevice::Rolling;
     } else {
       _state = VRFakeTrackerDevice::None;
     }
   }
-  else if (event.getName() == _translateZOffEvent && !_sticky) {
+  else if (eventData.getName() == _translateZOffEvent && !_sticky) {
     _state = VRFakeTrackerDevice::None;
   }
-  else if (event.getName() == _translateOffEvent && !_sticky) {
+  else if (eventData.getName() == _translateOffEvent && !_sticky) {
     _state = VRFakeTrackerDevice::None;
   }
-  else if (event.getName() == _rotateOffEvent && !_sticky) {
+  else if (eventData.getName() == _rotateOffEvent && !_sticky) {
     _state = VRFakeTrackerDevice::None;
   }
-  else if (event.getName() == _rollOffEvent && !_sticky) {
+  else if (eventData.getName() == _rollOffEvent && !_sticky) {
     _state = VRFakeTrackerDevice::None;
   }
-  else if (event.getName() == "Mouse_Move") {
-    const float *screenPos = event.getDataAsFloatArray("NormalizedPosition");
-    if (screenPos != NULL) {
+  else if (eventData.getName() == "Mouse_Move") {
+    const VRFloatArray screenPos = eventData.getValue("NormalizedPosition");
+    if (!screenPos.empty()) {
 
       // Transform range from [0,1] to [-1,1].
       float mousex = 2.0 * (screenPos[0] - 0.5);
@@ -134,7 +134,7 @@ void VRFakeTrackerDevice::onVREvent(const MinVR::VREvent &event)
       if (_tracking) {
         float deltaX = mousex - _lastMouseX;
         float deltaY = mousey - _lastMouseY;
-            
+
         if (_state == VRFakeTrackerDevice::ZTranslating) {
           // If we're Z translating, that's up and down in the seeker mode, but
           // forward and backward in the looker mode.
@@ -142,14 +142,14 @@ void VRFakeTrackerDevice::onVREvent(const MinVR::VREvent &event)
             _statePos =  VRVector3(0, _zScale * deltaY, 0) + _statePos;
           } else {
             _statePos =  VRVector3(0, 0, _zScale * deltaY) + _statePos;
-          }          
+          }
         }
         else if (_state == VRFakeTrackerDevice::Rotating) {
           // The seeker mode turns the viewer around in place, while the looker
           // mode rotates the object in front of the viewer.  More or less.
-          
+
           VRMatrix4 r;
-          
+
           if (_seeker) {
             VRVector3 up = _stateRot * VRVector3(0.0f, 1.0f, 0.0f);
             // Not sure why these coordinates have to be negated.
@@ -158,8 +158,8 @@ void VRFakeTrackerDevice::onVREvent(const MinVR::VREvent &event)
 
             r = VRMatrix4::rotation(here, up, _rScale * deltaX) *
               VRMatrix4::rotation(here, over, _rScale * deltaY);
-              
-          } else {          
+
+          } else {
             r = VRMatrix4::rotationY(_rScale * deltaX) *
               VRMatrix4::rotationX(-_rScale * deltaY);
           }
@@ -178,29 +178,27 @@ void VRFakeTrackerDevice::onVREvent(const MinVR::VREvent &event)
             _statePos =  _xyScale * VRVector3(deltaX, deltaY, 0) + _statePos;
           }
         }
-        
+
         _transform = VRMatrix4::translation(_statePos) * _stateRot;
 
-        VRDataIndex di;
+        VRDataIndex di(_eventName);
         di.addData(_eventName + "/Transform", _transform);
-        _pendingEvents.push(di.serialize(_eventName));
+        _pendingEvents.push(di);
       }
-            
+
       _lastMouseX = mousex;
       _lastMouseY = mousey;
     }
   }
 }
 
-  
-void VRFakeTrackerDevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents)
+
+void VRFakeTrackerDevice::appendNewInputEventsSinceLastCall(VRDataQueue* inputEvents)
 {
-  while (_pendingEvents.notEmpty()) {
-    inputEvents->push(_pendingEvents.getSerializedObject());
-    _pendingEvents.pop();
-  }
+  inputEvents->addQueue(_pendingEvents);
+  _pendingEvents.clear();
 }
-  
+
 
 VRInputDevice*
 VRFakeTrackerDevice::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
@@ -269,7 +267,7 @@ VRFakeTrackerDevice::create(VRMainInterface *vrMain, VRDataIndex *config, const 
     return dev;
 }
 
-  
+
 } // end namespace
 
 

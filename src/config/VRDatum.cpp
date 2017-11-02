@@ -41,9 +41,9 @@ VRDatum::VRDatum(const VRCORETYPE_ID inType) : type(inType) {
 };
 
 // Returns the attribute list formatted to include in an XML tag.
-std::string VRDatum::getAttributeListAsString() {
+std::string VRDatum::getAttributeListAsString() const {
   std::string out = std::string("");
-  for (VRAttributeList::iterator it = attrList.front().begin();
+  for (VRAttributeList::const_iterator it = attrList.front().begin();
        it != attrList.front().end(); it++) {
     out += " " + it->first + "=\"" + it->second + "\"";
   }

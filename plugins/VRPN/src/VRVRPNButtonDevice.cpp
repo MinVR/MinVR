@@ -1,14 +1,14 @@
 /* ================================================================================
 
-This file is part of the MinVR Open Source Project, which is developed and 
-maintained collaboratively by the University of Minnesota's Interactive 
+This file is part of the MinVR Open Source Project, which is developed and
+maintained collaboratively by the University of Minnesota's Interactive
 Visualization Lab and the Brown University Visualization Research Lab.
 
 File: VRVRPNButtonDevice.cpp
 
-Original Author(s) of this File: 
+Original Author(s) of this File:
 	Daniel Keefe, 2004, Brown University (originally VRG3D/VRPNButtonDevice.cpp)
-	
+
 Author(s) of Significant Updates/Modifications to the File:
 	Bret Jackson, 2013, University of Minnesota (adapted to MinVR)
 	Dan Keefe, 2016, University of Minnesota (adapted to MinVR2)
@@ -49,6 +49,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "VRVRPNButtonDevice.h"
 #include <vrpn_Button.h>
 #include <iostream>
+
+#include <api/VRButtonEvent.h>
 
 
 #ifndef VRPN_CALLBACK
@@ -96,27 +98,23 @@ std::string VRVRPNButtonDevice::getEventName(int buttonNumber)
 
 void VRVRPNButtonDevice::sendEvent(int buttonNumber, bool down)
 {
-    VRDataIndex di;
-	std::string name = getEventName(buttonNumber);
-	if (down) {
+    std::string name = getEventName(buttonNumber);
+    if (down) {
         name = name + "_Down";
-		di.addData(name + "/id", buttonNumber);
-	    _pendingEvents.push(di.serialize(name));
-	}
-	else {
+    }
+    else {
         name = name + "_Up";
-		di.addData(name + "/id", buttonNumber);
-	    _pendingEvents.push(di.serialize(name));
-	}
+    }
+    VRDataIndex di = VRButtonEvent::createValidDataIndex("name", down);
+    _pendingEvents.push_back(di);
 }
 
-void VRVRPNButtonDevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents)
-{
-	_vrpnDevice->mainloop();
-	while (_pendingEvents.notEmpty()) {
-		inputEvents->push(_pendingEvents.getSerializedObject());
-		_pendingEvents.pop();
-	}
+void VRVRPNButtonDevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents) {
+    _vrpnDevice->mainloop();
+    for (int f = 0; f < _pendingEvents.size(); f++) {
+        inputEvents->push(_pendingEvents[f].serialize());
+    }
+    _pendingEvents.clear();
 }
 
 

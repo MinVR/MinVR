@@ -407,6 +407,10 @@ public:
   /// And another that fills an index with some serialized data.  The
   /// root name in the serialized data is adopted as the '_indexName' field
   /// of the index object.
+  ///
+  /// If the input data is just a simple string with no XML features
+  /// (i.e. it does not begin with a '<') then just create an empty
+  /// index with the given name.
   VRDataIndex(const std::string serializedData);
 
   /// \brief Makes a deep copy.
@@ -438,10 +442,10 @@ public:
   ~VRDataIndex() {};
 
   /// \brief Returns the name of the data index.
-  std::string getIndexName() { return _indexName; };
+  std::string getName() const { return _indexName; };
 
   /// \brief Changes the name of the data index.
-  void setIndexName(const std::string indexName) { _indexName = indexName; };
+  void setName(const std::string indexName) { _indexName = indexName; };
 
   ///@{
   /// \name Add data
@@ -622,8 +626,9 @@ public:
   /// container/namespace and not inherit from any namespace above.
   VRAnyCoreType getValue(const std::string &key,
                          const std::string nameSpace = "",
-                         const bool inherit = true) {
-    VRDataMap::iterator p = _getEntry(key, nameSpace, inherit);
+                         const bool inherit = true) const {
+    VRDataMap::iterator p =
+      const_cast<VRDataIndex*>(this)->_getEntry(key, nameSpace, inherit);
 
     if (p == _theIndex.end()) {
       VRERRORNOADV("Never heard of " + key + " in namespace " + nameSpace + ".");
@@ -642,7 +647,7 @@ public:
   /// ~~~
   /// if (index->exists("MyValue")) return getValue();
   /// ~~~
-  VRAnyCoreType getValue() {
+  VRAnyCoreType getValue() const {
 
     if (_lastDatum == _theIndex.end()) {
       VRERRORNOADV("Bad key access in data index.");
@@ -650,7 +655,7 @@ public:
       return _lastDatum->second->getValue();
     }
   }
-  
+
 
   /// \brief Returns an index value, with a default value.
   ///
@@ -696,7 +701,7 @@ public:
   /// \param nameSpace The (optional) namespace in which to look for key.
   VRCORETYPE_ID getType(const std::string &key,
                         const std::string nameSpace = "",
-                        const bool inherit = true) {
+                        const bool inherit = true) const {
     return _getDatum(key, nameSpace, inherit)->getType();
   }
 
@@ -719,7 +724,7 @@ public:
   /// \param nameSpace The (optional) container in which to look for key.
   std::string getTypeString(const std::string key,
                             const std::string nameSpace = "",
-                            const bool inherit = true) {
+                            const bool inherit = true) const {
     return _getDatum(key, nameSpace, inherit)->getDescription();
   }
 
@@ -739,15 +744,15 @@ public:
   ///
   /// Returns the fully qualified name of the specified value, starting with
   /// the root namespace.
-  std::string getName(const std::string &key,
-                      const std::string nameSpace = "",
-                      const bool inherit = true);
+  std::string getFullKey(const std::string &key,
+                         const std::string nameSpace = "",
+                         const bool inherit = true) const;
 
   /// \brief Returns the full name of the last searched value.
   ///
   /// This is comparable to the argument-free getValue().  Use it to
   /// get the full name of whatever you looked for last.
-  std::string getName() {
+  std::string getFullKey() {
     if (_lastDatum == _theIndex.end()) {
       VRERRORNOADV("Bad key access in data index.");
     } else {
@@ -766,7 +771,7 @@ public:
   /// \param nameSpace The container to search; defaults to the global namespace.
   std::string getByAttribute(const std::string &attrName,
                              const std::string &attrVal,
-                             const std::string nameSpace = "");
+                             const std::string nameSpace = "") const;
 
 
   /// \brief Returns true if the specified name exists in the index.
@@ -774,8 +779,8 @@ public:
   /// namespace.
   bool exists(const std::string &key,
               const std::string nameSpace = "",
-              const bool inherit = true) {
-	  return _getEntry(key, nameSpace, inherit) != _theIndex.end();
+              const bool inherit = true) const {
+	  return const_cast<VRDataIndex*>(this)->_getEntry(key, nameSpace, inherit) != _theIndex.end();
   }
 
   ///@}
@@ -813,7 +818,7 @@ public:
   VRContainer selectByAttribute(const std::string &attrName,
                                 const std::string &attrVal,
                                 const std::string nameSpace = "",
-                                const bool childOnly = false);
+                                const bool childOnly = false) const;
 
   /// \brief Returns objects with the given type.
   ///
@@ -826,7 +831,7 @@ public:
   ///        great-grandchildren, etc.
   VRContainer selectByType(const VRCORETYPE_ID &typeID,
                            const std::string nameSpace = "",
-                           const bool childOnly = false);
+                           const bool childOnly = false) const;
 
   /// \brief Returns objects with the given name.
   ///
@@ -835,8 +840,8 @@ public:
   ///        namespaces (scopes).
   /// \param nameSpace An optional namespace that will be prepended to the input
   ///        name before testing.
-  VRContainer selectByName(const std::string &inName,
-                           const std::string nameSpace = "");
+  VRContainer selectByKey(const std::string &inName,
+                          const std::string nameSpace = "") const;
 
   ///@}
 
@@ -860,7 +865,7 @@ public:
   /// \param inherit Do we confine our search for key to the current nameSpace?
   std::string serialize(const std::string key,
                         const std::string nameSpace = "",
-                        const bool inherit = true);
+                        const bool inherit = true) const;
 
   /// \brief Returns an XML formatted representation of the entire index.
   ///
@@ -870,7 +875,7 @@ public:
   ///
   /// Note: Use the copy constructor if you want to create a copy of an index.
   /// The serialize method does not record any links in the index.
-  std::string serialize();
+  std::string serialize() const;
 
   /// Incorporates a serialized bit of data into the data index within
   /// the specified container.
@@ -925,7 +930,7 @@ public:
   ///
   /// \param attributeName The name of an attribute of that value.
   std::string getAttributeValue(const std::string &fullKey,
-                                const std::string &attributeName);
+                                const std::string &attributeName) const;
 
   /// \brief Check if a data value has an attribute.
   ///
@@ -939,7 +944,7 @@ public:
   /// \param attributeName The name of the attribute to check.
   ///
   bool hasAttribute(const std::string &fullKey,
-                    const std::string &attributeName);
+                    const std::string &attributeName) const;
 
   /// Sets a specific attribute (tag) for a data index entry.
   ///
@@ -1081,7 +1086,7 @@ public:
   ///                  container of that name is in the data index, and return
   ///                  it with a `/` on the beginning and end if it is.  An empty
   ///                  input string will return `/`, the root namespace.
-  std::string validateNameSpace(const std::string &nameSpace);
+  std::string validateNameSpace(const std::string &nameSpace) const;
 
   /// \brief Find the value of an environment variable.
   ///
@@ -1112,7 +1117,7 @@ public:
   /// \param lim The maximum number of characters to output on each line.  If
   ///            exceeded, the text will be truncated.
   std::string printStructure(const std::string itemName = "/",
-                             const size_t lim = 80);
+                             const size_t lim = 80) const;
 
   /// \brief Returns a list of all the fully-qualified names in the index.
   ///
@@ -1120,7 +1125,7 @@ public:
   /// VRContainer.  That is, they may seem like the same thing, but there is
   /// no container in the index that contains these names.  If you want a list
   /// of the names in some container, use getValue().
-  std::list<std::string> findAllNames();
+  std::list<std::string> findAllNames() const;
 
    /// \brief Does the index have any entries?
   ///
@@ -1138,7 +1143,7 @@ private:
   //typedef std::map<std::string, std::vector<VRDatumPtr> > VRDataMap;
   VRDataMap _theIndex;
   VRDataMap::iterator _lastDatum;
-  
+
   // This is the name of the data index itself.
   std::string _indexName;
 
@@ -1150,7 +1155,7 @@ private:
   int _overwrite;
 
   // Tries to guess a data type from the ASCII representation.
-  VRCORETYPE_ID _inferType(const std::string &valueString);
+  VRCORETYPE_ID _inferType(const std::string &valueString) const;
 
   // These functions read an XML-encoded string and produce the value
   // implied.  There is no deserializeContainer, since that's what
@@ -1165,7 +1170,7 @@ private:
                                         const char separator);
 
   // Serializes the given VRDatum object, using the given name.
-  std::string _serialize(const std::string &name, VRDatumPtr &pdata);
+  std::string _serialize(const std::string &name, const VRDatumPtr &pdata) const;
 
 
   // Just a utility to return the tail end of the fully qualified name.
@@ -1206,6 +1211,14 @@ private:
   /// Returns an iterator pointing to an entry in the DataMap.  The
   /// return value is a pair<string, VRDatumPtr>, so it->first is the
   /// name and it->second is the datum object.
+  ///
+  /// Note that this does not return a const iterator, so runs afoul
+  /// of C++ const-ness rules when it's used inside a const method
+  /// like exists().  You can get around this with a cast, spelled
+  /// like this:
+  ///  ~~~
+  ///  const_cast<VRDataIndex*>(this)->_getEntry(...)
+  ///  ~~~
   VRDataMap::iterator _getEntry(const std::string &key,
                                 const std::string nameSpace = "",
                                 const bool inherit = true);
@@ -1214,6 +1227,11 @@ private:
   VRDatumPtr _getDatum(const std::string &key,
                        const std::string nameSpace = "",
                        const bool inherit = true);
+
+  // Returns a pointer to the value with a given name (and namespace)
+  const VRDatumPtr _getDatum(const std::string &key,
+                             const std::string nameSpace = "",
+                             const bool inherit = true) const;
 
   // These are specialized set methods.  They seem a little unhip, but
   // it's because I find this easier than remembering how to spell the
@@ -1300,7 +1318,17 @@ private:
   // If this is false, we don't need to do linkNodes() or linkContent().
   bool _linkNeeded;
 
+  friend std::ostream & operator<<(std::ostream &os, const VRDataIndex& di) {
+    return os << di.printStructure();
+  }
 };
+
+/// \brief A class to hold an arbitrary event.
+///
+/// An event in MinVR is just a VRDataIndex object.
+typedef VRDataIndex VRRawEvent;
+
+
 
 
 // Where are we going with this: We have an index that contains

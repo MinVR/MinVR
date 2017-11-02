@@ -91,7 +91,7 @@ public:
 private:
 	vrpn_Button_Remote        *_vrpnDevice;
 	std::vector<std::string>   _eventNames;
-	VRDataQueue                _pendingEvents;
+    std::vector<VRDataIndex>   _pendingEvents;
 };
 
 

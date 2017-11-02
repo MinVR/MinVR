@@ -9,6 +9,10 @@
 
 #include "VRTUIODevice.h"
 
+#include <api/VRButtonEvent.h>
+#include <api/VRCursorEvent.h>
+
+
 #include <list>
 
 using namespace TUIO;
@@ -38,6 +42,7 @@ VRTUIODevice::~VRTUIODevice()
 
 void VRTUIODevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents)
 {
+    std::vector<DataIndex> events;
 
 	// Send out events for TUIO "cursors" by polling the TuioClient for the current state
 	std::list<TuioCursor*> cursorList = _tuioClient->getTuioCursors();
@@ -58,9 +63,9 @@ void VRTUIODevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents)
 			}
 		}
 		if (!stillDown) {
-			std::string event = "Touch_Cursor_Up";
-			_dataIndex.addData(event + "/Id", downLast[i]);
-			inputEvents->push(_dataIndex.serialize(event));
+            VRDataIndex event = VRButtonEvent::createValidDataIndex("Touch" + downLast[i] + "_Up", 0);
+            event.addData("TouchID", downLast[i]);
+            events.push_back(event);
 			_cursorsDown.erase(downLast[i]);
 		}
 	}
@@ -70,20 +75,24 @@ void VRTUIODevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents)
 		TuioCursor *tcur = (*iter);
 
 		if (_cursorsDown.find(tcur->getCursorID()) == _cursorsDown.end()) {
-			std::string event = "Touch_Cursor_Down";
-			_dataIndex.addData(event + "/Id", tcur->getCursorID());
-			_dataIndex.addData(event + "/XPos", (float)_xScale*tcur->getX());
-			_dataIndex.addData(event + "/YPos", (float)_yScale*tcur->getY());
-			inputEvents->push(_dataIndex.serialize(event));
+            VRDataIndex event = VRButtonEvent::createValidDataIndex("Touch" + tcur->getCursorID() + "_Down", 0);
+            event.addData("TouchID", tcur->getCursorID());
+            event.addData(event + "X", (float)_xScale*tcur->getX());
+            event.addData(event + "Y", (float)_yScale*tcur->getY());
+            events.push_back(event);
 			_cursorsDown.insert(tcur->getCursorID());
 		}
 
 		if (tcur->getMotionSpeed() > 0.0) {
-			std::string event = "Touch_Cursor_Move";
-			_dataIndex.addData(event + "/Id", tcur->getCursorID());
-			_dataIndex.addData(event + "/XPos", (float)_xScale*tcur->getX());
-			_dataIndex.addData(event + "/YPos", (float)_yScale*tcur->getY());
-			inputEvents->push(_dataIndex.serialize(event));
+            std::vector<float> pos;
+            pos.push_back((float)_xScale*tcur->getX());
+            pos.push_back((float)_yScale*tcur->getY());
+
+            VRDataIndex event = VRCursorEvent::createValidDataIndex("Touch" + tcur->getCursorID() + "_Move", 0);
+            event.addData("TouchID", tcur->getCursorID());
+            event.addData(event + "X", pos[0]);
+            event.addData(event + "Y", pos[1]);
+            events.push_back(event);
 		}
 
 		// Can also access several other properties of cursors (speed, acceleration, path followed, etc.)
@@ -100,6 +109,10 @@ void VRTUIODevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents)
 		//}
 	}
 
+    for (int f = 0; f < events.size(); f++) {
+        inputEvents->push(events[f].serialize());
+    }
+    
 	_tuioClient->unlockCursorList();
 }
 

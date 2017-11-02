@@ -35,7 +35,7 @@ public:
 private:
 	TUIO::TuioClient *_tuioClient;
 	std::set<int>    _cursorsDown;
-	VRDataIndex _dataIndex;
+    std::vector<VRDataIndex> _events;
 	double      _xScale;
 	double      _yScale;
 

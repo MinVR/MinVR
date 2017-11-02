@@ -22,8 +22,8 @@ void VRNetInterface::sendSwapBuffersNow(SOCKET socketID) {
 }
 
 void VRNetInterface::sendEventData(SOCKET socketID,
-                                   VRDataQueue::serialData eventData) { 
-									   
+                                   VRDataQueue::serialData eventData) {
+
 	int dataSize =  eventData.size() + 1 + VRNET_SIZEOFINT;
 	unsigned char *buf = new unsigned char[dataSize+1];
 	//1. add 1-byte message header
@@ -36,13 +36,13 @@ void VRNetInterface::sendEventData(SOCKET socketID,
 	//4. send package
 	sendall(socketID,buf,dataSize);
 	//5. delete buffer
-	delete buf;
+	delete[] buf;
 }
 
 int VRNetInterface::sendall(SOCKET s, const unsigned char *buf, int len) {
   int total = 0;        // how many bytes we've sent
   int bytesleft = len;  // how many we have left to send
-  int n = 0;    
+  int n = 0;
   while (total < len) {
 #ifdef WIN32
 	  n = send(s, (char *)(buf + total), bytesleft, 0);
@@ -54,11 +54,11 @@ int VRNetInterface::sendall(SOCKET s, const unsigned char *buf, int len) {
     bytesleft -= n;
   }
   return n==-1?-1:total; // return -1 on failure, total on success
-} 
+}
 
 // Meant to receive a message of a single byte.
 void VRNetInterface::waitForAndReceiveOneByte(SOCKET socketID,
-                                              unsigned char messageID) {												  		
+                                              unsigned char messageID) {
   unsigned char receivedID = 0x0;
   while (receivedID != messageID) {
     int status = receiveall(socketID, &receivedID, 1);
@@ -73,13 +73,13 @@ void VRNetInterface::waitForAndReceiveOneByte(SOCKET socketID,
   }
 }
 
-void 
+void
 VRNetInterface::waitForAndReceiveSwapBuffersRequest(SOCKET socketID) {
   // this message consists only of a 1-byte header
   waitForAndReceiveOneByte(socketID, SWAP_BUFFERS_REQUEST_MSG);
 }
 
-void 
+void
 VRNetInterface::waitForAndReceiveSwapBuffersNow(SOCKET socketID) {
   // this message consists only of a 1-byte header
   waitForAndReceiveOneByte(socketID, SWAP_BUFFERS_NOW_MSG);
@@ -100,7 +100,7 @@ VRNetInterface::waitForAndReceiveEventData(SOCKET socketID) {
     exit(1);
   }
   int dataSize = unpackInt(buf1);
-  
+
   // 3. receive dataSize bytes, then decode these as InputEvents
   unsigned char *buf2 = new unsigned char[dataSize+1];
   status = receiveall(socketID, buf2, dataSize);
@@ -108,10 +108,10 @@ VRNetInterface::waitForAndReceiveEventData(SOCKET socketID) {
     std::cerr << "NetInterface error: receiveall failed receiving event data." << std::endl;
     exit(1);
   }
-  
+
   buf2[dataSize] = '\0';
   std::string data(reinterpret_cast<const char*>(buf2));
-  delete buf2;
+  delete[] buf2;
   return data;
 }
 

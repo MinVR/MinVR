@@ -27,7 +27,7 @@ void VRDisplayNode::render(VRDataIndex *renderState,
 			(*it)->render(renderState, renderHandler);
 		}
 	} else {
-		renderHandler->onVRRenderScene(renderState, this);
+		renderHandler->onVRRenderScene(*renderState);
 	}
 }
 

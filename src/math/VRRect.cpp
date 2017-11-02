@@ -65,7 +65,7 @@ bool VRRect::read(VRDataIndex& index, std::string name, std::string nameSpace) {
 		return false;
 	}
 
-	std::string newNamespace = index.getName(name, nameSpace);
+	std::string newNamespace = index.getFullKey(name, nameSpace);
 
 	m_xOffset = index.getValue("xOffset", newNamespace);
 	m_yOffset = index.getValue("yOffset", newNamespace);

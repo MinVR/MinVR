@@ -89,15 +89,14 @@ endif()
 if (CMAKE_BUILD_POSTFIX)
   message(STATUS "Appending '" ${CMAKE_BUILD_POSTFIX} "' to the built library file name.")
 endif()
-  
+
 # Add 'MinVR_DEBUG' to the symbols you can use in the code.
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DMinVR_DEBUG")
-
 
 ## ************************************************ WHERE ARE WE PUTTING IT?
 
 # Let's follow the convention of putting all of the libs in "build/lib" and all
-# of the exes in "build/bin". 
+# of the exes in "build/bin".
 
 make_directory(${CMAKE_BINARY_DIR}/lib)
 make_directory(${CMAKE_BINARY_DIR}/bin)
@@ -125,7 +124,6 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # installed code is also plays a role in providing sensible default search paths.
 add_definitions(-DINSTALLPATH="${CMAKE_INSTALL_PREFIX}")
 add_definitions(-DMINVRTESTBATCHDIR="${CMAKE_SOURCE_DIR}/tests-batch")
-
 
 ## ************************************************ HOW ARE WE BUILDING IT?
 

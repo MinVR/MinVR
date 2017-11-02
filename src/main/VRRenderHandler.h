@@ -31,7 +31,7 @@ public:
   /// any information you may need to draw graphics (e.g., the correct 
   /// projection matrix to apply in your shaders in order to support head
   /// tracked stereo rendering).
-  virtual void onVRRenderScene(VRDataIndex *renderState, VRDisplayNode *callingNode) = 0;
+  virtual void onVRRenderScene(const VRDataIndex &stateData) = 0;
 
   /// This function has a default empty implementation because it is not
   /// always required.  However, it is important to use if you want to
@@ -44,7 +44,7 @@ public:
   /// rendering code, onVRRenderContext(..) is the place where programmers 
   /// should do any computation that is the same for both eyes, such as loading
   /// textures or mesh data into graphics card memory.
-  virtual void onVRRenderContext(VRDataIndex *renderState, VRDisplayNode *callingNode) {};
+  virtual void onVRRenderContext(const VRDataIndex &stateData) {};
 };
 
 } // end namespace

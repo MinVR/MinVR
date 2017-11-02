@@ -9,6 +9,8 @@
 #include <VRGLFWInputDevice.h>
 #include <ctime>
 #include <cctype>
+#include <api/VRButtonEvent.h>
+#include <api/VRCursorEvent.h>
 
 namespace MinVR {
 
@@ -21,22 +23,22 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode,
     ((VRGLFWInputDevice*)(glfwGetWindowUserPointer(window)))->keyCallback(window, key, scancode, action, mods);
 }
 
-  
+
 static void glfw_size_callback(GLFWwindow* window, int width, int height) {
     ((VRGLFWInputDevice*)(glfwGetWindowUserPointer(window)))->sizeCallback(window, width, height);
 }
 
-  
+
 static void glfw_cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
     ((VRGLFWInputDevice*)(glfwGetWindowUserPointer(window)))->cursorPositionCallback(window, xpos, ypos);
 }
 
-  
+
 static void glfw_mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
   ((VRGLFWInputDevice*)(glfwGetWindowUserPointer(window)))->mouseButtonCallback(window, button, action, mods);
 }
 
-  
+
 VRGLFWInputDevice::VRGLFWInputDevice() {
 }
 
@@ -48,7 +50,7 @@ void VRGLFWInputDevice::appendNewInputEventsSinceLastCall(VRDataQueue* queue) {
 
     for (size_t f = 0; f < _events.size(); f++)
     {
-    	queue->push(_events[f]);
+    	queue->push(_events[f].serialize());
     }
 
     _events.clear();
@@ -64,10 +66,11 @@ void VRGLFWInputDevice::addWindow(GLFWwindow* window) {
 }
 
 void VRGLFWInputDevice::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    std::string event = "Kbd" + getGlfwKeyName(key) + "_" + getGlfwActionName(action);
-    _dataIndex.addData(event + "/KeyString", getGlfwKeyName(key));
-    _dataIndex.addData(event + "/EventString", getGlfwActionName(action));
-    _events.push_back(_dataIndex.serialize(event));
+    std::string actionName = getGlfwActionName(action);
+    std::string name = "Kbd" + getGlfwKeyName(key) + "_" + actionName;
+
+    VRDataIndex event = VRButtonEvent::createValidDataIndex(name, action);
+    _events.push_back(event);
 }
 
 void VRGLFWInputDevice::sizeCallback(GLFWwindow* window, int width, int height) {
@@ -76,60 +79,56 @@ void VRGLFWInputDevice::sizeCallback(GLFWwindow* window, int width, int height) 
 
 
 void VRGLFWInputDevice::cursorPositionCallback(GLFWwindow* window, float xpos, float ypos) {
-  std::string event = "Mouse_Move";
-  _dataIndex.addData(event + "/XPos", xpos);
-  _dataIndex.addData(event + "/YPos", ypos);
-  std::vector<float> pos;
-  pos.push_back(xpos);
-  pos.push_back(ypos);
-  _dataIndex.addData(event + "/Position", pos);
+    std::vector<float> pos;
+    pos.push_back(xpos);
+    pos.push_back(ypos);
     
-  int width, height;
-  glfwGetWindowSize(window, &width, &height);
-  pos[0] /= (float)width;
-  pos[1] /= (float)height;
-  _dataIndex.addData(event + "/NormalizedPosition", pos);
+    std::vector<float> npos;
+    int width, height;
+    glfwGetWindowSize(window, &width, &height);
+    npos[0] /= (float)width;
+    npos[1] /= (float)height;
     
-    
-  _events.push_back(_dataIndex.serialize(event));
+    VRDataIndex event = VRCursorEvent::createValidDataIndex("Mouse_Move", pos, npos);
+    _events.push_back(event);
 }
 
-  
-  
+
+
 void VRGLFWInputDevice::mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
-  std::string buttonStr;
-  if (button == GLFW_MOUSE_BUTTON_LEFT) {
-    buttonStr = "MouseBtnLeft";
-  }
-  else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
-    buttonStr = "MouseBtnRight";
-  }
-  else if (button == GLFW_MOUSE_BUTTON_MIDDLE) {
-    buttonStr = "MouseBtnMiddle";
-  }
-  else {
-    std::ostringstream os;
-    os << button;
-    buttonStr = "MouseBtn" + os.str();
-  }
-  
-  std::string actionStr;
-  if (action == GLFW_PRESS) {
-    actionStr = "_Down";
-  }
-  else if (action == GLFW_RELEASE) {
-    actionStr = "_Up";
-  }
+    std::string buttonStr;
+    if (button == GLFW_MOUSE_BUTTON_LEFT) {
+        buttonStr = "MouseBtnLeft_";
+    }
+    else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+        buttonStr = "MouseBtnRight_";
+    }
+    else if (button == GLFW_MOUSE_BUTTON_MIDDLE) {
+        buttonStr = "MouseBtnMiddle_";
+    }
+    else {
+        std::ostringstream os;
+        os << button;
+        buttonStr = "MouseBtn" + os.str() + "_";
+    }
 
-  std::string event = buttonStr + actionStr;
-  _dataIndex.addData(event + "/ButtonID", button);
-  _events.push_back(_dataIndex.serialize(event));
+    std::string actionStr;
+    if (action == GLFW_PRESS) {
+        actionStr = "Down";
+    }
+    else if (action == GLFW_RELEASE) {
+        actionStr = "Up";
+    }
+
+    std::string name = buttonStr + actionStr;
+    VRDataIndex event = VRButtonEvent::createValidDataIndex(name, action);
+    _events.push_back(event);
 }
 
-  
-  
-  
-  
+
+
+
+
 std::string getGlfwKeyName(int key) {
     switch (key)
     {

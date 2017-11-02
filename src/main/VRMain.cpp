@@ -9,6 +9,7 @@
 #include <unistd.h>
 #endif
 
+#include <api/VRAnalogEvent.h>
 #include <display/VRConsoleNode.h>
 #include <display/VRGraphicsWindowNode.h>
 #include <display/VRGroupNode.h>
@@ -22,7 +23,6 @@
 #include <net/VRNetClient.h>
 #include <net/VRNetServer.h>
 #include <plugin/VRPluginManager.h>
-#include <main/VREventInternal.h>
 
 #include <sstream>
 #include <cstdlib>
@@ -221,15 +221,15 @@ public:
 	}
 	virtual ~VRCompositeRenderHandler() {}
 
-	virtual void onVRRenderScene(VRDataIndex *renderState, VRDisplayNode *callingNode) {
+	virtual void onVRRenderScene(const VRDataIndex &renderState) {
 		for (std::vector<VRRenderHandler*>::iterator it = _handlers.begin(); it != _handlers.end(); it++) {
-			(*it)->onVRRenderScene(renderState, callingNode);
+			(*it)->onVRRenderScene(renderState);
 		}
 	}
 
-	virtual void onVRRenderContext(VRDataIndex *renderState, VRDisplayNode *callingNode) {
+	virtual void onVRRenderContext(const VRDataIndex &renderState) {
 		for (std::vector<VRRenderHandler*>::iterator it = _handlers.begin(); it != _handlers.end(); it++) {
-			(*it)->onVRRenderContext(renderState, callingNode);
+			(*it)->onVRRenderContext(renderState);
 		}
 	}
 
@@ -315,6 +315,7 @@ VRMain::~VRMain()
 void VRMain::loadConfig(const std::string &configName) {
 
   std::string fileName = _configPath.findFile(configName);
+
   if (fileName.empty()) {
 
     VRERROR("Cannot find a configuration named " + configName + ".",
@@ -754,62 +755,62 @@ void VRMain::initialize(int argc, char **argv) {
 }
 
 void
-VRMain::synchronizeAndProcessEvents()
-{
+VRMain::synchronizeAndProcessEvents() {
+
 	if (!_initialized) {
 		throw std::runtime_error("VRMain not initialized.");
 	}
 
-	VRDataQueue eventsFromDevices;
-    std::string event = "FrameStart";
-    std::string dataField = "/ElapsedSeconds";
-    _config->addData(event + dataField, (float)VRSystem::getTime());
-    eventsFromDevices.push(_config->serialize(event));
+  VRDataQueue eventQueue;
 
-	for (size_t f = 0; f < _inputDevices.size(); f++) {
-		_inputDevices[f]->appendNewInputEventsSinceLastCall(&eventsFromDevices);
-	}
-	//eventsFromDevices.printQueue();
+  // Add a standard "FrameStart" event at the beginning of each frame
+  VRDataIndex frameStartEvent =
+      VRAnalogEvent::createValidDataIndex("FrameStart", (float)VRSystem::getTime());
+  // by default the data will be placed in a field called "AnalogValue".  The
+  // next line is not strictly necessary, but it demonstrates how to add an
+  // entry to the index with a more descriptive name for event's data payload
+  // additional entries could also be added here, for example, might be useful
+  // to include delta time since last frame and even the current framerate.
+  // Adding more fields is fine as long as the VRSystem::getTime() remains the
+  // default data stored in the AnalogValue field.
+  frameStartEvent.linkNode("AnalogValue", "ElapsedSeconds");
+  eventQueue.push(frameStartEvent);
+
+  for (int f = 0; f < _inputDevices.size(); f++) {
+    _inputDevices[f]->appendNewInputEventsSinceLastCall(&eventQueue);
+  }
 
 	// SYNCHRONIZATION POINT #1: When this function returns, we know
 	// that all MinVR nodes have the same list of input events generated
 	// since the last call to synchronizeAndProcessEvents(..).  So,
 	// every node will process the same set of input events this frame.
-	VRDataQueue::serialData eventData;
-	if (_net != NULL) {
-		eventData = _net->syncEventDataAcrossAllNodes(eventsFromDevices.serialize());
-	}
-	else if (eventsFromDevices.notEmpty()) {
-		// TODO: There is no need to serialize here if we are not a network node
-		eventData = eventsFromDevices.serialize();
-	}
+  if (_net != NULL) {
+    eventQueue = _net->syncEventDataAcrossAllNodes(eventQueue);
+  }
 
-	VRDataQueue *events = new VRDataQueue(eventData);
-	while (events->notEmpty()) {
-		// Unpack the next item from the queue.
-		std::string eventName = _config->addSerializedValue( events->getSerializedObject() );
+  while (eventQueue.notEmpty()) {
+    // Unpack the next item from the queue and invoke the user's
+    // callback on it.
+    for (int f = 0; f < _eventHandlers.size(); f++) {
+      _eventHandlers[f]->onVREvent(eventQueue.getFirst());
+    }
 
-        VREventInternal event(eventName, _config);
+    // Remove the item from the queue.
+    eventQueue.pop();
+  }
 
-		// Invoke the user's callback on the new event
-		for (size_t f = 0; f < _eventHandlers.size(); f++) {
-			_eventHandlers[f]->onVREvent(*event.getAPIEvent());
-		}
-
-		// Get the next item from the queue.
-		events->pop();
-	}
-
-	delete events;
+  // At this point the eventQueue should be empty with all its events
+  // distributed to the user callback.  Our job here is done and we can
+  // safely get out.
 }
 
-void
-VRMain::renderOnAllDisplays()
-{
+void VRMain::renderOnAllDisplays() {
+
   if (!_initialized) throw std::runtime_error("VRMain not initialized.");
 
 	VRDataIndex renderState;
-	renderState.addData("/InitRender", _frame == 0);
+    renderState.setName("RenderState");
+	renderState.addData("InitRender", (int)(_frame == 0));
 
 	if (!_displayGraphs.empty()) {
 		VRCompositeRenderHandler compositeHandler(_renderHandlers);
