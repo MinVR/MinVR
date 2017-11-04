@@ -129,10 +129,12 @@ set(vr_display_h
 )
 
 set(vr_input_cpp
+  ${vr_src_dir}/input/VRFakeHandTrackerDevice.cpp
   ${vr_src_dir}/input/VRFakeTrackerDevice.cpp
 )
 
 set(vr_input_h
+  ${vr_src_dir}/input/VRFakeHandTrackerDevice.h
   ${vr_src_dir}/input/VRFakeTrackerDevice.h
   ${vr_src_dir}/input/VRInputDevice.h
 )

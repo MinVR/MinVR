@@ -83,7 +83,7 @@ void VRGLFWInputDevice::cursorPositionCallback(GLFWwindow* window, float xpos, f
     pos.push_back(xpos);
     pos.push_back(ypos);
     
-    std::vector<float> npos;
+    std::vector<float> npos = pos;
     int width, height;
     glfwGetWindowSize(window, &width, &height);
     npos[0] /= (float)width;

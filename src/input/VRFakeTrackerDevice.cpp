@@ -56,12 +56,9 @@ VRFakeTrackerDevice::VRFakeTrackerDevice(const std::string &trackerName,
                                                  x[2], up[2], forward[2], 0,
                                                  0, 0, 0, 1);
     _transform = VRMatrix4::translation(_statePos) * _stateRot;
-    VRMatrix4 xform  = _transform;
-
-    VRDataIndex di(_eventName);
-    di.addData(_eventName + "/Transform", xform);
+    
+    VRDataIndex di = VRTrackerEvent::createValidDataIndex(_eventName, _transform.toVRFloatArray());
     _pendingEvents.push(di);
-
 }
 
 
@@ -181,8 +178,7 @@ void VRFakeTrackerDevice::onVREvent(const VRDataIndex &eventData)
 
         _transform = VRMatrix4::translation(_statePos) * _stateRot;
 
-        VRDataIndex di(_eventName);
-        di.addData(_eventName + "/Transform", _transform);
+        VRDataIndex di = VRTrackerEvent::createValidDataIndex(_eventName, _transform.toVRFloatArray());
         _pendingEvents.push(di);
       }
 

@@ -19,6 +19,7 @@
 #include <display/VRProjectionNode.h>
 #include <display/VRLookAtNode.h>
 #include <display/VRTrackedLookAtNode.h>
+#include <input/VRFakeHandTrackerDevice.h>
 #include <input/VRFakeTrackerDevice.h>
 #include <net/VRNetClient.h>
 #include <net/VRNetServer.h>
@@ -257,7 +258,7 @@ std::string getCurrentWorkingDir()
 
 VRMain::VRMain() : _initialized(false), _config(NULL), _net(NULL), _factory(NULL), _pluginMgr(NULL), _frame(0), _shutdown(false)
 {
-  _config = new VRDataIndex();
+    _config = new VRDataIndex();
 	_factory = new VRFactory();
 	// add sub-factories that are part of the MinVR core library right away
 	_factory->registerItemType<VRDisplayNode, VRConsoleNode>("VRConsoleNode");
@@ -269,7 +270,9 @@ VRMain::VRMain() : _initialized(false), _config(NULL), _net(NULL), _factory(NULL
 	_factory->registerItemType<VRDisplayNode, VRViewportNode>("VRViewportNode");
 	_factory->registerItemType<VRDisplayNode, VRLookAtNode>("VRLookAtNode");
 	_factory->registerItemType<VRDisplayNode, VRTrackedLookAtNode>("VRTrackedLookAtNode");
-  _factory->registerItemType<VRInputDevice, VRFakeTrackerDevice>("VRFakeTrackerDevice");
+
+    _factory->registerItemType<VRInputDevice, VRFakeHandTrackerDevice>("VRFakeHandTrackerDevice");
+    _factory->registerItemType<VRInputDevice, VRFakeTrackerDevice>("VRFakeTrackerDevice");
 
     _pluginMgr = new VRPluginManager(this);
 }

@@ -19,9 +19,9 @@ Author(s) of Significant Updates/Modifications to the File:
 namespace MinVR {
 
     
-float VRGraphicsState::defaultProjMat[16] = {1.0, 0.0, 0.0, 0.0,  0.0, 1.0, 0.0, 0.0,  0.0, 0.0, 1.0, 0.0,  0.0, 0.0, 0.0, 1.0};
-float VRGraphicsState::defaultViewMat[16] = {1.0, 0.0, 0.0, 0.0,  0.0, 1.0, 0.0, 0.0,  0.0, 0.0, 1.0, 0.0,  0.0, 0.0, 0.0, 1.0};
-float VRGraphicsState::defaultEyePos[3] = {0.0, 0.0, 0.0};
+float VRGraphicsState::projMat[16] = {1.0, 0.0, 0.0, 0.0,  0.0, 1.0, 0.0, 0.0,  0.0, 0.0, 1.0, 0.0,  0.0, 0.0, 0.0, 1.0};
+float VRGraphicsState::viewMat[16] = {1.0, 0.0, 0.0, 0.0,  0.0, 1.0, 0.0, 0.0,  0.0, 0.0, 1.0, 0.0,  0.0, 0.0, 0.0, 1.0};
+float VRGraphicsState::eyePos[3] = {0.0, 0.0, 0.0};
 int VRGraphicsState::defaultSharedContextID = 0;
 int VRGraphicsState::defaultWindowID = 0;
     
@@ -41,32 +41,26 @@ const VRDataIndex& VRGraphicsState::index() {
 
 const float * VRGraphicsState::getProjectionMatrix() const {
     if (_index.exists("ProjectionMatrix")) {
-        const std::vector<float> &mat = _index.getValue("ProjectionMatrix");
-        return &mat[0];
+        VRFloatArray mat = _index.getValue("ProjectionMatrix");
+        std::copy(mat.begin(), mat.end(), projMat);
     }
-    else {
-        return defaultProjMat;
-    }
+    return projMat;
 }
 
 const float * VRGraphicsState::getViewMatrix() const {
     if (_index.exists("ViewMatrix")) {
-        const std::vector<float> &mat = _index.getValue("ViewMatrix");
-        return &mat[0];
+        VRFloatArray mat = _index.getValue("ViewMatrix");
+        std::copy(mat.begin(), mat.end(), viewMat);
     }
-    else {
-        return defaultViewMat;
-    }
+    return viewMat;
 }
 
 const float * VRGraphicsState::getCameraPos() const {
     if (_index.exists("EyePosition")) {
-        const std::vector<float> &mat = _index.getValue("EyePosition");
-        return &mat[0];
+        VRFloatArray mat = _index.getValue("EyePosition");
+        std::copy(mat.begin(), mat.end(), eyePos);
     }
-    else {
-        return defaultEyePos;
-    }
+    return eyePos;
 }
 
 bool VRGraphicsState::isInitialRenderCall() const {

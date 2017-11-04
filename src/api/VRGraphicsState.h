@@ -109,9 +109,9 @@ private:
     
     const VRDataIndex &_index;
     
-    static float defaultProjMat[16];
-    static float defaultViewMat[16];
-    static float defaultEyePos[3];
+    static float projMat[16];
+    static float viewMat[16];
+    static float eyePos[3];
     static int defaultSharedContextID;
     static int defaultWindowID;
 
