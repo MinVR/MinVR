@@ -94,7 +94,7 @@ Btn,B03,B04,B05,B06,B07,B08,B09,B10,B11,B12,B13,B14,B15,B16</EventsToGenerate>
 
   <YURTGraph>
     <RootNode displaynodeType="VRGraphicsWindowNode" windowtoolkitType="VRFreeGLUTWindowToolkit" graphicstoolkitType="VROpenGLGraphicsToolkit">
-      <LookAtNode displaynodeType="VRTrackedLookAtNode">
+      <LookAtNode displaynodeType="VRHeadTrackingNode">
         <StereoNode displaynodeType="VRStereoNode">
           <MyProjectionNode displaynodeType="VRScalableNode">
             <NearClip>0.01</NearClip>

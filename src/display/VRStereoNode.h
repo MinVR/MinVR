@@ -16,7 +16,11 @@
 namespace MinVR {
 
 
-
+/** Looks for a HeadMatrix in the RenderState and turns it into a CameraMatrix
+    based on the current stereo format and value for EyeSeparation.  Then, calls
+    the rest of the display graph one or two times (if stereo is enabled).  Also 
+    sets an entry in the RenderState for the current Eye being rendered.
+ */
 class VRStereoNode : public VRDisplayNode {
 public:
 	enum VRStereoFormat {
@@ -45,7 +49,7 @@ public:
 
 protected:
 	void renderOneEye(VRDataIndex *renderState, VRRenderHandler *renderHandler, VREyePosition eye);
-	void updateLookAtMatrix(VRDataIndex *renderState, VREyePosition eye);
+	void setCameraMatrix(VRDataIndex *renderState, VREyePosition eye);
 
 	VRGraphicsToolkit *_gfxToolkit;
 	VRStereoFormat _format;

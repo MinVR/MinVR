@@ -31,7 +31,7 @@ namespace MinVR {
 
 /**
  * Represents a projection node with a near and far clipping plane.
- * Generates View and Projection matrices from the LookAtMatrix
+ * Generates View and Projection matrices from the CameraMatrix
  */
 class VRProjectionNode : public VRDisplayNode {
 public:

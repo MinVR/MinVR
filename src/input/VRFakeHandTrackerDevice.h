@@ -26,11 +26,25 @@ namespace MinVR {
 
 /** A "virtual input device" that converts mouse and keyboard events into
     6 Degree-of-Freedom tracker events.  This facilitates debugging
-    VR programs on a desktop computer.  Move the mouse to move the tracker
-    in the XY-plane parallel to the scrren.  Hold z to move the tracker
-    in/out of the screen.  Hold 'r' to rotate the tracker with the mouse.
-    The scale factors set in the constructor adjust the sensitivity of the
-    tracker to each of these mouse movements.
+    VR programs on a desktop computer.  
+ 
+    This UI has a good default mapping for controlling hand-held VR cursors via
+    mouse and keyoard input.  The mouse and keyboard events are trapped and then
+    turned into 6-DOF tracker events so that you can write your program as if it
+    is a VR program listening for tracker move events but control it with your
+    desktop computer.
+ 
+    To move the tracker in a plane parallel to the filmplane, just move the
+    mouse.  Hold the "T" key on the keyboard to enter a translate-in-Z-direction
+    mode, which will map mouse movement to movement perpendicular to the
+    filmplane.  Hold the "R" key to rotate the tracker with the mouse.  Pressing
+    the "2" key on the keyboard, toggles the entire interface on/off.
+ 
+    Finally, note that all of the keys mentioned above are just defaults.  These
+    can be reconfigured in the config file where the VRFakeHeadTrackerDevice is
+    defined.  Scale factors can also be set in the config file to adjust the
+    sensativity of the mouse-to-tracker movements.  The scale factors are 
+    designed so that a default value of 1.0 works well on most machines.
   */
 class VRFakeHandTrackerDevice : public VRInputDevice, public VREventHandler {
 public:
@@ -39,7 +53,9 @@ public:
                             const std::string &toggleOnOffEventName,
                             float xyScale,
                             float zScale,
-                            float rotScale);
+                            float rotScale,
+                            std::vector<std::string> zKeys,
+                            std::vector<std::string> rotKeys);
     
     virtual ~VRFakeHandTrackerDevice();
     
@@ -56,6 +72,9 @@ private:
     float _xyScale;
     float _zScale;
     float _rScale;
+    std::vector<std::string> _zKeys;
+    std::vector<std::string> _rotKeys;
+
     
     enum TrackingState {
         XYTranslating,

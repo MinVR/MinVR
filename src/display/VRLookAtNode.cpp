@@ -4,10 +4,10 @@
 namespace MinVR {
 
 
-VRLookAtNode::VRLookAtNode(const std::string &name, VRMatrix4 initiallookAtMatrix) :
-  VRDisplayNode(name),_lookAtMatrix(initiallookAtMatrix)
+VRLookAtNode::VRLookAtNode(const std::string &name, VRMatrix4 initialHeadMatrix) :
+  VRDisplayNode(name),_headMatrix(initialHeadMatrix)
 {
-  _valuesAdded.push_back("/LookAtMatrix");
+  _valuesAdded.push_back("HeadMatrix");
 }
 
 VRLookAtNode::~VRLookAtNode()
@@ -20,7 +20,7 @@ VRLookAtNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 {
 	renderState->pushState();
 
-	renderState->addData("/LookAtMatrix", _lookAtMatrix);
+	renderState->addData("HeadMatrix", _headMatrix);
 	VRDisplayNode::render(renderState, renderHandler);
 
 	renderState->popState();
@@ -28,10 +28,10 @@ VRLookAtNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 
 VRDisplayNode* VRLookAtNode::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
 	
-	VRMatrix4 lookAtMatrix;
+	VRMatrix4 headMatrix;
 
-	if (config->exists("LookAtMatrix", nameSpace)){
-		lookAtMatrix = config->getValue("LookAtMatrix", nameSpace);
+	if (config->exists("HeadMatrix", nameSpace)){
+		headMatrix = config->getValue("HeadMatrix", nameSpace);
 	} 
 	else if (config->exists("LookAtUp", nameSpace) && config->exists("LookAtEye", nameSpace) && config->exists("LookAtCenter", nameSpace))
 	{
@@ -39,7 +39,7 @@ VRDisplayNode* VRLookAtNode::create(VRMainInterface *vrMain, VRDataIndex *config
 		VRVector3 eye = config->getValue("LookAtEye", nameSpace);
 		VRVector3 center = config->getValue("LookAtCenter", nameSpace);
 
-		VRVector3 z = center - eye;
+		VRVector3 z = eye - center;
 		z = z.normalize();
 		VRVector3 x = up.cross(z);
 		x = x.normalize();
@@ -55,16 +55,17 @@ VRDisplayNode* VRLookAtNode::create(VRMainInterface *vrMain, VRDataIndex *config
                                                        0, 0, 1, -eye[2],
                                                        0, 0, 0, 1);
 
-		lookAtMatrix =  M1 * M2;
+		VRMatrix4 lookAtMatrix =  M1 * M2;
+        headMatrix = lookAtMatrix.inverse();
 	}
 	else
 	{
-		std::cerr << "Warning : no LookAtMatrix defined for " << nameSpace << std::endl;
-		std::cerr << "Either Define  LookAtMatrix or LookAtUp,LookAEye and LookAtCenter" << std::endl;
+		std::cerr << "Warning : no HeadMatrix (a.k.a., CameraMatrix) defined for " << nameSpace << std::endl;
+		std::cerr << "Either Define HeadMatrix or LookAtUp, LookAtEye, and LookAtCenter" << std::endl;
 		std::cerr << "Using IdentityMatrix as default 1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1 " << std::endl;
 	}
 
-	VRLookAtNode *node = new VRLookAtNode(nameSpace, lookAtMatrix);
+	VRLookAtNode *node = new VRLookAtNode(nameSpace, headMatrix);
 
 	return node;
 }

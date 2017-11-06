@@ -13,10 +13,10 @@ namespace MinVR {
 
 VRViewportNode::VRViewportNode(const std::string &name, VRGraphicsToolkit *gfxToolkit, const VRRect& rect) :
 	VRDisplayNode(name), _rect(rect), _gfxToolkit(gfxToolkit)  {
-  _valuesAdded.push_back("/ViewportX");
-  _valuesAdded.push_back("/ViewportY");
-  _valuesAdded.push_back("/ViewportWidth");
-  _valuesAdded.push_back("/ViewportHeight");
+  _valuesAdded.push_back("ViewportX");
+  _valuesAdded.push_back("ViewportY");
+  _valuesAdded.push_back("ViewportWidth");
+  _valuesAdded.push_back("ViewportHeight");
 }
 
 VRViewportNode::~VRViewportNode() {
@@ -26,10 +26,10 @@ void VRViewportNode::render(VRDataIndex *renderState, VRRenderHandler *renderHan
   renderState->pushState();
 
 	// Is this the kind of state information we expect to pass from one node to the next?
-	renderState->addData("/ViewportX", (int)_rect.getX());
-	renderState->addData("/ViewportY", (int)_rect.getY());
-	renderState->addData("/ViewportWidth", (int)_rect.getWidth());
-	renderState->addData("/ViewportHeight", (int)_rect.getHeight());
+	renderState->addData("ViewportX", (int)_rect.getX());
+	renderState->addData("ViewportY", (int)_rect.getY());
+	renderState->addData("ViewportWidth", (int)_rect.getWidth());
+	renderState->addData("ViewportHeight", (int)_rect.getHeight());
   
 	_gfxToolkit->setSubWindow(_rect);
 

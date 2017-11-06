@@ -1,48 +1,46 @@
 
-#include <display/VRTrackedLookAtNode.h>
+#include <display/VRHeadTrackingNode.h>
 
 namespace MinVR {
 
 
-	VRTrackedLookAtNode::VRTrackedLookAtNode(const std::string &name, const std::string &headTrackingEventName, VRMatrix4 initiallookAtMatrix) :
-		VRDisplayNode(name), _lookAtMatrix(initiallookAtMatrix), _trackingEvent(headTrackingEventName)
+VRHeadTrackingNode::VRHeadTrackingNode(const std::string &name, const std::string &headTrackingEventName, VRMatrix4 initialHeadMatrix) :
+    VRDisplayNode(name), _headMatrix(initialHeadMatrix), _trackingEvent(headTrackingEventName)
 {
-  _valuesAdded.push_back("/LookAtMatrix");
+  _valuesAdded.push_back("HeadMatrix");
 }
 
-VRTrackedLookAtNode::~VRTrackedLookAtNode()
+VRHeadTrackingNode::~VRHeadTrackingNode()
 {
 }
 
 
 void 
-VRTrackedLookAtNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
+VRHeadTrackingNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 {
 	renderState->pushState();
 
-	renderState->addData("/LookAtMatrix", _lookAtMatrix);
-
+	renderState->addData("HeadMatrix", _headMatrix);
 	VRDisplayNode::render(renderState, renderHandler);
 
 	renderState->popState();
 }
 
 void
-VRTrackedLookAtNode::onVREvent(const VRDataIndex &e)
+VRHeadTrackingNode::onVREvent(const VRDataIndex &e)
 {
 	if (e.getName() == _trackingEvent) {
-		VRMatrix4 head_frame = e.getValue("Transform");
-		_lookAtMatrix = head_frame.inverse();
-	}
+        _headMatrix = e.getValue("Transform");
+    }
 }
 
-VRDisplayNode* VRTrackedLookAtNode::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
+VRDisplayNode* VRHeadTrackingNode::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
 
 	std::string trackingEvent = config->getValue("HeadTrackingEvent", nameSpace);
-	VRMatrix4 lookAtMatrix;
+	VRMatrix4 headMatrix;
 
-	if (config->exists("LookAtMatrix", nameSpace)){
-		lookAtMatrix = config->getValue("LookAtMatrix", nameSpace);
+	if (config->exists("HeadMatrix", nameSpace)){
+		headMatrix = config->getValue("HeadMatrix", nameSpace);
 	}
 	else if (config->exists("LookAtUp", nameSpace) && config->exists("LookAtEye", nameSpace) && config->exists("LookAtCenter", nameSpace))
 	{
@@ -50,10 +48,10 @@ VRDisplayNode* VRTrackedLookAtNode::create(VRMainInterface *vrMain, VRDataIndex 
 		VRVector3 eye = config->getValue("LookAtEye", nameSpace);
 		VRVector3 center = config->getValue("LookAtCenter", nameSpace);
 
-		VRVector3 z = center - eye;
-		z.normalize();
+        VRVector3 z = eye - center;
+		z = z.normalize();
 		VRVector3 x = up.cross(z);
-		x.normalize();
+		x = x.normalize();
 		VRVector3 y = z.cross(x);
 
         VRMatrix4 M1 = VRMatrix4::fromRowMajorElements(x[0], y[0], z[0], 0,
@@ -66,16 +64,17 @@ VRDisplayNode* VRTrackedLookAtNode::create(VRMainInterface *vrMain, VRDataIndex 
                                                        0, 0, 1, -eye[2],
                                                        0, 0, 0, 1);
 
-		lookAtMatrix = M1 * M2;
+		VRMatrix4 lookAtMatrix = M1 * M2;
+        headMatrix = lookAtMatrix.inverse();
 	}
 	else
 	{
-		std::cerr << "Warning : no LookAtMatrix defined for " << nameSpace << std::endl;
-		std::cerr << "Either Define  LookAtMatrix or LookAtUp,LookAEye and LookAtCenter" << std::endl;
+		std::cerr << "Warning : no HeadMatrix defined for " << nameSpace << std::endl;
+		std::cerr << "Either Define HeadMatrix or LookAtUp, LookAtEye and LookAtCenter" << std::endl;
 		std::cerr << "Using IdentityMatrix as default 1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1 " << std::endl;
 	}
 
-	VRTrackedLookAtNode *node = new VRTrackedLookAtNode(nameSpace, trackingEvent, lookAtMatrix);
+	VRHeadTrackingNode *node = new VRHeadTrackingNode(nameSpace, trackingEvent, headMatrix);
 
 	vrMain->addEventHandler(node);
 

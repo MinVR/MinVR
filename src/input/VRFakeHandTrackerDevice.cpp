@@ -11,13 +11,17 @@ VRFakeHandTrackerDevice::VRFakeHandTrackerDevice(const std::string &trackerName,
                                          const std::string &toggleOnOffEventName,
                                          float xyScale,
                                          float zScale,
-                                         float rotScale)
+                                         float rotScale,
+                                         std::vector<std::string> zKeys,
+                                         std::vector<std::string> rotKeys)
 {
     _eventName = trackerName + "_Move";
     _toggleEvent = toggleOnOffEventName;
     _xyScale = xyScale;
     _zScale = zScale;
     _rScale = rotScale;
+    _zKeys = zKeys;
+    _rotKeys = rotKeys;
 
     _tracking = true;
     _state = VRFakeHandTrackerDevice::XYTranslating;
@@ -31,6 +35,16 @@ VRFakeHandTrackerDevice::~VRFakeHandTrackerDevice()
 }
 
 
+bool eventMatch(std::string eventName, std::vector<std::string> keys, std::string state) {
+    for (std::vector<std::string>::iterator it = keys.begin(); it < keys.end(); ++it) {
+        if (*it + "_" + state == eventName) {
+            return true;
+        }
+    }
+    return false;
+}
+    
+
 void VRFakeHandTrackerDevice::onVREvent(const VRDataIndex &event)
 {
     if (event.getName() == _toggleEvent) {
@@ -39,16 +53,16 @@ void VRFakeHandTrackerDevice::onVREvent(const VRDataIndex &event)
             _state = VRFakeHandTrackerDevice::XYTranslating;
         }
     }
-    else if (event.getName() == "KbdZ_Down") {
+    else if (eventMatch(event.getName(), _zKeys, "Down")) {
         _state = VRFakeHandTrackerDevice::ZTranslating;
     }
-    else if (event.getName() == "KbdZ_Up") {
+    else if (eventMatch(event.getName(), _zKeys, "Up")) {
         _state = VRFakeHandTrackerDevice::XYTranslating;
     }
-    else if (event.getName() == "KbdR_Down") {
+    else if (eventMatch(event.getName(), _rotKeys, "Down")) {
         _state = VRFakeHandTrackerDevice::Rotating;
     }
-    else if (event.getName() == "KbdR_Up") {
+    else if (eventMatch(event.getName(), _rotKeys, "Up")) {
         _state = VRFakeHandTrackerDevice::XYTranslating;
     }
     else if (event.getName() == "Mouse_Move") {
@@ -95,12 +109,21 @@ VRFakeHandTrackerDevice::create(VRMainInterface *vrMain, VRDataIndex *config, co
     std::string devNameSpace = nameSpace;
   
     std::string trackerName = config->getValue("TrackerName", devNameSpace);
-    std::string toggleEvent = config->getValue("ToggleOnOffEvent", devNameSpace);
-    float xyScale = config->getValue("XYTranslationScale", devNameSpace);
-    float zScale = config->getValue("ZTranslationScale", devNameSpace);
-    float rScale = config->getValue("RotationScale", devNameSpace);
+    std::string toggleEvent = config->getValueWithDefault("ToggleOnOffEvent", std::string("Kbd2_Down"), devNameSpace);
+    float xyScale = config->getValueWithDefault("XYTranslationScale", 1.0, devNameSpace);
+    float zScale = config->getValueWithDefault("ZTranslationScale", 1.0, devNameSpace);
+    float rScale = config->getValueWithDefault("RotationScale", 1.0, devNameSpace);
     
-    VRFakeHandTrackerDevice *dev = new VRFakeHandTrackerDevice(trackerName, toggleEvent, xyScale, zScale, rScale);
+    std::vector<std::string> zKeys;
+    zKeys.push_back("KbdT");
+    zKeys = config->getValueWithDefault("ZTranslationKeys", zKeys);
+    
+    std::vector<std::string> rotKeys;
+    rotKeys.push_back("KbdR");
+    rotKeys = config->getValueWithDefault("RotationKeys", rotKeys);
+    
+    
+    VRFakeHandTrackerDevice *dev = new VRFakeHandTrackerDevice(trackerName, toggleEvent, xyScale, zScale, rScale, zKeys, rotKeys);
     vrMain->addEventHandler(dev);
 
     return dev;

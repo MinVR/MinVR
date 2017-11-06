@@ -18,8 +18,9 @@
 #include <display/VRViewportNode.h>
 #include <display/VRProjectionNode.h>
 #include <display/VRLookAtNode.h>
-#include <display/VRTrackedLookAtNode.h>
+#include <display/VRHeadTrackingNode.h>
 #include <input/VRFakeHandTrackerDevice.h>
+#include <input/VRFakeHeadTrackerDevice.h>
 #include <input/VRFakeTrackerDevice.h>
 #include <net/VRNetClient.h>
 #include <net/VRNetServer.h>
@@ -269,9 +270,10 @@ VRMain::VRMain() : _initialized(false), _config(NULL), _net(NULL), _factory(NULL
 	_factory->registerItemType<VRDisplayNode, VRStereoNode>("VRStereoNode");
 	_factory->registerItemType<VRDisplayNode, VRViewportNode>("VRViewportNode");
 	_factory->registerItemType<VRDisplayNode, VRLookAtNode>("VRLookAtNode");
-	_factory->registerItemType<VRDisplayNode, VRTrackedLookAtNode>("VRTrackedLookAtNode");
+	_factory->registerItemType<VRDisplayNode, VRHeadTrackingNode>("VRHeadTrackingNode");
 
     _factory->registerItemType<VRInputDevice, VRFakeHandTrackerDevice>("VRFakeHandTrackerDevice");
+    _factory->registerItemType<VRInputDevice, VRFakeHeadTrackerDevice>("VRFakeHeadTrackerDevice");
     _factory->registerItemType<VRInputDevice, VRFakeTrackerDevice>("VRFakeTrackerDevice");
 
     _pluginMgr = new VRPluginManager(this);

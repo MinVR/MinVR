@@ -14,9 +14,14 @@ namespace MinVR {
 
 VRStereoNode::VRStereoNode(const std::string &name, float interOcularDist, VRGraphicsToolkit *gfxToolkit, VRStereoFormat format) :
   VRDisplayNode(name), _gfxToolkit(gfxToolkit), _format(format), _iod(interOcularDist) {
-  _valuesAdded.push_back("/StereoFormat");
-  _valuesAdded.push_back("/LookAtMatrix");
-  _valuesAdded.push_back("/Eye");
+      
+  // in:
+  _valuesAdded.push_back("StereoFormat");
+  _valuesAdded.push_back("HeadMatrix");
+
+  // out:
+  _valuesAdded.push_back("CameraMatrix");
+  _valuesAdded.push_back("Eye");
 }
 
 VRStereoNode::~VRStereoNode() {
@@ -27,13 +32,13 @@ void VRStereoNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandl
   renderState->pushState();
 
 	if (_format == VRSTEREOFORMAT_MONO) {
-		renderState->addData("/StereoFormat", "Mono");
+		renderState->addData("StereoFormat", "Mono");
 
 		_gfxToolkit->setDrawBuffer(VRGraphicsToolkit::VRDRAWBUFFER_BACK);
 		renderOneEye(renderState, renderHandler, Cyclops);
 	}
 	else if (_format == VRSTEREOFORMAT_QUADBUFFERED) {
-		renderState->addData("/StereoFormat", "QuadBuffered");
+		renderState->addData("StereoFormat", "QuadBuffered");
 
 		_gfxToolkit->setDrawBuffer(VRGraphicsToolkit::VRDRAWBUFFER_BACKLEFT);
 		renderOneEye(renderState, renderHandler, Left);
@@ -42,20 +47,20 @@ void VRStereoNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandl
 		renderOneEye(renderState, renderHandler, Right);
 	}
 	else if (_format == VRSTEREOFORMAT_SIDEBYSIDE) {
-		renderState->addData("/StereoFormat", "SideBySide");
+		renderState->addData("StereoFormat", "SideBySide");
 
 		int x,y,w,h;
-		if (renderState->exists("/ViewportX")) {
-            x = renderState->getValue("/ViewportX");
-            y = renderState->getValue("/ViewportY");
-			w = renderState->getValue("/ViewportWidth");
-			h = renderState->getValue("/ViewportHeight");
+		if (renderState->exists("ViewportX")) {
+            x = renderState->getValue("ViewportX");
+            y = renderState->getValue("ViewportY");
+			w = renderState->getValue("ViewportWidth");
+			h = renderState->getValue("ViewportHeight");
 		}
 		else {
             x = 0;
             y = 0;
-			w = renderState->getValue("/WindowWidth");
-			h = renderState->getValue("/WindowHeight");
+			w = renderState->getValue("WindowWidth");
+			h = renderState->getValue("WindowHeight");
 		}
 
 		_gfxToolkit->setSubWindow(VRRect(x,y,w/2,h));
@@ -65,7 +70,7 @@ void VRStereoNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandl
 		renderOneEye(renderState, renderHandler, Right);
 	}
 	else if (_format == VRSTEREOFORMAT_COLUMNINTERLACED) {
-		renderState->addData("/StereoFormat", "ColumnInterlaced");
+		renderState->addData("StereoFormat", "ColumnInterlaced");
 
 		_gfxToolkit->disableDrawingOnEvenColumns();
 		renderOneEye(renderState, renderHandler, Left);
@@ -79,49 +84,50 @@ void VRStereoNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandl
 	renderState->popState();
 }
 
-void VRStereoNode::updateLookAtMatrix(VRDataIndex *renderState, VREyePosition eye)
+void VRStereoNode::setCameraMatrix(VRDataIndex *renderState, VREyePosition eye)
 {
 
-	VRMatrix4 lookAtMatrix;
-
-	if (renderState->exists("/LookAtMatrix"))
-  {
-		lookAtMatrix = renderState->getValue("/LookAtMatrix");
+    // This should be set by a HeadTrackingNode or a LookAtNode before reaching
+    // this StereoNode
+	VRMatrix4 headMatrix;
+	if (renderState->exists("HeadMatrix")) {
+		headMatrix = renderState->getValue("HeadMatrix");
+	}
+    else {
+        VRERROR("VRStereoNode cannot find HeadMatrix in the current RenderState",
+                "The display graph should include a VRHeadTrackingNode or a "
+                "VRLookAtNode or some other method of defining a HeadMatrix"
+                "before reaching the VRStereoNode.");
+    }
+    
+    VRMatrix4 cameraMatrix = headMatrix;
+    if (eye == Left) {
+        cameraMatrix = cameraMatrix * VRMatrix4::translation(VRVector3(-_iod / 2.0, 0, 0));
+	}
+	else if (eye == Right) {
+        cameraMatrix = cameraMatrix * VRMatrix4::translation(VRVector3(-_iod / 2.0, 0, 0));
 	}
 
-	if (eye == Left)
-	{
-		VRMatrix4 head_frame = lookAtMatrix.inverse();
-		head_frame = head_frame * VRMatrix4::translation(VRVector3(-_iod / 2.0, 0, 0));
-		lookAtMatrix = head_frame.inverse();
-	}
-	else if (eye == Right)
-	{
-		VRMatrix4 head_frame = lookAtMatrix.inverse();
-		head_frame = head_frame * VRMatrix4::translation(VRVector3(_iod / 2.0, 0, 0));
-		lookAtMatrix = head_frame.inverse();
-	}
-
-	renderState->addData("/LookAtMatrix", lookAtMatrix);
+	renderState->addData("CameraMatrix", cameraMatrix);
 }
 
 void VRStereoNode::renderOneEye(VRDataIndex *renderState, VRRenderHandler *renderHandler, VREyePosition eye)
 {
 	renderState->pushState();
-		updateLookAtMatrix(renderState, eye);
+		setCameraMatrix(renderState, eye);
 		if (_children.size() > 0) {
 			if (eye == Cyclops)
 			{
-				renderState->addData("/Eye", "Cyclops");
+				renderState->addData("Eye", "Cyclops");
 				_children[0]->render(renderState, renderHandler);
 			}
 			else if (eye == Left){
-				renderState->addData("/Eye", "Left");
+				renderState->addData("Eye", "Left");
 				_children[0]->render(renderState, renderHandler);
 			}
 			else if (eye == Right)
 			{
-				renderState->addData("/Eye", "Right");
+				renderState->addData("Eye", "Right");
 				_children[1]->render(renderState, renderHandler);
 			}
 		}
@@ -145,7 +151,7 @@ void VRStereoNode::createChildren(VRMainInterface *vrMain, VRDataIndex *config, 
 			{
 				if (config->hasAttribute(validatedNameSpace + *it, "displaynodeType")){
 					config->pushState();
-					config->addData(validatedNameSpace + *it + "/Eye", "Left");
+					config->addData(validatedNameSpace + *it + "Eye", "Left");
 					VRDisplayNode *child = vrMain->getFactory()->create<VRDisplayNode>(vrMain, config, config->validateNameSpace(validatedNameSpace) + *it);
 					if (child != NULL) {
 						child_left->addChild(child);
@@ -161,7 +167,7 @@ void VRStereoNode::createChildren(VRMainInterface *vrMain, VRDataIndex *config, 
 			{
 				if (config->hasAttribute(validatedNameSpace + *it, "displaynodeType")){
 					config->pushState();
-					config->addData(validatedNameSpace + *it + "/Eye", "Left");
+					config->addData(validatedNameSpace + *it + "Eye", "Left");
 					VRDisplayNode *child = vrMain->getFactory()->create<VRDisplayNode>(vrMain, config, config->validateNameSpace(validatedNameSpace) + *it);
 					if (child != NULL) {
 						child_right->addChild(child);
@@ -177,7 +183,7 @@ void VRStereoNode::createChildren(VRMainInterface *vrMain, VRDataIndex *config, 
 			if (config->exists(*it, validatedNameSpace)){
 				if (config->hasAttribute(validatedNameSpace + *it, "displaynodeType")){
 					config->pushState();
-					config->addData(validatedNameSpace + *it + "/Eye", "Cyclops");
+					config->addData(validatedNameSpace + *it + "Eye", "Cyclops");
 					VRDisplayNode *child = vrMain->getFactory()->create<VRDisplayNode>(vrMain, config, config->validateNameSpace(validatedNameSpace) + *it);
 					if (child != NULL) {
 						addChild(child);

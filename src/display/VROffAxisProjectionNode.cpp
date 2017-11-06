@@ -7,8 +7,11 @@ namespace MinVR {
 	VROffAxisProjectionNode::VROffAxisProjectionNode(const std::string &name, VRPoint3 topLeft, VRPoint3 botLeft, VRPoint3 topRight, VRPoint3 botRight, float nearClip, float farClip) :
 	VRDisplayNode(name), _topLeft(topLeft), _botLeft(botLeft), _topRight(topRight), _botRight(botRight),  _nearClip(nearClip), _farClip(farClip)
 {
-  _valuesAdded.push_back("/ProjectionMatrix");
-  _valuesAdded.push_back("/ViewMatrix");
+  // in:
+  _valuesAdded.push_back("CameraMatrix");
+  // out:
+  _valuesAdded.push_back("ProjectionMatrix");
+  _valuesAdded.push_back("ViewMatrix");
 }
 
 VROffAxisProjectionNode::~VROffAxisProjectionNode()
@@ -27,13 +30,8 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
 	VRPoint3 pa = _botLeft;
 	VRPoint3 pb = _botRight;
 	VRPoint3 pc = _topLeft;
-	VRPoint3 pe(0,0,0);
-	if (renderState->exists("/LookAtMatrix")){
-		VRMatrix4 lookAtMatrix = renderState->getValue("/LookAtMatrix");
-		VRMatrix4 head_frame = lookAtMatrix.inverse();
-		pe = VRPoint3(head_frame(0,3), head_frame(1,3), head_frame(2,3));
-	}
-
+    VRMatrix4 cameraMatrix = renderState->getValue("CameraMatrix");
+    VRPoint3 pe = VRPoint3(0,0,0) + cameraMatrix.getColumn(3);
 
 	// Compute an orthonormal basis for the screen
 	VRVector3 vr = (pb - pa).normalize();
@@ -56,7 +54,7 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
 
 	VRMatrix4 projMat = VRMatrix4::projection(l, r, b, t, _nearClip, _farClip);
 
-	renderState->addData("/ProjectionMatrix", projMat);
+	renderState->addData("ProjectionMatrix", projMat);
 
 	// Rotate the projection to be non-perpendicular
     VRMatrix4 Mrot = VRMatrix4::fromRowMajorElements(vr[0], vr[1], vr[2], 0.0,
@@ -69,7 +67,7 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
 
 	VRMatrix4 viewMat = Mrot * Mtrans;
 
-	renderState->addData("/ViewMatrix", viewMat);
+	renderState->addData("ViewMatrix", viewMat);
 
 	VRDisplayNode::render(renderState, renderHandler);
 
