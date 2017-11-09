@@ -42,7 +42,7 @@
 				<YPos>100</YPos>
 				<Width>640</Width>
 				<Height>640</Height>
-				<LookAtNode displaynodeType="VRTrackedLookAtNode">
+				<LookAtNode displaynodeType="VRHeadTrackingNode">
 					<StereoNode displaynodeType="VRStereoNode">
 						<ProjectionNode displaynodeType="VROffAxisProjectionNode">
 							 <TopLeft type="floatarray">-2,2,0</TopLeft>

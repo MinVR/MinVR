@@ -18,7 +18,10 @@
 namespace MinVR {
 
 
-/** 
+/** Generates projection and view matrices for off-axis projection used in tiled
+    VR displays (e.g., Powerwall, wall of a Cave, 3DTV) that use head tracked
+    perspective rendering.  Takes a CameraMatrix as input in the current
+    RenderState and sets the ProjectionMatrix and ViewMatrix as output.
  */
 class VROffAxisProjectionNode : public VRDisplayNode {
 public:
