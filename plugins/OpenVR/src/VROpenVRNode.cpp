@@ -32,12 +32,12 @@
 
 namespace MinVR {
 
-	VROpenVRNode::VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double _near, double _far, bool draw_controller, bool hide_tracker, bool draw_HMD_Only, unsigned char openvr_plugin_flags, unsigned int MSAA_buffers) : VRDisplayNode(name), isInitialized(false), m_fNearClip(_near), m_fFarClip(_far), m_draw_controller(draw_controller), m_draw_HMD_Only(draw_HMD_Only), m_rendermodelhandler(NULL), m_MSAA_buffers(MSAA_buffers){
+	VROpenVRNode::VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double _near, double _far, bool draw_controller, bool hide_tracker, bool draw_HMD_Only, unsigned char openvr_plugin_flags, unsigned int MSAA_buffers, float deviceUnitsToRoomUnits, VRMatrix4 deviceToRoom) : VRDisplayNode(name), isInitialized(false), m_fNearClip(_near), m_fFarClip(_far), m_draw_controller(draw_controller), m_draw_HMD_Only(draw_HMD_Only), m_rendermodelhandler(NULL), m_MSAA_buffers(MSAA_buffers), deviceUnitsToRoomUnits(deviceUnitsToRoomUnits), deviceToRoom(deviceToRoom) {
 	vr::EVRInitError eError = vr::VRInitError_None;
 	m_pHMD = vr::VR_Init( &eError, vr::VRApplication_Scene );
 	int idx = name.find_last_of('/');
 	std::cerr << name.substr(idx + 1) << std::endl;
-	_inputDev = new VROpenVRInputDevice(m_pHMD, name.substr(idx + 1), this, openvr_plugin_flags);
+	_inputDev = new VROpenVRInputDevice(m_pHMD, name.substr(idx + 1), this, openvr_plugin_flags, deviceUnitsToRoomUnits, deviceToRoom);
 	
 
 	vrMain->addInputDevice(_inputDev);
@@ -130,7 +130,7 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 
 	VRMatrix4 view_left = m_mat4eyePosLeft * head_pose;
 	renderState->addData("/ProjectionMatrix", m_mat4ProjectionLeft);
-	renderState->addData("/ViewMatrix", view_left);
+	renderState->addData("/ViewMatrix", view_left * VRMatrix4::scale(VRVector3(1.0 / deviceUnitsToRoomUnits, 1.0 / deviceUnitsToRoomUnits, 1.0 / deviceUnitsToRoomUnits)) *deviceToRoom);
 	renderState->addData("/Eye", "Left");
 	if (_children.size() == 0) {
 		renderHandler->onVRRenderScene(renderState, this);
@@ -164,9 +164,9 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 	VRMatrix4 view_right = m_mat4eyePosRight * head_pose;
-	
+
 	renderState->addData("/ProjectionMatrix",m_mat4ProjectionRight);
-	renderState->addData("/ViewMatrix", view_right);
+	renderState->addData("/ViewMatrix", view_right * VRMatrix4::scale(VRVector3(1.0 / deviceUnitsToRoomUnits, 1.0 / deviceUnitsToRoomUnits, 1.0 / deviceUnitsToRoomUnits)) *deviceToRoom);
 	renderState->addData("/Eye", "Right");
 	if (_children.size() == 0) {
 		renderHandler->onVRRenderScene(renderState, this);
@@ -268,7 +268,19 @@ VRDisplayNode* VROpenVRNode::create(VRMainInterface *vrMain, VRDataIndex *config
 		MSAA_buffers = config->getValue("MSAA_buffers", nameSpace);
 		MSAA_buffers = (MSAA_buffers < 1) ? 1 : MSAA_buffers;
 	}
-	VRDisplayNode *node = new VROpenVRNode(vrMain, nameSpace, 0.1f, 100000.0f, drawController, hide_tracker, draw_HMD_Only, flags, MSAA_buffers);
+
+	float deviceUnitsToRoomUnits = 1.0f;
+	if (config->exists("DeviceUnitsToRoomUnitsScale", nameSpace)) {
+		deviceUnitsToRoomUnits = config->getValue("DeviceUnitsToRoomUnitsScale", nameSpace);
+	}
+
+	VRMatrix4 deviceToRoom = VRMatrix4();
+	if (config->exists("DeviceToRoom", nameSpace)) {
+		deviceToRoom = config->getValue("DeviceToRoom", nameSpace);
+		deviceToRoom = deviceToRoom.orthonormal();
+	}
+
+	VRDisplayNode *node = new VROpenVRNode(vrMain, nameSpace, 0.1f, 100000.0f, drawController, hide_tracker, draw_HMD_Only, flags, MSAA_buffers, deviceUnitsToRoomUnits, deviceToRoom);
 	
 	return node;
 }

@@ -15,8 +15,8 @@
 
 namespace MinVR {
                        
-	VROpenVRInputDevice::VROpenVRInputDevice(vr::IVRSystem *pHMD, string name, VROpenVRNode * node, unsigned char openvr_plugin_flags) :m_pHMD(pHMD), m_name(name), m_node(node),
-		m_report_state(openvr_plugin_flags), m_report_state_touched(openvr_plugin_flags & Touched), m_report_state_pressed(openvr_plugin_flags & Pressed), m_report_state_axis(openvr_plugin_flags & Axis), m_report_state_pose(openvr_plugin_flags & Pose)
+	VROpenVRInputDevice::VROpenVRInputDevice(vr::IVRSystem *pHMD, string name, VROpenVRNode * node, unsigned char openvr_plugin_flags, float deviceUnitsToRoomUnits, VRMatrix4 deviceToRoom) :m_pHMD(pHMD), m_name(name), m_node(node),
+		m_report_state(openvr_plugin_flags), m_report_state_touched(openvr_plugin_flags & Touched), m_report_state_pressed(openvr_plugin_flags & Pressed), m_report_state_axis(openvr_plugin_flags & Axis), m_report_state_pose(openvr_plugin_flags & Pose), deviceUnitsToRoomUnits(deviceUnitsToRoomUnits), deviceToRoom(deviceToRoom)
 	{
 		updateDeviceNames();
 
@@ -55,7 +55,13 @@ void VROpenVRInputDevice::updatePoses(){
 	{
 		if (m_pHMD->IsTrackedDeviceConnected(unDevice)){
 			std::string event_name = getDeviceName(unDevice);
-			_dataIndex.addData(event_name + "/Pose", poseToMatrix4(&m_rTrackedDevicePose[unDevice]) * m_tip_offset[unDevice]);
+			VRMatrix4 pose = poseToMatrix4(&m_rTrackedDevicePose[unDevice]) * m_tip_offset[unDevice];
+
+			pose(0, 3) *= deviceUnitsToRoomUnits;
+			pose(1, 3) *= deviceUnitsToRoomUnits;
+			pose(2, 3) *= deviceUnitsToRoomUnits;
+
+			_dataIndex.addData(event_name + "/Pose", deviceToRoom.inverse() * pose);
 			_events.push_back(_dataIndex.serialize(event_name));
 		}
 	}
