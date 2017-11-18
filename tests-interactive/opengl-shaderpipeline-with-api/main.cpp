@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "GL/glew.h"
 #ifdef _WIN32
+#include "GL/glew.h"
 #include "GL/wglew.h"
 #elif (!defined(__APPLE__))
 #include "GL/glxew.h"
@@ -78,13 +78,14 @@ public:
     void onRenderGraphicsContext(const VRGraphicsState& state) {
         // If this is the inital call, initialize context variables
         if (state.isInitialRenderCall()) {
+#ifdef _WIN32
             glewExperimental = GL_TRUE;
             GLenum err = glewInit();
             if (GLEW_OK != err)
             {
                 std::cout << "Error initializing GLEW." << std::endl;
             }
-            
+#endif
             // Init GL
             glEnable(GL_DEPTH_TEST);
             glClearDepth(1.0f);

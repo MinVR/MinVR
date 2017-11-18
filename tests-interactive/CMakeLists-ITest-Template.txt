@@ -1,7 +1,11 @@
+# Template for creating a CMakeLists.txt for new interactive tests / other apps that are
+# built within the MinVR tree -- copy this, replace XXX and YYY, and follow the example of 
+# OpenGL/GLEW below if your app depends on an external library.
+# -----------------------------------------------------------------------------------------
 # This file is part of the MinVR cmake build system.  
 # See the main MinVR/CMakeLists.txt file for authors, copyright, and license info.
-#
-# Builds the MinVR_FREEGLUT plugin as a shared library.
+
+# Builds itest-XXX.
 
 # Note: This CMakeLists.txt is not intended to work on its own.  It inherits many settings 
 # from the root CMakeLists.txt (build and install directories, compiling flags, #defines, etc.)
@@ -9,34 +13,24 @@
 
 
 
-# By convention, plugin names begin with "MinVR_"
-project(MinVR_FreeGLUT)
+# By convention, interactive tests begin with "itest-"
+project(itest-XXX)
 
 
 # Source:
 set (SOURCEFILES 
-  src/VRFreeGLUTInputDevice.cpp
-  src/VRFreeGLUTPlugin.cpp
-  src/VRFreeGLUTWindowToolkit.cpp
+  main.cpp
 )
 set (HEADERFILES
-  src/VRFreeGLUTInputDevice.h
-  src/VRFreeGLUTWindowToolkit.h
 )
-
+set (CONFIGFILES
+  desktop-oldopengl.minvr
+)
 
 # Setup dependency on libMinVR:
 list(APPEND MY_INC_DIRS src)
 list(APPEND MY_LIB_DIRS ${CMAKE_BINARY_DIR})
 list(APPEND MY_LIBS MinVR)
-
-
-# Setup dependency on FreeGLUT:
-include(UseFreeGLUT)
-UseFreeGLUT()
-list(APPEND MY_INC_DIRS ${FREEGLUT_INCLUDE_DIR})
-list(APPEND MY_LIB_DIRS ${FREEGLUT_LIBRARY_DIR})
-list(APPEND MY_LIBS ${FREEGLUT_LIBRARIES})
 
 # Setup dependency on OpenGL:
 include(UseOpenGL)
@@ -55,10 +49,10 @@ if (WIN32)
 endif()
 
 
-# Create the shared library:
+# Create the executable:
 include_directories(${MY_INC_DIRS})
 link_directories(${MY_LIB_DIRS})
-add_library(${PROJECT_NAME} SHARED ${HEADERFILES} ${SOURCEFILES})
+add_executable(${PROJECT_NAME} ${HEADERFILES} ${SOURCEFILES})
 target_link_libraries(${PROJECT_NAME} ${MY_LIBS} ${LIBS_ALL})
 
 
@@ -66,8 +60,8 @@ target_link_libraries(${PROJECT_NAME} ${MY_LIBS} ${LIBS_ALL})
 # and that will be built as part of the MinVR build process, then these
 # must be listed as dependencies of the current project so that cmake
 # builds them first.
-if (${FREEGLUT_AUTOBUILT})
-    add_dependencies(${PROJECT_NAME} FreeGLUT)
+if (${GLEW_AUTOBUILT} AND WIN32)
+    add_dependencies(${PROJECT_NAME} GLEW)
 endif()
 
 
@@ -79,6 +73,7 @@ install( TARGETS ${PROJECT_NAME}
 
 
 # For better organization when using an IDE with folder structures:
+set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "tests-interactive")
 source_group("Header Files" FILES ${HEADERFILES})
-set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "plugins")
-
+set_source_files_properties(${CONFIGFILES} PROPERTIES HEADER_FILE_ONLY TRUE)
+source_group("Config Files" FILES ${CONFIGFILES})

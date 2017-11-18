@@ -1,3 +1,6 @@
+# This file is part of the MinVR cmake build system.  
+# See the main MinVR/CMakeLists.txt file for authors, copyright, and license info.
+
 # Create some test programs from the source files in this directory.
 
 ## Run these tests with 'make test' or 'ctest -VV' if you want to see

@@ -1,60 +1,49 @@
-# ================================================================================
+# This file is part of the MinVR Open Source Project, which is developed and 
+# maintained collaboratively by the University of Minnesota and Brown University.
 #
-# This file is part of the MinVR project.
-#
-# File: CMakeLists.txt
-#
-# Original Author(s) of this File:
-# 	Dan Orban, 2015, University of Minnesota
-#
+# Copyright (c) 2015,2016,2017 Regents of the University of Minnesota and Brown University.
+# This software is distributed under the BSD-3 Clause license, which can be found
+# at: MinVR/LICENSE.txt.
+# 
+# Original Author(s) of this File: 
+#   Dan Orban, 2015, University of Minnesota
+#  
 # Author(s) of Significant Updates/Modifications to the File:
-# 	MinVR Core Team
-#
-# -----------------------------------------------------------------------------------
-# Copyright (c) 2015 Regents of the University of Minnesota and Brown University
-# All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without modification,
-# are permitted provided that the following conditions are met:
-#
-# * Redistributions of source code must retain the above copyright notice, this
-#   list of conditions and the following disclaimer.
-#
-# * Redistributions in binary form must reproduce the above copyright notice, this
-#   list of conditions and the following disclaimer in the documentation and/or
-#   other materials provided with the distribution.
-#
-# * The name of the University of Minnesota, nor the names of its
-#   contributors may be used to endorse or promote products derived from
-#   this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-# ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# ================================================================================
+#   Tom Sgouros, 2016, 2017, Brown University 
+#      -- re-organized
+#      -- improved status messages
+#      -- cmake-repeat.sh
+#   Dan Keefe, 2017, University of Minnesota 
+#      -- made compiling itests optional since they have external dependencies
+#      -- made all optional builds consistent, these are set using WITH_* flags for both plugins and itests
+#      -- major rework of support for external projects (DEPENDENCIES_AUTOBUILD, DEPENDENCIES_INSTALL)
+#      -- build/install plugins directly to lib/ rather than in subfolders
+#      -- install headers to <prefix>/include/MinVR, extern projects use include/vrpn, include/TUIO, etc.
+#      -- install config files to <prefix>/share/MinVR/config following filesystem standard:
+#         http://refspecs.linuxfoundation.org/FHS_2.3/fhs-2.3.html
+#      -- added installing cmake export files to <prefix>/share/MinVR/cmake
+#      -- updated copyright headers in all CMakeLists.txt and .cmake files
+#      -- updated README.md to walk through process of building and running a test graphics program
+#   ...
+
 
 project(MinVR_Project)
-cmake_minimum_required (VERSION 2.8.2)
-
-# This policy has to do with how to compare variable values and strings.
-# The change from old behavior to new happened in 3.1, so in order to
-# support earlier and later version of cmake, we set a policy here.
-cmake_policy(SET CMP0054 NEW)
+cmake_minimum_required (VERSION 3.1)
 
 
-# CMakeLists files in this project can refer to the root source directory of the
-# project as ${MINVR_SOURCE_DIR} and to the root binary directory of the project
-# as ${MINVR_BINARY_DIR}.
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+
+
+# Organize folder structure for Xcode, Visual Studio, etc.
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+
+include(MessageMacros)
 
 
 ## ************************************************ WHAT ARE WE BUILDING?
+
+h1("CONFIGURING BUILD TYPE")
 
 if(NOT CMAKE_BUILD_TYPE)
   set( CMAKE_BUILD_TYPE Release CACHE STRING
@@ -62,7 +51,8 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 message(STATUS "Building the '" ${CMAKE_BUILD_TYPE} "' version of MinVR.")
-message(STATUS "If you want something different, use -DCMAKE_BUILD_TYPE=Debug, Release, etc.")
+message(STATUS "If you want something different, use -DCMAKE_BUILD_TYPE=Debug, Release, RelWithDebInfo, MinSizeRel.")
+
 
 # To distinguish between debugging, release, and other builds, we'll
 # add a postfix to the name of the lib or exe that we generate.
@@ -86,14 +76,16 @@ else()
   set(CMAKE_BUILD_POSTFIX "")
 endif()
 
-if (CMAKE_BUILD_POSTFIX)
-  message(STATUS "Appending '" ${CMAKE_BUILD_POSTFIX} "' to the built library file name.")
-endif()
+message(STATUS "This build will append the postfix '" ${CMAKE_BUILD_POSTFIX} "' to any built libraries.")
 
 # Add 'MinVR_DEBUG' to the symbols you can use in the code.
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DMinVR_DEBUG")
 
+
+
 ## ************************************************ WHERE ARE WE PUTTING IT?
+
+h1("CONFIGURING BUILD AND INSTALL LOCATIONS")
 
 # Let's follow the convention of putting all of the libs in "build/lib" and all
 # of the exes in "build/bin".
@@ -110,14 +102,23 @@ foreach (CONF ${CMAKE_CONFIGURATION_TYPES})
   set (CMAKE_LIBRARY_OUTPUT_DIRECTORY_${CONF} ${CMAKE_BINARY_DIR}/lib)
 endforeach(CONF CMAKE_CONFIGURATION_TYPES)
 
+message(STATUS "Libraries will be built into " ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+message(STATUS "Executables will be built into " ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+
+
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set (CMAKE_INSTALL_PREFIX "${${PROJECT_NAME}_SOURCE_DIR}/build/install" CACHE PATH "default install path" FORCE )
 endif()
 
-message(STATUS "Libraries and include files will be installed to " ${CMAKE_INSTALL_PREFIX})
+# Common rpath settings for shared libraries
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}")
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+set(CMAKE_SKIP_BUILD_RPATH  FALSE)
+set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
 
-# Organize folder structure for Xcode, Visual Studio, etc.
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+message(STATUS "Installation will use this prefix: " ${CMAKE_INSTALL_PREFIX})
+
+
 
 # You can use these symbol definitions in your code if you want to refer to a file
 # location.  This is only really useful for the testing code, but knowing where the
@@ -125,33 +126,280 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 add_definitions(-DINSTALLPATH="${CMAKE_INSTALL_PREFIX}")
 add_definitions(-DMINVRTESTBATCHDIR="${CMAKE_SOURCE_DIR}/tests-batch")
 
-## ************************************************ HOW ARE WE BUILDING IT?
+
+
+## ************************************************ WHAT PLATFORM-SPECIFIC OPTIONS DO WE NEED?
+
+h1("CONFIGURING PLATFORM-SPECIFIC BUILD OPTIONS")
 
 message(STATUS "Building for " ${CMAKE_SYSTEM_NAME} ".")
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   # Linux specific code
+  add_definitions(-DLINUX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-endif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   # Apple-specific code
-  set(CMAKE_CXX_FLAGS "-DOSX")
-  set(CMAKE_MACOSX_RPATH false)
-endif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  add_definitions(-DOSX)
+  set(CMAKE_MACOSX_RPATH ON)
+endif()
 
 if (WIN32)
+  add_definitions(-DWIN32)
   # Windows-specific
-endif (WIN32)
+endif()
+
+
+
+## ************************************************ START WITH THE SRC FOR THE CORE LIBRARY
+
+h1("CONFIGURING LIBMINVR")
+
+h2("Configuring core library source.")
+message(STATUS "Adding all subirectories of src to the build.")
+set(vr_src_dir ${CMAKE_CURRENT_SOURCE_DIR}/src)
+include_directories( ${vr_src_dir} )
+
+add_subdirectory(src)
+
+
+h2("Configuring .minvr config files.")
+message(STATUS "Adding config/*.minvr to the build.")
+add_subdirectory(config)
+
+
+## ************************************************ ADD BATCH TESTS AND UTILS WITH NO DEPENDENCIES
+
+h1("CONFIGURING TESTS AND UTILITY PROGRAMS")
+
+h2("Configuring batch tests.")
+message(STATUS "Adding all subirectories of tests-batch to the build.")
+add_subdirectory(tests-batch)
+
+h2("Configuring CMake Testing System.")
+enable_testing()
+message(STATUS "Testing enabled, try 'make test'.")
+
+h2("Configuring utility programs.")
+message(STATUS "Adding all subdirectories of utils to the build.")
+add_subdirectory(utils)
+
+
+## ************************************************ OPTIONALLY ADD PLUGINS AND ITESTS WITH EXTERNAL DEPENDENCIES 
+
+h1("CONFIGURING OPTIONAL PLUGINS")
+
+
+option(DEPENDENCIES_AUTOBUILD "If enabled, dependencies that cmake cannot find on the system will be downloaded to the `external' directory and built and installed as external projects during the MinVR build and install processes." ON)
+
+if (DEPENDENCIES_AUTOBUILD)
+    message(STATUS "DEPENDENCIES_AUTOBUILD is ON.")
+else()
+    message(STATUS "DEPENDENCIES_AUTOBUILD is OFF.")
+endif()
+
+
+option(DEPENDENCIES_INSTALL "If enabled, autobuilt dependencies will be installed to the same CMAKE_INSTALL_PREFIX as MinVR during the MinVR install step." ON)
+
+if (DEPENDENCIES_INSTALL)
+    message(STATUS "DEPENDENCIES_INSTALL is ON.")
+else()
+    message(STATUS "DEPENDENCIES_INSTALL is OFF.")
+endif()
+
+
+set(EXTERNAL_DIR ${CMAKE_SOURCE_DIR}/external)
+file(MAKE_DIRECTORY ${EXTERNAL_DIR})
+
+
+
+#------------------ Plugins ------------------ 
+
+macro(minvr_optional_adddir optionflag description dependsnote dir)
+  h2("Configuring ${description}. ${dependsnote}")
+  option(${optionflag} "Include ${description} in the build.  ${dependsnote}")
+  if (${optionflag})
+    message(STATUS "ON: Will build and install ${description}.")
+    add_subdirectory(${dir})
+  else()
+    message(STATUS "OFF: NOT building ${description}.  Choose it with '-D ${optionflag}=ON'.")
+  endif()
+endmacro()
+
+macro(minvr_optional optionflag description dependsnote)
+  h2("Configuring ${description}. ${dependsnote}")
+  option(${optionflag} "Include ${description} in the build.  ${dependsnote}")
+  if (${optionflag})
+    message(STATUS "ON: Will build and install ${description}.")
+  else()
+    message(STATUS "OFF: NOT building ${description}.  Choose it with '-D ${optionflag}=ON'.")
+  endif()
+endmacro()
+
+
+
+#---- OpenGL Plugin ----
+minvr_optional_adddir(
+  WITH_PLUGIN_OPENGL
+  "OpenGL Plugin"
+  "(Requires OpenGL to be pre-installed and requires GLEW on Windows only)"
+  "plugins/OpenGL"
+)
+
+
+#---- GLFW Plugin ----
+minvr_optional_adddir(
+  WITH_PLUGIN_GLFW
+  "GLFW Plugin"
+  "(Requires GLFW and OpenGL, and GLEW on Windows only)"
+  "plugins/GLFW"
+)
+
+
+#---- VRPN ----
+minvr_optional_adddir(
+  WITH_PLUGIN_VRPN
+  "VRPN Plugin"
+  "(Requires the VRPN library)"
+  "plugins/VRPN"
+)
+
+
+#---- Python ----
+minvr_optional_adddir(
+  WITH_PLUGIN_PYTHON
+  "Python Bindings Plugin"
+  "(Requires Python version ????)"
+  "plugins/Python"
+)
+
+
+#---- Threading ----
+minvr_optional_adddir(
+  WITH_PLUGIN_THREADING
+  "Threading Plugin"
+  "(Requires a C++-11 capable compiler)"
+  "plugins/Threading"
+)
+
+
+#---- TUIO ----
+minvr_optional_adddir(
+  WITH_PLUGIN_TUIO
+  "TUIO Plugin"
+  "(Requires the TUIO library)"
+  "plugins/TUIO"
+)
+
+
+#---- OpenVR ----
+minvr_optional_adddir(
+  WITH_PLUGIN_OPENVR
+  "OpenVR Plugin"
+  "(Requires the OpenVR library)"
+  "plugins/OpenVR"
+)
+
+
+#---- FreeGlut ----
+minvr_optional_adddir(
+  WITH_PLUGIN_FREEGLUT
+  "FREEGLUT Plugin"
+  "(Requires the FreeGlut library)"
+  "plugins/FREEGLUT"
+)
+
+
+#---- Scalable ----
+minvr_optional_adddir(
+  WITH_PLUGIN_SCALABLE
+  "Scalable Plugin"
+  "(Requires proprietary software from scalabledisplay.com)"
+  "plugins/Scalable"
+)
+
+
+
+
+#------------------ Interactive Tests ------------------ 
+
+h1("CONFIGURING OPTIONAL INTERACTIVE TESTS")
+
+if (DEPENDENCIES_AUTOBUILD)
+    message(STATUS "DEPENDENCIES_AUTOBUILD is ON.")
+else()
+    message(STATUS "DEPENDENCIES_AUTOBUILD is OFF.")
+endif()
+
+
+option(DEPENDENCIES_INSTALL "If enabled, autobuilt dependencies will be installed to the same CMAKE_INSTALL_PREFIX as MinVR during the MinVR install step." ON)
+
+if (DEPENDENCIES_INSTALL)
+    message(STATUS "DEPENDENCIES_INSTALL is ON.")
+else()
+    message(STATUS "DEPENDENCIES_INSTALL is OFF.")
+endif()
+
+
+
+minvr_optional_adddir(
+  WITH_ITEST_OPENGL_FIXEDFUNCPIPELINE 
+  "itest-opengl-fixedfuncpipeline"
+  "(Requires the OpenGL Plugin and a WindowToolkit plugin (e.g., GLFW Plugin))" 
+  "tests-interactive/opengl-fixedfuncpipeline"
+)
+
+
+minvr_optional_adddir(
+  WITH_ITEST_OPENGL_MULTITHREADED 
+  "itest-opengl-multithreaded"
+  "(Requires the OpenGL Plugin, the Threading Plugin, and a WindowToolkit plugin (e.g., GLFW Plugin))" 
+  "tests-interactive/opengl-multithreaded"
+)
+
+
+minvr_optional_adddir(
+  WITH_ITEST_OPENGL_SHADERPIPELINE 
+  "itest-opengl-shaderpipeline" 
+  "(Requires the OpenGL Plugin and a WindowToolkit plugin (e.g., GLFW Plugin))" 
+  "tests-interactive/opengl-shaderpipeline"
+)
+
+minvr_optional_adddir(
+  WITH_ITEST_OPENGL_SHADERPIPELINE_WITH_API 
+  "itest-opengl-shaderpipeline-with-api"
+  "(Requires the OpenGL Plugin and a WindowToolkit plugin (e.g., GLFW Plugin))" 
+  "tests-interactive/opengl-shaderpipeline-with-api"
+)
+
+
+# There's not actually anything to build here, right?
+#minvr_optional_adddir(
+#  WITH_ITEST_PYTHONBINDINGS_OPENGL 
+#  "itest-pythonbindings-opengl"
+#  "(Requires the OpenGL Plugin, the Python Bindings Plugin, and a WindowToolkit plugin (e.g., GLFW Plugin))" 
+#  "tests-interactive/pythonbindings-opengl" 
+#)
+
+
+
+
 
 ## ************************************************ WHAT ABOUT DOCUMENTATION?
 
-# Add a target to generate API documentation with Doxygen
-find_package(Doxygen)
+h1("CONFIGURING DOCUMENTATION")
 
-option(BUILD_DOCUMENTATION "If enabled, creates and installs the HTML based API documentation (requires Doxygen).")
+minvr_optional(
+  WITH_DOCUMENTATION 
+  "MinVR API Documentation Web Pages"
+  "(Requires Doxygen)" 
+)
+if (WITH_DOCUMENTATION)
 
-if(BUILD_DOCUMENTATION)
+  find_package(Doxygen)
+
   if(NOT DOXYGEN_FOUND)
     message(FATAL_ERROR "Doxygen is needed to build the documentation.")
   endif()
@@ -169,33 +417,15 @@ if(BUILD_DOCUMENTATION)
     COMMENT "Generating API documentation with Doxygen"
     VERBATIM)
 
-  install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html DESTINATION share/doc)
-
-else()
-  message(STATUS "NOT building MinVR library documentation.\n     Use 'cmake -DBUILD_DOCUMENTATION=on' to build.")
-
+  install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html DESTINATION ${CMAKE_INSTALL_PREFIX}/share/MinVR/doc)
 endif()
 
-enable_testing()
-message(STATUS "Testing enabled, try 'make test'.")
 
-
-set(vr_src_dir ${CMAKE_CURRENT_SOURCE_DIR}/src)
-include_directories( ${vr_src_dir} )
-
-message(STATUS "Examining source.")
-add_subdirectory(src)
-message(STATUS "Configuring plugins.")
-add_subdirectory(plugins)
-message(STATUS "Configuring batch tests.")
-add_subdirectory(tests-batch)
-message(STATUS "Configuring interactive tests.")
-add_subdirectory(tests-interactive)
-message(STATUS "Configuring utility applications.")
-add_subdirectory(utils)
 
 
 ## ************************************************ HOW ARE WE BUILDING?
+
+h1("SUMMARY INFORMATION")
 
 # The following sorts through all the cmake variables, and stores the ones
 # whose help strings include the magic string "If enabled", plus the cmake
@@ -231,4 +461,4 @@ foreach(CACHE_VAR ${CACHE_VARS})
 endforeach()
 file(WRITE ${CMAKE_BINARY_DIR}/cmake-repeat.sh "#!/usr/bin/env bash\n# Feel free to edit this file before executing it. The file will be\n# overwritten with each cmake invocation, but the saved version will\n# reflect your changes.\n${CMAKE_INVOCATION}\n")
 
-message(STATUS "CMAKE invocation stored in ${CMAKE_BINARY_DIR}/cmake-repeat.sh.\n     Feel free to edit, then execute that file.")
+message(STATUS "CMAKE invocation stored in ${CMAKE_BINARY_DIR}/cmake-repeat.sh.\n   Feel free to edit, then execute that file.")

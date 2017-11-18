@@ -1,80 +1,86 @@
+# This file is part of the MinVR cmake build system.  
+# See the main MinVR/CMakeLists.txt file for authors, copyright, and license info.
 
+# Builds itest-opengl-multithreaded.
+
+# Note: This CMakeLists.txt is not intended to work on its own.  It inherits many settings 
+# from the root CMakeLists.txt (build and install directories, compiling flags, #defines, etc.)
+
+
+
+
+# By convention, interactive tests begin with "itest-"
 project(itest-opengl-multithreaded)
 
-find_package(OpenGL REQUIRED)
 
-include_directories(
-	${OPENGL_INCLUDE_DIR}
-	${CMAKE_SOURCE_DIR}/third-party/GLEW
-)
-
-set(source_files
-  ${CMAKE_SOURCE_DIR}/third-party/GLEW/glew.c
+# Source:
+set (SOURCEFILES 
   main.cpp
   MyAppModel.cpp
   MyAppController.cpp
   MyAppView.cpp
   MyAppSharedContext.cpp
 )
-
-set(header_files
+set (HEADERFILES
   MyAppModel.h
   MyAppController.h
   MyAppView.h
   MyAppSharedContext.h
 )
-
-set(config_files
+set (CONFIGFILES
 )
 
-set_source_files_properties(${header_files} PROPERTIES HEADER_FILE_ONLY TRUE)
-source_group("Header Files" FILES ${header_files})
+# Setup dependency on libMinVR:
+list(APPEND MY_INC_DIRS src)
+list(APPEND MY_LIB_DIRS ${CMAKE_BINARY_DIR})
+list(APPEND MY_LIBS MinVR)
 
-set_source_files_properties(${config_files} PROPERTIES HEADER_FILE_ONLY TRUE)
-source_group("Config Files" FILES ${config_files})
+# Setup dependency on OpenGL:
+include(UseOpenGL)
+UseOpenGL()
+list(APPEND MY_INC_DIRS ${OPENGL_INCLUDE_DIR})
+list(APPEND MY_LIB_DIRS ${OPENGL_LIBRARY_DIR})
+list(APPEND MY_LIBS ${OPENGL_LIBRARIES})
 
-#------------------------------------------
-# Specific preprocessor defines
-#------------------------------------------
-
-# Windows Section #
-if (MSVC)
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-    # Tell MSVC to use main instead of WinMain for Windows subsystem executables
-    set_target_properties(${WINDOWS_BINARIES} PROPERTIES LINK_FLAGS "/ENTRY:mainCRTStartup")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+# Setup dependency on GLEW (only needed on Windows):
+if (WIN32)
+  include(UseGLEW)
+  UseGLEW()
+  list(APPEND MY_INC_DIRS ${GLEW_INCLUDE_DIR})
+  list(APPEND MY_LIB_DIRS ${GLEW_LIBRARY_DIR})
+  list(APPEND MY_LIBS ${GLEW_LIBRARIES})
 endif()
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++")
-	set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
-	set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
-	find_library(COCOA_LIB Cocoa)
-	find_library(IOKIT_LIB IOKit)
-	find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
-    	find_library(CORE_VIDEO_FRAMEWORK CoreVideo)
-	set(LIBS_ALL ${LIBS_ALL} ${COCOA_LIB} ${IOKIT_LIB} ${CORE_FOUNDATION_FRAMEWORK} ${CORE_VIDEO_FRAMEWORK})
-	message(STATUS "${CORE_VIDEO_FRAMEWORK}")
+
+# Create the executable:
+include_directories(${MY_INC_DIRS})
+link_directories(${MY_LIB_DIRS})
+add_executable(${PROJECT_NAME} ${HEADERFILES} ${SOURCEFILES})
+target_link_libraries(${PROJECT_NAME} ${MY_LIBS} ${LIBS_ALL})
+
+
+# If we have dependencies that were not found pre-installed on the system
+# and that will be built as part of the MinVR build process, then these
+# must be listed as dependencies of the current project so that cmake
+# builds them first.
+if ("${GLEW_AUTOBUILT}" AND "WIN32")
+    add_dependencies(${PROJECT_NAME} GLEW)
 endif()
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.7")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x")
-  else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-  endif()
-  find_package(Threads)
-  find_package(X11)
-  set(ALL_LIBS ${ALL_LIBS} ${CMAKE_THREAD_LIBS_INIT} rt Xrandr Xxf86vm Xi m dl ${X11_LIBRARIES})
-endif()
 
-#------------------------------------------
-# Build Application
-#------------------------------------------
+# Installation:
+install( TARGETS ${PROJECT_NAME}
+         LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+         ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+         RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
-add_executable(${PROJECT_NAME} ${source_files} ${config_files} ${header_files})
 
-target_link_libraries(${PROJECT_NAME} MinVR ${OPENGL_gl_LIBRARY} ${ALL_LIBS})
-
+# For better organization when using an IDE with folder structures:
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "tests-interactive")
+source_group("Header Files" FILES ${HEADERFILES})
+set_source_files_properties(${CONFIGFILES} PROPERTIES HEADER_FILE_ONLY TRUE)
+source_group("Config Files" FILES ${CONFIGFILES})
+
+
+
 

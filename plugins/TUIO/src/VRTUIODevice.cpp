@@ -42,7 +42,7 @@ VRTUIODevice::~VRTUIODevice()
 
 void VRTUIODevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents)
 {
-    std::vector<DataIndex> events;
+    std::vector<VRDataIndex> events;
 
 	// Send out events for TUIO "cursors" by polling the TuioClient for the current state
 	std::list<TuioCursor*> cursorList = _tuioClient->getTuioCursors();
@@ -63,7 +63,7 @@ void VRTUIODevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents)
 			}
 		}
 		if (!stillDown) {
-            VRDataIndex event = VRButtonEvent::createValidDataIndex("Touch" + downLast[i] + "_Up", 0);
+            VRDataIndex event = VRButtonEvent::createValidDataIndex("Touch" + std::to_string(downLast[i]) + "_Up", 0);
             event.addData("TouchID", downLast[i]);
             events.push_back(event);
 			_cursorsDown.erase(downLast[i]);
@@ -75,10 +75,10 @@ void VRTUIODevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents)
 		TuioCursor *tcur = (*iter);
 
 		if (_cursorsDown.find(tcur->getCursorID()) == _cursorsDown.end()) {
-            VRDataIndex event = VRButtonEvent::createValidDataIndex("Touch" + tcur->getCursorID() + "_Down", 0);
+            VRDataIndex event = VRButtonEvent::createValidDataIndex("Touch" + std::to_string(tcur->getCursorID()) + "_Down", 1);
             event.addData("TouchID", tcur->getCursorID());
-            event.addData(event + "X", (float)_xScale*tcur->getX());
-            event.addData(event + "Y", (float)_yScale*tcur->getY());
+            event.addData("X", (float)_xScale*tcur->getX());
+            event.addData("Y", (float)_yScale*tcur->getY());
             events.push_back(event);
 			_cursorsDown.insert(tcur->getCursorID());
 		}
@@ -88,10 +88,12 @@ void VRTUIODevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents)
             pos.push_back((float)_xScale*tcur->getX());
             pos.push_back((float)_yScale*tcur->getY());
 
-            VRDataIndex event = VRCursorEvent::createValidDataIndex("Touch" + tcur->getCursorID() + "_Move", 0);
+            std::vector<float> npos;
+            npos.push_back((float)tcur->getX());
+            npos.push_back((float)tcur->getY());
+            
+            VRDataIndex event = VRCursorEvent::createValidDataIndex("Touch" + std::to_string(tcur->getCursorID()) + "_Move", pos, npos);
             event.addData("TouchID", tcur->getCursorID());
-            event.addData(event + "X", pos[0]);
-            event.addData(event + "Y", pos[1]);
             events.push_back(event);
 		}
 

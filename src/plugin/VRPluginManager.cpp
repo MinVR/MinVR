@@ -70,16 +70,20 @@ VRPluginManager::~VRPluginManager() {
 
 bool VRPluginManager::loadPlugin(const std::string& filePath, const std::string& name) {
 #if defined(WIN32)
-	std::string path = filePath + "/bin/" + name + ".dll";
+	std::string path = filePath + "/" + name + ".dll";
 #elif defined(__APPLE__)
-	std::string path = filePath + "/lib/lib" + name + ".dylib";
+	std::string path = filePath + "/lib" + name + ".dylib";
 #else
-	std::string path = filePath + "/lib/lib" + name + ".so";
+	std::string path = filePath + "/lib" + name + ".so";
 #endif
+    
+    //std::cerr << "Calling loadPlugin with: " << path << std::endl;
+
 	return loadPlugin(path);
 }
 
 bool VRPluginManager::loadPlugin(const std::string& pluginFilePath) {
+    //std::cerr << "Trying to load: " << pluginFilePath << std::endl;
 	VRSharedLibrary* lib = new VRSharedLibrary(pluginFilePath);
 	if (lib->isLoaded())
 	{

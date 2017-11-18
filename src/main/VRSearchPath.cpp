@@ -65,6 +65,16 @@ std::string VRSearchPath::getPath() const {
   return out.substr(0, out.length() - 1);
 }
 
+std::string VRSearchPath::getFullFilenames(const std::string &desiredFile) const {
+    
+    std::string out;
+    for (std::list<std::string>::const_iterator it = _searchPath.begin();
+         it != _searchPath.end(); it++)
+        out += _selectFile(desiredFile, (*it)) + ":";
+    
+    return out.substr(0, out.length() - 1);
+}
+    
 ///
 // Here is the search path order that MinVR searches for plugins:
 //
@@ -81,17 +91,24 @@ VRSearchPlugin::VRSearchPlugin() {
   addPathEntry("./", false);
 
   // 2. config subdir within current working directory
+  addPathEntry("./lib/", false);
+  addPathEntry("./bin/", false);
   addPathEntry("./plugins/", false);
 
   // 3. running from within the build tree from build/bin or tests-*/testname
+  addPathEntry("../lib/", false);
+  addPathEntry("../bin/", false);
   addPathEntry("../plugins/", false);
 
   // 4. an installed version based on MINVR_ROOT envvar
+  addPathEntry("${MINVR_ROOT}/lib/", false);
+  addPathEntry("${MINVR_ROOT}/bin/", false);
   addPathEntry("${MINVR_ROOT}/plugins/", false);
 
   // 5. an installed version based on the INSTALL_PREFIX set with cmake
+  addPathEntry(std::string(INSTALLPATH) + "/lib", false);
+  addPathEntry(std::string(INSTALLPATH) + "/bin", false);
   addPathEntry(std::string(INSTALLPATH) + "/plugins", false);
-
 }
 
 /// Same as VRSearchPath, but built to accommodate the specific semantics of

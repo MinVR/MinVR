@@ -6,29 +6,32 @@
  * 		Ben Knorlein
  */
 
-#include "GL/glew.h"
 #ifdef _WIN32
+#include "GL/glew.h"
 #include "GL/wglew.h"
 #elif (!defined(__APPLE__))
 #include "GL/glxew.h"
 #endif
 
+// OpenGL Headers
+#if defined(WIN32)
+#define NOMINMAX
+#include <windows.h>
+#include <GL/gl.h>
+#elif defined(__APPLE__)
+#define GL_GLEXT_PROTOTYPES
+#include <OpenGL/gl3.h>
+#include <OpenGL/glext.h>
+#else
+#define GL_GLEXT_PROTOTYPES
+#include <GL/gl.h>
+#endif
+
+
 #include "VROpenVRNode.h"
 #include "VROpenVRRenderModelHandler.h"
 #include <cmath>
 
-#if defined(WIN32)
-#define NOMINMAX
-	#include <windows.h>
-	#include <GL/gl.h>
-#elif defined(__APPLE__)
-	#include <OpenGL/OpenGL.h>
-	#include <OpenGL/glu.h>
-#else
-	#define GL_GLEXT_PROTOTYPES
-	#include <GL/gl.h>
-	#include <GL/glu.h>
-#endif
 
 namespace MinVR {
 
@@ -96,6 +99,7 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 	//return;
 	if(!isInitialized){
 		isInitialized = true;
+#ifdef WIN32
 		glewExperimental = true;
 		GLenum nGlewError = glewInit();
 		if (nGlewError != GLEW_OK)
@@ -103,6 +107,7 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 			std::cerr << __FUNCTION__ << " - Error initializing GLEW! \n" << glewGetErrorString( nGlewError ) << std::endl;
 			exit(0);
 		}
+#endif
 		glGetError(); // to clear the error caused deep in GLEW
 
 		m_mat4ProjectionLeft = GetHMDMatrixProjectionEye( vr::Eye_Left );
@@ -133,7 +138,7 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 	renderState->addData("/ViewMatrix", view_left);
 	renderState->addData("/Eye", "Left");
 	if (_children.size() == 0) {
-		renderHandler->onVRRenderScene(renderState, this);
+		renderHandler->onVRRenderScene(*renderState);
 	}
 	else {
 		VRDisplayNode::render(renderState, renderHandler);
@@ -169,7 +174,7 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 	renderState->addData("/ViewMatrix", view_right);
 	renderState->addData("/Eye", "Right");
 	if (_children.size() == 0) {
-		renderHandler->onVRRenderScene(renderState, this);
+		renderHandler->onVRRenderScene(*renderState);
 	}
 	else {
 		VRDisplayNode::render(renderState, renderHandler);
@@ -213,7 +218,7 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 		renderState->addData("/ViewMatrix", view_right);
 		renderState->addData("/Eye", "Cyclops");
 		if (_children.size() == 0) {
-			renderHandler->onVRRenderScene(renderState, this);
+			renderHandler->onVRRenderScene(*renderState);
 		}
 		else {
 			VRDisplayNode::render(renderState, renderHandler);

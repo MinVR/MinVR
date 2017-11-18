@@ -586,10 +586,12 @@ void VRMain::initialize(int argc, char **argv) {
 
     // Find the actual library that is the plugin, and load it, if possible.
     std::string fullLibName = _pluginSearchPath.findFile(pluginName);
-    if(!_pluginMgr->loadPlugin(fullLibName)) {
+      
+    std::cout << "Loading plugin: " << pluginName << std::endl;
+    if (!_pluginMgr->loadPlugin(fullLibName)) {
       VRWARNING("VRMain Error: Problem loading plugin: " + pluginName,
-                "Could not load from any of the following paths: " +
-                _pluginSearchPath.getPath());
+                "Could not load from any of the following filenames: " +
+                _pluginSearchPath.getFullFilenames(pluginName));
     }
   }
 

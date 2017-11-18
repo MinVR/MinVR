@@ -1,63 +1,8 @@
-# ================================================================================
-#
-# This file is part of the MinVR project.
-#
-# File: CMakeLists.txt
-#
-# Original Author(s) of this File:
-# 	MinVR Core Team
-#
-# Author(s) of Significant Updates/Modifications to the File:
-# 	...
-#
-# -----------------------------------------------------------------------------------
-# Copyright (c) 2015 Regents of the University of Minnesota and Brown University
-# All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without modification,
-# are permitted provided that the following conditions are met:
-#
-# * Redistributions of source code must retain the above copyright notice, this
-#   list of conditions and the following disclaimer.
-#
-# * Redistributions in binary form must reproduce the above copyright notice, this
-#   list of conditions and the following disclaimer in the documentation and/or
-#   other materials provided with the distribution.
-#
-# * The name of the University of Minnesota, nor the names of its
-#   contributors may be used to endorse or promote products derived from
-#   this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-# ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# ================================================================================
+# This file is part of the MinVR cmake build system.  
+# See the main MinVR/CMakeLists.txt file for authors, copyright, and license info.
 
 
 project(libMinVR)
-
-
-set(vr_config_files
-  ${vr_src_dir}/../config/3DTV.minvr
-  ${vr_src_dir}/../config/default.minvr
-  ${vr_src_dir}/../config/desktop-oldopengl.minvr
-  ${vr_src_dir}/../config/desktop.minvr
-  ${vr_src_dir}/../config/desktop-sidebyside.minvr
-  ${vr_src_dir}/../config/desktop-multithreaded.minvr
-  ${vr_src_dir}/../config/HTC_Vive.minvr
-  ${vr_src_dir}/../config/ivlabcave_multithreaded.minvr
-  ${vr_src_dir}/../config/ivlabcave.minvr
-  ${vr_src_dir}/../config/ivlabcavefront.minvr
-  ${vr_src_dir}/../config/ivlabcave-desktop.minvr
-  ${vr_src_dir}/../config/YURT.minvr
-)
 
 
 set(vr_config_cpp
@@ -249,35 +194,38 @@ source_group("net\\Source Files" FILES ${vr_net_cpp})
 source_group("plugin\\Header Files" FILES ${vr_plugin_h})
 source_group("plugin\\Source Files" FILES ${vr_plugin_cpp})
 
-set_source_files_properties(${vr_config_files} PROPERTIES HEADER_FILE_ONLY TRUE)
-source_group("Config Files" FILES ${vr_config_files})
 
 
 add_library(MinVR ${vr_sources})
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-  message("-- Using libdl.")
+  message(STATUS "Using libdl.")
   target_link_libraries(MinVR dl)
 endif()
 
-install(TARGETS MinVR
-        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-	ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
-install(FILES ${vr_api_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/api)
-install(FILES ${vr_config_h_config}
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/config)
-install(FILES ${vr_config_h_cxml}
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/config/Cxml)
-install(FILES ${vr_config_h_base}
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/config/base64)
-install(FILES ${vr_display_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/display)
-install(FILES ${vr_max_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/max)
-install(FILES ${vr_input_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/input)
-install(FILES ${vr_main_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/main)
-install(FILES ${vr_math_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/math)
-install(FILES ${vr_net_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/net)
-install(FILES ${vr_plugin_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/plugin)
 
-install(FILES ${vr_config_files} DESTINATION ${CMAKE_INSTALL_PREFIX}/config)
+
+# Install built libraries
+install(TARGETS MinVR EXPORT MinVR
+  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+)
+
+# Install CMake export file to help with importing in other cmake projects
+install(EXPORT MinVR DESTINATION ${CMAKE_INSTALL_PREFIX}/share/MinVR/cmake)
+
+# Install header files
+install(FILES ${vr_api_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/MinVR/api)
+install(FILES ${vr_config_h_config} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/MinVR/config)
+install(FILES ${vr_config_h_cxml} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/MinVR/config/Cxml)
+install(FILES ${vr_config_h_base} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/MinVR/config/base64)
+install(FILES ${vr_display_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/MinVR/display)
+install(FILES ${vr_max_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/MinVR/max)
+install(FILES ${vr_input_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/MinVR/input)
+install(FILES ${vr_main_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/MinVR/main)
+install(FILES ${vr_math_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/MinVR/math)
+install(FILES ${vr_net_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/MinVR/net)
+install(FILES ${vr_plugin_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/MinVR/plugin)
+
 

@@ -20,6 +20,7 @@ CMakeFiles
 cmake_install.cmake
 cmake_uninstall.cmake
 Makefile
+external
 
 # Local MinVR
 *log.txt

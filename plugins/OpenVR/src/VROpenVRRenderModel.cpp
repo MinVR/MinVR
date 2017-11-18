@@ -10,6 +10,9 @@
 
 #include "VROpenVRRenderModel.h"
 
+
+
+
 namespace MinVR {
 	VROpenVRRenderModel::VROpenVRRenderModel(const std::string & sRenderModelName)
 		: m_sModelName(sRenderModelName)

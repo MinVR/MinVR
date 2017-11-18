@@ -10,13 +10,15 @@
 
 MyAppSharedContext::MyAppSharedContext(const MyAppModel& model, const VRGraphicsState &renderState) : model(model), version(0) {
 	// Initialize Graphics Context and variables
-	glewExperimental = GL_TRUE;
-	GLenum err = glewInit();
-	if (GLEW_OK != err)
-	{
-		std::cout << "Error initializing GLEW." << std::endl;
-	}
-
+    #ifdef WIN32
+        glewExperimental = GL_TRUE;
+        GLenum err = glewInit();
+        if (GLEW_OK != err)
+        {
+            std::cout << "Error initializing GLEW." << std::endl;
+        }
+    #endif
+    
 	// Allocate space and send Vertex Data
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
