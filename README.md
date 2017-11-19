@@ -10,7 +10,7 @@ The goal of MinVR is to facilitate a variety of data visualization and virtual r
 
 ### Prereqs
 
-MinVR is built using the cross-platform CMake tool.  Before building MinVR, you will need to install CMake version 3.1 or higher (https://cmake.org/).  
+MinVR is built using the cross-platform CMake tool.  Before building MinVR, you will need to install CMake version 3.3 or higher (https://cmake.org/).  
 
 
 ### Background for CMake Beginners

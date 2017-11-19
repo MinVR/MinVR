@@ -28,7 +28,7 @@
 
 
 project(MinVR_Project)
-cmake_minimum_required (VERSION 3.1)
+cmake_minimum_required (VERSION 3.3)
 
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_SOURCE_DIR}/cmake/Modules/")
@@ -321,6 +321,19 @@ minvr_optional_adddir(
 )
 
 
+# ---- Plugins that Provide a Window Toolkit ----
+# Save a list of plugins that provide a window toolkit so that we can error out
+# if building a graphics program and no window toolkit is available.
+
+list(APPEND WINTOOLKIT_PLUGINS WITH_PLUGIN_GLFW WITH_PLUGIN_FREEGLUT)
+set(HAVE_WINTOOLKIT False)
+
+foreach(P ${WINTOOLKIT_PLUGINS})
+  if (${P})
+    set(HAVE_WINTOOLKIT True)
+  endif()
+endforeach(P)
+
 
 
 #------------------ Interactive Tests ------------------ 
@@ -350,6 +363,12 @@ minvr_optional_adddir(
   "(Requires the OpenGL Plugin and a WindowToolkit plugin (e.g., GLFW Plugin))" 
   "tests-interactive/opengl-fixedfuncpipeline"
 )
+if (WITH_ITEST_OPENGL_FIXEDFUNCPIPELINE AND NOT ${WITH_PLUGIN_OPENGL})
+  message(FATAL_ERROR "WITH_ITEST_OPENGL_FIXEDFUNCPIPELINE requires that you also build WITH_PLUGIN_OPENGL.")
+endif()
+if (WITH_ITEST_OPENGL_FIXEDFUNCPIPELINE AND NOT ${HAVE_WINTOOLKIT})
+  message(FATAL_ERROR "WITH_ITEST_OPENGL_FIXEDFUNCPIPELINE requires that you also build a plugin that provides a window toolkit.  You need to add one of the following: ${WINTOOLKIT_PLUGINS}.")
+endif()
 
 
 minvr_optional_adddir(
@@ -358,6 +377,16 @@ minvr_optional_adddir(
   "(Requires the OpenGL Plugin, the Threading Plugin, and a WindowToolkit plugin (e.g., GLFW Plugin))" 
   "tests-interactive/opengl-multithreaded"
 )
+if (WITH_ITEST_OPENGL_MULTITHREADED AND NOT ${WITH_PLUGIN_OPENGL})
+  message(FATAL_ERROR "WITH_ITEST_OPENGL_MULTITHREADED requires that you also build WITH_PLUGIN_OPENGL.")
+endif()
+if ((WITH_ITEST_OPENGL_MULTITHREADED) AND (NOT ${WITH_PLUGIN_THREADING}))
+  message(FATAL_ERROR "WITH_ITEST_OPENGL_MULTITHREADED requires that you also build WITH_PLUGIN_THREADING.")
+endif()
+if (WITH_ITEST_OPENGL_MULTITHREADED AND NOT ${HAVE_WINTOOLKIT})
+  message(FATAL_ERROR "WITH_ITEST_OPENGL_MULTITHREADED requires that you also build a plugin that provides a window toolkit.  You need to add one of the following: ${WINTOOLKIT_PLUGINS}.")
+endif()
+
 
 
 minvr_optional_adddir(
@@ -366,6 +395,12 @@ minvr_optional_adddir(
   "(Requires the OpenGL Plugin and a WindowToolkit plugin (e.g., GLFW Plugin))" 
   "tests-interactive/opengl-shaderpipeline"
 )
+if (WITH_ITEST_OPENGL_SHADERPIPELINE AND NOT ${WITH_PLUGIN_OPENGL})
+  message(FATAL_ERROR "WITH_ITEST_OPENGL_SHADERPIPELINE requires that you also build WITH_PLUGIN_OPENGL.")
+endif()
+if (WITH_ITEST_OPENGL_SHADERPIPELINE AND NOT ${HAVE_WINTOOLKIT})
+  message(FATAL_ERROR "WITH_ITEST_OPENGL_SHADERPIPELINE requires that you also build a plugin that provides a window toolkit.  You need to add one of the following: ${WINTOOLKIT_PLUGINS}.")
+endif()
 
 minvr_optional_adddir(
   WITH_ITEST_OPENGL_SHADERPIPELINE_WITH_API 
@@ -373,7 +408,12 @@ minvr_optional_adddir(
   "(Requires the OpenGL Plugin and a WindowToolkit plugin (e.g., GLFW Plugin))" 
   "tests-interactive/opengl-shaderpipeline-with-api"
 )
-
+if (WITH_ITEST_OPENGL_SHADERPIPELINE_WITH_API AND NOT ${WITH_PLUGIN_OPENGL})
+  message(FATAL_ERROR "WITH_ITEST_OPENGL_SHADERPIPELINE requires that you also build WITH_PLUGIN_OPENGL.")
+endif()
+if (WITH_ITEST_OPENGL_SHADERPIPELINE_WITH_API AND NOT ${HAVE_WINTOOLKIT})
+  message(FATAL_ERROR "WITH_ITEST_OPENGL_SHADERPIPELINE_WITH_API requires that you also build a plugin that provides a window toolkit.  You need to add one of the following: ${WINTOOLKIT_PLUGINS}.")
+endif()
 
 # There's not actually anything to build here, right?
 #minvr_optional_adddir(
