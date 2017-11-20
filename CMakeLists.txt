@@ -30,13 +30,14 @@
 project(MinVR_Project)
 cmake_minimum_required (VERSION 3.3)
 
+set(MINVR_VERSION 2.0)
+
+
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
-
 # Organize folder structure for Xcode, Visual Studio, etc.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
 
 include(MessageMacros)
 
@@ -460,6 +461,51 @@ if (WITH_DOCUMENTATION)
   install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html DESTINATION ${CMAKE_INSTALL_PREFIX}/share/MinVR/doc)
 endif()
 
+
+## ************************************************ CREATE A CMAKE CONFIG FILE TO HELP OTHER PROJECTS
+
+h1("WRITING CMAKE CONFIG PACKAGE")
+
+# https://cmake.org/cmake/help/git-master/manual/cmake-packages.7.html#creating-packages
+
+set_property(TARGET MinVR PROPERTY VERSION ${MINVR_VERSION})
+
+
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+  "${CMAKE_CURRENT_BINARY_DIR}/MinVR/MinVRConfigVersion.cmake"
+  VERSION ${MINVR_VERSION}
+  COMPATIBILITY AnyNewerVersion
+)
+
+export(EXPORT MinVRTargets
+  FILE "${CMAKE_CURRENT_BINARY_DIR}/MinVR/MinVRTargets.cmake"
+  NAMESPACE MinVR::
+)
+
+configure_file(cmake/MinVRConfig.cmake.in
+  "${CMAKE_CURRENT_BINARY_DIR}/MinVR/MinVRConfig.cmake"
+  COPYONLY
+)
+
+set(ConfigPackageLocation lib/cmake/MinVR)
+install(EXPORT MinVRTargets
+  FILE
+    MinVRTargets.cmake
+  NAMESPACE
+    MinVR::
+  DESTINATION
+    ${ConfigPackageLocation}
+)
+install(
+  FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/MinVR/MinVRConfig.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/MinVR/MinVRConfigVersion.cmake"
+  DESTINATION
+    ${ConfigPackageLocation}
+  COMPONENT
+    Devel
+)
 
 
 

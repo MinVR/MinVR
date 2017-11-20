@@ -206,26 +206,35 @@ endif()
 
 
 
+# We may wish to include this at some point if we decide to build MinVR as a dynamic lib.
+# Tested (it works), but not currently used in the code, so not yet needed.
+#include(GenerateExportHeader)
+#generate_export_header(MinVR)
+#install(FILES "${CMAKE_CURRENT_BINARY_DIR}/minvr_export.h" DESTINATION include/MinVR/ COMPONENT Devel)
+
+
+# Documentation on exporting targets
+# https://cmake.org/cmake/help/git-master/manual/cmake-packages.7.html#creating-packages
+
 # Install built libraries
-install(TARGETS MinVR EXPORT MinVR
-  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-	ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+install(TARGETS MinVR EXPORT MinVRTargets
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION bin
+  INCLUDES DESTINATION include
 )
 
-# Install CMake export file to help with importing in other cmake projects
-install(EXPORT MinVR DESTINATION ${CMAKE_INSTALL_PREFIX}/share/MinVR/cmake)
-
 # Install header files
-install(FILES ${vr_api_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/MinVR/api)
-install(FILES ${vr_config_h_config} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/MinVR/config)
-install(FILES ${vr_config_h_cxml} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/MinVR/config/Cxml)
-install(FILES ${vr_config_h_base} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/MinVR/config/base64)
-install(FILES ${vr_display_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/MinVR/display)
-install(FILES ${vr_max_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/MinVR/max)
-install(FILES ${vr_input_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/MinVR/input)
-install(FILES ${vr_main_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/MinVR/main)
-install(FILES ${vr_math_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/MinVR/math)
-install(FILES ${vr_net_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/MinVR/net)
-install(FILES ${vr_plugin_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/MinVR/plugin)
+install(FILES ${vr_api_h} DESTINATION include/MinVR/api COMPONENT Devel)
+install(FILES ${vr_config_h_config} DESTINATION include/MinVR/config COMPONENT Devel)
+install(FILES ${vr_config_h_cxml} DESTINATION include/MinVR/config/Cxml COMPONENT Devel)
+install(FILES ${vr_config_h_base} DESTINATION include/MinVR/config/base64 COMPONENT Devel)
+install(FILES ${vr_display_h} DESTINATION include/MinVR/display COMPONENT Devel)
+install(FILES ${vr_max_h} DESTINATION include/MinVR/max COMPONENT Devel)
+install(FILES ${vr_input_h} DESTINATION include/MinVR/input COMPONENT Devel)
+install(FILES ${vr_main_h} DESTINATION include/MinVR/main COMPONENT Devel)
+install(FILES ${vr_math_h} DESTINATION include/MinVR/math COMPONENT Devel)
+install(FILES ${vr_net_h} DESTINATION include/MinVR/net COMPONENT Devel)
+install(FILES ${vr_plugin_h} DESTINATION include/MinVR/plugin COMPONENT Devel)
 
 
