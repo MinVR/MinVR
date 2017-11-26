@@ -196,6 +196,11 @@ source_group("plugin\\Source Files" FILES ${vr_plugin_cpp})
 
 
 
+# Documentation on exporting targets
+# https://cmake.org/cmake/help/git-master/manual/cmake-packages.7.html#creating-packages
+# https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html#target-usage-requirements
+
+
 add_library(MinVR ${vr_sources})
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
@@ -203,18 +208,10 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   target_link_libraries(MinVR dl)
 endif()
 
-
-
-
-# We may wish to include this at some point if we decide to build MinVR as a dynamic lib.
-# Tested (it works), but not currently used in the code, so not yet needed.
-#include(GenerateExportHeader)
-#generate_export_header(MinVR)
-#install(FILES "${CMAKE_CURRENT_BINARY_DIR}/minvr_export.h" DESTINATION include/MinVR/ COMPONENT Devel)
-
-
-# Documentation on exporting targets
-# https://cmake.org/cmake/help/git-master/manual/cmake-packages.7.html#creating-packages
+target_include_directories(MinVR PUBLIC
+    $<BUILD_INTERFACE:${MY_LIBRARY_SOURCE_DIR}/src> # for headers when building
+    $<INSTALL_INTERFACE:include/MinVR> # for client in install mode
+)
 
 # Install built libraries
 install(TARGETS MinVR EXPORT MinVRTargets
@@ -237,4 +234,14 @@ install(FILES ${vr_math_h} DESTINATION include/MinVR/math COMPONENT Devel)
 install(FILES ${vr_net_h} DESTINATION include/MinVR/net COMPONENT Devel)
 install(FILES ${vr_plugin_h} DESTINATION include/MinVR/plugin COMPONENT Devel)
 
+
+
+
+
+# We may wish to include this at some point if we decide to support building libMinVR as 
+# both a static lib and a dynamic lib.  Tested (it works), but not currently used in the 
+# code, so not yet needed.
+#include(GenerateExportHeader)
+#generate_export_header(MinVR)
+#install(FILES "${CMAKE_CURRENT_BINARY_DIR}/minvr_export.h" DESTINATION include/MinVR/ COMPONENT Devel)
 

@@ -466,45 +466,100 @@ endif()
 
 h1("WRITING CMAKE CONFIG PACKAGE")
 
+# The documentation for setting this up is so bad.  These pages all helped.  My current
+# understanding (dfk) is summarized below to help others.
 # https://cmake.org/cmake/help/git-master/manual/cmake-packages.7.html#creating-packages
+# http://foonathan.net/blog/2016/03/03/cmake-install.html
 
-set_property(TARGET MinVR PROPERTY VERSION ${MINVR_VERSION})
+
+# CMake Package Config in a Nutshell:
+
+# CMake config packages are the newer, recommended way of distributing projects built with CMake.
+# They replace the older FindModule.cmake approach for including dependencies in a cmake project, 
+# but not everyone has yet switched over to the new approach.  Both styles can work together, and
+# this seems to often be required because many libraries are not yet distributing a *Config.cmake
+# file with their install tree.
 
 
+# 1. The Difference Between "Find Modules" (Find*.cmake) and "Config Packages" (*Config.cmake)
+
+# Whereas, Find*.cmake files are either installed on the system or written by downstream projects.
+# *Config.cmake files are created and installed by the upstream projects (e.g., we want generate
+# MinVRConfig.cmake and install it whenever the MinVR project in installed).
+
+# When you use a Find Module, it defines several variables (e.g., OPENGL_INCLUDE_DIR, OPENGL_LIBRARIES)
+# that you must then be sure to add to the include dirs and libs to link with your project.
+# Config Packages are different.  Instead, they "export" the targets defined in the original project
+# (e.g., the target MinVR is used in this file to build libMinVR.a) so that the client project
+# may refer to these targets directly.  This is pretty cool because we can define the MinVR target
+# in such a way that cmake even knows which header files are associated with it, and will add the
+# required include flags whenever the MinVR target is used.
+
+
+# 2. How to use Config Packages in a client CMakeLists.txt 
+
+# With the config package appraoch, client projects only need to include two lines to use our library:
+
+# find_package(MinVR REQUIRED)
+# ... then, after add_executable(${PROJECT_NAME}) or add_library(${PROJECT_NAME})
+# target_link_libraries(${PROJECT_NAME} PUBLIC MinVR)
+
+
+# 3. Finding *Config.cmake files
+
+# Config packages are files of the form MyProjNameConfig.cmake (or *-config.cmake).  Each library
+# provides and installs its own config package.  So, here we will create one to install with MinVR.
+# If created correctly, these packages can be relocatable, i.e., not specific to the install path
+# used on a particular machine.  When you call find_package(...) cmake looks for packages in a
+# variety of locations (e.g., /usr/local/lib/cmake/*).  
+
+# Since config packages are supposed to be written by and installed by the upstream dependencies,
+# my understanding is that you should not attempt to write you own version of a config package if
+# you encounter a project that is not (yet) using the config package appraoch.  Instead, use the
+# older Find Module appraoch.  If CMake ships with a Find*.cmake file for that project, then use 
+# it.  If not, then you can write your own.
+
+
+# Installing to lib/cmake/MyProjectName seems to be the cmake recommended practice 
+set(ConfigPackageLocation lib/cmake/MinVR)
+
+
+# This tells cmake to generate a MinVRTargets.cmake file that works for importing all targets
+# associated with the MinVR export group from the install tree.  This file is where all the
+# important cmake magic happens, but it is auto-generated, so it is a bit difficult for the
+# human, non-cmake-expert to understand.  This call also installs the file to the appropriate
+# location.
+install(EXPORT MinVRTargets
+  FILE MinVRTargets.cmake
+  DESTINATION ${ConfigPackageLocation}
+)
+
+# This is a very small wrapper around the MinVRTargets.cmake file.  It's possible to use this
+# configure_file() command to replace variables (e.g., special defines, install paths) in the 
+# file, but we do not currently need that functionality.
+configure_file(
+  cmake/MinVRConfig.cmake.in
+  "${CMAKE_CURRENT_BINARY_DIR}/MinVR/MinVRConfig.cmake"
+  COPYONLY
+)
+
+# This auto-generates a standard CMake config version file. Using this, client projects can
+# check to see if a specific version of MinVR is installed on the system.
 include(CMakePackageConfigHelpers)
+set_property(TARGET MinVR PROPERTY VERSION ${MINVR_VERSION})
 write_basic_package_version_file(
   "${CMAKE_CURRENT_BINARY_DIR}/MinVR/MinVRConfigVersion.cmake"
   VERSION ${MINVR_VERSION}
   COMPATIBILITY AnyNewerVersion
 )
 
-export(EXPORT MinVRTargets
-  FILE "${CMAKE_CURRENT_BINARY_DIR}/MinVR/MinVRTargets.cmake"
-  NAMESPACE MinVR::
-)
-
-configure_file(cmake/MinVRConfig.cmake.in
-  "${CMAKE_CURRENT_BINARY_DIR}/MinVR/MinVRConfig.cmake"
-  COPYONLY
-)
-
-set(ConfigPackageLocation lib/cmake/MinVR)
-install(EXPORT MinVRTargets
-  FILE
-    MinVRTargets.cmake
-  NAMESPACE
-    MinVR::
-  DESTINATION
-    ${ConfigPackageLocation}
-)
+# The two Config files also get installed
 install(
   FILES
     "${CMAKE_CURRENT_BINARY_DIR}/MinVR/MinVRConfig.cmake"
     "${CMAKE_CURRENT_BINARY_DIR}/MinVR/MinVRConfigVersion.cmake"
   DESTINATION
     ${ConfigPackageLocation}
-  COMPONENT
-    Devel
 )
 
 
