@@ -38,7 +38,7 @@ namespace MinVR {
  */
 class VROpenVRInputDevice : public VRInputDevice {
 public:
-	PLUGIN_API VROpenVRInputDevice(vr::IVRSystem *pHMD, std::string name, VROpenVRNode * node, unsigned char openvr_plugin_flags);
+	PLUGIN_API VROpenVRInputDevice(vr::IVRSystem *pHMD, std::string name, VROpenVRNode * node, unsigned char openvr_plugin_flags, float deviceUnitsToRoomUnits, VRMatrix4 deviceToRoom);
 	PLUGIN_API virtual ~VROpenVRInputDevice();
 
 	PLUGIN_API void appendNewInputEventsSinceLastCall(VRDataQueue* queue);
@@ -75,6 +75,8 @@ private:
 	bool m_report_state_axis;
 	bool m_report_state_pose;
 
+	float deviceUnitsToRoomUnits;
+	VRMatrix4 deviceToRoom;
 };
 
 

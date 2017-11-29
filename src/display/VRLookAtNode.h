@@ -18,7 +18,10 @@
 namespace MinVR {
 
 
-/** 
+/** Serves as a stand-in for head tracking on systems that do not support head
+    tracking.  This node can replace a VRHeadTrackingNode by adding a 
+    HeadMatrix entry to the RenderState, where HeadMatrix is defined based upon
+    the LookAt* values specified in a config file.
  */
 class VRLookAtNode : public VRDisplayNode{
 public:
@@ -33,7 +36,7 @@ public:
 	static VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 protected:
 
-	VRMatrix4 _lookAtMatrix;
+	VRMatrix4 _headMatrix;
 };
 
 } // end namespace

@@ -130,7 +130,7 @@
     
     <!-- ********************** Display Graph ********************** -->
     <MyDisplayGraph>
-        <HeadTracker displaynodeType="VRTrackedLookAtNode">
+        <HeadTracker displaynodeType="VRHeadTrackingNode">
           <StereoNode displaynodeType="VRStereoNode">
             <ProjectionNode displaynodeType="VROffAxisProjectionNode">
 				      <DUMMY/>

@@ -7,9 +7,11 @@ namespace MinVR{
 VRProjectionNode::VRProjectionNode(const std::string &name, float fovX, float fovY, float nearClip, float farClip): 
   VRDisplayNode(name), _fovX(fovX), _fovY(fovY), _nearClip(nearClip), _farClip(farClip)
 {
-  _valuesAdded.push_back("/ProjectionMatrix");
-  _valuesAdded.push_back("/ViewMatrix");
-  _valuesNeeded.push_back("/LookAtMatrix");
+  // in:
+  _valuesAdded.push_back("CameraMatrix");
+  // out:
+  _valuesAdded.push_back("ViewMatrix");
+  _valuesAdded.push_back("ProjectionMatrix");
  
   double degreeToRadian = 3.1415926 / 180;
   float _horizontalClip = tan(fovX * degreeToRadian / 2.0f) * _nearClip;
@@ -29,15 +31,13 @@ void VRProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *renderH
 {
   renderState->pushState();
 
-  renderState->addData("/ProjectionMatrix", _projectionMatrix);
+  renderState->addData("ProjectionMatrix", _projectionMatrix);
 
-  VRMatrix4 viewMat;
-  if (renderState->exists("/LookAtMatrix")){
-    VRMatrix4 lookAtMatrix = renderState->getValue("/LookAtMatrix");
-    lookAtMatrix = lookAtMatrix.inverse();
-    viewMat = lookAtMatrix;
-  }
-  renderState->addData("/ViewMatrix", viewMat);
+  VRMatrix4 cameraMat = renderState->getValue("CameraMatrix");
+    
+  VRMatrix4 viewMat = cameraMat.inverse();
+    
+  renderState->addData("ViewMatrix", viewMat);
 
   VRDisplayNode::render(renderState, renderHandler);
 

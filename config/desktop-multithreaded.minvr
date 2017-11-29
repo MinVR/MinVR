@@ -45,7 +45,7 @@
       <ThreadNode displaynodeType="VRThreadGroupNode">
         <Node1 displaynodeType="VRGraphicsWindowNode">
           <Caption>Desktop</Caption>
-          <LookAtNode displaynodeType="VRTrackedLookAtNode">
+          <LookAtNode displaynodeType="VRHeadTrackingNode">
             <StereoNode displaynodeType="VRStereoNode">
               <ProjectionNode displaynodeType="VROffAxisProjectionNode">
                 <TopLeft type="floatarray">-2,2,0</TopLeft>
@@ -59,7 +59,7 @@
         <Node2 displaynodeType="VRGraphicsWindowNode">
           <Caption>Desktop</Caption>
           <XPos>800</XPos>
-          <LookAtNode displaynodeType="VRTrackedLookAtNode">
+          <LookAtNode displaynodeType="VRHeadTrackingNode">
             <StereoNode displaynodeType="VRStereoNode">
               <ProjectionNode displaynodeType="VROffAxisProjectionNode">
                 <TopLeft type="floatarray">-2,2,0</TopLeft>

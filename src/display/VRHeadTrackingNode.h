@@ -19,15 +19,17 @@
 namespace MinVR {
 
 
-/** 
+/** Adds a HeadMatrix to the RenderState that gets updated repeatedly based
+    upon head tracking events.
  */
-class VRTrackedLookAtNode : public VRDisplayNode, public VREventHandler {
+class VRHeadTrackingNode : public VRDisplayNode, public VREventHandler {
 public:
 
-	VRTrackedLookAtNode(const std::string &name, const std::string &headTrackingEventName, VRMatrix4 initialHeadMatrix);
-	virtual ~VRTrackedLookAtNode();
+	VRHeadTrackingNode(const std::string &name, const std::string &headTrackingEventName, VRMatrix4 initialHeadMatrix);
+    
+	virtual ~VRHeadTrackingNode();
 
-	virtual std::string getType() { return "VRTrackedLookAtNode"; }
+	virtual std::string getType() { return "VRHeadTrackingNode"; }
 
 	virtual void render(VRDataIndex *renderState, VRRenderHandler *renderHandler);
 
@@ -37,7 +39,7 @@ public:
 
 protected:
 
-	VRMatrix4 _lookAtMatrix;
+	VRMatrix4 _headMatrix;
 	std::string _trackingEvent;
 };
 
