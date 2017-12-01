@@ -1287,8 +1287,14 @@ bool VRDataIndex::linkNode(const std::string &fullSourceName,
   if (sourceEntry == _theIndex.end())
     VRERRORNOADV("Can't find the source node: " + fullSourceName);
 
+  // It's possible the target name won't start with a '/', in which
+  // case, stick one on front.
+  std::string fixTargetName =
+    (fullTargetName[0] == '/') ? fullTargetName : "/" + fullTargetName;
+
+  
   VRDatumPtr sourceNode = sourceEntry->second;
-  VRDataMap::iterator targetEntry = _getEntry(fullTargetName);
+  VRDataMap::iterator targetEntry = _getEntry(fixTargetName);
 
   // Does this name already exist?
   if (targetEntry != _theIndex.end()) {
@@ -1298,17 +1304,17 @@ bool VRDataIndex::linkNode(const std::string &fullSourceName,
   } else {
 
     // No. Make an entry in the index, linked to the sourceNode.
-    _theIndex.insert(VRDataMap::value_type(fullTargetName, sourceNode));
+    _theIndex.insert(VRDataMap::value_type(fixTargetName, sourceNode));
 
   }
 
   if (sourceNode->hasAttribute("linkContent"))
     VRERROR("Linking content and nodes not allowed.",
             "You really don't want to mix linkContent and linkNode, as in linking " +
-            fullSourceName + " and " + fullTargetName + ".");
+            fullSourceName + " and " + fixTargetName + ".");
 
   // Record the link we made.  This is for use by the copy constructor.
-  _linkRegister[fullSourceName] = fullTargetName;
+  _linkRegister[fullSourceName] = fixTargetName;
 
   // If this is a container, recurse into the children, and copy them, too.
   if (sourceNode->getType() == VRCORETYPE_CONTAINER) {
@@ -1322,7 +1328,7 @@ bool VRDataIndex::linkNode(const std::string &fullSourceName,
     for (VRContainer::iterator jt = childrenToCopy.begin();
          jt != childrenToCopy.end(); jt++)
       linkNode(fullSourceName + "/" + *jt,
-               fullTargetName + "/" + *jt,
+               fixTargetName + "/" + *jt,
                depthLimit + 1);
   }
   return true;
