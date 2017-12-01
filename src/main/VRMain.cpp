@@ -757,12 +757,9 @@ void VRMain::initialize(int argc, char **argv) {
 	_initialized = true;
   _shutdown = false;
 
-  std::list<std::string> problems = auditValuesFromAllDisplays();
-  for (std::list<std::string>::iterator it = problems.begin();
-       it != problems.end(); it++) {
-    std::cerr << *it << std::endl;
-  }
-
+  // Check to make sure the display node tree is properly constructed.
+  // This function will throw an error if it is not.
+  auditValuesFromAllDisplays();
 }
 
 void
@@ -851,26 +848,18 @@ void VRMain::renderOnAllDisplays() {
 }
 
 
-std::list<std::string>
-VRMain::auditValuesFromAllDisplays(const bool printAudit)
+void VRMain::auditValuesFromAllDisplays()
 {
-  std::list<std::string> out;
-
   if (!_initialized) VRERRORNOADV("VRMain must be initialized before audit.");
 
 	if (!_displayGraphs.empty()) {
 
 		for (std::vector<VRDisplayNode*>::iterator it = _displayGraphs.begin();
          it != _displayGraphs.end(); ++it) {
-      std::cout << "printNode:" << (*it)->printNode() << std::endl;
 
-      
-      std::map<std::string,std::string> subOut = (*it)->getValuesAdded();
-
+      (*it)->auditValues((*it)->printNode());
     }
   }
-
-  return out;
 }
 
 

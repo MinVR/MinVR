@@ -484,7 +484,7 @@ public:
     void addPluginSearchPath(const std::string& path) {
       _pluginSearchPath.addPathEntry(path, true);
     }
-    std::list<std::string> auditValuesFromAllDisplays(const bool printAudit = true);
+    void auditValuesFromAllDisplays();
 
     void displayCommandLineHelp();
 

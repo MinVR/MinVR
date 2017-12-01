@@ -84,18 +84,26 @@ public:
   /// a list of all the values added to the render state, and by whom.
   virtual std::map<std::string,std::string> getValuesAdded();
 
-  // This function is meant to be called by a parent node.  It accepts
-  // a list of value names and compares it to a set of names that it
-  // requires.  Essentially it is answering the question of whether it
-  // will have the data it needs to do its job when its render()
-  // method is called.  This function's role is to provide as
-  // informative a set of error messages as possible so that the user
-  // will not be left to puzzle over some "value not found" message
-  // later, during the render phase.  The method is called on this
-  // object, as well as on its children, so we can audit the entire
-  // display node graph.  The return is void because the function will
-  // throw an error if a mismatch is found.  Return = success.
-  virtual void auditValues(std::list<std::string> valuesSupplied);
+  /// This function is meant to be called by a parent node.  It accepts a
+  /// list of value names and compares it to a set of names that it requires.
+  /// Essentially it is answering the question of whether it will have the
+  /// data it needs to do its job when its render() method is called.  This
+  /// function's role is to provide as informative a set of error messages as
+  /// possible so that the user will not be left to puzzle over some "value
+  /// not found" message later, during the render phase.  The method is
+  /// called on this object, as well as on its children, so we can audit the
+  /// entire display node graph.
+  ///
+  /// The return is void because the function will throw an error if a
+  /// mismatch is found.  Return = success.  The treeData is printed in the
+  /// event of throwing an error, and is expected to be a rendition of the
+  /// node tree, as would be created by printNode().
+  void auditValues(const std::string &treeData) {
+    std::set<std::string> dummy;
+    auditValues(dummy, treeData);
+  }
+  void auditValues(std::set<std::string> valuesSet,
+                   const std::string &treeData);
 
   /// Provides a printable rendering of the display node graph, with an
   /// annotation for when a value needed by a lower node is not supplied by

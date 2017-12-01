@@ -121,36 +121,35 @@ std::map<std::string,std::string> VRDisplayNode::getValuesAdded() {
   return out;
 }
 
-void VRDisplayNode::auditValues(std::list<std::string> valuesSupplied) {
-  // First check to see if all of the values needed appear in the
-  // input list.
-  bool found;
+void VRDisplayNode::auditValues(std::set<std::string> valuesSet,
+                                const std::string &treeData) {
 
-  if ((_valuesNeeded.size() > 0) && (valuesSupplied.size() > 0)) {
-    for (std::list<std::string>::iterator it = _valuesNeeded.begin();
-         it != _valuesNeeded.end(); it++) {
+  // Add the values supplied by this node to the set of values against which we
+  // will check the values needed by this node.
+  for (std::list<std::string>::const_iterator it = _valuesAdded.begin();
+       it != _valuesAdded.end(); it++) {
 
-      found = false;
-      for (std::list<std::string>::iterator jt = valuesSupplied.begin();
-           jt != valuesSupplied.end(); jt++) {
-        found = found || ((*it).compare(*jt) == 0);
-      }
-      // If we haven't found this needed value, throw an error.
-      if (!found)
-        throw std::runtime_error("Needed " + (*it) + " but didn't get it, in " +
-                                 getName() + ":" + getType());
+    // Insert it added value into the set from above.
+    valuesSet.insert(*it);
+  }
+
+  // Run through all the valuesNeeded and see if they are in valuesSet.
+  for (std::list<std::string>::const_iterator it = _valuesNeeded.begin();
+       it != _valuesNeeded.end(); it++) {
+
+    // If the name is not in the value set, print the treeData and throw an error.
+    if (valuesSet.find(*it) == valuesSet.end()) {
+
+      std::cerr << "Error in display node tree:" << std::endl << treeData << std::endl;
+      VRERROR("Necessary data is not available to the " + getName() + " (" + getType() + ").", "Review the construction of the display node tree in your configuration file.");
+      
     }
   }
-  // Then add the valuesAdded to the input list and pass along to the
-  // children nodes.
-  valuesSupplied.insert(valuesSupplied.end(),
-                       _valuesAdded.begin(), _valuesAdded.end());
-
-  if (_children.size() > 0) {
-    for (std::vector<VRDisplayNode*>::iterator it =  _children.begin();
-         it != _children.end(); it++) {
-      (*it)->auditValues(valuesSupplied);
-    }
+  
+  // Recursively audit the children nodes.
+  for (std::vector<VRDisplayNode*>::const_iterator it = _children.begin();
+       it != _children.end(); it++) {
+    (*it)->auditValues(valuesSet, treeData);
   }
 }
 
