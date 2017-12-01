@@ -30,7 +30,7 @@ public:
 	PLUGIN_API VRFreeGLUTWindowToolkit(VRMainInterface *vrMain);
 	PLUGIN_API virtual ~VRFreeGLUTWindowToolkit();
 
-    PLUGIN_API std::string getName() { return "VRFreeGLUTWindowToolkit"; }
+    PLUGIN_API std::string getName() const { return "VRFreeGLUTWindowToolkit"; }
   
 	PLUGIN_API int createWindow(VRWindowSettings settings);
 

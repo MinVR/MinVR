@@ -21,7 +21,7 @@ public:
 	VRViewportNode(const std::string &name, VRGraphicsToolkit *gfxToolkit, const VRRect& rect);
 	virtual ~VRViewportNode();
 
-	virtual std::string getType() { return "VRViewportNode"; }
+	virtual std::string getType() const { return "VRViewportNode"; }
 
 	virtual void render(VRDataIndex *renderState, VRRenderHandler *renderHandler);
 

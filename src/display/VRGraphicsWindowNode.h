@@ -28,7 +28,7 @@ public:
 	VRGraphicsWindowNode(const std::string &name, VRGraphicsToolkit *gfxToolkit, VRWindowToolkit *winToolkit, const VRWindowSettings &settings);
 	virtual ~VRGraphicsWindowNode();
 
-	virtual std::string getType() { return "VRGraphicsWindowNode"; }
+	virtual std::string getType() const { return "VRGraphicsWindowNode"; }
 
 	virtual void render(VRDataIndex *renderState, VRRenderHandler *renderHandler);
 	virtual void waitForRenderToComplete(VRDataIndex *renderState);

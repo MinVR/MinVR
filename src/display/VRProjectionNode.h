@@ -38,7 +38,7 @@ public:
   VRProjectionNode(const std::string &name, float fovX, float fovY, float nearClip, float farClip);
   virtual ~VRProjectionNode();
 
-  virtual std::string getType() { return "VRProjectionNode"; }
+  virtual std::string getType() const { return "VRProjectionNode"; }
 
   virtual void render(VRDataIndex *renderState, VRRenderHandler *renderHandler);
 

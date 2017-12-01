@@ -22,7 +22,7 @@ public:
 	VRConsoleNode(const std::string &name, std::ostream *stream = &std::cout);
 	virtual ~VRConsoleNode();
 
-	virtual std::string getType() { return "VRConsoleNode"; }
+	virtual std::string getType() const { return "VRConsoleNode"; }
 
 	void render(VRDataIndex *renderState, VRRenderHandler* renderHandler);
 	void displayFinishedRendering(VRDataIndex *renderState);

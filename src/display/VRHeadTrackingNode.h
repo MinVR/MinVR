@@ -29,7 +29,7 @@ public:
     
 	virtual ~VRHeadTrackingNode();
 
-	virtual std::string getType() { return "VRHeadTrackingNode"; }
+	virtual std::string getType() const { return "VRHeadTrackingNode"; }
 
 	virtual void render(VRDataIndex *renderState, VRRenderHandler *renderHandler);
 
