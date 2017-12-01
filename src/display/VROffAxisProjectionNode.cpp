@@ -8,7 +8,7 @@ namespace MinVR {
 	VRDisplayNode(name), _topLeft(topLeft), _botLeft(botLeft), _topRight(topRight), _botRight(botRight),  _nearClip(nearClip), _farClip(farClip)
 {
   // in:
-  _valuesAdded.push_back("CameraMatrix");
+  _valuesNeeded.push_back("CameraMatrix");
   // out:
   _valuesAdded.push_back("ProjectionMatrix");
   _valuesAdded.push_back("ViewMatrix");
