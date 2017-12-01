@@ -174,17 +174,20 @@ std::string VRDisplayNode::printNode(std::set<std::string> valuesSet,
   // Display this node.
   out = prefix + "<displayNode:" + name + ">";
 
+  // The lines following need a longer prefix.
   std::string newPrefix = prefix + " | ";
-  
+
   out += "\n" + newPrefix + "  Type: " + getType();
 
-  // Print the values added, but also add them to the list from above.
+  // Print the values added, but also add them to the set of values we
+  // know from above this position in the display graph.
   out += "\n" + newPrefix + "  Values Added:";
   for (std::list<std::string>::const_iterator it = _valuesAdded.begin();
        it != _valuesAdded.end(); it++) {
+    // Print the value added.
     out += "\n" + newPrefix + "    " + *it;
 
-    // Insert the added value into the set.
+    // Insert it added value into the set from above.
     valuesSet.insert(*it);
   }
   if (_valuesAdded.empty()) out += "\n" + newPrefix + "     <none>";
@@ -203,6 +206,7 @@ std::string VRDisplayNode::printNode(std::set<std::string> valuesSet,
   }
   if (_valuesNeeded.empty()) out += "\n" + newPrefix + "     <none>";
 
+  // Recursively print the children nodes.
   for (std::vector<VRDisplayNode*>::const_iterator it = _children.begin();
        it != _children.end(); it++) {
     out += "\n" + (*it)->printNode(valuesSet, newPrefix);

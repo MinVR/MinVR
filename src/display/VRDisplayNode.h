@@ -97,8 +97,9 @@ public:
   // throw an error if a mismatch is found.  Return = success.
   virtual void auditValues(std::list<std::string> valuesSupplied);
 
-  /// Provides a rendering of the display node graph, with an annotation for
-  /// when a needed value is not supplied.
+  /// Provides a printable rendering of the display node graph, with an
+  /// annotation for when a value needed by a lower node is not supplied by
+  /// any node above it.
   std::string printNode(const std::string &prefix = "") const {
     std::set<std::string> dummy;
     return printNode(dummy, prefix);
