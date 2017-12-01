@@ -141,7 +141,7 @@ void VRDisplayNode::auditValues(std::set<std::string> valuesSet,
     if (valuesSet.find(*it) == valuesSet.end()) {
 
       std::cerr << "Error in display node tree:" << std::endl << treeData << std::endl;
-      VRERROR("Necessary data is not available to the " + getName() + " (" + getType() + ").", "Review the construction of the display node tree in your configuration file.");
+      VRERROR("Necessary data (" + (*it) + ") is not available to the " + getName() + " (" + getType() + ").", "Review the construction of the display node tree in your configuration file.");
       
     }
   }
