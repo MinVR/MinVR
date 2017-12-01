@@ -951,7 +951,7 @@ std::string VRDataIndex::getFullKey(const std::string &key,
     const_cast<VRDataIndex*>(this)->_getEntry(key, nameSpace, inherit);
 
   if (p == _theIndex.end()) {
-      VRERRORNOADV("Never heard of " + key + " in namespace " + nameSpace);
+      VRERRORNOADV("Uh-oh. Never heard of " + key + " in namespace " + nameSpace);
   } else {
     return p->first;
   }
@@ -965,7 +965,7 @@ VRDatumPtr VRDataIndex::_getDatum(const std::string &key,
   VRDataMap::iterator p = _getEntry(key, nameSpace, inherit);
 
   if (p == _theIndex.end()) {
-    VRERRORNOADV("Never heard of " + key + " in namespace " + nameSpace);
+    VRERRORNOADV("What? Never heard of " + key + " in namespace " + nameSpace);
   } else {
     return p->second;
   }
@@ -980,7 +980,7 @@ const VRDatumPtr VRDataIndex::_getDatum(const std::string &key,
       const_cast<VRDataIndex*>(this)->_getEntry(key, nameSpace, inherit);
 
     if (p == _theIndex.end()) {
-        VRERRORNOADV("Never heard of " + key + " in namespace " + nameSpace);
+        VRERRORNOADV("Who? Never heard of " + key + " in namespace " + nameSpace);
     } else {
         return p->second;
     }
