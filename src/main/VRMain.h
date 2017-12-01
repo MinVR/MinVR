@@ -1,6 +1,7 @@
 #ifndef VRMAIN_H
 #define VRMAIN_H
 
+#include <set>
 #include <plugin/VRPluginManager.h>
 
 #include <config/VRDataIndex.h>
@@ -483,7 +484,7 @@ public:
     void addPluginSearchPath(const std::string& path) {
       _pluginSearchPath.addPathEntry(path, true);
     }
-    std::list<std::string> auditValuesFromAllDisplays();
+    std::list<std::string> auditValuesFromAllDisplays(const bool printAudit = true);
 
     void displayCommandLineHelp();
 
@@ -526,6 +527,8 @@ public:
     int _frame;
     bool _shutdown;
 
+
+      
 };
 
 

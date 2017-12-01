@@ -97,7 +97,7 @@ std::map<std::string,std::string> VRDisplayNode::getValuesAdded() {
   if (_valuesAdded.size() > 0) {
     for (std::list<std::string>::iterator it = _valuesAdded.begin();
          it != _valuesAdded.end(); it++) {
-      out[*it] = _name + "(" + getType() + ")";
+      out[*it] = _name + " (" + getType() + ")";
     }
   }
 
@@ -154,36 +154,58 @@ void VRDisplayNode::auditValues(std::list<std::string> valuesSupplied) {
   }
 }
 
-std::string VRDisplayNode::printNode(const std::string &prefix) const {
+std::string VRDisplayNode::printNode(std::set<std::string> valuesSet,
+                                     const std::string &prefix) const {
 
+  // First compress the long names a little bit for readability.
   std::string name;
   if (_name.size() > 48) {
-    name = _name.substr(0,15) + "..." +
-      _name.substr(_name.size() - 33, std::string::npos);
+    name = _name.substr(0,8) + "..." +
+      _name.substr(_name.size() - 40, std::string::npos);
 
   } else {
     name = _name;
   }
 
-  std::string out = prefix + "<displayNode:" + name + ">";
+  // Establish the output.
+  std::string out;
+  if (!prefix.empty()) out = "\n";
 
-  out += "\n" + prefix + "   Values Added";
+  // Display this node.
+  out = prefix + "<displayNode:" + name + ">";
+
+  std::string newPrefix = prefix + " | ";
+  
+  out += "\n" + newPrefix + "  Type: " + getType();
+
+  // Print the values added, but also add them to the list from above.
+  out += "\n" + newPrefix + "  Values Added:";
   for (std::list<std::string>::const_iterator it = _valuesAdded.begin();
        it != _valuesAdded.end(); it++) {
-    out += "\n" + prefix + "     " + *it;
-  }
-  if (_valuesAdded.empty()) out += "\n" + prefix + "     <none>";
+    out += "\n" + newPrefix + "    " + *it;
 
-  out += "\n" + prefix + "   Values Needed";
+    // Insert the added value into the set.
+    valuesSet.insert(*it);
+  }
+  if (_valuesAdded.empty()) out += "\n" + newPrefix + "     <none>";
+
+  // Print the values needed, but also check them against the values already set.
+  out += "\n" + newPrefix + "  Values Needed:";
   for (std::list<std::string>::const_iterator it = _valuesNeeded.begin();
        it != _valuesNeeded.end(); it++) {
-    out += "\n" + prefix + "     " + *it;
+    out += "\n" + newPrefix + "    " + *it;
+
+    // If the name is not in the value set, flag it.
+    if (valuesSet.find(*it) == valuesSet.end()) {
+
+      out += " <-- ERROR: this value will not be found.";
+    }
   }
-  if (_valuesNeeded.empty()) out += "\n" + prefix + "     <none>";
+  if (_valuesNeeded.empty()) out += "\n" + newPrefix + "     <none>";
 
   for (std::vector<VRDisplayNode*>::const_iterator it = _children.begin();
        it != _children.end(); it++) {
-    out += "\n" + (*it)->printNode(prefix + "| ");
+    out += "\n" + (*it)->printNode(valuesSet, newPrefix);
   }
 
   return out;

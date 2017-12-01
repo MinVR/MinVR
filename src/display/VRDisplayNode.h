@@ -11,6 +11,7 @@
 
 #include <vector>
 #include <string>
+#include <set>
 
 #include <config/VRDataIndex.h>
 #include <main/VRRenderHandler.h>
@@ -33,11 +34,11 @@ public:
 	virtual ~VRDisplayNode();
 
 	/// Returns the name given to this display node in the config file.
-	virtual std::string getName() { return _name; }
+	virtual std::string getName() const { return _name; }
 
 	/// Returns a string describing the type of the node (e.g.,
 	/// VRGroupNode, VRWindowNode)
-	virtual std::string getType() = 0;
+	virtual std::string getType() const = 0;
 
 	/// Calls the render function on each of the display node's
 	/// children.  If there are no children, then we are at a leaf node
@@ -96,7 +97,14 @@ public:
   // throw an error if a mismatch is found.  Return = success.
   virtual void auditValues(std::list<std::string> valuesSupplied);
 
-  std::string printNode(const std::string &prefix) const;
+  /// Provides a rendering of the display node graph, with an annotation for
+  /// when a needed value is not supplied.
+  std::string printNode(const std::string &prefix = "") const {
+    std::set<std::string> dummy;
+    return printNode(dummy, prefix);
+  }
+  std::string printNode(std::set<std::string> valuesSet,
+                        const std::string &prefix = "") const;
 
 protected:
 	std::vector<VRDisplayNode*> _children;
@@ -111,7 +119,8 @@ protected:
   std::list<std::string> _valuesNeeded;
 
   friend std::ostream & operator<<(std::ostream &os, const VRDisplayNode& p) {
-    return os << p.printNode("| ");
+    std::set<std::string> dummy;
+    return os << p.printNode(dummy, "");
   };
 };
 

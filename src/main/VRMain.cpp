@@ -259,24 +259,24 @@ std::string getCurrentWorkingDir()
 
 VRMain::VRMain() : _initialized(false), _config(NULL), _net(NULL), _factory(NULL), _pluginMgr(NULL), _frame(0), _shutdown(false)
 {
-    _config = new VRDataIndex();
-	_factory = new VRFactory();
+  _config = new VRDataIndex();
+  _factory = new VRFactory();
 	// add sub-factories that are part of the MinVR core library right away
 	_factory->registerItemType<VRDisplayNode, VRConsoleNode>("VRConsoleNode");
 	_factory->registerItemType<VRDisplayNode, VRGraphicsWindowNode>("VRGraphicsWindowNode");
 	_factory->registerItemType<VRDisplayNode, VRGroupNode>("VRGroupNode");
 	_factory->registerItemType<VRDisplayNode, VROffAxisProjectionNode>("VROffAxisProjectionNode");
-    _factory->registerItemType<VRDisplayNode, VRProjectionNode>("VRProjectionNode");
+  _factory->registerItemType<VRDisplayNode, VRProjectionNode>("VRProjectionNode");
 	_factory->registerItemType<VRDisplayNode, VRStereoNode>("VRStereoNode");
 	_factory->registerItemType<VRDisplayNode, VRViewportNode>("VRViewportNode");
 	_factory->registerItemType<VRDisplayNode, VRLookAtNode>("VRLookAtNode");
 	_factory->registerItemType<VRDisplayNode, VRHeadTrackingNode>("VRHeadTrackingNode");
 
-    _factory->registerItemType<VRInputDevice, VRFakeHandTrackerDevice>("VRFakeHandTrackerDevice");
-    _factory->registerItemType<VRInputDevice, VRFakeHeadTrackerDevice>("VRFakeHeadTrackerDevice");
-    _factory->registerItemType<VRInputDevice, VRFakeTrackerDevice>("VRFakeTrackerDevice");
+  _factory->registerItemType<VRInputDevice, VRFakeHandTrackerDevice>("VRFakeHandTrackerDevice");
+  _factory->registerItemType<VRInputDevice, VRFakeHeadTrackerDevice>("VRFakeHeadTrackerDevice");
+  _factory->registerItemType<VRInputDevice, VRFakeTrackerDevice>("VRFakeTrackerDevice");
 
-    _pluginMgr = new VRPluginManager(this);
+  _pluginMgr = new VRPluginManager(this);
 }
 
 
@@ -748,7 +748,6 @@ void VRMain::initialize(int argc, char **argv) {
 		}
 	}
 
-
   // std::cerr << "DISPLAY NODES:" << std::endl;
   // for (std::vector<VRDisplayNode*>::iterator it = _displayGraphs.begin();
   //      it != _displayGraphs.end(); it++) {
@@ -756,7 +755,14 @@ void VRMain::initialize(int argc, char **argv) {
   // }
 
 	_initialized = true;
-    _shutdown = false;
+  _shutdown = false;
+
+  std::list<std::string> problems = auditValuesFromAllDisplays();
+  for (std::list<std::string>::iterator it = problems.begin();
+       it != problems.end(); it++) {
+    std::cerr << *it << std::endl;
+  }
+
 }
 
 void
@@ -844,23 +850,23 @@ void VRMain::renderOnAllDisplays() {
 	_frame++;
 }
 
+
 std::list<std::string>
-VRMain::auditValuesFromAllDisplays()
+VRMain::auditValuesFromAllDisplays(const bool printAudit)
 {
   std::list<std::string> out;
 
-  if (!_initialized) throw std::runtime_error("VRMain not initialized.");
+  if (!_initialized) VRERRORNOADV("VRMain must be initialized before audit.");
 
 	if (!_displayGraphs.empty()) {
 
 		for (std::vector<VRDisplayNode*>::iterator it = _displayGraphs.begin();
          it != _displayGraphs.end(); ++it) {
+      std::cout << "printNode:" << (*it)->printNode() << std::endl;
+
+      
       std::map<std::string,std::string> subOut = (*it)->getValuesAdded();
 
-      for (std::map<std::string,std::string>::iterator jt = subOut.begin();
-           jt != subOut.end(); jt++) {
-        out.push_back(jt->first + " : " + jt->second);
-      }
     }
   }
 
