@@ -128,8 +128,10 @@ protected:
   std::list<std::string> _valuesNeeded;
 
   friend std::ostream & operator<<(std::ostream &os, const VRDisplayNode& p) {
-    std::set<std::string> dummy;
-    return os << p.printNode(dummy, "");
+    return os << p.printNode("");
+  };
+  friend std::ostream & operator<<(std::ostream &os, const VRDisplayNode* p) {
+    return os << p->printNode("");
   };
 };
 
