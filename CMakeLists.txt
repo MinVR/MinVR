@@ -31,10 +31,15 @@
 #      -- installed headers for the plugins
 #      -- added plugins to the MinVRConfig.cmake package using target_include_dirs() with different
 #         settings for build and install so the package is relocatable
+#      -- updated to requiring cmake 3.9+ in order to pull in cmake's updated FindOpenGL and FindGLEW,
+#         which define new-style cmake imported targets.
 #   ...
 
 
-# MinVR depends on cmake 3.10+ for its more advanced FindOpenGL.cmake module
+
+
+
+# MinVR depends on cmake 3.9+ for its more advanced FindOpenGL.cmake module
 cmake_minimum_required (VERSION 3.9)
 
 cmake_policy(SET CMP0048 NEW)
