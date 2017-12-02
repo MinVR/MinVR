@@ -9,7 +9,7 @@
 
 
 
-# By convention, plugin names begin with "MinVR_"
+# Plugin names must begin with "MinVR_"
 project(MinVR_VRPN)
 
 
@@ -27,41 +27,35 @@ set (HEADERFILES
 )
 
 
+# Define the target
+add_library(${PROJECT_NAME} SHARED ${HEADERFILES} ${SOURCEFILES})
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>  # for headers when building
+    $<INSTALL_INTERFACE:include/MinVR${MINVR_VERSION_STR}/${PROJECT_NAME}>  # for client in install mode
+)
+
+
 # Setup dependency on libMinVR:
-list(APPEND MY_INC_DIRS src)
-list(APPEND MY_LIB_DIRS ${CMAKE_BINARY_DIR})
-list(APPEND MY_LIBS MinVR)
+target_include_directories(${PROJECT_NAME} PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../src>  # for headers when building
+    $<INSTALL_INTERFACE:include/MinVR${MINVR_VERSION_STR}>  # for client in install mode
+)
+target_link_libraries(${PROJECT_NAME} MinVR)
 
 
 # Setup dependency on VRPN:
 include(UseVRPN)
-UseVRPN()
-list(APPEND MY_INC_DIRS ${VRPN_INCLUDE_DIR})
-list(APPEND MY_LIB_DIRS ${VRPN_LIBRARY_DIR})
-list(APPEND MY_LIBS ${VRPN_LIBRARIES})
-
-
-# Create the shared library:
-include_directories(${MY_INC_DIRS})
-link_directories(${MY_LIB_DIRS})
-add_library(${PROJECT_NAME} SHARED ${HEADERFILES} ${SOURCEFILES})
-target_link_libraries(${PROJECT_NAME} ${MY_LIBS} ${LIBS_ALL})
-
-
-# If we have dependencies that were not found pre-installed on the system
-# and that will be built as part of the MinVR build process, then these
-# must be listed as dependencies of the current project so that cmake
-# builds them first.
-if (${VRPN_AUTOBUILT})
-    add_dependencies(${PROJECT_NAME} VRPN)
-endif()
+UseVRPN(${PROJECT_NAME} PUBLIC)
 
 
 # Installation:
-install( TARGETS ${PROJECT_NAME}
-         LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-         ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-         RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+install(TARGETS ${PROJECT_NAME} EXPORT MinVRTargets COMPONENT ${PROJECT_NAME}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/MinVR${MINVR_VERSION_STR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/MinVR${MINVR_VERSION_STR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+)
+install(FILES ${HEADERFILES} DESTINATION include/MinVR${MINVR_VERSION_STR}/${PROJECT_NAME} COMPONENT ${PROJECT_NAME})
 
 
 # For better organization when using an IDE with folder structures:

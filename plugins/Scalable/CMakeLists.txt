@@ -10,7 +10,7 @@
 
 
 
-# By convention, plugin names begin with "MinVR_"
+# Plugin names must begin with "MinVR_"
 project(MinVR_Scalable)
 
 
@@ -26,49 +26,51 @@ set (HEADERFILES
 )
 
 
+# Define the target
+add_library(${PROJECT_NAME} SHARED ${HEADERFILES} ${SOURCEFILES})
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>  # for headers when building
+    $<INSTALL_INTERFACE:include/MinVR${MINVR_VERSION_STR}/${PROJECT_NAME}>  # for client in install mode
+)
+
+
 # Setup dependency on libMinVR:
-list(APPEND MY_INC_DIRS src)
-list(APPEND MY_LIB_DIRS ${CMAKE_BINARY_DIR})
-list(APPEND MY_LIBS MinVR)
+target_include_directories(${PROJECT_NAME} PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../src>  # for headers when building
+    $<INSTALL_INTERFACE:include/MinVR${MINVR_VERSION_STR}>  # for client in install mode
+)
+target_link_libraries(${PROJECT_NAME} MinVR)
+
 
 # Setup dependency on OpenGL:
 include(UseOpenGL)
-UseOpenGL()
-list(APPEND MY_INC_DIRS ${OPENGL_INCLUDE_DIR})
-list(APPEND MY_LIB_DIRS ${OPENGL_LIBRARY_DIR})
-list(APPEND MY_LIBS ${OPENGL_LIBRARIES})
+UseOpenGL(${PROJECT_NAME} PUBLIC)
+
 
 # Setup dependency on GLEW (only needed on Windows):
 if (WIN32)
   include(UseGLEW)
-  UseGLEW()
-  list(APPEND MY_INC_DIRS ${GLEW_INCLUDE_DIR})
-  list(APPEND MY_LIB_DIRS ${GLEW_LIBRARY_DIR})
-  list(APPEND MY_LIBS ${GLEW_LIBRARIES})
+  UseGLEW(${PROJECT_NAME} PUBLIC)
 endif()
+
 
 # Setup dependency on Scalable:
 # This follows a different pattern because there is no option to auto-download-and-build
 # the libScalable.
 find_package(LibSCALABLE REQUIRED)
-add_definitions(-D_EASYBLENDSDK_LINUX)
-list(APPEND MY_INC_DIRS ${LIBSCALABLE_INCLUDE_DIRS})
-list(APPEND MY_LIBS ${LIBSCALABLE_ALL_LIBRARIES})
-
-
-# Create the shared library:
-include_directories(${MY_INC_DIRS})
-link_directories(${MY_LIB_DIRS})
-add_library(${PROJECT_NAME} SHARED ${HEADERFILES} ${SOURCEFILES})
-target_link_libraries(${PROJECT_NAME} ${MY_LIBS} ${LIBS_ALL})
-
+target_compile_definitions(${PROJECT_NAME} PUBLIC -D_EASYBLENDSDK_LINUX)
+target_include_directories(${PROJECT_NAME} ${LIBSCALABLE_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} ${LIBSCALABLE_ALL_LIBRARIES})
 
 
 # Installation:
-install( TARGETS ${PROJECT_NAME}
-         LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-         ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-         RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+install(TARGETS ${PROJECT_NAME} EXPORT MinVRTargets COMPONENT ${PROJECT_NAME}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/MinVR${MINVR_VERSION_STR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/MinVR${MINVR_VERSION_STR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+)
+install(FILES ${HEADERFILES} DESTINATION include/MinVR${MINVR_VERSION_STR}/${PROJECT_NAME} COMPONENT ${PROJECT_NAME})
 
 
 # For better organization when using an IDE with folder structures:

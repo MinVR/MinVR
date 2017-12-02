@@ -2,36 +2,43 @@
 # See the main MinVR/CMakeLists.txt file for authors, copyright, and license info.
 #
 # Either finds a pre-installed version or downloads and builds the TUIO library.
-#
-# Usage: In your CMakeLists.txt:
-# 1. Somewhere before your add_executable() or add_library() line, add the following:
-#        include(UseTUIO)
-#        UseTUIO()
-# 2. After your add_executable() or add_library() line, add the following:
-#        if (${TUIO_AUTOBUILT})
-#            add_dependencies(${PROJECT_NAME} TUIO)
-#        endif()
-#
+
+# Usage: In your CMakeLists.txt, somewhere after you define the target that depends
+# on the TUIO library (typical with something like add_executable(${PROJECT_NAME} ...) 
+# or add_library(${PROJECT_NAME} ...)), add the following two lines:
+
+#    include(UseTUIO)
+#    UseTUIO(${PROJECT_NAME} PUBLIC)
+
+# The second argument can be either PUBLIC, PRIVATE, or INTERFACE, following the keyword
+# usage described here: 
+# https://cmake.org/cmake/help/latest/command/target_include_directories.html
+
 # Effect: This will use find_package() to try to find a version of TUIO already on 
 # the system.  If found, that pre-installed version will be used to build the target.
 # If no pre-installed version is found, then a new target will be added to the current
 # build in order to download and build TUIO as an external project.  In this case, the
 # same flags that find_package() sets (TUIO_INCLUDE_DIR, etc.) will be set to point to
 # the newly build version so the rest of your CMakeLists.txt files can treat this as if
-# the find_package() step were successful.  Finally, if you eventually install your own
-# project, then cmake will also install the newly built version of TUIO to the same
-# install prefix as for your project.
+# the find_package() step were successful.  In either case, TUIO will be linked to your
+# project using target_include_directories() and target_link_libraries().  Finally, 
+# if you eventually install your project, then cmake will also install the newly built
+# version of TUIO to the same install prefix as for your project.
 
-
-macro(UseTUIO)
+macro(UseTUIO YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
 
     message(STATUS "Searching for TUIO library...")
 
     # Check to see if the library is already installed on the system
+    # CMake does not provide a FindTUIO.cmake, and TUIO does not provide a config package.
+    # So, the call below is using our own cmake/FindTUIO.cmake script.
     find_package(TUIO)
 
     if (${TUIO_FOUND})
         message(STATUS "Ok: TUIO Found.")
+
+        target_link_libraries(${YOUR_TARGET} ${TUIO_LIBRARIES})
+        target_include_directories(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} ${TUIO_INCLUDE_DIR})
     else()
 
         # Either autobuild it or provide an informative error message
@@ -52,15 +59,17 @@ macro(UseTUIO)
                 CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_DIR}/TUIO/install ${TUIO_CMAKE_ARGS}
                 PATCH_COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/external-patches/TUIO/CMakeLists.txt <SOURCE_DIR> && ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/external-patches/TUIO/TuioServer.cpp <SOURCE_DIR>/TUIO
             )
+            add_dependencies(${YOUR_TARGET} TUIO)
+
 
             # Set the same variables that find_package would
             set(TUIO_INCLUDE_DIR "${EXTERNAL_DIR}/TUIO/install/include")
             set(TUIO_LIBRARY_DIR "${EXTERNAL_DIR}/TUIO/install/lib")
             if(MSVC)
-                set(TUIO_LIBRARIES optimized TUIO.lib debug TUIOd.lib)
+                set(TUIO_LIBRARIES optimized ${TUIO_LIBRARY_DIR}/TUIO.lib debug ${TUIO_LIBRARY_DIR}/TUIOd.lib)
                 set(TUIO_LIBRARIES ${TUIO_LIBRARIES} winmm.lib wininet.lib ws2_32.lib)
             else()
-                set(TUIO_LIBRARIES optimized libTUIO.a debug libTUIOd.a)
+                set(TUIO_LIBRARIES optimized ${TUIO_LIBRARY_DIR}/libTUIO.a debug ${TUIO_LIBRARY_DIR}/libTUIOd.a)
             endif()
 
 
@@ -75,6 +84,12 @@ macro(UseTUIO)
                 install(DIRECTORY ${TUIO_LIBRARY_DIR}/ DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
             endif()
 
+            target_link_libraries(${YOUR_TARGET} ${TUIO_LIBRARIES})
+            target_include_directories(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} 
+                $<BUILD_INTERFACE:${TUIO_INCLUDE_DIR}> # for headers when building
+                $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include/TUIO>  # for client in install mode
+            )
+
         else()
 
             message(FATAL_ERROR "The TUIO library was not found on the system.  You can: (1) install TUIO yourself, (2)point cmake to an already-installed version of TUIO by adding the installation prefix of TUIO to the CMAKE_PREFIX_PATH variable, or (3) set DEPENDENCIES_AUTOBUILD to ON to have MinVR download and build TUIO in its 'external' directory for you.")
@@ -83,17 +98,6 @@ macro(UseTUIO)
 
     endif()
 
-    message(STATUS "Adding build flags for TUIO programs.")
-
-    add_definitions(-DUSE_TUIO)
-
-    if (MSVC)
-    endif()
-
-    if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    endif()
-
-    if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    endif()
+    target_compile_definitions(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} -DUSE_TUIO)
 
 endmacro()

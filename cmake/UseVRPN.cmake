@@ -2,28 +2,30 @@
 # See the main MinVR/CMakeLists.txt file for authors, copyright, and license info.
 #
 # Either finds a pre-installed version or downloads and builds the VRPN library.
-#
-# Usage: In your CMakeLists.txt:
-# 1. Somewhere before your add_executable() or add_library() line, add the following:
-#        include(UseVRPN)
-#        UseVRPN()
-# 2. After your add_executable() or add_library() line, add the following:
-#        if (${VRPN_AUTOBUILT})
-#            add_dependencies(${PROJECT_NAME} VRPN)
-#        endif()
-#
+
+# Usage: In your CMakeLists.txt, somewhere after you define the target that depends
+# on the VRPN library (typical with something like add_executable(${PROJECT_NAME} ...) 
+# or add_library(${PROJECT_NAME} ...)), add the following two lines:
+
+#    include(UseVRPN)
+#    UseVRPN(${PROJECT_NAME} PUBLIC)
+
+# The second argument can be either PUBLIC, PRIVATE, or INTERFACE, following the keyword
+# usage described here: 
+# https://cmake.org/cmake/help/latest/command/target_include_directories.html
+
 # Effect: This will use find_package() to try to find a version of VRPN already on 
 # the system.  If found, that pre-installed version will be used to build the target.
 # If no pre-installed version is found, then a new target will be added to the current
 # build in order to download and build VRPN as an external project.  In this case, the
 # same flags that find_package() sets (VRPN_INCLUDE_DIR, etc.) will be set to point to
 # the newly build version so the rest of your CMakeLists.txt files can treat this as if
-# the find_package() step were successful.  Finally, if you eventually install your own
-# project, then cmake will also install the newly built version of VRPN to the same
-# install prefix as for your project.
+# the find_package() step were successful.  In either case, VRPN will be linked to your
+# project using target_include_directories() and target_link_libraries().  Finally, 
+# if you eventually install your project, then cmake will also install the newly built
+# version of VRPN to the same install prefix as for your project.
 
-
-macro(UseVRPN)
+macro(UseVRPN YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
 
     message(STATUS "Searching for VRPN library...")
 
@@ -32,6 +34,9 @@ macro(UseVRPN)
 
     if (${VRPN_FOUND})
         message(STATUS "Ok: VRPN Found.")
+
+        target_link_libraries(${YOUR_TARGET} ${VRPN_LIBRARIES})
+        target_include_directories(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} ${VRPN_INCLUDE_DIR})
     else()
 
         # Either autobuild it or provide an informative error message
@@ -54,18 +59,17 @@ macro(UseVRPN)
                 INSTALL_DIR ${EXTERNAL_DIR}/VRPN/install
                 CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_DIR}/VRPN/install -DVRPN_INSTALL=TRUE ${VRPN_CMAKE_ARGS}
             )
+            add_dependencies(${YOUR_TARGET} VRPN)
+
 
             # Set the same variables that find_package would
-
             set(VRPN_INCLUDE_DIR ${EXTERNAL_DIR}/VRPN/install/include)
             set(VRPN_LIBRARY_DIR "${EXTERNAL_DIR}/VRPN/install/lib")
             set(VRPN_BIN_DIR "${EXTERNAL_DIR}/VRPN/install/bin")
-
-            
             if (MSVC)
-                set(VRPN_LIBRARIES optimized vrpn.lib optimized quat.lib debug vrpnd.lib debug quatd.lib)
+                set(VRPN_LIBRARIES optimized ${VRPN_LIBRARY_DIR}/vrpn.lib optimized ${VRPN_LIBRARY_DIR}/quat.lib debug ${VRPN_LIBRARY_DIR}/vrpnd.lib debug ${VRPN_LIBRARY_DIR}/quatd.lib)
             else()
-                set(VRPN_LIBRARIES libvrpn.a libquat.a)
+                set(VRPN_LIBRARIES ${VRPN_LIBRARY_DIR}/libvrpn.a ${VRPN_LIBRARY_DIR}/libquat.a)
             endif() 
 
 
@@ -81,6 +85,12 @@ macro(UseVRPN)
                 install(DIRECTORY ${VRPN_BIN_DIR}/ DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
             endif()
 
+            target_link_libraries(${YOUR_TARGET} ${VRPN_LIBRARIES})
+            target_include_directories(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} 
+                $<BUILD_INTERFACE:${VRPN_INCLUDE_DIR}> # for headers when building
+                $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include/vrpn>  # for client in install mode
+            )
+
         else()
 
             message(FATAL_ERROR "The VRPN library was not found on the system.  You can: (1) install VRPN yourself, (2)point cmake to an already-installed version of VRPN by adding the installation prefix of VRPN to the CMAKE_PREFIX_PATH variable, or (3) set DEPENDENCIES_AUTOBUILD to ON to have MinVR download and build VRPN in its 'external' directory for you.")
@@ -89,17 +99,6 @@ macro(UseVRPN)
 
     endif()
 
-    message(STATUS "Adding build flags for VRPN programs.")
-
-    add_definitions(-DUSE_VRPN)
-
-    if (MSVC)
-    endif()
-
-    if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    endif()
-
-    if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    endif()
+    target_compile_definitions(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} -DUSE_VRPN)
 
 endmacro()

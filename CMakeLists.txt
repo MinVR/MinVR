@@ -21,26 +21,39 @@
 #      -- install headers to <prefix>/include/MinVR, extern projects use include/vrpn, include/TUIO, etc.
 #      -- install config files to <prefix>/share/MinVR/config following filesystem standard:
 #         http://refspecs.linuxfoundation.org/FHS_2.3/fhs-2.3.html
-#      -- added installing cmake export files to <prefix>/share/MinVR/cmake
 #      -- updated copyright headers in all CMakeLists.txt and .cmake files
 #      -- updated README.md to walk through process of building and running a test graphics program
+#      -- added installing a CMake Config Package to <prefix>/lib/cmake/MinVR and added comments
+#         documenting this feature, which is really hard to understand from the cmake docs.
+#      -- updated CMakeLists.txt files to use new style target_*() cmake functions
+#      -- changed MinVR install dirs to include a version number so that multiple versions can be
+#         installed on the same system without conflicts
+#      -- installed headers for the plugins
+#      -- added plugins to the MinVRConfig.cmake package using target_include_dirs() with different
+#         settings for build and install so the package is relocatable
 #   ...
 
 
-project(MinVR_Project)
-cmake_minimum_required (VERSION 3.3)
+# MinVR depends on cmake 3.10+ for its more advanced FindOpenGL.cmake module
+cmake_minimum_required (VERSION 3.9)
 
-set(MINVR_VERSION 2.0)
-
-
-
+cmake_policy(SET CMP0048 NEW)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+
+
+# Version is <major>.<minor>.<patch>
+project(MinVR_Toolkit VERSION 2.0.0)
+
+
+# This will be appended to the install destinations so that multiple versions of MinVR
+# can be safely installed on the same system.  This intentionally does not include a
+# patch number because patches should be small changes that do not change the API.
+set(MINVR_VERSION_STR -${MinVR_Toolkit_VERSION_MAJOR}.${MinVR_Toolkit_VERSION_MINOR})
+
 
 # Organize folder structure for Xcode, Visual Studio, etc.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
 include(MessageMacros)
-
 
 ## ************************************************ WHAT ARE WE BUILDING?
 
@@ -160,10 +173,12 @@ h1("CONFIGURING LIBMINVR")
 
 h2("Configuring core library source.")
 message(STATUS "Adding all subirectories of src to the build.")
-set(vr_src_dir ${CMAKE_CURRENT_SOURCE_DIR}/src)
-include_directories( ${vr_src_dir} )
 
-add_subdirectory(src)
+
+# Intentionally using include() rather than add_subdirectory() so that the MinVR target
+# is defined in the scope of this CMakeLists.txt file.  That way, sudirs that depend
+# upon it can list it as a dependency.
+include(src/CMakeLists.txt)
 
 
 h2("Configuring .minvr config files.")
@@ -403,6 +418,7 @@ if (WITH_ITEST_OPENGL_SHADERPIPELINE AND NOT ${HAVE_WINTOOLKIT})
   message(FATAL_ERROR "WITH_ITEST_OPENGL_SHADERPIPELINE requires that you also build a plugin that provides a window toolkit.  You need to add one of the following: ${WINTOOLKIT_PLUGINS}.")
 endif()
 
+
 minvr_optional_adddir(
   WITH_ITEST_OPENGL_SHADERPIPELINE_WITH_API 
   "itest-opengl-shaderpipeline-with-api"
@@ -415,6 +431,7 @@ endif()
 if (WITH_ITEST_OPENGL_SHADERPIPELINE_WITH_API AND NOT ${HAVE_WINTOOLKIT})
   message(FATAL_ERROR "WITH_ITEST_OPENGL_SHADERPIPELINE_WITH_API requires that you also build a plugin that provides a window toolkit.  You need to add one of the following: ${WINTOOLKIT_PLUGINS}.")
 endif()
+
 
 # There's not actually anything to build here, right?
 #minvr_optional_adddir(
@@ -458,7 +475,10 @@ if (WITH_DOCUMENTATION)
     COMMENT "Generating API documentation with Doxygen"
     VERBATIM)
 
-  install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html DESTINATION ${CMAKE_INSTALL_PREFIX}/share/MinVR/doc)
+  install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html 
+      DESTINATION ${CMAKE_INSTALL_PREFIX}/share/MinVR${MINVR_VERSION_STR}/doc
+      COMPONENT Docs
+  )
 endif()
 
 
@@ -469,8 +489,9 @@ h1("WRITING CMAKE CONFIG PACKAGE")
 # The documentation for setting this up is so bad.  These pages all helped.  My current
 # understanding (dfk) is summarized below to help others.
 # https://cmake.org/cmake/help/git-master/manual/cmake-packages.7.html#creating-packages
+# https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html#target-usage-requirements
 # http://foonathan.net/blog/2016/03/03/cmake-install.html
-
+# https://archive.fosdem.org/2013/schedule/event/moderncmake/attachments/slides/258/export/events/attachments/moderncmake/slides/258/cmake_fosdem_2013.pdf
 
 # CMake Package Config in a Nutshell:
 
@@ -521,7 +542,7 @@ h1("WRITING CMAKE CONFIG PACKAGE")
 
 
 # Installing to lib/cmake/MyProjectName seems to be the cmake recommended practice 
-set(ConfigPackageLocation lib/cmake/MinVR)
+set(ConfigPackageLocation lib/cmake/MinVR${MINVR_VERSION_STR})
 
 
 # This tells cmake to generate a MinVRTargets.cmake file that works for importing all targets
@@ -530,6 +551,7 @@ set(ConfigPackageLocation lib/cmake/MinVR)
 # human, non-cmake-expert to understand.  This call also installs the file to the appropriate
 # location.
 install(EXPORT MinVRTargets
+  NAMESPACE MinVR
   FILE MinVRTargets.cmake
   DESTINATION ${ConfigPackageLocation}
 )
@@ -539,25 +561,25 @@ install(EXPORT MinVRTargets
 # file, but we do not currently need that functionality.
 configure_file(
   cmake/MinVRConfig.cmake.in
-  "${CMAKE_CURRENT_BINARY_DIR}/MinVR/MinVRConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/cmake/MinVRConfig.cmake"
   COPYONLY
 )
 
 # This auto-generates a standard CMake config version file. Using this, client projects can
 # check to see if a specific version of MinVR is installed on the system.
 include(CMakePackageConfigHelpers)
-set_property(TARGET MinVR PROPERTY VERSION ${MINVR_VERSION})
+set_property(TARGET MinVR PROPERTY VERSION ${MinVR_Toolkit_VERSION})
 write_basic_package_version_file(
-  "${CMAKE_CURRENT_BINARY_DIR}/MinVR/MinVRConfigVersion.cmake"
-  VERSION ${MINVR_VERSION}
+  "${CMAKE_CURRENT_BINARY_DIR}/cmake/MinVRConfigVersion.cmake"
+  VERSION ${MinVR_Toolkit_VERSION}
   COMPATIBILITY AnyNewerVersion
 )
 
 # The two Config files also get installed
 install(
   FILES
-    "${CMAKE_CURRENT_BINARY_DIR}/MinVR/MinVRConfig.cmake"
-    "${CMAKE_CURRENT_BINARY_DIR}/MinVR/MinVRConfigVersion.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/cmake/MinVRConfig.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/cmake/MinVRConfigVersion.cmake"
   DESTINATION
     ${ConfigPackageLocation}
 )

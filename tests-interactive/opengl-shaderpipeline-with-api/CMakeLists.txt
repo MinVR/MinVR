@@ -7,8 +7,6 @@
 # from the root CMakeLists.txt (build and install directories, compiling flags, #defines, etc.)
 
 
-
-
 # By convention, interactive tests begin with "itest-"
 project(itest-opengl-shaderpipeline-with-api)
 
@@ -22,41 +20,25 @@ set (HEADERFILES
 set (CONFIGFILES
 )
 
+
+# Define the target
+add_executable(${PROJECT_NAME} ${HEADERFILES} ${SOURCEFILES})
+
+
 # Setup dependency on libMinVR:
-list(APPEND MY_INC_DIRS src)
-list(APPEND MY_LIB_DIRS ${CMAKE_BINARY_DIR})
-list(APPEND MY_LIBS MinVR)
+target_include_directories(${PROJECT_NAME} PUBLIC ../../src)
+target_link_libraries(${PROJECT_NAME} MinVR)
+
 
 # Setup dependency on OpenGL:
 include(UseOpenGL)
-UseOpenGL()
-list(APPEND MY_INC_DIRS ${OPENGL_INCLUDE_DIR})
-list(APPEND MY_LIB_DIRS ${OPENGL_LIBRARY_DIR})
-list(APPEND MY_LIBS ${OPENGL_LIBRARIES})
+UseOpenGL(${PROJECT_NAME} PUBLIC)
+
 
 # Setup dependency on GLEW (only needed on Windows):
 if (WIN32)
   include(UseGLEW)
-  UseGLEW()
-  list(APPEND MY_INC_DIRS ${GLEW_INCLUDE_DIR})
-  list(APPEND MY_LIB_DIRS ${GLEW_LIBRARY_DIR})
-  list(APPEND MY_LIBS ${GLEW_LIBRARIES})
-endif()
-
-
-# Create the executable:
-include_directories(${MY_INC_DIRS})
-link_directories(${MY_LIB_DIRS})
-add_executable(${PROJECT_NAME} ${HEADERFILES} ${SOURCEFILES})
-target_link_libraries(${PROJECT_NAME} ${MY_LIBS} ${LIBS_ALL})
-
-
-# If we have dependencies that were not found pre-installed on the system
-# and that will be built as part of the MinVR build process, then these
-# must be listed as dependencies of the current project so that cmake
-# builds them first.
-if ("${GLEW_AUTOBUILT}" AND "WIN32")
-    add_dependencies(${PROJECT_NAME} GLEW)
+  UseGLEW(${PROJECT_NAME} PUBLIC)
 endif()
 
 
@@ -64,7 +46,8 @@ endif()
 install( TARGETS ${PROJECT_NAME}
          LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
          ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-         RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+         RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+         COMPONENT ITests)
 
 
 # For better organization when using an IDE with folder structures:
