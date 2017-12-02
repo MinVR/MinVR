@@ -33,8 +33,20 @@
 #         settings for build and install so the package is relocatable
 #      -- updated to requiring cmake 3.9+ in order to pull in cmake's updated FindOpenGL and FindGLEW,
 #         which define new-style cmake imported targets.
+#      -- added using cmakes configure_file() command with VRConfig.h.in to pass MinVR version numbers
+#         and build and install dirs to the MinVR library.  Updated searching for config files and
+#         plugins to use these paths.
 #   ...
 
+
+# DAN TODO:
+# - update searching for plugins to take version str into account and maybe check a better list of dirs
+# - probably need to pass a #define for the MINVR_VERSION_STR
+# - update examples/ to test find_package with the new install dirs and with multiple versions installed
+# - test on linux and Windows
+
+# Later:
+# - auto load plugins, adjust error messages e.g., complain if you can't find any plugins
 
 
 
@@ -106,8 +118,8 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DMinVR_DEBUG")
 
 h1("CONFIGURING BUILD AND INSTALL LOCATIONS")
 
-# Let's follow the convention of putting all of the libs in "build/lib" and all
-# of the exes in "build/bin".
+# Since we add postfixes to distinguish between debug, release, etc., we can just put all
+# of the libs in "build/lib" and all of the exes in "build/bin".
 
 make_directory(${CMAKE_BINARY_DIR}/lib)
 make_directory(${CMAKE_BINARY_DIR}/bin)
@@ -121,13 +133,38 @@ foreach (CONF ${CMAKE_CONFIGURATION_TYPES})
   set (CMAKE_LIBRARY_OUTPUT_DIRECTORY_${CONF} ${CMAKE_BINARY_DIR}/lib)
 endforeach(CONF CMAKE_CONFIGURATION_TYPES)
 
-message(STATUS "Libraries will be built into " ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-message(STATUS "Executables will be built into " ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+h2("Configuring build directories.")
+message(STATUS "Utilities, tests, other binaries: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+message(STATUS "Libraries: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+
 
 
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set (CMAKE_INSTALL_PREFIX "${${PROJECT_NAME}_SOURCE_DIR}/build/install" CACHE PATH "default install path" FORCE )
 endif()
+
+# These are relative to ${CMAKE_INSTALL_PREFIX}
+set(INSTALL_BIN_DEST           bin)
+set(INSTALL_LIB_DEST           lib/MinVR${MINVR_VERSION_STR})
+set(INSTALL_INCLUDE_DEST       include/MinVR${MINVR_VERSION_STR})
+set(INSTALL_PLUGINLIB_DEST     lib/MinVR${MINVR_VERSION_STR})
+set(INSTALL_PLUGINDLL_DEST     bin/MinVR${MINVR_VERSION_STR})
+set(INSTALL_PLUGININCLUDE_DEST include/MinVR${MINVR_VERSION_STR})
+set(INSTALL_CONFIGFILES_DEST   share/MinVR${MINVR_VERSION_STR}/config)
+set(INSTALL_DOC_DEST           share/MinVR${MINVR_VERSION_STR}/doc)
+set(INSTALL_CMAKECONFIG_DEST   lib/cmake/MinVR${MINVR_VERSION_STR})
+
+
+h2("Configuring installation directories.")
+message(STATUS "Utilities, tests, other binaries: ${CMAKE_INSTALL_PREFIX}/${INSTALL_BIN_DEST}")
+message(STATUS "MinVR library: ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIB_DEST}")
+message(STATUS "MinVR header files: ${CMAKE_INSTALL_PREFIX}/${INSTALL_INCLUDE_DEST}")
+message(STATUS "MinVR config files for pre-defined VR Setups: ${CMAKE_INSTALL_PREFIX}/${INSTALL_CONFIGFILES_DEST}")
+message(STATUS "CMake Config Package for including MinVR in other projects: ${CMAKE_INSTALL_PREFIX}/${INSTALL_CMAKECONFIG_DEST}")
+message(STATUS "MinVR plugin shared libraries: ${CMAKE_INSTALL_PREFIX}/${INSTALL_PLUGINLIB_DEST}")
+message(STATUS "MinVR plugin .dlls (windows only): ${CMAKE_INSTALL_PREFIX}/${INSTALL_PLUGINDLL_DEST}")
+message(STATUS "MinVR plugin header files: ${CMAKE_INSTALL_PREFIX}/${INSTALL_PLUGININCLUDE_DEST}/<PLUGINNAME>")
+
 
 # Common rpath settings for shared libraries
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}")
@@ -135,8 +172,12 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 set(CMAKE_SKIP_BUILD_RPATH  FALSE)
 set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
 
-message(STATUS "Installation will use this prefix: " ${CMAKE_INSTALL_PREFIX})
 
+# Configure a header file to pass some of the CMake settings to the source code
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/main/VRConfig.h.in
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/main/VRConfig.h
+)
 
 
 # You can use these symbol definitions in your code if you want to refer to a file
@@ -481,7 +522,7 @@ if (WITH_DOCUMENTATION)
     VERBATIM)
 
   install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html 
-      DESTINATION ${CMAKE_INSTALL_PREFIX}/share/MinVR${MINVR_VERSION_STR}/doc
+      DESTINATION ${INSTALL_DOC_DEST}
       COMPONENT Docs
   )
 endif()
@@ -543,22 +584,23 @@ h1("WRITING CMAKE CONFIG PACKAGE")
 # my understanding is that you should not attempt to write you own version of a config package if
 # you encounter a project that is not (yet) using the config package appraoch.  Instead, use the
 # older Find Module appraoch.  If CMake ships with a Find*.cmake file for that project, then use 
-# it.  If not, then you can write your own.
-
-
-# Installing to lib/cmake/MyProjectName seems to be the cmake recommended practice 
-set(ConfigPackageLocation lib/cmake/MinVR${MINVR_VERSION_STR})
+# it.  If not, then you can write your own.  Since making this switch, many of the newer
+# Find*.cmake scripts that ship with CMake have been updated to support imported targets. They
+# are still called something like FindOpenGL.cmake, but in addition to just setting vars like
+# OPENGL_INCLUDE_DIR, they also define targets, such as OpenGL::GL.  We use these when we can
+# because they are more robust.  When you do target_link_libraries(myproj PULBIC OpenGL::GL)
+# cmake knows to not only link with the the opengl library but also to include its headers and
+# link with all dependencies.
 
 
 # This tells cmake to generate a MinVRTargets.cmake file that works for importing all targets
 # associated with the MinVR export group from the install tree.  This file is where all the
-# important cmake magic happens, but it is auto-generated, so it is a bit difficult for the
-# human, non-cmake-expert to understand.  This call also installs the file to the appropriate
-# location.
+# important cmake magic happens. It is auto-generated.  This call also installs the file to 
+# the appropriate location.
 install(EXPORT MinVRTargets
   NAMESPACE MinVR
   FILE MinVRTargets.cmake
-  DESTINATION ${ConfigPackageLocation}
+  DESTINATION ${INSTALL_CMAKECONFIG_DEST}
 )
 
 # This is a very small wrapper around the MinVRTargets.cmake file.  It's possible to use this
@@ -586,7 +628,7 @@ install(
     "${CMAKE_CURRENT_BINARY_DIR}/cmake/MinVRConfig.cmake"
     "${CMAKE_CURRENT_BINARY_DIR}/cmake/MinVRConfigVersion.cmake"
   DESTINATION
-    ${ConfigPackageLocation}
+    ${INSTALL_CMAKECONFIG_DEST}
 )
 
 

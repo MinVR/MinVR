@@ -44,10 +44,9 @@ endif()
 
 # Installation:
 install( TARGETS ${PROJECT_NAME}
-         LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-         ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-         RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+         RUNTIME DESTINATION ${INSTALL_BIN_DEST}
          COMPONENT ITests)
+
 
 
 # For better organization when using an IDE with folder structures:

@@ -204,26 +204,25 @@ endif()
 # generator expressions, so we can point to two different include dirs depending
 # on whether building or using the installed version.
 target_include_directories(MinVR PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>      # for headers when building
-    $<INSTALL_INTERFACE:include/MinVR${MINVR_VERSION_STR}>  # for client in install mode
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>  # for headers when building
+    $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DEST}>        # for client in install mode
 )
 
 
 install(TARGETS MinVR EXPORT MinVRTargets COMPONENT CoreLib
-  LIBRARY DESTINATION lib/MinVR${MINVR_VERSION_STR}
-  ARCHIVE DESTINATION lib/MinVR${MINVR_VERSION_STR}
-  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION ${INSTALL_LIB_DEST}
+  ARCHIVE DESTINATION ${INSTALL_LIB_DEST}
+  RUNTIME DESTINATION ${INSTALL_BIN_DEST}
 )
 
-install(FILES ${vr_api_h} DESTINATION include/MinVR${MINVR_VERSION_STR}/api COMPONENT CoreLib)
-install(FILES ${vr_config_h_config} DESTINATION include/MinVR${MINVR_VERSION_STR}/config COMPONENT CoreLib)
-install(FILES ${vr_config_h_cxml} DESTINATION include/MinVR${MINVR_VERSION_STR}/config/Cxml COMPONENT CoreLib)
-install(FILES ${vr_config_h_base} DESTINATION include/MinVR${MINVR_VERSION_STR}/config/base64 COMPONENT CoreLib)
-install(FILES ${vr_display_h} DESTINATION include/MinVR${MINVR_VERSION_STR}/display COMPONENT CoreLib)
-install(FILES ${vr_max_h} DESTINATION include/MinVR${MINVR_VERSION_STR}/max COMPONENT CoreLib)
-install(FILES ${vr_input_h} DESTINATION include/MinVR${MINVR_VERSION_STR}/input COMPONENT CoreLib)
-install(FILES ${vr_main_h} DESTINATION include/MinVR${MINVR_VERSION_STR}/main COMPONENT CoreLib)
-install(FILES ${vr_math_h} DESTINATION include/MinVR${MINVR_VERSION_STR}/math COMPONENT CoreLib)
-install(FILES ${vr_net_h} DESTINATION include/MinVR${MINVR_VERSION_STR}/net COMPONENT CoreLib)
-install(FILES ${vr_plugin_h} DESTINATION include/MinVR${MINVR_VERSION_STR}/plugin COMPONENT CoreLib)
+install(FILES ${vr_api_h} DESTINATION ${INSTALL_INCLUDE_DEST}/api COMPONENT CoreLib)
+install(FILES ${vr_config_h_config} DESTINATION ${INSTALL_INCLUDE_DEST}/config COMPONENT CoreLib)
+install(FILES ${vr_config_h_cxml} DESTINATION ${INSTALL_INCLUDE_DEST}/config/Cxml COMPONENT CoreLib)
+install(FILES ${vr_config_h_base} DESTINATION ${INSTALL_INCLUDE_DEST}/config/base64 COMPONENT CoreLib)
+install(FILES ${vr_display_h} DESTINATION ${INSTALL_INCLUDE_DEST}/display COMPONENT CoreLib)
+install(FILES ${vr_input_h} DESTINATION ${INSTALL_INCLUDE_DEST}/input COMPONENT CoreLib)
+install(FILES ${vr_main_h} DESTINATION ${INSTALL_INCLUDE_DEST}/main COMPONENT CoreLib)
+install(FILES ${vr_math_h} DESTINATION ${INSTALL_INCLUDE_DEST}/math COMPONENT CoreLib)
+install(FILES ${vr_net_h} DESTINATION ${INSTALL_INCLUDE_DEST}/net COMPONENT CoreLib)
+install(FILES ${vr_plugin_h} DESTINATION ${INSTALL_INCLUDE_DEST}/plugin COMPONENT CoreLib)
 

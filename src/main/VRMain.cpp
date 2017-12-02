@@ -155,6 +155,12 @@ bool VRParseCommandLine::parseCommandLine(int argc, char** argv,
     }
   }
 
+  // one final case -- if no MinVR configuration settings were on the command 
+  // line, then load the pre-installed default configuration
+  if ((configFileList.empty()) && (configValList.empty())) {
+    loadConfig("default.minvr");
+  }
+
   return _execute;
 }
 

@@ -30,15 +30,15 @@ set (HEADERFILES
 add_library(${PROJECT_NAME} SHARED ${HEADERFILES} ${SOURCEFILES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>  # for headers when building
-    $<INSTALL_INTERFACE:include/MinVR${MINVR_VERSION_STR}/${PROJECT_NAME}>  # for client in install mode
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>                  # for headers when building
+    $<INSTALL_INTERFACE:${INSTALL_PLUGININCLUDE_DEST}/${PROJECT_NAME}>  # for client in install mode
 )
 
 
 # Setup dependency on libMinVR:
 target_include_directories(${PROJECT_NAME} PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../src>  # for headers when building
-    $<INSTALL_INTERFACE:include/MinVR${MINVR_VERSION_STR}>  # for client in install mode
+    $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DEST}>              # for client in install mode
 )
 target_link_libraries(${PROJECT_NAME} MinVR)
 
@@ -66,11 +66,11 @@ target_link_libraries(${PROJECT_NAME} ${LIBSCALABLE_ALL_LIBRARIES})
 
 # Installation:
 install(TARGETS ${PROJECT_NAME} EXPORT MinVRTargets COMPONENT ${PROJECT_NAME}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/MinVR${MINVR_VERSION_STR}
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/MinVR${MINVR_VERSION_STR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+    LIBRARY DESTINATION ${INSTALL_PLUGINLIB_DEST}
+    ARCHIVE DESTINATION ${INSTALL_PLUGINLIB_DEST}
+    RUNTIME DESTINATION ${INSTALL_PLUGINDLL_DEST}
 )
-install(FILES ${HEADERFILES} DESTINATION include/MinVR${MINVR_VERSION_STR}/${PROJECT_NAME} COMPONENT ${PROJECT_NAME})
+install(FILES ${HEADERFILES} DESTINATION ${INSTALL_PLUGININCLUDE_DEST}/${PROJECT_NAME} COMPONENT ${PROJECT_NAME})
 
 
 # For better organization when using an IDE with folder structures:
