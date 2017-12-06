@@ -33,15 +33,13 @@
 #         settings for build and install so the package is relocatable
 #      -- updated to requiring cmake 3.9+ in order to pull in cmake's updated FindOpenGL and FindGLEW,
 #         which define new-style cmake imported targets.
-#      -- added using cmakes configure_file() command with VRConfig.h.in to pass MinVR version numbers
+#      -- added using cmake configure_file() command with VRConfig.h.in to pass MinVR version numbers
 #         and build and install dirs to the MinVR library.  Updated searching for config files and
 #         plugins to use these paths.
 #   ...
 
 
 # DAN TODO:
-# - update searching for plugins to take version str into account and maybe check a better list of dirs
-# - probably need to pass a #define for the MINVR_VERSION_STR
 # - update examples/ to test find_package with the new install dirs and with multiple versions installed
 # - test on linux and Windows
 
@@ -173,19 +171,12 @@ set(CMAKE_SKIP_BUILD_RPATH  FALSE)
 set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
 
 
+h2("Creating VRConfig.h.")
 # Configure a header file to pass some of the CMake settings to the source code
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/src/main/VRConfig.h.in
   ${CMAKE_CURRENT_SOURCE_DIR}/src/main/VRConfig.h
 )
-
-
-# You can use these symbol definitions in your code if you want to refer to a file
-# location.  This is only really useful for the testing code, but knowing where the
-# installed code is also plays a role in providing sensible default search paths.
-add_definitions(-DINSTALLPATH="${CMAKE_INSTALL_PREFIX}")
-add_definitions(-DMINVRTESTBATCHDIR="${CMAKE_SOURCE_DIR}/tests-batch")
-
 
 
 ## ************************************************ WHAT PLATFORM-SPECIFIC OPTIONS DO WE NEED?
@@ -598,7 +589,7 @@ h1("WRITING CMAKE CONFIG PACKAGE")
 # important cmake magic happens. It is auto-generated.  This call also installs the file to 
 # the appropriate location.
 install(EXPORT MinVRTargets
-  NAMESPACE MinVR
+  NAMESPACE MinVR::
   FILE MinVRTargets.cmake
   DESTINATION ${INSTALL_CMAKECONFIG_DEST}
 )
