@@ -3,6 +3,7 @@
 
 #if defined(WIN32)
 #define NOMINMAX
+#include <WinSock2.h>
 #include <windows.h>
 #include <GL/gl.h>
 #include <gl/GLU.h>
