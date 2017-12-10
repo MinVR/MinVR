@@ -36,7 +36,10 @@ macro(UseGLEW YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
     if (${GLEW_FOUND})
 
         message(STATUS "Ok: GLEW Found.")
-
+        message(STATUS "GLEW headers: ${GLEW_INCLUDE_DIR}")
+	message(STATUS "GLEW libs: ${GLEW_LIBRARIES}")
+	
+	
 
     # Case 2: Download, build and install it now for the user, then try find_package() again
     elseif (AUTOBUILD_DEPENDENCIES)
@@ -77,10 +80,16 @@ macro(UseGLEW YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
 
     # If we reach this point without an error, then one of the calls to find_package() was successful
 
-    message(STATUS "Linking target ${YOUR_TARGET} with ${INTERFACE_PUBLIC_OR_PRIVATE} dependency GLEW.")
+    message(STATUS "Linking target ${YOUR_TARGET} with ${INTERFACE_PUBLIC_OR_PRIVATE} dependency GLEW::GLEW.")
 
     # No need to set include dirs; this uses the modern cmake imported targets, so they are set automatically
-    target_link_libraries(${YOUR_TARGET} GLEW::GLEW)
+    if (TARGET GLEW::GLEW)
+        target_link_libraries(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} GLEW::GLEW)
+    else()
+        target_link_libraries(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} ${GLEW_LIBRARIES})
+	target_include_directories(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} ${GLEW_INCLUDE_DIR})
+    endif()
+    
     target_compile_definitions(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} -DUSE_GLEW)
 
 endmacro()

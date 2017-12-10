@@ -35,8 +35,8 @@ include(UseOpenGL)
 UseOpenGL(${PROJECT_NAME} PUBLIC)
 
 
-# Setup dependency on GLEW (only needed on Windows):
-if (WIN32)
+# Setup dependency on GLEW (not needed on OSX):
+if (NOT APPLE)
   include(UseGLEW)
   UseGLEW(${PROJECT_NAME} PUBLIC)
 endif()
