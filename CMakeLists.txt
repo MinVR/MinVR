@@ -39,14 +39,6 @@
 #   ...
 
 
-# DAN TODO:
-# - update examples/ to test find_package with the new install dirs and with multiple versions installed
-# - test on linux and Windows
-
-# Later:
-# - auto load plugins, adjust error messages e.g., complain if you can't find any plugins
-
-
 
 
 # MinVR depends on cmake 3.9+ for its more advanced FindOpenGL.cmake module
@@ -141,7 +133,7 @@ message(STATUS "Libraries: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 
 
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set (CMAKE_INSTALL_PREFIX "${${PROJECT_NAME}_SOURCE_DIR}/build/install" CACHE PATH "default install path" FORCE )
+    set (CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "default install path" FORCE )
 endif()
 
 # When we autobuild dependencies, we install them in CMAKE_INSTALL_PREFIX, and then look for them
