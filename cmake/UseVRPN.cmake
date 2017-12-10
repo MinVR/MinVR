@@ -36,6 +36,8 @@ macro(UseVRPN YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
     if (${VRPN_FOUND})
 
         message(STATUS "Ok: VRPN Found.")
+        message(STATUS "VRPN headers: ${VRPN_INCLUDE_DIR}")
+        message(STATUS "VRPN libs: ${VRPN_LIBRARIES}")
 
 
     # Case 2: Download, build and install it now for the user, then try find_package() again
@@ -83,6 +85,9 @@ macro(UseVRPN YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
         if (NOT ${VRPN_FOUND})
             message(FATAL_ERROR "MinVR did an autobuild of the VRPN dependency, and it should now be installed at the prefix ${CMAKE_INSATALL_PREFIX}, but cmake is still unable to find it with find_package().")
         endif()
+
+        message(STATUS "VRPN headers: ${VRPN_INCLUDE_DIR}")
+        message(STATUS "VRPN libs: ${VRPN_LIBRARIES}")
 
 
     # Case 3: The user does not want us to build it, so error out when not found.

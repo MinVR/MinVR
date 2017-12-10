@@ -35,6 +35,9 @@ macro(UseOpenGL YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
 	endif()
 
     message(STATUS "Ok: OpenGL Found.")
+    message(STATUS "OpenGL headers: ${OPENGL_INCLUDE_DIR}")
+    message(STATUS "OpenGL libs: ${OPENGL_LIBRARIES}")
+
 
     message(STATUS "Linking target ${YOUR_TARGET} with ${INTERFACE_PUBLIC_OR_PRIVATE} dependency OpenGL::GL.")
     target_link_libraries(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} OpenGL::GL)
