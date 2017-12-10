@@ -1,11 +1,31 @@
-find_path(OPENVR_INCLUDE_DIR openvr.h
-          HINTS $ENV{OPENVR_INCLUDE_DIR} ${OPENVR_INCLUDE_DIR})
 
-find_library(OPENVR_LIBRARY NAMES openvr_api.lib openvr_api.so openvr_api
-             HINTS $ENV{OPENVR_LIB_DIR} ${OPENVR_LIB_DIR})
+find_path(OPENVR_INCLUDE_DIR 
+    openvr.h
+  HINTS 
+	${CMAKE_INSTALL_PREFIX}/include 
+	${CMAKE_INSTALL_PREFIX}/include/openvr
+	${CMAKE_INSTALL_PREFIX}/include/OpenVR
+	$ENV{OPENVR_ROOT}/include 
+	$ENV{OPENVR_ROOT}/include/openvr
+	$ENV{OPENVR_ROOT}/include/OpenVR
+	/usr/local/include
+	/usr/local/include/openvr
+	/usr/local/include/OpenVR
+)
+
+find_library(OPENVR_LIBRARY 
+  NAMES 
+	openvr_api.lib 
+	openvr_api.so 
+	openvr_api
+  HINTS 
+	${CMAKE_INSTALL_PREFIX}/lib 
+	$ENV{OPENVR_ROOT}/lib 
+	/usr/local/lib
+)
 
 set(OPENVR_LIBRARIES ${OPENVR_LIBRARY})
-set(OPENVR_INCLUDE_DIRS ${OPENVR_INCLUDE_DIR} )
+set(OPENVR_INCLUDE_DIRS ${OPENVR_INCLUDE_DIR})
 
 include(FindPackageHandleStandardArgs)
 # handle the QUIETLY and REQUIRED arguments and set LIBXML2_FOUND to TRUE

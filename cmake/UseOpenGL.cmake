@@ -8,7 +8,7 @@
 # or add_library(${PROJECT_NAME} ...)), add the following two lines:
 
 #    include(UseOpenGL)
-#    UseOpenGL(${PROJECT_NAME} PUBLIC)
+#    UseOpenGL(${PROJECT_NAME} PRIVATE)
 
 # The second argument can be either PUBLIC, PRIVATE, or INTERFACE, following the keyword
 # usage described here: 
@@ -30,21 +30,18 @@ macro(UseOpenGL YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
 	# See https://cmake.org/cmake/help/v3.9/module/FindOpenGL.html
 	find_package(OpenGL)
 
-	# If not, either autobuild it or provide an informative error message
 	if (NOT ${OPENGL_FOUND})
-
 	    message(FATAL_ERROR "OpenGL was not found on the system.  MinVR can auto-download and build many dependencies for you, but not OpenGL. It should come pre-installed on your system.")
-
 	endif()
 
     message(STATUS "Ok: OpenGL Found.")
 
-    message(STATUS "Linking imported target OpenGL::GL to target ${YOUR_TARGET}.")
-    target_link_libraries(${YOUR_TARGET} OpenGL::GL)
+    message(STATUS "Linking target ${YOUR_TARGET} with ${INTERFACE_PUBLIC_OR_PRIVATE} dependency OpenGL::GL.")
+    target_link_libraries(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} OpenGL::GL)
 
     if (${OPENGL_GLU_FOUND})
-        message(STATUS "Linking imported target OpenGL::GLU to target ${YOUR_TARGET}.")
-        target_link_libraries(${YOUR_TARGET} OpenGL::GLU)
+        message(STATUS "Linking target ${YOUR_TARGET} with ${INTERFACE_PUBLIC_OR_PRIVATE} dependency OpenGL::GLU.")
+        target_link_libraries(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} OpenGL::GLU)
     endif()
 
 	target_compile_definitions(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} -DUSE_OPENGL)

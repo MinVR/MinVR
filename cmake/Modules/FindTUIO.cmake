@@ -1,12 +1,36 @@
 
-find_path(TUIO_INCLUDE_DIR TUIO.h
-          HINTS $ENV{TUIO_ROOT}/include)
+find_path(TUIO_INCLUDE_DIR 
+	TuioClient.h
+  HINTS 
+	${CMAKE_INSTALL_PREFIX}/include 
+	${CMAKE_INSTALL_PREFIX}/include/TUIO
+	$ENV{TUIO_ROOT}/include 
+	$ENV{TUIO_ROOT}/include/TUIO 
+	/usr/local/include
+	/usr/local/include/TUIO
+)
 
-find_library(TUIO_OPT_LIBRARIES NAMES libTUIO.a TUIO.lib TUIO
-             HINTS $ENV{TUIO_ROOT}/lib)
+find_library(TUIO_OPT_LIBRARIES 
+  NAMES 
+    libTUIO.a 
+    TUIO.lib 
+    TUIO
+  HINTS 
+	${CMAKE_INSTALL_PREFIX}/lib 
+	$ENV{TUIO_ROOT}/lib 
+	/usr/local/lib
+)
           
-find_library(TUIO_DEBUG_LIBRARIES NAMES libTUIOd.a TUIOd.lib TUIOd
-             HINTS $ENV{TUIO_ROOT}/lib)
+find_library(TUIO_DEBUG_LIBRARIES 
+  NAMES 
+    libTUIOd.a 
+    TUIOd.lib 
+    TUIOd
+  HINTS 
+	${CMAKE_INSTALL_PREFIX}/lib 
+	$ENV{TUIO_ROOT}/lib 
+	/usr/local/lib
+)
 
 if(TUIO_OPT_LIBRARIES AND TUIO_DEBUG_LIBRARIES)
 	set(TUIO_OPT_LIBRARIES optimized ${TUIO_OPT_LIBRARIES} )

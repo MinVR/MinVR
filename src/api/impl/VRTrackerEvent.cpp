@@ -29,16 +29,9 @@ VRTrackerEvent::~VRTrackerEvent() {
 
     
 const float * VRTrackerEvent::getTransform() const {
-    
-    // TOM: Check this out and see if you have ideas.  Because everything is const
-    // here, I think we should be able to avoid copying any data and return a
-    // reference to the raw data inside the data index that will be valid as long
-    // as this VRTrackerEvent object is valid, but not sure I am doing it correctly.
-    // Does DataIndex::getValue() always return a copy?
-    
     if (_index.exists("Transform")) {
-        std::vector<float> v = _index.getValue("Transform");
-        return &v.front();
+        const std::vector<float> *v = _index.getValue("Transform");
+        return &(v->front());
     }
     else {
         VRERROR("VRTrackerEvent::getTransform() cannot determine a data field to return for event named " +

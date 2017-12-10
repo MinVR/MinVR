@@ -16,7 +16,7 @@
 #   Dan Keefe, 2017, University of Minnesota 
 #      -- made compiling itests optional since they have external dependencies
 #      -- made all optional builds consistent, these are set using WITH_* flags for both plugins and itests
-#      -- major rework of support for external projects (DEPENDENCIES_AUTOBUILD, DEPENDENCIES_INSTALL)
+#      -- major rework of support for external projects (AUTOBUILD_DEPENDENCIES, DEPENDENCIES_INSTALL)
 #      -- build/install plugins directly to lib/ rather than in subfolders
 #      -- install headers to <prefix>/include/MinVR, extern projects use include/vrpn, include/TUIO, etc.
 #      -- install config files to <prefix>/share/MinVR/config following filesystem standard:
@@ -64,6 +64,9 @@ project(MinVR_Toolkit VERSION 2.0.0)
 # can be safely installed on the same system.  This intentionally does not include a
 # patch number because patches should be small changes that do not change the API.
 set(MINVR_VERSION_STR -${MinVR_Toolkit_VERSION_MAJOR}.${MinVR_Toolkit_VERSION_MINOR})
+
+
+set(MINVR_PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
 
 # Organize folder structure for Xcode, Visual Studio, etc.
@@ -141,6 +144,13 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set (CMAKE_INSTALL_PREFIX "${${PROJECT_NAME}_SOURCE_DIR}/build/install" CACHE PATH "default install path" FORCE )
 endif()
 
+# When we autobuild dependencies, we install them in CMAKE_INSTALL_PREFIX, and then look for them
+# there using find_package().  So, this makes sure the install prefix is in the path that 
+# find_package() searches.
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_INSTALL_PREFIX})
+list(APPEND CMAKE_PREFIX_PATH ${CMAKE_INSTALL_PREFIX})
+
+
 # These are relative to ${CMAKE_INSTALL_PREFIX}
 set(INSTALL_BIN_DEST           bin)
 set(INSTALL_LIB_DEST           lib/MinVR${MINVR_VERSION_STR})
@@ -177,6 +187,8 @@ configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/src/main/VRConfig.h.in
   ${CMAKE_CURRENT_SOURCE_DIR}/src/main/VRConfig.h
 )
+
+
 
 
 ## ************************************************ WHAT PLATFORM-SPECIFIC OPTIONS DO WE NEED?
@@ -245,25 +257,16 @@ add_subdirectory(utils)
 h1("CONFIGURING OPTIONAL PLUGINS")
 
 
-option(DEPENDENCIES_AUTOBUILD "If enabled, dependencies that cmake cannot find on the system will be downloaded to the `external' directory and built and installed as external projects during the MinVR build and install processes." ON)
+option(AUTOBUILD_DEPENDENCIES "If enabled, dependencies that cmake cannot find on the system will be downloaded to the `external' directory and built and installed to CMAKE_INSTALL_PREFIX during the MinVR configure process as a precursor to the MinVR build process." ON)
 
-if (DEPENDENCIES_AUTOBUILD)
-    message(STATUS "DEPENDENCIES_AUTOBUILD is ON.")
+if (AUTOBUILD_DEPENDENCIES)
+    message(STATUS "AUTOBUILD_DEPENDENCIES is ON.")
 else()
-    message(STATUS "DEPENDENCIES_AUTOBUILD is OFF.")
+    message(STATUS "AUTOBUILD_DEPENDENCIES is OFF.")
 endif()
 
-
-option(DEPENDENCIES_INSTALL "If enabled, autobuilt dependencies will be installed to the same CMAKE_INSTALL_PREFIX as MinVR during the MinVR install step." ON)
-
-if (DEPENDENCIES_INSTALL)
-    message(STATUS "DEPENDENCIES_INSTALL is ON.")
-else()
-    message(STATUS "DEPENDENCIES_INSTALL is OFF.")
-endif()
-
-
-set(EXTERNAL_DIR ${CMAKE_SOURCE_DIR}/external)
+set(EXTERNAL_DIR_NAME external)
+set(EXTERNAL_DIR ${MINVR_PROJECT_ROOT}/${EXTERNAL_DIR_NAME})
 file(MAKE_DIRECTORY ${EXTERNAL_DIR})
 
 
@@ -393,21 +396,11 @@ endforeach(P)
 
 h1("CONFIGURING OPTIONAL INTERACTIVE TESTS")
 
-if (DEPENDENCIES_AUTOBUILD)
-    message(STATUS "DEPENDENCIES_AUTOBUILD is ON.")
+if (AUTOBUILD_DEPENDENCIES)
+    message(STATUS "AUTOBUILD_DEPENDENCIES is ON.")
 else()
-    message(STATUS "DEPENDENCIES_AUTOBUILD is OFF.")
+    message(STATUS "AUTOBUILD_DEPENDENCIES is OFF.")
 endif()
-
-
-option(DEPENDENCIES_INSTALL "If enabled, autobuilt dependencies will be installed to the same CMAKE_INSTALL_PREFIX as MinVR during the MinVR install step." ON)
-
-if (DEPENDENCIES_INSTALL)
-    message(STATUS "DEPENDENCIES_INSTALL is ON.")
-else()
-    message(STATUS "DEPENDENCIES_INSTALL is OFF.")
-endif()
-
 
 
 minvr_optional_adddir(

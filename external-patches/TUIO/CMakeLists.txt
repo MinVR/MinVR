@@ -27,13 +27,50 @@ else()
   set(CMAKE_BUILD_POSTFIX "")
 endif()
 
-aux_source_directory(${CMAKE_SOURCE_DIR}/TUIO SOURCEFILES)
-aux_source_directory(${CMAKE_SOURCE_DIR}/oscpack/ip/ SOURCEFILES)
-aux_source_directory(${CMAKE_SOURCE_DIR}/oscpack/osc/ SOURCEFILES)
+set(SOURCEFILES 
+  TUIO/TuioClient.cpp
+  TUIO/TuioClient.h
+  TUIO/TuioContainer.h
+  TUIO/TuioCursor.h
+  TUIO/TuioListener.h
+  TUIO/TuioObject.h
+  TUIO/TuioPoint.h
+  TUIO/TuioServer.cpp
+  TUIO/TuioServer.h
+  TUIO/TuioTime.cpp
+  TUIO/TuioTime.h
+
+  oscpack/ip/IpEndpointName.cpp
+  oscpack/ip/IpEndpointName.h
+  oscpack/ip/NetworkingUtils.h
+  oscpack/ip/PacketListener.h
+  oscpack/ip/TimerListener.h
+  oscpack/ip/UdpSocket.h
+
+  oscpack/osc/MessageMappingOscPacketListener.h
+  oscpack/osc/OscException.h
+  oscpack/osc/OscHostEndianness.h
+  oscpack/osc/OscOutboundPacketStream.cpp
+  oscpack/osc/OscOutboundPacketStream.h
+  oscpack/osc/OscPacketListener.h
+  oscpack/osc/OscPrintReceivedElements.cpp
+  oscpack/osc/OscPrintReceivedElements.h
+  oscpack/osc/OscReceivedElements.cpp
+  oscpack/osc/OscReceivedElements.h
+  oscpack/osc/OscTypes.cpp
+  oscpack/osc/OscTypes.h
+)
+
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  aux_source_directory(${CMAKE_SOURCE_DIR}/oscpack/ip/win32/ SOURCEFILES)
+  set(SOURCEFILES ${SOURCEFILES}
+    oscpack/ip/win32/NetworkingUtils.cpp
+    oscpack/ip/win32/UdpSocket.cpp
+  )
 else()
-  aux_source_directory(${CMAKE_SOURCE_DIR}/oscpack/ip/posix/ SOURCEFILES)
+  set(SOURCEFILES ${SOURCEFILES}
+    oscpack/ip/posix/NetworkingUtils.cpp
+    oscpack/ip/posix/UdpSocket.cpp
+  )
 endif()  
 
 set (CMAKE_VERBOSE_MAKEFILE TRUE)
@@ -41,7 +78,7 @@ set (CMAKE_VERBOSE_MAKEFILE TRUE)
 # Used for compiling in subdirectories of the project
 include_directories (
   .
-  ${CMAKE_SOURCE_DIR}/oscpack
+  oscpack
 )
 
 
@@ -80,6 +117,6 @@ install( TARGETS ${PROJECT_NAME}
          ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
          RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/TUIO/ DESTINATION "${CMAKE_INSTALL_PREFIX}/include")
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/oscpack/ip DESTINATION "${CMAKE_INSTALL_PREFIX}/include")
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/oscpack/osc DESTINATION "${CMAKE_INSTALL_PREFIX}/include")
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/TUIO/ DESTINATION "${CMAKE_INSTALL_PREFIX}/include/TUIO")
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/oscpack/ip DESTINATION "${CMAKE_INSTALL_PREFIX}/include/TUIO")
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/oscpack/osc DESTINATION "${CMAKE_INSTALL_PREFIX}/include/TUIO")

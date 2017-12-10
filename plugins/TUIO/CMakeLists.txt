@@ -36,12 +36,12 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../src>  # for headers when building
     $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DEST}>              # for client in install mode
 )
-target_link_libraries(${PROJECT_NAME} MinVR)
+target_link_libraries(${PROJECT_NAME} PUBLIC MinVR)
 
 
 # Setup dependency on TUIO:
 include(UseTUIO)
-UseTUIO(${PROJECT_NAME} PUBLIC)
+UseTUIO(${PROJECT_NAME} PRIVATE)
 
 
 # Installation:
