@@ -42,6 +42,8 @@ macro(UseFreeGLUT YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
     if (${FreeGLUT_FOUND})
 
         message(STATUS "Ok: FreeGLUT Found.")
+        message(STATUS "FreeGLUT headers: ${FREEGLUT_INCLUDE_DIR}")
+        message(STATUS "FreeGLUT libs: ${FREEGLUT_LIBRARIES}")
 
 
     # Case 2: Download, build and install it now for the user, then try find_package() again
@@ -72,6 +74,9 @@ macro(UseFreeGLUT YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
         if (NOT ${FREEGLUT_FOUND})
             message(FATAL_ERROR "MinVR did an autobuild of the FreeGLUT dependency, and it should now be installed at the prefix ${CMAKE_INSATALL_PREFIX}, but cmake is still unable to find it with find_package().")
         endif()
+
+        message(STATUS "FreeGLUT headers: ${FREEGLUT_INCLUDE_DIR}")
+        message(STATUS "FreeGLUT libs: ${FREEGLUT_LIBRARIES}")
 
 
     # Case 3: The user does not want us to build it, so error out when not found.

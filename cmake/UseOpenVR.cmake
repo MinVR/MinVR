@@ -36,6 +36,8 @@ macro(UseOpenVR YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
     if (${OpenVR_FOUND})
 
         message(STATUS "Ok: OpenVR Found.")
+        message(STATUS "OpenVR headers: ${OPENVR_INCLUDE_DIR}")
+        message(STATUS "OpenVR libs: ${OPENVR_LIBRARIES}")
 
 
     # Case 2: Download, build and install it now for the user, then try find_package() again
@@ -69,6 +71,9 @@ macro(UseOpenVR YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
         if (NOT ${OPENVR_FOUND})
             message(FATAL_ERROR "MinVR did an autobuild of the OpenVR dependency, and it should now be installed at the prefix ${CMAKE_INSATALL_PREFIX}, but cmake is still unable to find it with find_package().")
         endif()
+
+        message(STATUS "OpenVR headers: ${OPENVR_INCLUDE_DIR}")
+        message(STATUS "OpenVR libs: ${OPENVR_LIBRARIES}")
 
 
     # Case 3: The user does not want us to build it, so error out when not found.
