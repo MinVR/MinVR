@@ -27,7 +27,8 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT OR "${CMAKE_INSTALL_PREFIX}" STR
     set (CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "default install path" FORCE )
 endif()
 
-list(APPEND CMAKE_MODULE_PATH  ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+list(APPEND CMAKE_MODULE_PATH  ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_INSTALL_PREFIX})
+list(INSERT CMAKE_PREFIX_PATH 0 ${CMAKE_INSTALL_PREFIX})
 
 
 
@@ -88,7 +89,7 @@ endif()
 
 
 # GLM (GLM's installation provides a cmake config package with the imported target 'glm')
-find_package(GLM CONFIG)
+find_package(glm CONFIG)
 if (NOT ${GLM_FOUND})
     message(STATUS "Package not found (glm): Ok, will download, build, and install for you.")
     message(STATUS "Download dir: ${EXTERNAL_DIR}.")
@@ -109,9 +110,11 @@ if (NOT ${GLM_FOUND})
     find_package(GLM CONFIG)
 
     if (NOT ${GLM_FOUND})
-        message(FATAL_ERROR "GLM was autobuilt for you, and it should now be installed at the prefix ${CMAKE_INSATALL_PREFIX}, but cmake is still unable to find it with find_package().")
+        message(FATAL_ERROR "GLM was autobuilt for you, and it should now be installed at the prefix ${CMAKE_INSTALL_PREFIX}, but cmake is still unable to find it with find_package().")
     endif()
 endif()
+
+
 
 # At this point, one or the other version of find_package() succeeded.
 message(STATUS ${GLM_INCLUDE_DIRS})
@@ -141,7 +144,7 @@ if (WIN32)
         find_package(GLEW)
 
         if (NOT ${GLEW_FOUND})
-            message(FATAL_ERROR "GLEW was autobuilt for you, and it should now be installed at the prefix ${CMAKE_INSATALL_PREFIX}, but cmake is still unable to find it with find_package().")
+            message(FATAL_ERROR "GLEW was autobuilt for you, and it should now be installed at the prefix ${CMAKE_INSTALL_PREFIX}, but cmake is still unable to find it with find_package().")
         endif()
     endif()
 
