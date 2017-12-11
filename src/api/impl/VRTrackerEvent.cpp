@@ -37,8 +37,8 @@ const float * VRTrackerEvent::getTransform() const {
     // Does DataIndex::getValue() always return a copy?
     
     if (_index.exists("Transform")) {
-        std::vector<float> v = _index.getValue("Transform");
-        return &v.front();
+		const std::vector<float> *v = _index.getValue("Transform");
+        return &(v->front());
     }
     else {
         VRERROR("VRTrackerEvent::getTransform() cannot determine a data field to return for event named " +

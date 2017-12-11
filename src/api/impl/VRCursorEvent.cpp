@@ -29,8 +29,8 @@ VRCursorEvent::~VRCursorEvent() {
     
 const float * VRCursorEvent::getPos() const {
     if (_index.exists("Position")) {
-        std::vector<float> v = _index.getValue("Position");
-        return &v.front();
+        const std::vector<float>* v = _index.getValue("Position");
+        return &(v->front());
     }
     else {
         VRERROR("VRCursorEvent::getPos() cannot determine a data field to return for event named " +
@@ -41,8 +41,8 @@ const float * VRCursorEvent::getPos() const {
     
 const float * VRCursorEvent::getNormalizedPos() const {
     if (_index.exists("NormalizedPosition")) {
-        std::vector<float> v = _index.getValue("NormalizedPosition");
-        return &v.front();
+        const std::vector<float>* v = _index.getValue("NormalizedPosition");
+        return &(v->front());
     }
     else {
         VRERROR("VRCursorEvent::getNormalizedPos() cannot determine a data field to return for event named " +

@@ -1,6 +1,11 @@
 #include "net/VRNetClient.h"
 #include "config/VRDataIndex.h"
 
+#ifdef WIN32
+#include <process.h>
+#define getpid _getpid
+#endif
+
 // Program to launch one VRNetClient that connects to server.  Created
 // client executes syncEventDataAcrossAllNodes.  The program is
 // intended to be executed by a forked child process in the network
