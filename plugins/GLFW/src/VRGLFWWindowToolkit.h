@@ -26,20 +26,20 @@ class VRMain;
 /** Knows how to create windows using the GLFW library for cross-platform
     graphics window support and creates a virtual VRInputDevice to collect
     keyboard and mouse input from these windows.
- */ 
+ */
 class VRGLFWWindowToolkit : public VRWindowToolkit {
 public:
 	PLUGIN_API VRGLFWWindowToolkit(VRMainInterface *vrMain);
 	PLUGIN_API virtual ~VRGLFWWindowToolkit();
 
-    PLUGIN_API std::string getName() { return "VRGLFWWindowToolkit"; }
-  
+    PLUGIN_API std::string getName() const { return "VRGLFWWindowToolkit"; }
+
 	PLUGIN_API int createWindow(VRWindowSettings settings);
 
 	PLUGIN_API void makeWindowCurrent(int windowID);
 
     PLUGIN_API void destroyWindow(int windowID);
-  
+
 	PLUGIN_API void swapBuffers(int windowID);
 
 	PLUGIN_API void getFramebufferSize(int windowID, int& width, int& height);
