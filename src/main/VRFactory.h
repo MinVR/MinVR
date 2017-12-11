@@ -27,12 +27,12 @@ public:
   template <typename T>
   T* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &dataContainer);
 
-  /// Plugins call this method to register an item type which has a static create method with the same signature
-  /// as an the VRItemFactory create method.
+  /// Plugins call this method to register an item type which has a static create
+  /// method with the same signature as the VRItemFactory create method.
   template <typename ParentType, typename T>
   void registerItemType(const std::string typeName);
 
-  /// Plugins call this mehod to add a new "sub-factory" to this master factory
+  /// Plugins call this method to add a new "sub-factory" to this master factory.
   void addSubFactory(VRItemFactory* factory);
 
 protected:

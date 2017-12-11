@@ -99,27 +99,27 @@ VRDisplayNode* VRGraphicsWindowNode::create(VRMainInterface *vrMain, VRDataIndex
     }
 
   VRWindowSettings settings;
-  settings.xpos = config->getValue("XPos", nameSpace);
-  settings.ypos = config->getValue("YPos", nameSpace);
-  settings.width = config->getValue("Width", nameSpace);
-  settings.height = config->getValue("Height", nameSpace);
-  settings.border = (int)config->getValue("Border", nameSpace);
-  settings.visible = (int)config->getValue("Visible", nameSpace);
-  settings.caption = std::string(config->getValue("Caption", nameSpace));
-  settings.quadBuffered = (int)config->getValue("QuadBuffered", nameSpace);
-  settings.sharedContextGroupID = int(config->getValue("SharedContextGroupID", nameSpace));
-  settings.contextVersionMajor = int(config->getValue("ContextVersionMajor", nameSpace));
-  settings.contextVersionMinor = int(config->getValue("ContextVersionMinor", nameSpace));
-  settings.rgbBits = int(config->getValue("RGBBits", nameSpace));
-  settings.alphaBits = int(config->getValue("AlphaBits", nameSpace));
-  settings.depthBits = int(config->getValue("DepthBits", nameSpace));
-  settings.stencilBits = int(config->getValue("StencilBits", nameSpace));
-  settings.fullScreen = int(config->getValue("FullScreen", nameSpace));
-  settings.resizable = int(config->getValue("Resizable", nameSpace));
-  settings.allowMaximize = int(config->getValue("AllowMaximize", nameSpace));
-  settings.gpuAffinity = int(config->getValue("UseGPUAffinity", nameSpace));
-  settings.debugContext = int(config->getValue("UseDebugContext", nameSpace));
-  settings.msaaSamples = int(config->getValue("MSAASamples", nameSpace));
+  settings.xpos = config->getValueWithDefault("XPos", 100, nameSpace);
+  settings.ypos = config->getValueWithDefault("YPos", 100, nameSpace);
+  settings.width = config->getValueWithDefault("Width", 640, nameSpace);
+  settings.height = config->getValueWithDefault("Height", 640, nameSpace);
+  settings.border = (int)config->getValueWithDefault("Border", 0, nameSpace);
+  settings.visible = (int)config->getValueWithDefault("Visible", 0, nameSpace);
+  settings.caption = std::string(config->getValueWithDefault("Caption", std::string("MinVR Window"), nameSpace));
+  settings.quadBuffered = (int)config->getValueWithDefault("QuadBuffered", 0, nameSpace);
+  settings.sharedContextGroupID = int(config->getValueWithDefault("SharedContextGroupID", -1, nameSpace));
+  settings.contextVersionMajor = int(config->getValueWithDefault("ContextVersionMajor", 1, nameSpace));
+  settings.contextVersionMinor = int(config->getValueWithDefault("ContextVersionMinor", 2, nameSpace));
+  settings.rgbBits = int(config->getValueWithDefault("RGBBits", 8, nameSpace));
+  settings.alphaBits = int(config->getValueWithDefault("AlphaBits", 8, nameSpace));
+  settings.depthBits = int(config->getValueWithDefault("DepthBits", 24, nameSpace));
+  settings.stencilBits = int(config->getValueWithDefault("StencilBits", 8, nameSpace));
+  settings.fullScreen = int(config->getValueWithDefault("FullScreen", 0, nameSpace));
+  settings.resizable = int(config->getValueWithDefault("Resizable", 1, nameSpace));
+  settings.allowMaximize = int(config->getValueWithDefault("AllowMaximize", 1, nameSpace));
+  settings.gpuAffinity = int(config->getValueWithDefault("UseGPUAffinity", 1, nameSpace));
+  settings.debugContext = int(config->getValueWithDefault("UseDebugContext", 0, nameSpace));
+  settings.msaaSamples = int(config->getValueWithDefault("MSAASamples", 0, nameSpace));
 
   //  std::cout << "Window corners: " << settings.xpos << ", " << settings.ypos << ", " << settings.width << ", " << settings.height << std::endl;
 
