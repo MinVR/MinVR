@@ -41,9 +41,9 @@ else()
 		file(TO_CMAKE_PATH "$ENV{ProgramW6432}" _progfiles)
 	else()
 		set(_libsuffixes lib)
-		if(NOT "$ENV{ProgramFiles(x86)}" STREQUAL "")
+		if(NOT "$ENV{ProgramFiles\(x86\)}" STREQUAL "")
 			# 32-bit dir: only set on win64
-			file(TO_CMAKE_PATH "$ENV{ProgramFiles(x86)}" _progfiles)
+			file(TO_CMAKE_PATH "$ENV{ProgramFiles\(x86\)}" _progfiles)
 		else()
 			# 32-bit dir on win32, useless to us on win64
 			file(TO_CMAKE_PATH "$ENV{ProgramFiles}" _progfiles)
@@ -55,6 +55,7 @@ else()
 		NAMES
 		quat.h
 		HINTS
+                ${CMAKE_INSTALL_PREFIX}
 		"${QUATLIB_ROOT_DIR}"
 		ENV CPATH
 		PATH_SUFFIXES
@@ -69,8 +70,10 @@ else()
 	find_library(QUATLIB_LIBRARY
 		NAMES
 		quat.lib
+                quatd.lib
 		libquat.a
 		HINTS
+                ${CMAKE_INSTALL_PREFIX}
 		"${QUATLIB_ROOT_DIR}"
 		ENV LIBRARY_PATH # For OSCAR modules at Brown/CCV
 		PATH_SUFFIXES

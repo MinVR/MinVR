@@ -41,9 +41,9 @@ if("${CMAKE_SIZEOF_VOID_P}" MATCHES "8")
 	file(TO_CMAKE_PATH "$ENV{ProgramW6432}" _progfiles)
 else()
 	set(_libsuffixes lib)
-	if(NOT "$ENV{ProgramFiles(x86)}" STREQUAL "")
+	if(NOT "$ENV{ProgramFiles\(x86\)}" STREQUAL "")
 		# 32-bit dir: only set on win64
-		file(TO_CMAKE_PATH "$ENV{ProgramFiles(x86)}" _progfiles)
+		file(TO_CMAKE_PATH "$ENV{ProgramFiles\(x86\)}" _progfiles)
 	else()
 		# 32-bit dir on win32, useless to us on win64
 		file(TO_CMAKE_PATH "$ENV{ProgramFiles}" _progfiles)
@@ -61,6 +61,7 @@ find_path(VRPN_INCLUDE_DIR
 	include
 	include/vrpn
 	HINTS
+        ${CMAKE_INSTALL_PREFIX}
 	"${VRPN_ROOT_DIR}"
 	ENV CPATH # For OSCAR modules at Brown/CCV
 	PATHS
@@ -71,9 +72,11 @@ find_path(VRPN_INCLUDE_DIR
 find_library(VRPN_LIBRARY
 	NAMES
 	vrpn
+        vrpnd
 	PATH_SUFFIXES
 	${_libsuffixes}
 	HINTS
+        ${CMAKE_INSTALL_PREFIX}
 	"${VRPN_ROOT_DIR}"
 	ENV LIBRARY_PATH # For OSCAR modules at Brown/CCV
 	PATHS
@@ -84,9 +87,11 @@ find_library(VRPN_LIBRARY
 find_library(VRPN_SERVER_LIBRARY
 	NAMES
 	vrpnserver
+        vrpnserverd
 	PATH_SUFFIXES
 	${_libsuffixes}
 	HINTS
+        ${CMAKE_INSTALL_PREFIX}
 	"${VRPN_ROOT_DIR}"
 	ENV LIBRARY_PATH # For OSCAR modules at Brown/CCV
 	PATHS

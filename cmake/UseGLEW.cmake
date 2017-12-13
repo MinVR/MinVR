@@ -56,7 +56,7 @@ macro(UseGLEW YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
 
         MinVRExternalProject_BuildAndInstallNow(
             GLEW
-            src
+            src/build/cmake
         )
 
         # Try find_package() again

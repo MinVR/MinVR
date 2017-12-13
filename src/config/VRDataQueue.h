@@ -21,9 +21,9 @@
 // These are mostly for the iterator.
 #include <cassert>      // Provides assert
 #include <cstddef>      // Provides ptrdiff_t
-#include <iterator>     // iterator
-#include <type_traits>  // remove_cv
-#include <utility>      // swap
+//#include <iterator>     // iterator
+//#include <type_traits>  // remove_cv
+//#include <utility>      // swap
 
 
 #ifdef WIN32
