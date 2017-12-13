@@ -36,6 +36,24 @@
 #      -- added using cmake configure_file() command with VRConfig.h.in to pass MinVR version numbers
 #         and build and install dirs to the MinVR library.  Updated searching for config files and
 #         plugins to use these paths.
+#      -- changed to building dependencies during cmake's configure process rather than the build process.
+#         This is different than the way cmake's ExternalProject_add() command works, but I think it is
+#         preferable because there is a chicken and the egg problem with building dependencies.  If the
+#         depends do not exist at the time MinVR is configured, then it is impossible to load them in
+#         as imported targets, but with ExternalProject_add, the dependencies are not built until after
+#         MinVR is configured.  The proposed solution here is to download, build, and install all 
+#         dependencies during the configure step if find_package() is unable to find them already installed
+#         on the system.  Then, once they are installed, we can simply re-run find_package() and continue
+#         on with configuring MinVR as if they were found in the first place.  One other advantage of this
+#         approach is that the way MinVR links with external libs is exactly the same (same variables are
+#         set, etc.) regardless of whether the external lib is found with find_package() or whether we build
+#         it ourselves.  In our prior approach this was not the case, so we were maintaining two approaches
+#         for each dependency.
+#      -- not part of this main CMakeLists.txt file, but also added an examples directory with a 
+#         CavePainting-Lite example project.  It is a completely separate cmake build system that
+#         demonstrates: 1) how to link with MinVR using the new MinVRConfig.cmake config package that gets
+#         installed with MinVR.  2) how to access tracker and button events -- basically an example of a
+#         real VR program rather than just a test to verify rendering works, as in the itest-* apps.       
 #   ...
 
 
