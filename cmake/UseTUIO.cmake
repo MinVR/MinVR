@@ -50,7 +50,7 @@ macro(UseTUIO YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
         MinVRExternalProject_Download(
             TUIO
             URL http://prdownloads.sourceforge.net/reactivision/TUIO_CPP-1.4.zip
-            PATCH_COMMAND ${CMAKE_COMMAND} -E copy ${MINVR_PROJECT_ROOT}/external-patches/TUIO/CMakeLists.txt <SOURCE_DIR> && ${CMAKE_COMMAND} -E copy ${MINVR_PROJECT_ROOT}/external-patches/TUIO/TuioServer.cpp <SOURCE_DIR>/TUIO
+            PATCH_COMMAND \"${CMAKE_COMMAND}\" -E copy ${MINVR_PROJECT_ROOT}/external-patches/TUIO/CMakeLists.txt <SOURCE_DIR> && \"${CMAKE_COMMAND}\" -E copy ${MINVR_PROJECT_ROOT}/external-patches/TUIO/TuioServer.cpp <SOURCE_DIR>/TUIO
         )
 
         if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")

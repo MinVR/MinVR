@@ -69,7 +69,7 @@ macro(UseOpenVR YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
         # We just intalled it to CMAKE_INSTALL_PREFIX, and the root CMakeLists.txt puts this in the
         # CMAKE_MODULE_PATH.  So, if we were not able to find the package now, then something is very wrong.
         if (NOT ${OPENVR_FOUND})
-            message(FATAL_ERROR "MinVR did an autobuild of the OpenVR dependency, and it should now be installed at the prefix ${CMAKE_INSATALL_PREFIX}, but cmake is still unable to find it with find_package().")
+            message(FATAL_ERROR "MinVR did an autobuild of the OpenVR dependency, and it should now be installed at the prefix ${CMAKE_INSTALL_PREFIX}, but cmake is still unable to find it with find_package().")
         endif()
 
         message(STATUS "OpenVR headers: ${OPENVR_INCLUDE_DIR}")

@@ -66,10 +66,12 @@ function(MinVRExternalProject_BuildAndInstallNow EXT_PROJECT_NAME RELPATH_TO_CMA
 
     # any extra args to the function are interpreted as arguments for the cmake config process
     set(CMAKE_CONFIG_OPTIONS ${ARGN})
-    string (REGEX REPLACE "(^|[^\\\\]);" "\\1 " CMAKE_CONFIG_OPTIONS "${CMAKE_CONFIG_OPTIONS}")
 
     # always set the install prefix to be the same as for MinVR
-    set(CMAKE_CONFIG_OPTIONS ${CMAKE_CONFIG_OPTIONS} -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX})
+    list(APPEND CMAKE_CONFIG_OPTIONS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX})
+
+    #string (REGEX REPLACE "(^|[^\\\\]);" "\\1 " CMAKE_CONFIG_OPTIONS "${CMAKE_CONFIG_OPTIONS}")
+
 
     set(SRC_DIR "${EXTERNAL_DIR}/${EXT_PROJECT_NAME}/${RELPATH_TO_CMAKELISTS}")
     set(BUILD_DIR "${CMAKE_BINARY_DIR}/${EXTERNAL_DIR_NAME}/${EXT_PROJECT_NAME}")
@@ -79,6 +81,7 @@ function(MinVRExternalProject_BuildAndInstallNow EXT_PROJECT_NAME RELPATH_TO_CMA
     h2("Generating build files for external project ${EXT_PROJECT_NAME}.")
     message(STATUS "Using source dir: ${SRC_DIR}")
     message(STATUS "Using build dir: ${BUILD_DIR}")
+    message(STATUS "Config options: ${CMAKE_CONFIG_OPTIONS}")
 
     execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" ${SRC_DIR} ${CMAKE_CONFIG_OPTIONS} WORKING_DIRECTORY ${BUILD_DIR})
 
