@@ -1,4 +1,5 @@
 #include "VRSearchPath.h"
+#include "VRConfig.h"
 
 namespace MinVR {
 
@@ -65,34 +66,42 @@ std::string VRSearchPath::getPath() const {
   return out.substr(0, out.length() - 1);
 }
 
+std::string VRSearchPath::getFullFilenames(const std::string &desiredFile) const {
+    
+    std::string out;
+    for (std::list<std::string>::const_iterator it = _searchPath.begin();
+         it != _searchPath.end(); it++)
+        out += _selectFile(desiredFile, (*it)) + ":";
+    
+    return out.substr(0, out.length() - 1);
+}
+    
 ///
 // Here is the search path order that MinVR searches for plugins:
 //
-//    1. Plugin path specified in config ("/PluginPath" in VRDataIndex)
+//    1. Plugin path specified in config ("PluginPath" in VRDataIndex)
 //    2. Working directory (".")
-//    3. <Working directory>/plugins ("./plugins")
-//    4. Custom user defined paths (i.e. vrmain->addPluginSearchPath(mypath))
-//    5. <Binary directory>/../plugins ("build/bin/../plugins")
-//    6. <Install directory>/plugins ("install/plugins")
-//    7. <$MINVR_ROOT>/plugins ("$MINVR_ROOT/plugins")
+//    3. In the MinVR installation pointed to by the $MINVR_ROOT$ envvar
+//    4. In the MinVR installation prefix #defined in VRConfig.h (set by cmake)
+//    5. In the MinVR build directory #defined in VRConfig.h (set by cmake)
 VRSearchPlugin::VRSearchPlugin() {
 
-  // 1. current working directory
+  // 1. already added externally
+
+  // 2. current working directory
   addPathEntry("./", false);
 
-  // 2. config subdir within current working directory
-  addPathEntry("./plugins/", false);
+  // 3. installation pointed to by the $MINVR_ROOT$ envvar
+  addPathEntry("${MINVR_ROOT}/lib/MinVR" MINVR_VERSION_STR "/", false);
+  addPathEntry("${MINVR_ROOT}/bin/MinVR" MINVR_VERSION_STR "/", false);
 
-  // 3. running from within the build tree from build/bin or tests-*/testname
-  addPathEntry("../plugins/", false);
+  // 4. installation prefix #defined in VRConfig.h (set by cmake)
+  addPathEntry(MINVR_INSTALL_PLUGIN_DIR "/", false);
 
-  // 4. an installed version based on MINVR_ROOT envvar
-  addPathEntry("${MINVR_ROOT}/plugins/", false);
-
-  // 5. an installed version based on the INSTALL_PREFIX set with cmake
-  addPathEntry(std::string(INSTALLPATH) + "/plugins", false);
-
+  // 5. build directory #defined in VRConfig.h (set by cmake)
+  addPathEntry(MINVR_BUILD_PLUGIN_DIR "/", false);
 }
+
 
 /// Same as VRSearchPath, but built to accommodate the specific semantics of
 /// the configuration file naming.
@@ -101,18 +110,21 @@ VRSearchConfig::VRSearchConfig() {
   // 1. current working directory
   addPathEntry("./", false);
 
-  // 2. config subdir within current working directory
+  // 2. config or minvr subdirs within current working directory
   addPathEntry("./config/", false);
+  addPathEntry("./Config/", false);
+  addPathEntry("./minvr/", false);
+  addPathEntry("./MinVR/", false);
 
-  // 3. running from within the build tree from build/bin or tests-*/testname
-  addPathEntry("../config/", false);
-  addPathEntry("../../config/", false);
+  // 3. installation pointed to by the $MINVR_ROOT$ envvar
+  addPathEntry("${MINVR_ROOT}/share/MinVR" MINVR_VERSION_STR "/config", false);
 
-  // 4. an installed version based on MINVR_ROOT envvar
-  addPathEntry("${MINVR_ROOT}/config/", false);
+  // 4. installation prefix #defined in VRConfig.h (set by cmake)
+  addPathEntry(MINVR_INSTALL_CONFIG_DIR "/", false);
 
-  // 5. an installed version based on the INSTALL_PREFIX set with cmake
-  addPathEntry(std::string("${CMAKE_INSTALL_PREFIX}") + "/config/", false);
+  // 5. build directory #defined in VRConfig.h (set by cmake)
+  addPathEntry(MINVR_BUILD_CONFIG_DIR "/", false);
 }
 
-}
+
+} // namespace

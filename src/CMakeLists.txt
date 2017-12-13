@@ -1,97 +1,39 @@
-# ================================================================================
-#
-# This file is part of the MinVR project.
-#
-# File: CMakeLists.txt
-#
-# Original Author(s) of this File:
-# 	MinVR Core Team
-#
-# Author(s) of Significant Updates/Modifications to the File:
-# 	...
-#
-# -----------------------------------------------------------------------------------
-# Copyright (c) 2015 Regents of the University of Minnesota and Brown University
-# All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without modification,
-# are permitted provided that the following conditions are met:
-#
-# * Redistributions of source code must retain the above copyright notice, this
-#   list of conditions and the following disclaimer.
-#
-# * Redistributions in binary form must reproduce the above copyright notice, this
-#   list of conditions and the following disclaimer in the documentation and/or
-#   other materials provided with the distribution.
-#
-# * The name of the University of Minnesota, nor the names of its
-#   contributors may be used to endorse or promote products derived from
-#   this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-# ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# ================================================================================
-
-
-project(libMinVR)
-
-
-set(vr_config_files
-  ${vr_src_dir}/../config/3DTV.minvr
-  ${vr_src_dir}/../config/default.minvr
-  ${vr_src_dir}/../config/desktop-oldopengl.minvr
-  ${vr_src_dir}/../config/desktop.minvr
-  ${vr_src_dir}/../config/desktop-sidebyside.minvr
-  ${vr_src_dir}/../config/desktop-multithreaded.minvr
-  ${vr_src_dir}/../config/HTC_Vive.minvr
-  ${vr_src_dir}/../config/ivlabcave_multithreaded.minvr
-  ${vr_src_dir}/../config/ivlabcave.minvr
-  ${vr_src_dir}/../config/ivlabcavefront.minvr
-  ${vr_src_dir}/../config/ivlabcave-desktop.minvr
-  ${vr_src_dir}/../config/YURT.minvr
-)
+# This file is part of the MinVR cmake build system.  
+# See the main MinVR/CMakeLists.txt file for authors, copyright, and license info.
 
 
 set(vr_config_cpp
-  ${vr_src_dir}/config/VRDataIndex.cpp
-  ${vr_src_dir}/config/VRDataQueue.cpp
-  ${vr_src_dir}/config/VRDatum.cpp
-  ${vr_src_dir}/config/VRDatumFactory.cpp
-  ${vr_src_dir}/config/Cxml/attribute.cpp
-  ${vr_src_dir}/config/Cxml/Cxml.cpp
-  ${vr_src_dir}/config/Cxml/element.cpp
-  ${vr_src_dir}/config/Cxml/utils.cpp
-  ${vr_src_dir}/config/Cxml/XML.cpp
-  ${vr_src_dir}/config/base64/base64.cpp
+  src/config/VRDataIndex.cpp
+  src/config/VRDataQueue.cpp
+  src/config/VRDatum.cpp
+  src/config/VRDatumFactory.cpp
+  src/config/Cxml/attribute.cpp
+  src/config/Cxml/Cxml.cpp
+  src/config/Cxml/element.cpp
+  src/config/Cxml/utils.cpp
+  src/config/Cxml/XML.cpp
+  src/config/base64/base64.cpp
 )
 
 set(vr_config_h_config
-  ${vr_src_dir}/config/VRCoreTypes.h
-  ${vr_src_dir}/config/VRDataIndex.h
-  ${vr_src_dir}/config/VRDataQueue.h
-  ${vr_src_dir}/config/VRDatum.h
-  ${vr_src_dir}/config/VRDatumFactory.h
-  ${vr_src_dir}/config/VRWritable.h
+  src/config/VRCoreTypes.h
+  src/config/VRDataIndex.h
+  src/config/VRDataQueue.h
+  src/config/VRDatum.h
+  src/config/VRDatumFactory.h
+  src/config/VRWritable.h
 )
 
 set(vr_config_h_cxml
-  ${vr_src_dir}/config/Cxml/attribute.h
-  ${vr_src_dir}/config/Cxml/Cxml.h
-  ${vr_src_dir}/config/Cxml/element.h
-  ${vr_src_dir}/config/Cxml/utils.h
-  ${vr_src_dir}/config/Cxml/XML.h
+  src/config/Cxml/attribute.h
+  src/config/Cxml/Cxml.h
+  src/config/Cxml/element.h
+  src/config/Cxml/utils.h
+  src/config/Cxml/XML.h
 )
 
 set(vr_config_h_base
-  ${vr_src_dir}/config/base64/base64.h
+  src/config/base64/base64.h
 )
 
 set(vr_config_h
@@ -101,135 +43,135 @@ set(vr_config_h
 )
 
 set(vr_display_cpp
-  ${vr_src_dir}/display/VRConsoleNode.cpp
-  ${vr_src_dir}/display/VRDisplayNode.cpp
-  ${vr_src_dir}/display/VRGraphicsWindowNode.cpp
-  ${vr_src_dir}/display/VRGroupNode.cpp
-  ${vr_src_dir}/display/VRHeadTrackingNode.cpp
-  ${vr_src_dir}/display/VROffAxisProjectionNode.cpp
-  ${vr_src_dir}/display/VRProjectionNode.cpp
-  ${vr_src_dir}/display/VRStereoNode.cpp
-  ${vr_src_dir}/display/VRViewportNode.cpp
-  ${vr_src_dir}/display/VRLookAtNode.cpp
+  src/display/VRConsoleNode.cpp
+  src/display/VRDisplayNode.cpp
+  src/display/VRGraphicsWindowNode.cpp
+  src/display/VRGroupNode.cpp
+  src/display/VRHeadTrackingNode.cpp
+  src/display/VROffAxisProjectionNode.cpp
+  src/display/VRProjectionNode.cpp
+  src/display/VRStereoNode.cpp
+  src/display/VRViewportNode.cpp
+  src/display/VRLookAtNode.cpp
 )
 
 set(vr_display_h
-  ${vr_src_dir}/display/VRConsoleNode.h
-  ${vr_src_dir}/display/VRDisplayNode.h
-  ${vr_src_dir}/display/VRGraphicsToolkit.h
-  ${vr_src_dir}/display/VRGraphicsWindowNode.h
-  ${vr_src_dir}/display/VRGroupNode.h
-  ${vr_src_dir}/display/VRHeadTrackingNode.h
-  ${vr_src_dir}/display/VROffAxisProjectionNode.h
-  ${vr_src_dir}/display/VRProjectionNode.h
-  ${vr_src_dir}/display/VRStereoNode.h
-  ${vr_src_dir}/display/VRViewportNode.h
-  ${vr_src_dir}/display/VRWindowToolkit.h
-  ${vr_src_dir}/display/VRLookAtNode.h
+  src/display/VRConsoleNode.h
+  src/display/VRDisplayNode.h
+  src/display/VRGraphicsToolkit.h
+  src/display/VRGraphicsWindowNode.h
+  src/display/VRGroupNode.h
+  src/display/VRHeadTrackingNode.h
+  src/display/VROffAxisProjectionNode.h
+  src/display/VRProjectionNode.h
+  src/display/VRStereoNode.h
+  src/display/VRViewportNode.h
+  src/display/VRWindowToolkit.h
+  src/display/VRLookAtNode.h
 )
 
 set(vr_input_cpp
-  ${vr_src_dir}/input/VRFakeHandTrackerDevice.cpp
-  ${vr_src_dir}/input/VRFakeHeadTrackerDevice.cpp
-  ${vr_src_dir}/input/VRFakeTrackerDevice.cpp
+  src/input/VRFakeHandTrackerDevice.cpp
+  src/input/VRFakeHeadTrackerDevice.cpp
+  src/input/VRFakeTrackerDevice.cpp
 )
 
 set(vr_input_h
-  ${vr_src_dir}/input/VRFakeHandTrackerDevice.h
-  ${vr_src_dir}/input/VRFakeHeadTrackerDevice.h
-  ${vr_src_dir}/input/VRFakeTrackerDevice.h
-  ${vr_src_dir}/input/VRInputDevice.h
+  src/input/VRFakeHandTrackerDevice.h
+  src/input/VRFakeHeadTrackerDevice.h
+  src/input/VRFakeTrackerDevice.h
+  src/input/VRInputDevice.h
 )
 
 set(vr_api_cpp
-  ${vr_src_dir}/api/impl/VRApp.cpp
-  ${vr_src_dir}/api/impl/VRAnalogEvent.cpp
-  ${vr_src_dir}/api/impl/VRAudioState.cpp
-  ${vr_src_dir}/api/impl/VRButtonEvent.cpp
-  ${vr_src_dir}/api/impl/VRConsoleState.cpp
-  ${vr_src_dir}/api/impl/VRCursorEvent.cpp
-  ${vr_src_dir}/api/impl/VRGraphicsState.cpp
-  ${vr_src_dir}/api/impl/VRHapticsState.cpp
-  ${vr_src_dir}/api/impl/VRTrackerEvent.cpp
+  src/api/impl/VRApp.cpp
+  src/api/impl/VRAnalogEvent.cpp
+  src/api/impl/VRAudioState.cpp
+  src/api/impl/VRButtonEvent.cpp
+  src/api/impl/VRConsoleState.cpp
+  src/api/impl/VRCursorEvent.cpp
+  src/api/impl/VRGraphicsState.cpp
+  src/api/impl/VRHapticsState.cpp
+  src/api/impl/VRTrackerEvent.cpp
 )
 
 set(vr_api_h
-  ${vr_src_dir}/api/MinVR.h
-  ${vr_src_dir}/api/VRApp.h
-  ${vr_src_dir}/api/VRAnalogEvent.h
-  ${vr_src_dir}/api/VRAudioState.h
-  ${vr_src_dir}/api/VRButtonEvent.h
-  ${vr_src_dir}/api/VRConsoleState.h
-  ${vr_src_dir}/api/VRCursorEvent.h
-  ${vr_src_dir}/api/VRGraphicsState.h
-  ${vr_src_dir}/api/VRHapticsState.h
-  ${vr_src_dir}/api/VRTrackerEvent.h
+  src/api/MinVR.h
+  src/api/VRApp.h
+  src/api/VRAnalogEvent.h
+  src/api/VRAudioState.h
+  src/api/VRButtonEvent.h
+  src/api/VRConsoleState.h
+  src/api/VRCursorEvent.h
+  src/api/VRGraphicsState.h
+  src/api/VRHapticsState.h
+  src/api/VRTrackerEvent.h
 )
 
 set(vr_main_cpp
-  ${vr_src_dir}/main/VRFactory.cpp
-  ${vr_src_dir}/main/VRMain.cpp
-  ${vr_src_dir}/main/VRSearchPath.cpp
-  ${vr_src_dir}/main/VRSystem.cpp
+  src/main/VRFactory.cpp
+  src/main/VRMain.cpp
+  src/main/VRSearchPath.cpp
+  src/main/VRSystem.cpp
 )
 
 set(vr_main_h
-  ${vr_src_dir}/main/VREventHandler.h
-  ${vr_src_dir}/main/VRFactory.h
-  ${vr_src_dir}/main/VRItemFactory.h
-  ${vr_src_dir}/main/VRMain.h
-  ${vr_src_dir}/main/VRMainInterface.h
-  ${vr_src_dir}/main/VRRenderHandler.h
-  ${vr_src_dir}/main/VRSearchPath.h
-  ${vr_src_dir}/main/VRSystem.h
-  ${vr_src_dir}/main/VRError.h
-  ${vr_src_dir}/main/VRSearchPath.h
+  src/main/VREventHandler.h
+  src/main/VRFactory.h
+  src/main/VRItemFactory.h
+  src/main/VRMain.h
+  src/main/VRMainInterface.h
+  src/main/VRRenderHandler.h
+  src/main/VRSearchPath.h
+  src/main/VRSystem.h
+  src/main/VRError.h
+  src/main/VRSearchPath.h
 )
 
 set(vr_math_cpp
-  ${vr_src_dir}/math/VRMath.cpp
-  ${vr_src_dir}/math/VRRect.cpp
+  src/math/VRMath.cpp
+  src/math/VRRect.cpp
 )
 
 set(vr_math_h
-  ${vr_src_dir}/math/VRMath.h
-  ${vr_src_dir}/math/VRRect.h
+  src/math/VRMath.h
+  src/math/VRRect.h
 )
 
 set(vr_net_cpp
-  ${vr_src_dir}/net/VRNetClient.cpp
-  ${vr_src_dir}/net/VRNetInterface.cpp
-  ${vr_src_dir}/net/VRNetServer.cpp
+  src/net/VRNetClient.cpp
+  src/net/VRNetInterface.cpp
+  src/net/VRNetServer.cpp
 )
 
 set(vr_net_h
-  ${vr_src_dir}/net/VRNetClient.h
-  ${vr_src_dir}/net/VRNetInterface.h
-  ${vr_src_dir}/net/VRNetServer.h
+  src/net/VRNetClient.h
+  src/net/VRNetInterface.h
+  src/net/VRNetServer.h
 )
 
 set(vr_plugin_cpp
-  ${vr_src_dir}/plugin/VRPluginManager.cpp
-  ${vr_src_dir}/plugin/VRSharedLibrary.cpp
+  src/plugin/VRPluginManager.cpp
+  src/plugin/VRSharedLibrary.cpp
 )
 
 set(vr_plugin_h
-  ${vr_src_dir}/plugin/VRPlugin.h
-  ${vr_src_dir}/plugin/VRPluginManager.h
-  ${vr_src_dir}/plugin/VRPluginVersion.h
-  ${vr_src_dir}/plugin/VRSharedLibrary.h
+  src/plugin/VRPlugin.h
+  src/plugin/VRPluginManager.h
+  src/plugin/VRPluginVersion.h
+  src/plugin/VRSharedLibrary.h
 )
 
 set(vr_sources
   ${vr_config_files}
-  ${vr_config_cpp} ${vr_config_h}
+  ${vr_config_cpp}  ${vr_config_h}
   ${vr_display_cpp} ${vr_display_h}
-  ${vr_api_cpp} ${vr_api_h}
-  ${vr_input_cpp} ${vr_input_h}
-  ${vr_main_cpp} ${vr_main_h}
-  ${vr_math_cpp} ${vr_math_h}
-  ${vr_net_cpp} ${vr_net_h}
-  ${vr_plugin_cpp} ${vr_plugin_h}
+  ${vr_api_cpp}     ${vr_api_h}
+  ${vr_input_cpp}   ${vr_input_h}
+  ${vr_main_cpp}    ${vr_main_h}
+  ${vr_math_cpp}    ${vr_math_h}
+  ${vr_net_cpp}     ${vr_net_h}
+  ${vr_plugin_cpp}  ${vr_plugin_h}
 )
 
 source_group("config\\Header Files" FILES ${vr_config_h})
@@ -249,35 +191,38 @@ source_group("net\\Source Files" FILES ${vr_net_cpp})
 source_group("plugin\\Header Files" FILES ${vr_plugin_h})
 source_group("plugin\\Source Files" FILES ${vr_plugin_cpp})
 
-set_source_files_properties(${vr_config_files} PROPERTIES HEADER_FILE_ONLY TRUE)
-source_group("Config Files" FILES ${vr_config_files})
-
 
 add_library(MinVR ${vr_sources})
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-  message("-- Using libdl.")
+  message(STATUS "Using libdl.")
   target_link_libraries(MinVR dl)
 endif()
 
-install(TARGETS MinVR
-        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-	ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+# Using target_include_directories() rather than just include_directories() is
+# critical in order to support generating a MinVRConfig.cmake file.  It supports
+# generator expressions, so we can point to two different include dirs depending
+# on whether building or using the installed version.
+target_include_directories(MinVR PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>  # for headers when building
+    $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DEST}>        # for client in install mode
+)
 
-install(FILES ${vr_api_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/api)
-install(FILES ${vr_config_h_config}
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/config)
-install(FILES ${vr_config_h_cxml}
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/config/Cxml)
-install(FILES ${vr_config_h_base}
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/config/base64)
-install(FILES ${vr_display_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/display)
-install(FILES ${vr_max_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/max)
-install(FILES ${vr_input_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/input)
-install(FILES ${vr_main_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/main)
-install(FILES ${vr_math_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/math)
-install(FILES ${vr_net_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/net)
-install(FILES ${vr_plugin_h} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/plugin)
 
-install(FILES ${vr_config_files} DESTINATION ${CMAKE_INSTALL_PREFIX}/config)
+install(TARGETS MinVR EXPORT MinVRTargets COMPONENT CoreLib
+  LIBRARY DESTINATION ${INSTALL_LIB_DEST}
+  ARCHIVE DESTINATION ${INSTALL_LIB_DEST}
+  RUNTIME DESTINATION ${INSTALL_BIN_DEST}
+)
+
+install(FILES ${vr_api_h} DESTINATION ${INSTALL_INCLUDE_DEST}/api COMPONENT CoreLib)
+install(FILES ${vr_config_h_config} DESTINATION ${INSTALL_INCLUDE_DEST}/config COMPONENT CoreLib)
+install(FILES ${vr_config_h_cxml} DESTINATION ${INSTALL_INCLUDE_DEST}/config/Cxml COMPONENT CoreLib)
+install(FILES ${vr_config_h_base} DESTINATION ${INSTALL_INCLUDE_DEST}/config/base64 COMPONENT CoreLib)
+install(FILES ${vr_display_h} DESTINATION ${INSTALL_INCLUDE_DEST}/display COMPONENT CoreLib)
+install(FILES ${vr_input_h} DESTINATION ${INSTALL_INCLUDE_DEST}/input COMPONENT CoreLib)
+install(FILES ${vr_main_h} DESTINATION ${INSTALL_INCLUDE_DEST}/main COMPONENT CoreLib)
+install(FILES ${vr_math_h} DESTINATION ${INSTALL_INCLUDE_DEST}/math COMPONENT CoreLib)
+install(FILES ${vr_net_h} DESTINATION ${INSTALL_INCLUDE_DEST}/net COMPONENT CoreLib)
+install(FILES ${vr_plugin_h} DESTINATION ${INSTALL_INCLUDE_DEST}/plugin COMPONENT CoreLib)
 

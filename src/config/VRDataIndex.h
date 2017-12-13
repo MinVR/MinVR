@@ -1269,7 +1269,7 @@ private:
     if (key[0] != '/') fixedValName = std::string("/") + key;
 
     std::pair<VRDataMap::iterator, bool>res =
-      _theIndex.insert(VRDataMap::value_type(fixedValName, NULL));
+      _theIndex.insert(VRDataMap::value_type(fixedValName, (VRDatumPtr)NULL));
 
     // Was it already used?
     if (res.second) {

@@ -1,5 +1,6 @@
 #include <net/VRNetServer.h>
 
+
 using namespace std;
 
 namespace MinVR {
@@ -157,7 +158,7 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
       exit(1);
     }
 
-    if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
+      if (::bind(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
       close(sockfd);
       perror("server: bind");
       continue;

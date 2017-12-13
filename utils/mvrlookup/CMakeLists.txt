@@ -1,9 +1,10 @@
+# This file is part of the MinVR cmake build system.  
+# See the main MinVR/CMakeLists.txt file for authors, copyright, and license info.
+
 
 project(MVRLookup)
 
 find_package(OpenGL REQUIRED)
-
-include_directories(${OPENGL_INCLUDE_DIR})
 
 set(source_files
   MVRLookup.cpp
@@ -18,8 +19,9 @@ endif()
 
 add_executable(${PROJECT_NAME} ${source_files} ${config_files})
 
+target_include_directories(${PROJECT_NAME} PUBLIC ${OPENGL_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} MinVR ${OPENGL_gl_LIBRARY} ${ALL_LIBS})
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "utils")
 
-install(TARGETS MVRLookup RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+install(TARGETS MVRLookup RUNTIME DESTINATION ${INSTALL_BIN_DEST} COMPONENT Utils)
