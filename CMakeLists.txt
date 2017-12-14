@@ -16,7 +16,7 @@
 #   Dan Keefe, 2017, University of Minnesota 
 #      -- made compiling itests optional since they have external dependencies
 #      -- made all optional builds consistent, these are set using WITH_* flags for both plugins and itests
-#      -- major rework of support for external projects (AUTOBUILD_DEPENDENCIES, DEPENDENCIES_INSTALL)
+#      -- major rework of support for external projects (AUTOBUILD_DEPENDENCIES)
 #      -- build/install plugins directly to lib/ rather than in subfolders
 #      -- install headers to <prefix>/include/MinVR, extern projects use include/vrpn, include/TUIO, etc.
 #      -- install config files to <prefix>/share/MinVR/config following filesystem standard:
@@ -249,13 +249,18 @@ add_subdirectory(config)
 
 h1("CONFIGURING TESTS AND UTILITY PROGRAMS")
 
-h2("Configuring batch tests.")
-message(STATUS "Adding all subirectories of tests-batch to the build.")
-add_subdirectory(tests-batch)
+
 
 h2("Configuring CMake Testing System.")
 enable_testing()
 message(STATUS "Testing enabled, try 'make test'.")
+
+# Update the testing dashboard at http://my.cdash.org/index.php?project=MinVR
+include(CTest)
+
+h2("Configuring batch tests.")
+message(STATUS "Adding all subirectories of tests-batch to the build.")
+add_subdirectory(tests-batch)
 
 h2("Configuring utility programs.")
 message(STATUS "Adding all subdirectories of utils to the build.")
