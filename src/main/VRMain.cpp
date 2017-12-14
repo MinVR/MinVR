@@ -625,7 +625,9 @@ void VRMain::initialize(int argc, char **argv) {
 				_inputDevices.push_back(dev);
 			}
 			else{
-				std::cerr << "Problem creating inputdevice: " << *it << " with inputdeviceType=" << _config->getAttributeValue(*it, "inputdeviceType") << std::endl;
+
+        VRERROR("Problem creating inputdevice: " + *it + " with inputdeviceType=" + _config->getAttributeValue(*it, "inputdeviceType"),
+                "This is not in the list I know about, which are these: " + _factory->getRegisteredTypes());
 			}
 		}
 	}
@@ -691,7 +693,7 @@ void VRMain::initialize(int argc, char **argv) {
                 " with graphicstoolkit=" +
                 _config->getAttributeValue(graphicsToolkitName,
                                            "graphicstoolkitType"),
-                "The create failed, so there might be a link error to a plugin, or a misconfiguration of the graphics toolkit.");
+                "The create failed, so there might be a link error to a plugin, or a misconfiguration of the graphics toolkit.  The types I know about are these: " + _factory->getRegisteredTypes());
       }
 
 
@@ -733,7 +735,7 @@ void VRMain::initialize(int argc, char **argv) {
                 " with windowtoolkitType=" +
                 _config->getAttributeValue(windowToolkitName,
                                            "windowtoolkitType"),
-                "The create failed, so there might be a link error to a plugin, or a misconfiguration of the window toolkit.");
+                "The create failed, so there might be a link error to a plugin, or a misconfiguration of the window toolkit.  The types I know about are these: " + _factory->getRegisteredTypes());
       }
 
 			// add window to the displayGraph list
@@ -742,8 +744,9 @@ void VRMain::initialize(int argc, char **argv) {
 				_displayGraphs.push_back(dg);
 			}
 			else{
-        VRWARNINGNOADV("Problem creating window: " + *it + " with windowType=" +
-                       _config->getAttributeValue(*it, "windowType"));
+        VRWARNING("Problem creating window: " + *it + " with windowType=" +
+                  _config->getAttributeValue(*it, "windowType"),
+                  "The create failed, not sure why.  The types I know about are these: " + _factory->getRegisteredTypes());
 			}
 		}
 	}

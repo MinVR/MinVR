@@ -35,8 +35,14 @@ public:
   /// Plugins call this method to add a new "sub-factory" to this master factory.
   void addSubFactory(VRItemFactory* factory);
 
+  std::string getRegisteredTypes() { return _registeredTypes; };
+
 protected:
   std::vector<VRItemFactory*> _itemFactories;
+
+  // It's useful to keep around a list of what we do know about so we can be
+  // more informative when someone asks for something we *don't* know about.
+  std::string _registeredTypes;
 };
 
 template <typename T>
@@ -53,16 +59,24 @@ T* VRFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::st
       return item;
     }
   }
-  VRWARNING("Nothing in the factory catalog with the correct type: " +
-            std::string(typeid(T).name()),
-            "This is usually caused by a typo in your config file.");
+
+  // Issue a warning here, but we assume the caller will issue an error when it
+  // gets a NULL back.  We let the caller kill off the process because it has more
+  // information with which to make a decent error message.
+  VRWARNING("Nothing in the factory catalog with the type (" +
+          std::string(typeid(T).name()) + ") and subtype you specified.",
+          "This is usually caused by a typo in your config file, which is where the subtype (inputdeviceType, displaynodeType, etc) is specified.");
+
+  // Return NULL to indicate failure.
   return NULL;
 }
 
 template <typename ParentType, typename T>
 void VRFactory::registerItemType(const std::string typeName) {
 
-	  addSubFactory(new VRConcreteItemFactory<ParentType, T>(typeName));
+  _registeredTypes += typeName + " ";
+
+  addSubFactory(new VRConcreteItemFactory<ParentType, T>(typeName));
 }
 
 } // end namespace
