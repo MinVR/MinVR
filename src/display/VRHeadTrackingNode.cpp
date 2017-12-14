@@ -8,6 +8,7 @@ VRHeadTrackingNode::VRHeadTrackingNode(const std::string &name, const std::strin
     VRDisplayNode(name), _headMatrix(initialHeadMatrix), _trackingEvent(headTrackingEventName)
 {
   _valuesAdded.push_back("HeadMatrix");
+  _valuesAdded.push_back("CameraMatrix");
 }
 
 VRHeadTrackingNode::~VRHeadTrackingNode()
@@ -15,12 +16,17 @@ VRHeadTrackingNode::~VRHeadTrackingNode()
 }
 
 
-void 
+void
 VRHeadTrackingNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 {
 	renderState->pushState();
 
 	renderState->addData("HeadMatrix", _headMatrix);
+
+  // We copy the head matrix into "CameraMatrix" in case this is only a mono
+  // configuration and the two are the same thing.  We don't use a link because
+  // a stereo configuration will overwrite the camera matrix.
+	renderState->addData("CameraMatrix", _headMatrix);
 	VRDisplayNode::render(renderState, renderHandler);
 
 	renderState->popState();

@@ -8,7 +8,7 @@ namespace MinVR {
 	VRDisplayNode(name), _topLeft(topLeft), _botLeft(botLeft), _topRight(topRight), _botRight(botRight),  _nearClip(nearClip), _farClip(farClip)
 {
   // in:
-  _valuesNeeded.push_back("HeadMatrix");
+  _addValuesNeeded("CameraMatrix");
   // out:
   _valuesAdded.push_back("ProjectionMatrix");
   _valuesAdded.push_back("ViewMatrix");
@@ -19,7 +19,7 @@ VROffAxisProjectionNode::~VROffAxisProjectionNode()
 }
 
 
-void 
+void
 VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 {
 	renderState->pushState();
@@ -30,7 +30,7 @@ VROffAxisProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *rende
 	VRPoint3 pa = _botLeft;
 	VRPoint3 pb = _botRight;
 	VRPoint3 pc = _topLeft;
-  VRMatrix4 cameraMatrix = renderState->getValue("HeadMatrix");
+  VRMatrix4 cameraMatrix = renderState->getValue("CameraMatrix");
   VRPoint3 pe = VRPoint3(0,0,0) + cameraMatrix.getColumn(3);
 
 	// Compute an orthonormal basis for the screen

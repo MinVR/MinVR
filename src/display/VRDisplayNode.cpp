@@ -124,28 +124,42 @@ std::map<std::string,std::string> VRDisplayNode::getValuesAdded() {
 void VRDisplayNode::auditValues(std::set<std::string> valuesSet,
                                 const std::string &treeData) {
 
+  //std::cerr << " checking: " << _name << std::endl;
+
   // Add the values supplied by this node to the set of values against which we
   // will check the values needed by this node.
   for (std::list<std::string>::const_iterator it = _valuesAdded.begin();
        it != _valuesAdded.end(); it++) {
+
+    //std:: cerr << "    adding: " << *it << std::endl;
 
     // Insert it added value into the set from above.
     valuesSet.insert(*it);
   }
 
   // Run through all the valuesNeeded and see if they are in valuesSet.
-  for (std::list<std::string>::const_iterator it = _valuesNeeded.begin();
+  for (std::list<std::pair<std::string, bool> >::const_iterator it = _valuesNeeded.begin();
        it != _valuesNeeded.end(); it++) {
 
-    // If the name is not in the value set, print the treeData and throw an error.
-    if (valuesSet.find(*it) == valuesSet.end()) {
+    //std:: cerr << "    needing: " << it->first << std::endl;
 
-      std::cerr << "Error in display node tree:" << std::endl << treeData << std::endl;
-      VRERROR("Necessary data (" + (*it) + ") is not available to the " + getName() + " (" + getType() + ").", "Review the construction of the display node tree in your configuration file.");
-      
+    // If the name is not in the value set, print the treeData and throw an error.
+    if (valuesSet.find(it->first) == valuesSet.end()) {
+
+      std::cerr << "Missing value in display node tree:" << std::endl
+                << treeData << std::endl;
+
+      // We only bomb if the value is required.
+      if (it->second) {
+        VRERROR("Necessary data (" + it->first + ") is not available to the " + getName() + " (" + getType() + ").",
+                "Review the construction of the display node tree in your configuration file.");
+      } else {
+        VRWARNING("Optional data (" + it->first + ") is not available to the " + getName() + " (" + getType() + ").",
+                  "Review the construction of the display node tree in your configuration file.");
+      }
     }
   }
-  
+
   // Recursively audit the children nodes.
   for (std::vector<VRDisplayNode*>::const_iterator it = _children.begin();
        it != _children.end(); it++) {
@@ -193,12 +207,17 @@ std::string VRDisplayNode::printNode(std::set<std::string> valuesSet,
 
   // Print the values needed, but also check them against the values already set.
   out += "\n" + newPrefix + "  Values Needed:";
-  for (std::list<std::string>::const_iterator it = _valuesNeeded.begin();
+  for (std::list<std::pair<std::string, bool> >::const_iterator it = _valuesNeeded.begin();
        it != _valuesNeeded.end(); it++) {
-    out += "\n" + newPrefix + "    " + *it;
+    out += "\n" + newPrefix + "    " + it->first;
+    if (it->second) {
+      out += " (required)";
+    } else {
+      out += " (optional)";
+    }
 
     // If the name is not in the value set, flag it.
-    if (valuesSet.find(*it) == valuesSet.end()) {
+    if (valuesSet.find(it->first) == valuesSet.end()) {
 
       out += " <-- ERROR: this value will not be found.";
     }

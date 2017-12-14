@@ -120,12 +120,23 @@ protected:
   std::string _name;
 
   // This contains a list of the values added by this node.  When
-  // getValuesAdded() is invoked, this will be returned, appended to a
-  // list of values added by this node's children.
+  // getValuesAdded() is invoked, this will be returned, appended to a list of
+  // values added by this node's children.
   std::list<std::string> _valuesAdded;
 
-  // This is a list of the values needed by this node.
-  std::list<std::string> _valuesNeeded;
+  // This is a list of the values needed by this node.  The boolean indicates
+  // whether the value is required or not.  A missing value that is required
+  // (TRUE) will cause the auditValues() to fail.  If the value is not required,
+  // a warning will be printed.
+  std::list<std::pair<std::string, bool> > _valuesNeeded;
+
+  /// This is just a syntax sweetener to hide the std::pair stuff.  Use this to
+  /// add needed values to the audit.  Set the "required" argument to false for
+  /// optional arguments, but remember that if you check for optional arguments,
+  /// the user will see a warning during the audit if they're not there.
+  void _addValuesNeeded(const std::string name, const bool required = true) {
+    _valuesNeeded.push_back(std::pair<std::string, bool>(name, required));
+  }
 
   friend std::ostream & operator<<(std::ostream &os, const VRDisplayNode& p) {
     return os << p.printNode("");
