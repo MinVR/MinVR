@@ -1,4 +1,5 @@
-# Create a library from the source files in this directory.
+# This file is part of the MinVR cmake build system.  
+# See the main MinVR/CMakeLists.txt file for authors, copyright, and license info.
 
 project (test_plugin)
 
@@ -27,4 +28,5 @@ SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 add_library ( test_plugin SHARED ${HEADERFILES} ${test_pluginlib_source_files} )
 target_link_libraries (test_plugin VRPlugin)
 
+set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "tests-batch”)
 

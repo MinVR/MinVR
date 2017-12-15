@@ -1,0 +1,7 @@
+# To use the MinVR library in your cmake project, add the following to your CMakeLists.txt:
+#    find_package(MinVR REQUIRED)
+#    ... then, after add_executable(${PROJECT_NAME}) or add_library(${PROJECT_NAME})
+#    target_link_libraries(${PROJECT_NAME} PUBLIC MinVR)
+
+
+include("${CMAKE_CURRENT_LIST_DIR}/MinVRTargets.cmake")

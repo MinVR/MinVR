@@ -1,5 +1,6 @@
 #include "config/VRDataIndex.h"
 #include "config/VRDataQueue.h"
+#include <main/VRConfig.h>
 
 int TestQueueArray();
 int TestQueueUnpack();
@@ -113,7 +114,7 @@ MinVR::VRDataIndex* setupQIndex() {
   // This file is specified using the WORKING_DIRECTORY option in the
   // ctest framework.  See the CMakeLists.txt file in this directory,
   // and look for the add_test command.
-  n->processXMLFile(std::string(MINVRTESTBATCHDIR) + "/config/test.xml", "/");
+  n->processXMLFile(MINVR_BUILD_PREFIX "/tests-batch/config/test.xml", "/");
 
   return n;
 }

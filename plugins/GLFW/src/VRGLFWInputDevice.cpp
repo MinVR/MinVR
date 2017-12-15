@@ -6,7 +6,7 @@
  * 		Dan Orban (dtorban)
  */
 
-#include <VRGLFWInputDevice.h>
+#include "VRGLFWInputDevice.h"
 #include <ctime>
 #include <cctype>
 #include <api/VRButtonEvent.h>

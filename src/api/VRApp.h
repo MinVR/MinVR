@@ -25,72 +25,7 @@ namespace MinVR {
 class VRAppInternal; // forward declaration for implementation details
 
 
-/** VRGraphicsApp is a simple way to create a graphics VR application.  Developers
-  need only to subclass VRApp and override the onVREvent(...), onVRRenderGraphics(...),
-  and/or onVRRenderGraphicsContext(...).  To run the application, developers can call run.
-  To shut down the application, users can call the shutdown() method.  For example here is how
-  to create a simple MinVR Graphics application:
-
-  ------------------------------------------------------------------------
-  #include <api/MinVR.h>
-
-  class MyVRApp : public VRApp {
-  public:
-	MyVRApp(int argc, char** argv) : VRApp(argc, argv) {}
-
-	virtual void onVRRenderGraphics(VRGraphicsState& renderState) {
-		// draw graphics
-	}
-  };
-
-  // see description below on expected command line args
-  int main(int argc, char **argv) {
-	MyVRApp app(argc, argv);
-	app.run();
-	return 0;
-  }
-  ------------------------------------------------------------------------
-
-  MinVR's convention for command line arguments is as follows:
-
-        -h, --help         Display a help message.
-
-        Add any of the following arguments to the command line as many times as
-        needed in a space separated list.
-
-        -c <configname>, --load-config <configname>
-                           Search for and load the pre-installed MinVR config file
-                           named <configname>.minvr -- the search looks in:
-                           1. the current working directory [cwd]
-                           2. [cwd]/config
-                           3. ../../config (for developers running build tree
-                              executables from build/bin or tests/testname
-                           4. MINVR_ROOT/config if the MINVR_ROOT envvar is defined
-                           5. the install_prefix specified when libMinVR was built.
-
-        -s <key>=<value>, --set-value <key>=<value>
-                           Add an entry to the MinVR configuration directly from
-                           the command line rather than by specifying it in a
-                           config file. This can be used to override one specific
-                           option in a pre-installed configuration or config file
-                           specified earlier on the command line.  For example,\n"
-                           'myprogram -c desktop -s WindowHeight=500 -s WindowWidth=500'
-                           would start myprogram, load the installed desktop MinVR
-                           config and then override the WindowHeight and
-                           WindowWidth values in the pre-installed desktop
-                           configuration with the new values specified.
-
-        [nothing]          If no command line arguments are provided, then MinVR
-                           will try to load the pre-installed default
-                           configuration, whis is the same as running the command
-                           'myprogram --load-config default'.
-
-        [anything else]    MinVR will silently ignore anything else provided as
-                           a command line option.
-
-        --MINVR_DATA=xxxx  A special command line argument reserved for internal
-                           use by MinVR.
- */
+/** VRApp is a simple way to create a graphics VR application. */
 class VRApp {
 public:
 	/**

@@ -50,7 +50,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vrpn_Analog.h>
 #include <iostream>
 
-#include <api/VRTrackerEvent.h>
+#include <api/VRAnalogEvent.h>
 
 
 #ifndef VRPN_CALLBACK
@@ -107,7 +107,7 @@ void VRVRPNAnalogDevice::sendEventIfChanged(int channelNumber, float data)
 		//_pendingEvents.push_back(EventRef(new Event(_eventNames[channelNumber], data, nullptr, channelNumber, msg_time)));
         std::string name = _eventNames[channelNumber] + "_Update";
         VRDataIndex di = VRAnalogEvent::createValidDataIndex(name, data);
-		_pendingEvents.push(di);
+		_pendingEvents.push_back(di);
 		_channelValues[channelNumber] = data;
 	}
 }

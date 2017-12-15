@@ -1,3 +1,6 @@
+# Generated source files configured with cmake
+src/main/VRConfig.h
+
 # External junk
 .DS_Store
 _ReSharper*
@@ -20,6 +23,7 @@ CMakeFiles
 cmake_install.cmake
 cmake_uninstall.cmake
 Makefile
+external
 
 # Local MinVR
 *log.txt

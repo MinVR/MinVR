@@ -20,6 +20,8 @@
 #include <unistd.h>
 #endif
 
+#include <string.h>
+
 namespace MinVR {
 	VROpenVRRenderModelHandler::VROpenVRRenderModelHandler(vr::IVRSystem *pHMD, VROpenVRInputDevice* inputDevice, bool hide_tracker) : m_pHMD(pHMD), m_inputDevice(inputDevice), m_unRenderModelProgramID(0), m_nRenderModelMatrixLocation(-1), m_nRenderModelState(-1), m_hide_tracker(hide_tracker)
 	{
@@ -244,7 +246,11 @@ namespace MinVR {
 		VROpenVRRenderModel *pRenderModel = NULL;
 		for (std::vector< VROpenVRRenderModel * >::iterator i = m_vecRenderModels.begin(); i != m_vecRenderModels.end(); i++)
 		{
+#ifdef WIN32
 			if (!stricmp((*i)->GetName().c_str(), pchRenderModelName))
+#else
+                if (!strcasecmp((*i)->GetName().c_str(), pchRenderModelName))
+#endif
 			{
 				pRenderModel = *i;
 				break;

@@ -1,4 +1,5 @@
 #include "config/VRDataIndex.h"
+#include <main/VRConfig.h>
 
 // IMPORTANT NOTE: These tests need a better comparison operator.
 // They are largely using simple string comparisons to judge whether a
@@ -169,7 +170,7 @@ MinVR::VRDataIndex * setupIndex() {
   // This file is specified using the WORKING_DIRECTORY option in the
   // ctest framework.  See the CMakeLists.txt file in this directory,
   // and look for the add_test command.
-  n->processXMLFile(std::string(MINVRTESTBATCHDIR) + "/config/test.xml", "/");
+  n->processXMLFile(MINVR_BUILD_PREFIX "/tests-batch/config/test.xml", "/");
 
   return n;
 }

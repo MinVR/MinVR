@@ -1,0 +1,45 @@
+/** 
+This file is part of the MinVR Open Source Project, which is developed and 
+maintained collaboratively by the University of Minnesota and Brown University.
+
+Copyright (c) 2016 Regents of the University of Minnesota and Brown University.
+This software is distributed under the BSD-3 Clause license, which can be found
+at: MinVR/LICENSE.txt.
+
+Original Author(s) of this File: 
+	Dan Keefe, 2017, University of Minnesota
+	
+Author(s) of Significant Updates/Modifications to the File:
+	... 
+*/
+
+
+// The file VRConfig.h.in is processed by cmake to produce VRConfig.h.  This
+// replaces @CMAKE_VARIABLES@ with the values setup in the cmake build process.
+
+
+#define MINVR_VERSION_MAJOR @MinVR_Toolkit_VERSION_MAJOR@
+#define MINVR_VERSION_MINOR @MinVR_Toolkit_VERSION_MINOR@
+#define MINVR_VERSION_PATCH @MinVR_Toolkit_VERSION_PATCH@
+#define MINVR_VERSION_STR "@MINVR_VERSION_STR@"
+
+
+#define MINVR_INSTALL_PREFIX "@CMAKE_INSTALL_PREFIX@"
+#define MINVR_INSTALL_CONFIG_DIR "@CMAKE_INSTALL_PREFIX@/@INSTALL_CONFIGFILES_DEST@"
+#ifdef WIN32
+  #define MINVR_INSTALL_PLUGIN_DIR "@CMAKE_INSTALL_PREFIX@/@INSTALL_PLUGINDLL_DEST@"
+#else
+  #define MINVR_INSTALL_PLUGIN_DIR "@CMAKE_INSTALL_PREFIX@/@INSTALL_PLUGINLIB_DEST@"
+#endif
+
+
+#define MINVR_BUILD_PREFIX "@CMAKE_CURRENT_SOURCE_DIR@"
+#define MINVR_BUILD_CONFIG_DIR "@CMAKE_CURRENT_SOURCE_DIR@/config"
+#ifdef WIN32
+  #define MINVR_BUILD_PLUGIN_DIR "@CMAKE_RUNTIME_OUTPUT_DIRECTORY@"
+#else
+  #define MINVR_BUILD_PLUGIN_DIR "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@"
+#endif
+
+
+

@@ -6,8 +6,8 @@
  * 		Dan Orban (dtorban)
  */
 
-#include "GL/glew.h"
 #ifdef _WIN32
+#include "GL/glew.h"
 #include "GL/wglew.h"
 #elif (!defined(__APPLE__))
 #include "GL/glxew.h"
@@ -210,13 +210,16 @@ void VRGLFWWindowToolkit::initGLEW()
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE); // Create a debug context so glew is initialized with debug context extensions as well in case we need them later
 	GLFWwindow* tempWin = glfwCreateWindow(200, 200, "Temporary", NULL, NULL);
 	glfwMakeContextCurrent(tempWin);
+    
+#ifdef _WIN32
 	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
 	if (GLEW_OK != err)
 	{
 		std::cout << "Error initializing GLEW." << std::endl;
 	}
-
+#endif
+    
 	glfwMakeContextCurrent(NULL);
 	glfwDestroyWindow(tempWin);
 }
