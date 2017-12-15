@@ -18,7 +18,6 @@
 
   <!-- MinVR Plugins to Load - Most Common is to Use OpenGL for the
      MinVRs GraphicsTookit and GLFW for MinVRs WindowToolkit -->
-  <PluginPath>../../build/plugins</PluginPath>
 
   <GLFWPlugin pluginType="MinVR_GLFW"/>
   <GLFWToolkit windowtoolkitType="VRGLFWWindowToolkit"/>

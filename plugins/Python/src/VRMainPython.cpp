@@ -8,8 +8,7 @@
 
 #include "main/VRMain.h"
 #include <main/VREventHandler.h>
-#include <main/VRGraphicsHandler.h>
-#include <main/VREventInternal.h>
+#include <main/VRRenderHandler.h>
 #include <plugin/VRPlugin.h>
 
 using namespace MinVR;
@@ -26,8 +25,8 @@ public:
 	PLUGIN_API VRPythonEventCallbackHandler(eventcallback_type eventCallback) : eventCallback(eventCallback) {}
 	PLUGIN_API virtual ~VRPythonEventCallbackHandler() {}
 
-	PLUGIN_API void onVREvent(const VREvent &event) {
-		eventCallback(event.getName().c_str(), event.getInternal()->getDataIndex());
+	PLUGIN_API virtual void onVREvent(const VRDataIndex &event) {
+		eventCallback(event.getName().c_str(), (void*)&event);
 	}
 
 private:
@@ -39,11 +38,12 @@ class VRPythonRenderCallbackHandler : public VRRenderHandler {
 public:
 	PLUGIN_API VRPythonRenderCallbackHandler(rendercallback_type renderCallback, rendercallback_type renderContextCallback) : renderCallback(renderCallback), renderContextCallback(renderContextCallback) {}
 	PLUGIN_API virtual ~VRPythonRenderCallbackHandler() {}
-	PLUGIN_API virtual void onVRRenderScene(VRDataIndex *renderState, VRDisplayNode *callingNode) {
-		renderCallback(renderState);
+    
+	PLUGIN_API virtual void onVRRenderScene(const VRDataIndex &renderState) {
+		renderCallback((void*)&renderState);
 	}
-	PLUGIN_API virtual void onVRRenderContext(VRDataIndex *renderState, VRDisplayNode *callingNode) {
-		renderContextCallback(renderState);
+	PLUGIN_API virtual void onVRRenderContext(const VRDataIndex &renderState) {
+		renderContextCallback((void*)&renderState);
 	}
 
 private:

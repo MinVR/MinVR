@@ -1,148 +1,63 @@
-project (MinVR_VRPN)
+# This file is part of the MinVR cmake build system.  
+# See the main MinVR/CMakeLists.txt file for authors, copyright, and license info.
+#
+# Builds the MinVR_VRPN plugin as a shared library.
 
-#------------------------------------------
-# Define the source and header files
-#------------------------------------------
+# Note: This CMakeLists.txt is not intended to work on its own.  It inherits many settings 
+# from the root CMakeLists.txt (build and install directories, compiling flags, #defines, etc.)
 
+
+
+
+# Plugin names must begin with "MinVR_"
+project(MinVR_VRPN)
+
+
+# Source:
 set (SOURCEFILES
 	src/VRVRPNAnalogDevice.cpp
 	src/VRVRPNButtonDevice.cpp
 	src/VRVRPNPlugin.cpp
 	src/VRVRPNTrackerDevice.cpp
 )
-
 set (HEADERFILES
 	src/VRVRPNAnalogDevice.h
 	src/VRVRPNButtonDevice.h
 	src/VRVRPNTrackerDevice.h
 )
 
-source_group("Header Files" FILES ${HEADERFILES})
 
-option(BUILD_VRPN "If enabled, VRPN will be downloaded and installed" ON)
-#------------------------------------------
-# Download dependencies
-#------------------------------------------
-if (BUILD_VRPN)
-		set(vrpn_checkout_Dir ${CMAKE_BINARY_DIR}/vrpn)
-		make_directory(${vrpn_checkout_Dir})
-        message("   Library will be built from source in ${vrpn_checkout_Dir}.")
-		include(ExternalProject)
-		set(vrpn_PREFIX "${vrpn_checkout_Dir}")
-    make_directory(${CMAKE_INSTALL_PREFIX}/ext/vrpn)
-		set(vrpn_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/ext/vrpn)
-		set(vrpn_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${vrpn_INSTALL_DIR} -DVRPN_BUILD_DIRECTSHOW_VIDEO_SERVER=OFF -DVRPN_BUILD_HID_GUI=OFF -DVRPN_BUILD_JAVA=OFF -DVRPN_BUILD_PYTHON=OFF -DVRPN_USE_DIRECTINPUT=OFF -DVRPN_USE_DIRECTSHOW=OFF -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -Wno-dev)
-		set(vrpn_DIR "${vrpn_INSTALL_DIR}")
+# Define the target
+add_library(${PROJECT_NAME} SHARED ${HEADERFILES} ${SOURCEFILES})
 
-
-		if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-			set(vrpn_CMAKE_ARGS ${vrpn_CMAKE_ARGS} -DCMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD=c++11 -DCMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY=libc++)
-		elseif(MSVC)
-				set(vrpn_CMAKE_ARGS ${vrpn_CMAKE_ARGS} -DVRPN_USE_HID=ON -DVRPN_HID_DEBUGGING=ON -DVRPN_USE_LOCAL_HIDAPI=ON)
-		endif()
-
-		ExternalProject_add(vrpn
-				PREFIX ${vrpn_PREFIX}
-				URL https://github.com/vrpn/vrpn/releases/download/v07.33/vrpn_07_33.zip
-				INSTALL_DIR ${vrpn_INSTALL_DIR}
-				CMAKE_ARGS ${vrpn_CMAKE_ARGS}
-				UPDATE_COMMAND ""
-		    )
-
-      message(STATUS "Building VRPN from: ${vrpn_PREFIX}.")
-      message(STATUS "Installing VRPN in: ${vrpn_INSTALL_DIR}.")
-      
-		set_property(TARGET vrpn PROPERTY FOLDER "Dependencies")
-		set(VRPN_INCLUDE_DIRS ${vrpn_INSTALL_DIR}/include CACHE INTERNAL "Directory of VRPN header files")
-		if(MSVC)
-			set(VRPN_LIBRARIES optimized ${vrpn_INSTALL_DIR}/lib/vrpn.lib optimized ${vrpn_INSTALL_DIR}/lib/quat.lib debug ${vrpn_INSTALL_DIR}/lib/vrpnd.lib debug  ${vrpn_INSTALL_DIR}/lib/quatd.lib CACHE INTERNAL "VRPN lib file")
-			set(All_LIB ${MinVR_LIBRARIES})
-		else()
-#			set(VRPN_LIBRARY optimized ${vrpn_INSTALL_DIR}/lib/libvrpn.a debug ${vrpn_INSTALL_DIR}/lib/libvrpnd.a CACHE INTERNAL "VRPN lib file")
-			set(VRPN_LIBRARIES ${vrpn_INSTALL_DIR}/lib/libvrpn.a ${vrpn_INSTALL_DIR}/lib/libquat.a CACHE INTERNAL "VRPN lib file")
-		endif()	
-		add_definitions(-DUSE_VRPN)
-		#set(LIBS_ALL ${LIBS_ALL} ${VRPN_LIBRARY})
-		include_directories(${VRPN_INCLUDE_DIRS})
-else()
-	SET(CMAKE_MODULE_PATH  ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH} )
-	find_package(VRPN REQUIRED)
-	add_definitions(-DUSE_VRPN)
-	include_directories(${VRPN_INCLUDE_DIRS})
-endif()
-
-message(STATUS "VRPN include files: ${VRPN_INCLUDE_DIRS}.")
-message(STATUS "VRPN libraries: ${VRPN_LIBRARIES}.")
-
-#------------------------------------------
-# MinVR Dependencies
-#------------------------------------------
-
-link_directories(${CMAKE_BINARY_DIR}/lib)
-
-#------------------------------------------
-# Include Directories
-#------------------------------------------
-
-# Include Directories
-include_directories (
-  ${vr_src_dir}
-  src
-  deps/vrpn
+target_include_directories(${PROJECT_NAME} PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>                  # for headers when building
+    $<INSTALL_INTERFACE:${INSTALL_PLUGININCLUDE_DEST}/${PROJECT_NAME}>  # for client in install mode
 )
 
-#------------------------------------------
-# Specific preprocessor defines
-#------------------------------------------
 
-# Windows Section #
-if (MSVC)
-endif()
+# Setup dependency on libMinVR:
+target_include_directories(${PROJECT_NAME} PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../src>  # for headers when building
+    $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DEST}>              # for client in install mode
+)
+target_link_libraries(${PROJECT_NAME} PUBLIC MinVR)
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-endif()
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-endif()
+# Setup dependency on VRPN:
+include(UseVRPN)
+UseVRPN(${PROJECT_NAME} PRIVATE)
 
-#------------------------------------------
-# Set output directories to lib, and bin
-#------------------------------------------
 
-set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/${PROJECT_NAME}/lib)
-set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/${PROJECT_NAME}/lib)
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/plugins/${PROJECT_NAME}/bin)
-foreach (CONF ${CMAKE_CONFIGURATION_TYPES})
-	string (TOUPPER ${CONF} CONF)
-	set (CMAKE_RUNTIME_OUTPUT_DIRECTORY_${CONF} ${CMAKE_BINARY_DIR}/plugins/${PROJECT_NAME}/bin)
-	set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${CONF} ${CMAKE_BINARY_DIR}/plugins/${PROJECT_NAME}/lib)
-	set (CMAKE_LIBRARY_OUTPUT_DIRECTORY_${CONF} ${CMAKE_BINARY_DIR}/plugins/${PROJECT_NAME}/lib)
-endforeach(CONF CMAKE_CONFIGURATION_TYPES)
+# Installation:
+install(TARGETS ${PROJECT_NAME} EXPORT MinVRTargets COMPONENT ${PROJECT_NAME}
+    LIBRARY DESTINATION ${INSTALL_PLUGINLIB_DEST}
+    ARCHIVE DESTINATION ${INSTALL_PLUGINLIB_DEST}
+    RUNTIME DESTINATION ${INSTALL_PLUGINDLL_DEST}
+)
+install(FILES ${HEADERFILES} DESTINATION ${INSTALL_PLUGININCLUDE_DEST}/${PROJECT_NAME} COMPONENT ${PROJECT_NAME})
 
-#------------------------------------------
-# Build Target
-#------------------------------------------
 
-SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
-SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
-SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/lib")
-SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-
-add_library ( ${PROJECT_NAME} SHARED ${HEADERFILES} ${SOURCEFILES} )
-target_link_libraries(${PROJECT_NAME} ${VRPN_LIBRARIES} MinVR ${LIBS_ALL})
-if (BUILD_VRPN)
-	add_dependencies( ${PROJECT_NAME} vrpn )
-endif()
-#------------------------------------------
-# Install Target
-#------------------------------------------
-
-install( TARGETS ${PROJECT_NAME}
-         LIBRARY DESTINATION ${VRPlugins_install_dir}/${PROJECT_NAME}/lib
-         ARCHIVE DESTINATION ${VRPlugins_install_dir}/${PROJECT_NAME}/lib
-         RUNTIME DESTINATION ${VRPlugins_install_dir}/${PROJECT_NAME}/bin)
-
-set_property(TARGET MinVR_VRPN PROPERTY FOLDER "plugins")
-if (BUILD_VRPN)
-	set_property(TARGET vrpn PROPERTY FOLDER "plugins/dependencies/VRPN")
-endif()
+# For better organization when using an IDE with folder structures:
+source_group("Header Files" FILES ${HEADERFILES})
+set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "plugins")

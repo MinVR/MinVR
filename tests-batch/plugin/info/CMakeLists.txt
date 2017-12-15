@@ -1,4 +1,5 @@
-# Create a library from the source files in this directory.
+# This file is part of the MinVR cmake build system.  
+# See the main MinVR/CMakeLists.txt file for authors, copyright, and license info.
 
 project (plugin_info)
 
@@ -16,4 +17,4 @@ add_definitions(-DPLUGINPATH="${CMAKE_INSTALL_PREFIX}/plugins")
 add_executable (plugin_info ${plugin_info_source_files})
 target_link_libraries (plugin_info VREvent VRData VRPlugin ${LIBS_ALL})
 
-
+set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "tests-batch”)

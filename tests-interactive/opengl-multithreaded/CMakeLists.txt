@@ -1,80 +1,68 @@
+# This file is part of the MinVR cmake build system.  
+# See the main MinVR/CMakeLists.txt file for authors, copyright, and license info.
 
+# Builds itest-opengl-multithreaded.
+
+# Note: This CMakeLists.txt is not intended to work on its own.  It inherits many settings 
+# from the root CMakeLists.txt (build and install directories, compiling flags, #defines, etc.)
+
+
+# By convention, interactive tests begin with "itest-"
 project(itest-opengl-multithreaded)
 
-find_package(OpenGL REQUIRED)
 
-include_directories(
-	${OPENGL_INCLUDE_DIR}
-	${CMAKE_SOURCE_DIR}/third-party/GLEW
-)
-
-set(source_files
-  ${CMAKE_SOURCE_DIR}/third-party/GLEW/glew.c
+# Source:
+set (SOURCEFILES 
   main.cpp
   MyAppModel.cpp
   MyAppController.cpp
   MyAppView.cpp
   MyAppSharedContext.cpp
 )
-
-set(header_files
+set (HEADERFILES
   MyAppModel.h
   MyAppController.h
   MyAppView.h
   MyAppSharedContext.h
 )
-
-set(config_files
+set (CONFIGFILES
 )
 
-set_source_files_properties(${header_files} PROPERTIES HEADER_FILE_ONLY TRUE)
-source_group("Header Files" FILES ${header_files})
 
-set_source_files_properties(${config_files} PROPERTIES HEADER_FILE_ONLY TRUE)
-source_group("Config Files" FILES ${config_files})
+# Define the target
+add_executable(${PROJECT_NAME} ${HEADERFILES} ${SOURCEFILES})
 
-#------------------------------------------
-# Specific preprocessor defines
-#------------------------------------------
 
-# Windows Section #
-if (MSVC)
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-    # Tell MSVC to use main instead of WinMain for Windows subsystem executables
-    set_target_properties(${WINDOWS_BINARIES} PROPERTIES LINK_FLAGS "/ENTRY:mainCRTStartup")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+# Setup dependency on libMinVR:
+target_include_directories(${PROJECT_NAME} PUBLIC ../../src)
+target_link_libraries(${PROJECT_NAME} PUBLIC MinVR)
+
+
+# Setup dependency on OpenGL:
+include(UseOpenGL)
+UseOpenGL(${PROJECT_NAME} PUBLIC)
+
+
+# Setup dependency on GLEW (not needed on OSX):
+if (NOT APPLE)
+    include(UseGLEW)
+    UseGLEW(${PROJECT_NAME} PUBLIC)
 endif()
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++")
-	set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
-	set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
-	find_library(COCOA_LIB Cocoa)
-	find_library(IOKIT_LIB IOKit)
-	find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
-    	find_library(CORE_VIDEO_FRAMEWORK CoreVideo)
-	set(LIBS_ALL ${LIBS_ALL} ${COCOA_LIB} ${IOKIT_LIB} ${CORE_FOUNDATION_FRAMEWORK} ${CORE_VIDEO_FRAMEWORK})
-	message(STATUS "${CORE_VIDEO_FRAMEWORK}")
-endif()
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.7")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x")
-  else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-  endif()
-  find_package(Threads)
-  find_package(X11)
-  set(ALL_LIBS ${ALL_LIBS} ${CMAKE_THREAD_LIBS_INIT} rt Xrandr Xxf86vm Xi m dl ${X11_LIBRARIES})
-endif()
+# Installation:
+install( TARGETS ${PROJECT_NAME}
+         RUNTIME DESTINATION ${INSTALL_BIN_DEST}
+         COMPONENT ITests)
 
-#------------------------------------------
-# Build Application
-#------------------------------------------
 
-add_executable(${PROJECT_NAME} ${source_files} ${config_files} ${header_files})
 
-target_link_libraries(${PROJECT_NAME} MinVR ${OPENGL_gl_LIBRARY} ${ALL_LIBS})
-
+# For better organization when using an IDE with folder structures:
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "tests-interactive")
+source_group("Header Files" FILES ${HEADERFILES})
+set_source_files_properties(${CONFIGFILES} PROPERTIES HEADER_FILE_ONLY TRUE)
+source_group("Config Files" FILES ${CONFIGFILES})
+
+
+
 

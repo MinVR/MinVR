@@ -30,7 +30,7 @@ class VRSearchPath {
   std::list<std::string> _searchPath;
 
   virtual std::string _selectFile(const std::string &file,
-                                  const std::string &directory) {
+                                  const std::string &directory) const {
     std::string validDirectory = directory;
     if (*(validDirectory.rbegin()) != '/') validDirectory += "/";
     return validDirectory + file;
@@ -66,6 +66,9 @@ class VRSearchPath {
   ///
   /// Returns the search path as a single colon-separated string.
   std::string getPath() const;
+    
+  std::string getFullFilenames(const std::string &desiredFile) const;
+    
 
   friend std::ostream &operator<<(std::ostream &os, const VRSearchPath &p) {
     return os << p.getPath();
@@ -78,17 +81,7 @@ class VRSearchPlugin : public VRSearchPath {
 
  protected:
   std::string _selectFile(const std::string &file,
-                          const std::string &directory) {
-
-    // "file" indicates the name of the plugin, which will appear in both the
-    // directory name *and* the name of the library containing the plugin
-    // code.
-    std::string validDirectory = directory;
-    if (*(directory.rbegin()) != '/') {
-      validDirectory += "/" + file;
-    } else {
-      validDirectory += file;
-    }
+                          const std::string &directory) const {
 
     std::string buildType = "";
 #ifdef MinVR_DEBUG
@@ -96,13 +89,13 @@ class VRSearchPlugin : public VRSearchPath {
 #endif
 
 #if defined(WIN32)
-    return validDirectory + "/bin/" + file + buildType + ".dll";
+    return directory + "/" + file + buildType + ".dll";
 
 #elif defined(__APPLE__)
-    return validDirectory + "/lib/lib" + file + buildType + ".dylib";
+    return directory + "/lib" + file + buildType + ".dylib";
 
 #else // Linux
-    return validDirectory + "/lib/lib" + file + buildType + ".so";
+    return directory + "/lib" + file + buildType + ".so";
 
 #endif
   }
@@ -117,7 +110,7 @@ class VRSearchConfig : public VRSearchPath {
 
  protected:
   std::string _selectFile(const std::string &file,
-                          const std::string &directory) {
+                          const std::string &directory) const {
 
     std::string validDirectory = directory;
     if (*(directory.rbegin()) != '/') {

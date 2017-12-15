@@ -1,5 +1,10 @@
 #include "net/VRNetClient.h"
 
+#ifdef WIN32
+#include <process.h>
+#define getpid _getpid
+#endif
+
 // Program to launch one VRNetClient that connects to server.  Created
 // client executes syncSwapBuffersAcrossAllNodes.  The program is
 // intended to be executed by a forked child process in the network
