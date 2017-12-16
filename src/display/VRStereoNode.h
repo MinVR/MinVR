@@ -40,7 +40,7 @@ public:
 	VRStereoNode(const std::string &name, float interOcularDist, VRGraphicsToolkit *gfxToolkit, VRStereoFormat format);
 	virtual ~VRStereoNode();
 
-	virtual std::string getType() { return "VRStereoNode"; }
+	virtual std::string getType() const { return "VRStereoNode"; }
 
 	virtual void render(VRDataIndex *renderState, VRRenderHandler *renderHandler);
 	virtual void createChildren(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);

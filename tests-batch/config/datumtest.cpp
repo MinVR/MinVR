@@ -2,6 +2,8 @@
 
 // If a 'make test' shows a test failing, try 'ctest -VV' to get more
 // detail.  This will also print out whatever goes to std::cout.
+// Use 'ctest -VV -R datum_1' or something like that to execute only
+// one test.
 
 // These tests confirm the setting and retrieving of data in the
 // correct type, test the VRDatumConverter shortcut, and test that the

@@ -22,7 +22,7 @@ public:
 	VRGroupNode(const std::string &name);
 	virtual ~VRGroupNode();
 
-	virtual std::string getType() { return "VRGroupNode"; }
+	virtual std::string getType() const { return "VRGroupNode"; }
 	static VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 };
 

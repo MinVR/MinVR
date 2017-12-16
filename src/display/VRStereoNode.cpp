@@ -14,14 +14,17 @@ namespace MinVR {
 
 VRStereoNode::VRStereoNode(const std::string &name, float interOcularDist, VRGraphicsToolkit *gfxToolkit, VRStereoFormat format) :
   VRDisplayNode(name), _gfxToolkit(gfxToolkit), _format(format), _iod(interOcularDist) {
-      
+
   // in:
-  _valuesAdded.push_back("StereoFormat");
-  _valuesAdded.push_back("HeadMatrix");
+  _addValuesNeeded("HeadMatrix");
 
   // out:
   _valuesAdded.push_back("CameraMatrix");
   _valuesAdded.push_back("Eye");
+  _valuesAdded.push_back("StereoFormat");
+
+  // There are also some conditional requirements such as "ViewportX" that we
+  // only need under some conditions.  These are checked for below.
 }
 
 VRStereoNode::~VRStereoNode() {
@@ -51,16 +54,25 @@ void VRStereoNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandl
 
 		int x,y,w,h;
 		if (renderState->exists("ViewportX")) {
-            x = renderState->getValue("ViewportX");
-            y = renderState->getValue("ViewportY");
+      x = renderState->getValue("ViewportX");
+      y = renderState->getValue("ViewportY");
 			w = renderState->getValue("ViewportWidth");
 			h = renderState->getValue("ViewportHeight");
 		}
 		else {
-            x = 0;
-            y = 0;
-			w = renderState->getValue("WindowWidth");
-			h = renderState->getValue("WindowHeight");
+      x = 0;
+      y = 0;
+      if (renderState->exists("WindowWidth")) {
+        w = renderState->getValue();
+      } else {
+        VRERRORNOADV("VRStereoNode needs a window width.");
+      }
+
+      if (renderState->exists("WindowHeight")) {
+        h = renderState->getValue();
+      } else {
+        VRERRORNOADV("VRStereoNode needs a window height.");
+      }
 		}
 
 		_gfxToolkit->setSubWindow(VRRect(x,y,w/2,h));
@@ -92,20 +104,19 @@ void VRStereoNode::setCameraMatrix(VRDataIndex *renderState, VREyePosition eye)
 	VRMatrix4 headMatrix;
 	if (renderState->exists("HeadMatrix")) {
 		headMatrix = renderState->getValue("HeadMatrix");
-	}
-    else {
-        VRERROR("VRStereoNode cannot find HeadMatrix in the current RenderState",
-                "The display graph should include a VRHeadTrackingNode or a "
-                "VRLookAtNode or some other method of defining a HeadMatrix"
-                "before reaching the VRStereoNode.");
-    }
-    
-    VRMatrix4 cameraMatrix = headMatrix;
-    if (eye == Left) {
-        cameraMatrix = cameraMatrix * VRMatrix4::translation(VRVector3(-_iod / 2.0, 0, 0));
-	}
-	else if (eye == Right) {
-        cameraMatrix = cameraMatrix * VRMatrix4::translation(VRVector3(-_iod / 2.0, 0, 0));
+
+	} else {
+    VRERROR("VRStereoNode cannot find HeadMatrix in the current RenderState",
+            "The display graph should include a VRHeadTrackingNode or a "
+            "VRLookAtNode or some other method of defining a HeadMatrix "
+            "before reaching the VRStereoNode.");
+  }
+
+  VRMatrix4 cameraMatrix = headMatrix;
+  if (eye == Left) {
+    cameraMatrix = cameraMatrix * VRMatrix4::translation(VRVector3(-_iod / 2.0, 0, 0));
+	} else if (eye == Right) {
+    cameraMatrix = cameraMatrix * VRMatrix4::translation(VRVector3(-_iod / 2.0, 0, 0));
 	}
 
 	renderState->addData("CameraMatrix", cameraMatrix);

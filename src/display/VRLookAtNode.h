@@ -29,7 +29,7 @@ public:
 	VRLookAtNode(const std::string &name, VRMatrix4 initialHeadMatrix);
 	virtual ~VRLookAtNode();
 
-	virtual std::string getType() { return "VRLookAtNode"; }
+	virtual std::string getType() const { return "VRLookAtNode"; }
 
 	virtual void render(VRDataIndex *renderState, VRRenderHandler *renderHandler);
 

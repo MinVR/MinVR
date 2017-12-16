@@ -4,21 +4,22 @@
 
 namespace MinVR{
 
-VRProjectionNode::VRProjectionNode(const std::string &name, float fovX, float fovY, float nearClip, float farClip): 
+VRProjectionNode::VRProjectionNode(const std::string &name, float fovX, float fovY, float nearClip, float farClip):
   VRDisplayNode(name), _fovX(fovX), _fovY(fovY), _nearClip(nearClip), _farClip(farClip)
 {
   // in:
-  _valuesAdded.push_back("CameraMatrix");
+  _addValuesNeeded("CameraMatrix");
+
   // out:
   _valuesAdded.push_back("ViewMatrix");
   _valuesAdded.push_back("ProjectionMatrix");
- 
+
   double degreeToRadian = 3.1415926 / 180;
   float _horizontalClip = tan(fovX * degreeToRadian / 2.0f) * _nearClip;
   float _verticalClip = tan(fovY * degreeToRadian / 2.0f) * _nearClip;
 
   VRMatrix4 projMat = VRMatrix4::projection(-_horizontalClip, _horizontalClip, -_verticalClip, _verticalClip, _nearClip, _farClip); //TODO: This should just be cacheable once since it doesn't change.
- _projectionMatrix = projMat; 
+ _projectionMatrix = projMat;
 
 
 }
@@ -34,9 +35,9 @@ void VRProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *renderH
   renderState->addData("ProjectionMatrix", _projectionMatrix);
 
   VRMatrix4 cameraMat = renderState->getValue("CameraMatrix");
-    
+
   VRMatrix4 viewMat = cameraMat.inverse();
-    
+
   renderState->addData("ViewMatrix", viewMat);
 
   VRDisplayNode::render(renderState, renderHandler);

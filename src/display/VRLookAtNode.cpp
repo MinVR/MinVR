@@ -8,6 +8,7 @@ VRLookAtNode::VRLookAtNode(const std::string &name, VRMatrix4 initialHeadMatrix)
   VRDisplayNode(name),_headMatrix(initialHeadMatrix)
 {
   _valuesAdded.push_back("HeadMatrix");
+  _valuesAdded.push_back("CameraMatrix");
 }
 
 VRLookAtNode::~VRLookAtNode()
@@ -15,24 +16,29 @@ VRLookAtNode::~VRLookAtNode()
 }
 
 
-void 
+void
 VRLookAtNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 {
 	renderState->pushState();
 
 	renderState->addData("HeadMatrix", _headMatrix);
+
+  // We copy the head matrix into "CameraMatrix" in case this is only a mono
+  // configuration and the two are the same thing.  We don't use a link because
+  // a stereo configuration will overwrite the camera matrix.
+	renderState->addData("CameraMatrix", _headMatrix);
 	VRDisplayNode::render(renderState, renderHandler);
 
 	renderState->popState();
 }
 
 VRDisplayNode* VRLookAtNode::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
-	
+
 	VRMatrix4 headMatrix;
 
 	if (config->exists("HeadMatrix", nameSpace)){
 		headMatrix = config->getValue("HeadMatrix", nameSpace);
-	} 
+	}
 	else if (config->exists("LookAtUp", nameSpace) && config->exists("LookAtEye", nameSpace) && config->exists("LookAtCenter", nameSpace))
 	{
 		VRVector3 up = config->getValue("LookAtUp", nameSpace);
@@ -44,7 +50,7 @@ VRDisplayNode* VRLookAtNode::create(VRMainInterface *vrMain, VRDataIndex *config
 		VRVector3 x = up.cross(z);
 		x = x.normalize();
 		VRVector3 y = z.cross(x);
-		
+
         VRMatrix4 M1 = VRMatrix4::fromRowMajorElements(x[0], y[0], z[0], 0,
                                                        x[1], y[1], z[1], 0,
                                                        x[2], y[2], z[2], 0,

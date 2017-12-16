@@ -30,7 +30,7 @@ public:
 		 float nearClip, float farClip);
 	virtual ~VROffAxisProjectionNode();
 
-	virtual std::string getType() { return "VROffAxisProjectionNode"; }
+	virtual std::string getType() const { return "VROffAxisProjectionNode"; }
 
 	virtual void render(VRDataIndex *renderState, VRRenderHandler *renderHandler);
 

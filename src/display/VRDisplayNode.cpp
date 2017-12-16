@@ -97,7 +97,7 @@ std::map<std::string,std::string> VRDisplayNode::getValuesAdded() {
   if (_valuesAdded.size() > 0) {
     for (std::list<std::string>::iterator it = _valuesAdded.begin();
          it != _valuesAdded.end(); it++) {
-      out[*it] = _name + "(" + getType() + ")";
+      out[*it] = _name + " (" + getType() + ")";
     }
   }
 
@@ -121,69 +121,113 @@ std::map<std::string,std::string> VRDisplayNode::getValuesAdded() {
   return out;
 }
 
-void VRDisplayNode::auditValues(std::list<std::string> valuesSupplied) {
-  // First check to see if all of the values needed appear in the
-  // input list.
-  bool found;
+void VRDisplayNode::auditValues(std::set<std::string> valuesSet,
+                                const std::string &treeData) {
 
-  if ((_valuesNeeded.size() > 0) && (valuesSupplied.size() > 0)) {
-    for (std::list<std::string>::iterator it = _valuesNeeded.begin();
-         it != _valuesNeeded.end(); it++) {
+  //std::cerr << " checking: " << _name << std::endl;
 
-      found = false;
-      for (std::list<std::string>::iterator jt = valuesSupplied.begin();
-           jt != valuesSupplied.end(); jt++) {
-        found = found || ((*it).compare(*jt) == 0);
+  // Add the values supplied by this node to the set of values against which we
+  // will check the values needed by this node.
+  for (std::list<std::string>::const_iterator it = _valuesAdded.begin();
+       it != _valuesAdded.end(); it++) {
+
+    //std:: cerr << "    adding: " << *it << std::endl;
+
+    // Insert it added value into the set from above.
+    valuesSet.insert(*it);
+  }
+
+  // Run through all the valuesNeeded and see if they are in valuesSet.
+  for (std::list<std::pair<std::string, bool> >::const_iterator it = _valuesNeeded.begin();
+       it != _valuesNeeded.end(); it++) {
+
+    //std:: cerr << "    needing: " << it->first << std::endl;
+
+    // If the name is not in the value set, print the treeData and throw an error.
+    if (valuesSet.find(it->first) == valuesSet.end()) {
+
+      std::cerr << "Missing value in display node tree:" << std::endl
+                << treeData << std::endl;
+
+      // We only bomb if the value is required.
+      if (it->second) {
+        VRERROR("Necessary data (" + it->first + ") is not available to the " + getName() + " (" + getType() + ").",
+                "Review the construction of the display node tree in your configuration file.");
+      } else {
+        VRWARNING("Optional data (" + it->first + ") is not available to the " + getName() + " (" + getType() + ").",
+                  "Review the construction of the display node tree in your configuration file.");
       }
-      // If we haven't found this needed value, throw an error.
-      if (!found)
-        throw std::runtime_error("Needed " + (*it) + " but didn't get it, in " +
-                                 getName() + ":" + getType());
     }
   }
-  // Then add the valuesAdded to the input list and pass along to the
-  // children nodes.
-  valuesSupplied.insert(valuesSupplied.end(),
-                       _valuesAdded.begin(), _valuesAdded.end());
 
-  if (_children.size() > 0) {
-    for (std::vector<VRDisplayNode*>::iterator it =  _children.begin();
-         it != _children.end(); it++) {
-      (*it)->auditValues(valuesSupplied);
-    }
+  // Recursively audit the children nodes.
+  for (std::vector<VRDisplayNode*>::const_iterator it = _children.begin();
+       it != _children.end(); it++) {
+    (*it)->auditValues(valuesSet, treeData);
   }
 }
 
-std::string VRDisplayNode::printNode(const std::string &prefix) const {
+std::string VRDisplayNode::printNode(std::set<std::string> valuesSet,
+                                     const std::string &prefix) const {
 
+  // First compress the long names a little bit for readability.
   std::string name;
   if (_name.size() > 48) {
-    name = _name.substr(0,15) + "..." +
-      _name.substr(_name.size() - 33, std::string::npos);
+    name = _name.substr(0,8) + "..." +
+      _name.substr(_name.size() - 40, std::string::npos);
 
   } else {
     name = _name;
   }
 
-  std::string out = prefix + "<displayNode:" + name + ">";
+  // Establish the output.
+  std::string out;
+  if (!prefix.empty()) out = "\n";
 
-  out += "\n" + prefix + "   Values Added";
+  // Display this node.
+  out = prefix + "<displayNode:" + name + ">";
+
+  // The lines following need a longer prefix.
+  std::string newPrefix = prefix + " | ";
+
+  out += "\n" + newPrefix + "  Type: " + getType();
+
+  // Print the values added, but also add them to the set of values we
+  // know from above this position in the display graph.
+  out += "\n" + newPrefix + "  Values Added:";
   for (std::list<std::string>::const_iterator it = _valuesAdded.begin();
        it != _valuesAdded.end(); it++) {
-    out += "\n" + prefix + "     " + *it;
-  }
-  if (_valuesAdded.empty()) out += "\n" + prefix + "     <none>";
+    // Print the value added.
+    out += "\n" + newPrefix + "    " + *it;
 
-  out += "\n" + prefix + "   Values Needed";
-  for (std::list<std::string>::const_iterator it = _valuesNeeded.begin();
+    // Insert it added value into the set from above.
+    valuesSet.insert(*it);
+  }
+  if (_valuesAdded.empty()) out += "\n" + newPrefix + "     <none>";
+
+  // Print the values needed, but also check them against the values already set.
+  out += "\n" + newPrefix + "  Values Needed:";
+  for (std::list<std::pair<std::string, bool> >::const_iterator it = _valuesNeeded.begin();
        it != _valuesNeeded.end(); it++) {
-    out += "\n" + prefix + "     " + *it;
-  }
-  if (_valuesNeeded.empty()) out += "\n" + prefix + "     <none>";
+    out += "\n" + newPrefix + "    " + it->first;
+    if (it->second) {
+      out += " (required)";
+    } else {
+      out += " (optional)";
+    }
 
+    // If the name is not in the value set, flag it.
+    if (valuesSet.find(it->first) == valuesSet.end()) {
+
+      out += " <-- ERROR: this value will not be found.";
+    }
+  }
+  if (_valuesNeeded.empty()) out += "\n" + newPrefix + "     <none>";
+
+  // Recursively print the children nodes.
   for (std::vector<VRDisplayNode*>::const_iterator it = _children.begin();
        it != _children.end(); it++) {
-    out += "\n" + (*it)->printNode(prefix + "| ");
+    out += "\n" + (*it)->printNode(valuesSet, newPrefix);
   }
 
   return out;

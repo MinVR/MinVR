@@ -15,7 +15,7 @@ class VRGraphicsToolkit {
 public:
 	virtual ~VRGraphicsToolkit() {}
 
-    virtual std::string getName() = 0;
+  virtual std::string getName() const = 0;
 
 	enum VRDRAWBUFFER {
 		VRDRAWBUFFER_BACK = 0,

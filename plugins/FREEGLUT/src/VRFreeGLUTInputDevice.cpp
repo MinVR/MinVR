@@ -102,9 +102,10 @@ void VRFreeGLUTInputDevice::cursorPositionCallback(int xpos, int ypos, bool isAc
     pos.push_back(xpos);
     pos.push_back(ypos);
 
-    std::vector<float> npos;
+    std::vector<float> npos = pos;
     int width = glutGet(GLUT_WINDOW_WIDTH);
     int height = glutGet(GLUT_WINDOW_HEIGHT);
+
     npos[0] /= (float)width;
     npos[1] /= (float)height;
 

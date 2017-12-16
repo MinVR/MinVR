@@ -92,7 +92,7 @@ int TestSwapBufferSignal() {
   std::vector<pid_t> clientPIDs(numberOfClients);
 
   // Fork N clients to connect to the server.
-  std::string launchSwapClient = std::string(BINARYPATH) + "/launchSwapClient";
+  std::string launchSwapClient = std::string(BINARYPATH) + "/bin/launchSwapClient";
   std::cout << "Using: " << launchSwapClient << std::endl;
 
   char clientNumberStr[10];
@@ -174,7 +174,7 @@ int TestExchangeEventData() {
   std::vector<pid_t> clientPIDs(numberOfClients);
 
   // Fork N clients to connect to the server.
-  std::string launchEventClient = std::string(BINARYPATH) + "/launchEventClient";
+  std::string launchEventClient = std::string(BINARYPATH) + "/bin/launchEventClient";
   std::cout << "Using: " << launchEventClient << std::endl;
 
   char clientNumberStr[10];

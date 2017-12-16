@@ -16,7 +16,7 @@ public:
 	PLUGIN_API VROpenGLGraphicsToolkit();
 	PLUGIN_API virtual ~VROpenGLGraphicsToolkit();
 
-	PLUGIN_API std::string getName() { return "VROpenGLGraphicsToolkit"; }
+	PLUGIN_API std::string getName() const { return "VROpenGLGraphicsToolkit"; }
   
 	PLUGIN_API void setDrawBuffer(VRDRAWBUFFER buffer);
 	PLUGIN_API void setSubWindow(VRRect rect);

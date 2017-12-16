@@ -631,7 +631,11 @@ public:
       const_cast<VRDataIndex*>(this)->_getEntry(key, nameSpace, inherit);
 
     if (p == _theIndex.end()) {
-      VRERRORNOADV("Never heard of " + key + " in namespace " + nameSpace + ".");
+      if (nameSpace.empty()) {
+        VRERRORNOADV("Never heard of " + key + ".");
+      } else {
+        VRERRORNOADV("Never heard of " + key + " in namespace " + nameSpace + ".");
+      }
     } else {
       return p->second->getValue();
     }

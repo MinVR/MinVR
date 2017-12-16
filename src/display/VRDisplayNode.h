@@ -11,6 +11,7 @@
 
 #include <vector>
 #include <string>
+#include <set>
 
 #include <config/VRDataIndex.h>
 #include <main/VRRenderHandler.h>
@@ -33,11 +34,11 @@ public:
 	virtual ~VRDisplayNode();
 
 	/// Returns the name given to this display node in the config file.
-	virtual std::string getName() { return _name; }
+	virtual std::string getName() const { return _name; }
 
 	/// Returns a string describing the type of the node (e.g.,
 	/// VRGroupNode, VRWindowNode)
-	virtual std::string getType() = 0;
+	virtual std::string getType() const = 0;
 
 	/// Calls the render function on each of the display node's
 	/// children.  If there are no children, then we are at a leaf node
@@ -83,35 +84,65 @@ public:
   /// a list of all the values added to the render state, and by whom.
   virtual std::map<std::string,std::string> getValuesAdded();
 
-  // This function is meant to be called by a parent node.  It accepts
-  // a list of value names and compares it to a set of names that it
-  // requires.  Essentially it is answering the question of whether it
-  // will have the data it needs to do its job when its render()
-  // method is called.  This function's role is to provide as
-  // informative a set of error messages as possible so that the user
-  // will not be left to puzzle over some "value not found" message
-  // later, during the render phase.  The method is called on this
-  // object, as well as on its children, so we can audit the entire
-  // display node graph.  The return is void because the function will
-  // throw an error if a mismatch is found.  Return = success.
-  virtual void auditValues(std::list<std::string> valuesSupplied);
+  /// This function is meant to be called by a parent node.  It accepts a
+  /// list of value names and compares it to a set of names that it requires.
+  /// Essentially it is answering the question of whether it will have the
+  /// data it needs to do its job when its render() method is called.  This
+  /// function's role is to provide as informative a set of error messages as
+  /// possible so that the user will not be left to puzzle over some "value
+  /// not found" message later, during the render phase.  The method is
+  /// called on this object, as well as on its children, so we can audit the
+  /// entire display node graph.
+  ///
+  /// The return is void because the function will throw an error if a
+  /// mismatch is found.  Return = success.  The treeData is printed in the
+  /// event of throwing an error, and is expected to be a rendition of the
+  /// node tree, as would be created by printNode().
+  void auditValues(const std::string &treeData) {
+    std::set<std::string> dummy;
+    auditValues(dummy, treeData);
+  }
+  void auditValues(std::set<std::string> valuesSet,
+                   const std::string &treeData);
 
-  std::string printNode(const std::string &prefix) const;
+  /// Provides a printable rendering of the display node graph, with an
+  /// annotation for when a value needed by a lower node is not supplied by
+  /// any node above it.
+  std::string printNode(const std::string &prefix = "") const {
+    std::set<std::string> dummy;
+    return printNode(dummy, prefix);
+  }
+  std::string printNode(std::set<std::string> valuesSet,
+                        const std::string &prefix = "") const;
 
 protected:
 	std::vector<VRDisplayNode*> _children;
   std::string _name;
 
   // This contains a list of the values added by this node.  When
-  // getValuesAdded() is invoked, this will be returned, appended to a
-  // list of values added by this node's children.
+  // getValuesAdded() is invoked, this will be returned, appended to a list of
+  // values added by this node's children.
   std::list<std::string> _valuesAdded;
 
-  // This is a list of the values needed by this node.
-  std::list<std::string> _valuesNeeded;
+  // This is a list of the values needed by this node.  The boolean indicates
+  // whether the value is required or not.  A missing value that is required
+  // (TRUE) will cause the auditValues() to fail.  If the value is not required,
+  // a warning will be printed.
+  std::list<std::pair<std::string, bool> > _valuesNeeded;
+
+  /// This is just a syntax sweetener to hide the std::pair stuff.  Use this to
+  /// add needed values to the audit.  Set the "required" argument to false for
+  /// optional arguments, but remember that if you check for optional arguments,
+  /// the user will see a warning during the audit if they're not there.
+  void _addValuesNeeded(const std::string name, const bool required = true) {
+    _valuesNeeded.push_back(std::pair<std::string, bool>(name, required));
+  }
 
   friend std::ostream & operator<<(std::ostream &os, const VRDisplayNode& p) {
-    return os << p.printNode("| ");
+    return os << p.printNode("");
+  };
+  friend std::ostream & operator<<(std::ostream &os, const VRDisplayNode* p) {
+    return os << p->printNode("");
   };
 };
 
