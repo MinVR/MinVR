@@ -16,7 +16,7 @@ VRStereoNode::VRStereoNode(const std::string &name, float interOcularDist, VRGra
   VRDisplayNode(name), _gfxToolkit(gfxToolkit), _format(format), _iod(interOcularDist) {
 
   // in:
-  _addValuesNeeded("HeadMatrix");
+  _addValueNeeded("HeadMatrix");
 
   // out:
   _valuesAdded.push_back("CameraMatrix");
