@@ -162,6 +162,7 @@ set(vr_main_cpp
 
 set(vr_main_h
   ${vr_src_dir}/main/VRAppLauncher.h
+  ${vr_src_dir}/main/VRError.h
   ${vr_src_dir}/main/VREventHandler.h
   ${vr_src_dir}/main/VREventInternal.h
   ${vr_src_dir}/main/VRFactory.h
