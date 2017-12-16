@@ -49,6 +49,23 @@ if (NOT APPLE)
     UseGLEW(${PROJECT_NAME} PUBLIC)
 endif()
 
+# Setup dependency on C++-11:
+if (MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE -std=c++11)
+endif()
+
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  target_compile_options(${PROJECT_NAME} PRIVATE -std=c++11 -stdlib=libc++)
+endif()
+
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.7")
+    target_compile_options(${PROJECT_NAME} PRIVATE -std=gnu++0x)
+  else()
+    target_compile_options(${PROJECT_NAME} PRIVATE -std=c++11)
+  endif()
+endif()
+
 
 # Installation:
 install( TARGETS ${PROJECT_NAME}
