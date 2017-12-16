@@ -39,12 +39,12 @@ In addition to the path to the root source directory, you can pass a variety of 
 
 Here's a complete annotated list of steps to display your first MinVR demo program.
 
-1. Download the MinVR Source Tree
+#### 1. Download the MinVR Source Tree
 ```
 git clone http://github.com/MinVR/MinVR
 ```
 
-2. Create an Initial CMake Build Configuration
+#### 2. Create an Initial CMake Build Configuration
 
 ```
 cd MinVR
@@ -64,7 +64,7 @@ Also check the important variable ```CMAKE_INSTALL_PREFIX```.  If you decide the
 ```CMAKE_INSTALL_PREFIX``` is also used as the path for installing any dependencies that MinVR builds when ```AUTOBUILD_DEPENDENCIES``` is ```ON```.  Note that if ```AUTOBUILD_DEPENDENCIES``` is ```ON``` and a Plugin or other optional build requires them, the dependencies are downloaded, built, and installed during the MinVR *configure step* (i.e., before even building MinVR).  This means that if you want to also install the dependencies on your system, it is important to set ```CMAKE_INSTALL_PREFIX``` now, not just later if you eventually decide to install the MinVR library itself.  
 
 
-3. Select Plugins to Build and Re-Configure
+#### 3. Select Plugins to Build and Re-Configure
 
 Plugins and all other optional portions of the MinVR build (e.g., examples, documentation) can be turned on using options of the form ```WITH_*```.  Scroll down to those options now.  Let's build an example of a first 3D graphics program that can run in a desktop mode or VR mode.
 
@@ -79,12 +79,12 @@ Set ```WITH_GLFW_PLUGIN``` to ```ON```.
 Now, click the Configure button again.  (In CMake, you need to re-configure every time you make a change to a build option.  Sometimes a change will also unlock new options.  It doesn't hurt to try different options and reconfigure as many times as you want or to keep pressing Configure until no new options (in red) appear -- that way you know you have seen every available option.
 
 
-4. Generate the Build System / Project Files
+#### 4. Generate the Build System / Project Files
 
 Finally, with these options set, press the Generate button.  This is the step that will actually generate the Unix Makefiles, Visual Studio Solution File, or Xcode Project File needed to build MinVR.  
 
 
-5. Build MinVR with the Specified Options
+#### 5. Build MinVR with the Specified Options
 
 Click Open Project if you generated project files for an IDE, or if you generated Unix Makefiles return to your shell and the build directory.  Now, build the project as you normally would in these enviornments.  
 
@@ -93,7 +93,7 @@ For Xcode or Visual Studio ```click the triangle button```.
 For Unix Makefiles ```type make```.
 
 
-6. Run a Test Program in Desktop Mode
+#### 6. Run a Test Program in Desktop Mode
 
 ```bin/itest-opengl-shaderpipeline-with-api -c ../config/desktop.minvr```
 
@@ -106,8 +106,7 @@ or as an even shorter shorthand that will load the ```default.minvr``` config fi
 ```bin/itest-opengl-shaderpipeline-with-api```
 
 
-
-### Run in VR Mode
+#### 7. Run in VR Mode
 
 You can run the same example application in a variety of VR displays supported by MinVR just by changing the configuration file specified on the command line.  MinVR ships with configs that work for some common displays, such as the Oculus Rift, HTC Vive, and various 3DTVs.  If you have a Vive, try running the following.
 
@@ -169,28 +168,27 @@ In desktop mode, MinVR's builtin "Fake Trackers" are used to translate mouse and
 
 Here are the CavePainting-Lite controls for both Desktop and VR modes:
 
-| Function                          | Desktop Mode                       | VR Mode            |
-|-----------------------------------|------------------------------------|--------------------|
-| Start Painting                    | Mouse Left Button                  | Right Hand Button  |
-| Brush Move                        |                                    | Right Hand Tracker |
-|   - Translate Parallel to Screen  | Move Mouse                         |                    |
-|   - Translate in/out of Screen    | Hold 'T' and Move Mouse Vertically |                    |
-|   - Rotate with Trackball         | Hold 'R' and Move Mouse Around     |                    |
-|   - Toggle Brush Tracker On/Off^1 | Keyboard '2'                       |                    |
-|-----------------------------------|------------------------------------|--------------------|
-| Grab Painting w/ Left Hand        | Keyboard 'SPACEBAR'                | Left Hand Button   |
-| Left Hand (Box Icon) Move         |                                    | Left Hand Tracker  |
-|   - Translate Parallel to Screen  | Move Mouse                         |                    |
-|   - Translate in/out of Screen    | Hold 'T' and Move Mouse Vertically |                    |
-|   - Rotate with Trackball         | Hold 'R' and Move Mouse Around     |                    |
-|   - Toggle Hand Tracker On/Off^1  | Keyboard '3'                       |                    |
-|-----------------------------------|------------------------------------|--------------------|
-| Head Tracking                     |                                    | Head Tracker       |
-|   - Look Around                   | Mouse Right Click and Drag         |                    |
-|   - Walk Forward/Backward         | Keyboard 'UP'/'DOWN' or 'W'/'Z'    |                    |
-|   - Turn Left/Right               | Keyboard 'LEFT'/'RIGHT' or 'A'/'S' |                    |
-|   - Toggle Head Tracker On/Off^2  | Keyboard '1'                       |                    |
-|-----------------------------------|------------------------------------|--------------------|
+| Function                           | Desktop Mode                       | VR Mode                            |
+|------------------------------------|------------------------------------|------------------------------------|
+| Start Painting                     | Mouse Left Button                  | Right Hand Button                  |
+| Brush Move                         |                                    | Right Hand Tracker                 |
+|   - Translate Parallel to Screen   | Move Mouse                         |                                    |
+|   - Translate in/out of Screen     | Hold 'T' and Move Mouse Vertically |                                    |
+|   - Rotate with Trackball          | Hold 'R' and Move Mouse Around     |                                    |
+|   - Toggle Brush Tracker On/Off^1  | Keyboard '2'                       |                                    |
+|------------------------------------|------------------------------------|------------------------------------|
+| Grab Painting w/ Left Hand         | Keyboard 'SPACEBAR'                | Left Hand Button                   |
+| Left Hand (Box Icon) Move          |                                    | Left Hand Tracker                  |
+|   - Translate Parallel to Screen   | Move Mouse                         |                                    |
+|   - Translate in/out of Screen     | Hold 'T' and Move Mouse Vertically |                                    |
+|   - Rotate with Trackball          | Hold 'R' and Move Mouse Around     |                                    |
+|   - Toggle Hand Tracker On/Off^1   | Keyboard '3'                       |                                    |
+|------------------------------------|------------------------------------|------------------------------------|
+| Head Tracking                      |                                    | Head Tracker                       |
+|   - Look Around                    | Mouse Right Click and Drag         |                                    |
+|   - Walk Forward/Backward          | Keyboard 'UP'/'DOWN' or 'W'/'Z'    |                                    |
+|   - Turn Left/Right                | Keyboard 'LEFT'/'RIGHT' or 'A'/'S' |                                    |
+|   - Toggle Head Tracker On/Off^2   | Keyboard '1'                       |                                    |
 
 ^1 The reason to toggle the paintbrush and hand trackers on/off is so that you can control one at a time.  Since we need two trackers but we only have one mouse, both "fake trackers" follow the mouse.  In VR, this would be like having both hands right on top of each other.  If you want to test a technique where there is some distance between the hands in desktop mode, then you can toggle on/off the trackers to move them separately.
 
