@@ -14,6 +14,7 @@ int testIndexSerializeIntArray();
 int testIndexSerializeIntArraySep();
 int testIndexPrintFloatArray();
 int testIndexLotsaEntries();
+int testIndexGetDefaultValues();
 int testPushPopIndex();
 int testEscapedChars();
 int testSelections();
@@ -98,6 +99,10 @@ int indextest(int argc, char* argv[]) {
     output = testIsChild();
     break;
 
+  case 15:
+    output = testIndexGetDefaultValues();
+    break;
+    
   default:
     std::cout << "Test #" << choice << " does not exist!\n";
     output = -1;
@@ -651,12 +656,46 @@ int testIndexLotsaEntries() {
   return out;
 }
 
-int testEscapedChars() {
+int testIndexGetDefaultValues() {
 
   int out = 0;
 
-  int lctr;
-  int N = 1000;
+  LOOP {
+
+    MinVR::VRDataIndex *n = setupIndex();
+
+    std::cout << n->printStructure();
+
+    out += (0.00001 > (float)n->getValueWithDefault("/martha/b0", 3.0f) - 3.1415926) ? 0 : 1;
+
+    std::cout << "returning: " << (float)n->getValueWithDefault("/martha/b0", 3.0f) << "(" << out << ")" << std::endl;
+    std::cout << "should be: " << (float)n->getValue("/martha/b0") << "(" << out << ")" << std::endl;
+    
+    out += (n->getValueWithDefault("/martha/b10", 3.0f) == 3.0) ? 0 : 1;
+
+    std::cout << "returning: " << (float)n->getValueWithDefault("/martha/b10", 3.0f) << "(" << out << ")" << std::endl;
+
+    out += (n->getValueWithDefault("/george/a5", 6) == 9) ? 0 : 1;
+    out += (n->getValueWithDefault("/george/a15", 6) == 6) ? 0 : 1;
+
+    // Note that the method of implementing getValueWithDefault
+    // requires that the default value provided be an unambiguous
+    // type.  Just putting "hello" as an argument is either a char[]
+    // or an std::string, and the compiler can't hack the char[].
+    out += n->getValueWithDefault("/john/c5", std::string("hello")).compare("abigail5");
+    out += n->getValueWithDefault("/john/c15", std::string("hello")).compare("hello");
+
+
+    
+    delete n;
+  }
+
+  return out;
+}
+
+int testEscapedChars() {
+
+  int out = 0;
 
   LOOP {
 

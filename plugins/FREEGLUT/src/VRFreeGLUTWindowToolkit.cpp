@@ -25,21 +25,17 @@ static void warning_callback(const char *fmt, va_list ap)
 }
 
 VRFreeGLUTWindowToolkit::VRFreeGLUTWindowToolkit(VRMainInterface *vrMain) : _vrMain(vrMain), _inputDev(NULL) {
-	char *myargv [1];
-	int myargc=1;
-	myargv [0]=strdup ("");
+
 	glutInitErrorFunc(error_callback);
 	glutInitWarningFunc(warning_callback);
 	
-	glutInit(&myargc, myargv);
+	int argc = vrMain->getArgc();
+	glutInit(&argc, vrMain->getArgv());
 	
 	_inputDev = new VRFreeGLUTInputDevice();
 }
 
 VRFreeGLUTWindowToolkit::~VRFreeGLUTWindowToolkit() {
-	if (_inputDev != NULL) {
-		delete _inputDev;
-	}
     for (std::vector<int>::iterator it = _windows.begin(); it != _windows.end(); ++it){
 			glutDestroyWindow(*it);
 	}

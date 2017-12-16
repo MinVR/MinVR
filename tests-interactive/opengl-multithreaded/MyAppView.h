@@ -60,8 +60,8 @@ private:
 	void linkShaderProgram(GLuint shaderProgram);
 
 	GLuint vao, vshader, fshader, shaderProgram;
-	const MyAppSharedContext& sharedContext;
 	const MyAppModel& model;
+	const MyAppSharedContext& sharedContext;
 };
 
 #endif

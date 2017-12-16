@@ -1,8 +1,25 @@
 #ifndef MINVR_VRERROR_H
 #define MINVR_VRERROR_H
 #include <string>
+#include <stdlib.h>
+#include <string.h>
 #include <sstream>
 #include <iostream>
+
+// When multiple processes are writing to the same terminal, their
+// output gets mixed up if you just use std::cout or std::cerr.  Using
+// write() gets you unbuffered output, which is more or less atomic.
+#ifdef MinVR_DEBUG
+#define DEBUGMSG(msg) \
+  { std::string debugmsg = msg + std::string("\n");		\
+    std::cout.write(debugmsg.c_str(), debugmsg.size()); }
+#else
+#define DEBUGMSG(msg)
+#endif
+#define SHOWMSG(msg) \
+  { std::string debugmsg = msg + std::string("\n");		\
+    std::cout.write(debugmsg.c_str(), debugmsg.size()); }
+
 
 /// This class is meant to provide an easy way to systematize error
 /// handling in MinVR, and also encourage people to add a line or two
@@ -21,7 +38,7 @@
 /// If you don't like providing advice, or if it's not at all clear
 /// what advice would be relevant, you can also do this:
 ///
-///   VRERROR("Syntax error.");
+///   VRERRORNOADV("Syntax error.");
 ///
 
 
@@ -37,6 +54,8 @@
 #define VRWARNINGNOADV(what) VRError::VRWarning(what, "", __FILE__, __LINE__, __PRETTY_FUNCTION__);
 #define VRWARNING(what, advice) VRError::VRWarning(what, advice, __FILE__, __LINE__, __PRETTY_FUNCTION__);
 #endif
+
+namespace MinVR {
 
 /// A class to systematize the error handling in MinVR.
 class VRError: public std::exception {
@@ -93,7 +112,10 @@ public:
   ///         is in posession of the VRError object. Callers must
   ///         not attempt to free the memory.
   virtual const char* what() const throw (){
-    return _errorMessage().c_str();
+    std::string emsg = _errorMessage();
+    char* out = (char*)malloc(emsg.size() + 2);
+    strcpy(out, _errorMessage().c_str());
+    return out;
   }
 
   static void VRWarning(const std::string& whatMsg,
@@ -128,13 +150,15 @@ protected:
   /// The pieces of the error message.
   ///
   std::string _whatMsg;
-  std::string _whereFile;
-  std::string _whereLine;
-  std::string _whereFunc;
   std::string _adviceMsg;
+  std::string _whereFile;
+  std::string _whereFunc;
+  std::string _whereLine;
 
-  friend std::ostream & operator<<(std::ostream &os, VRError& e) {
+  friend std::ostream & operator<<(std::ostream &os, const VRError& e) {
     return os << e._errorMessage();
   }
 };
+
+}
 #endif    // MINVR_VRERROR_H

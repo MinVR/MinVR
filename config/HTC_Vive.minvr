@@ -27,15 +27,16 @@
 	      <GLFWToolkit windowtoolkitType="VRGLFWWindowToolkit"/>
 	      <OpenGLToolkit graphicstoolkitType="VROpenGLGraphicsToolkit"/>
 	      <RootNode displaynodeType="VRGraphicsWindowNode">
-				  <Border>1</Border>
-				  <Caption>Desktop</Caption>
-				  <GPUAffinity>0</GPUAffinity>	
-				  <XPos>100</XPos>
-				  <YPos>100</YPos>
-				  <Width>640</Width>
-				  <Height>400</Height>
-          <HTC displaynodeType="VROpenVRNode"/>
-			</RootNode>
+			<HTC displaynodeType="VROpenVRNode">
+				<HideTracker>0</HideTracker>
+				<ReportStatePressed>1</ReportStatePressed>
+				<ReportStateTouched>1</ReportStateTouched>
+				<ReportStateAxis>1</ReportStateAxis>
+				<ReportStatePose>1</ReportStatePose>
+				<DrawHMDOnly>0</DrawHMDOnly>
+				<MSAA_buffers>4</MSAA_buffers>	
+			</HTC>
+		</RootNode>
 		</Desktop>
 	</VRSetups>
 </MinVR>

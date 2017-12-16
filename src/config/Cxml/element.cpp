@@ -3,24 +3,24 @@
 namespace MinVR {
 
 element::element() : is_empty_attribute_list(true),
-                   m_value(NULL),
                    value_is_allocated(false),
                    name_is_allocated(false),
                    is_comment(false),
+		   is_pi(false),
                    m_name(NULL),
-                   m_parent(NULL),
-                   is_pi(false)
+                   m_value(NULL),
+                   m_parent(NULL)
 {
     m_element_iterator = m_element_list.begin();
     m_attribute_iterator = m_attribute_list.begin();
 }
 
 element::element(element* node) : is_empty_attribute_list(true),
-                               m_value(NULL),
                                value_is_allocated(false),
                                name_is_allocated(false),
                                is_comment(false),
                                m_name(NULL),
+                               m_value(NULL),
                                m_parent(NULL)
 {
     if(node != NULL)

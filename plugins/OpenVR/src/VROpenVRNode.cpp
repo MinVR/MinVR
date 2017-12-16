@@ -14,6 +14,7 @@
 #endif
 
 #include "VROpenVRNode.h"
+#include "VROpenVRRenderModelHandler.h"
 #include <cmath>
 
 #if defined(WIN32)
@@ -31,12 +32,13 @@
 
 namespace MinVR {
 
-VROpenVRNode::VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double _near, double _far) : VRDisplayNode(name) , isInitialized(false), m_fNearClip(_near), m_fFarClip(_far){
+	VROpenVRNode::VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double _near, double _far, bool draw_controller, bool hide_tracker, bool draw_HMD_Only, unsigned char openvr_plugin_flags, unsigned int MSAA_buffers, float deviceUnitsToRoomUnits, VRMatrix4 deviceToRoom) : VRDisplayNode(name), isInitialized(false), m_fNearClip(_near), m_fFarClip(_far), m_draw_controller(draw_controller), m_draw_HMD_Only(draw_HMD_Only), m_rendermodelhandler(NULL), m_MSAA_buffers(MSAA_buffers), deviceUnitsToRoomUnits(deviceUnitsToRoomUnits), deviceToRoom(deviceToRoom) {
 	vr::EVRInitError eError = vr::VRInitError_None;
 	m_pHMD = vr::VR_Init( &eError, vr::VRApplication_Scene );
 	int idx = name.find_last_of('/');
 	std::cerr << name.substr(idx + 1) << std::endl;
-	_inputDev = new VROpenVRInputDevice(m_pHMD, name.substr(idx + 1));
+	_inputDev = new VROpenVRInputDevice(m_pHMD, name.substr(idx + 1), this, openvr_plugin_flags, deviceUnitsToRoomUnits, deviceToRoom);
+	
 
 	vrMain->addInputDevice(_inputDev);
 	if ( eError != vr::VRInitError_None )
@@ -48,18 +50,9 @@ VROpenVRNode::VROpenVRNode(VRMainInterface *vrMain, const std::string &name, dou
 		exit(0);
 	}
 
-	m_pRenderModels = (vr::IVRRenderModels *)vr::VR_GetGenericInterface( vr::IVRRenderModels_Version, &eError );
-	if( !m_pRenderModels )
-	{
-		m_pHMD = NULL;
-		vr::VR_Shutdown();
-
-		char buf[1024];
-		std::cerr <<  "Unable to get render model interface: " << vr::VR_GetVRInitErrorAsEnglishDescription( eError )  << std::endl;
-
-		exit(0);
-	}
-
+	if (m_draw_controller)
+		m_rendermodelhandler = new VROpenVRRenderModelHandler(m_pHMD, _inputDev, hide_tracker);
+	
 	vr::EVRInitError peError = vr::VRInitError_None;
 
 	if ( !vr::VRCompositor() )
@@ -70,6 +63,10 @@ VROpenVRNode::VROpenVRNode(VRMainInterface *vrMain, const std::string &name, dou
 }
 	
 VROpenVRNode::~VROpenVRNode() {	
+	if (m_rendermodelhandler){
+		delete  m_rendermodelhandler;
+		m_rendermodelhandler = NULL;
+	}
 	if( m_pHMD )
 	{
 		vr::VR_Shutdown();
@@ -78,19 +75,20 @@ VROpenVRNode::~VROpenVRNode() {
 	
 	if(isInitialized){
 		glDeleteRenderbuffers( 1, &leftEyeDesc.m_nDepthBufferId );
-		glDeleteTextures( 1, &leftEyeDesc.m_nRenderTextureId );
+		if (m_MSAA_buffers > 1) glDeleteTextures(1, &leftEyeDesc.m_nRenderTextureId);
 		glDeleteFramebuffers( 1, &leftEyeDesc.m_nRenderFramebufferId );
 		glDeleteTextures( 1, &leftEyeDesc.m_nResolveTextureId );
-		glDeleteFramebuffers( 1, &leftEyeDesc.m_nResolveFramebufferId );
+		if (m_MSAA_buffers > 1) glDeleteFramebuffers(1, &leftEyeDesc.m_nResolveFramebufferId);
 
 		glDeleteRenderbuffers( 1, &rightEyeDesc.m_nDepthBufferId );
-		glDeleteTextures( 1, &rightEyeDesc.m_nRenderTextureId );
+		if (m_MSAA_buffers > 1) glDeleteTextures(1, &rightEyeDesc.m_nRenderTextureId);
 		glDeleteFramebuffers( 1, &rightEyeDesc.m_nRenderFramebufferId );
 		glDeleteTextures( 1, &rightEyeDesc.m_nResolveTextureId );
-		glDeleteFramebuffers( 1, &rightEyeDesc.m_nResolveFramebufferId );
+		if (m_MSAA_buffers > 1) glDeleteFramebuffers(1, &rightEyeDesc.m_nResolveFramebufferId);
 	}
-}
 
+	
+}
 
 void
 VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
@@ -115,12 +113,16 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 		SetupStereoRenderTargets();
 	}
 		
+	if (m_rendermodelhandler)
+		m_rendermodelhandler->initModels();
+
 	_inputDev->updatePoses();
+
 	VRMatrix4 head_pose = _inputDev->getPose(vr::k_unTrackedDeviceIndex_Hmd).inverse();
 
 	// Left Eye
 	renderState->pushState();
-	glEnable( GL_MULTISAMPLE );
+	if (m_MSAA_buffers > 1) glEnable(GL_MULTISAMPLE);
 	glBindFramebuffer( GL_FRAMEBUFFER, leftEyeDesc.m_nRenderFramebufferId );
  	glViewport(0, 0, m_nRenderWidth, m_nRenderHeight );
  	glClearColor( 0, 0, 0, 1 );
@@ -128,7 +130,7 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 
 	VRMatrix4 view_left = m_mat4eyePosLeft * head_pose;
 	renderState->addData("/ProjectionMatrix", m_mat4ProjectionLeft);
-	renderState->addData("/ViewMatrix", view_left);
+	renderState->addData("/ViewMatrix", view_left * VRMatrix4::scale(VRVector3(1.0 / deviceUnitsToRoomUnits, 1.0 / deviceUnitsToRoomUnits, 1.0 / deviceUnitsToRoomUnits)) *deviceToRoom);
 	renderState->addData("/Eye", "Left");
 	if (_children.size() == 0) {
 		renderHandler->onVRRenderScene(renderState, this);
@@ -137,29 +139,34 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 		VRDisplayNode::render(renderState, renderHandler);
 	}
 
+	if (m_rendermodelhandler)
+		m_rendermodelhandler->draw(m_mat4ProjectionLeft, view_left);
+
  	glBindFramebuffer( GL_FRAMEBUFFER, 0 );	
-	glDisable( GL_MULTISAMPLE ); 	
- 	glBindFramebuffer(GL_READ_FRAMEBUFFER, leftEyeDesc.m_nRenderFramebufferId);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, leftEyeDesc.m_nResolveFramebufferId );
-    glBlitFramebuffer( 0, 0, m_nRenderWidth, m_nRenderHeight, 0, 0, m_nRenderWidth, m_nRenderHeight, 
-		GL_COLOR_BUFFER_BIT,
- 		GL_LINEAR );
- 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0 );	
+	if (m_MSAA_buffers > 1) {
+		glDisable(GL_MULTISAMPLE);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, leftEyeDesc.m_nRenderFramebufferId);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, leftEyeDesc.m_nResolveFramebufferId);
+		glBlitFramebuffer(0, 0, m_nRenderWidth, m_nRenderHeight, 0, 0, m_nRenderWidth, m_nRenderHeight,
+			GL_COLOR_BUFFER_BIT,
+			GL_LINEAR);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	}
 	renderState->popState();
 	
 	// Right Eye
 	renderState->pushState();
-	glEnable( GL_MULTISAMPLE );
+	if (m_MSAA_buffers > 1) glEnable(GL_MULTISAMPLE);
 	glBindFramebuffer( GL_FRAMEBUFFER, rightEyeDesc.m_nRenderFramebufferId );
  	glViewport(0, 0, m_nRenderWidth, m_nRenderHeight );
 	glClearColor( 0, 0, 0, 1 );
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 	VRMatrix4 view_right = m_mat4eyePosRight * head_pose;
-	
+
 	renderState->addData("/ProjectionMatrix",m_mat4ProjectionRight);
-	renderState->addData("/ViewMatrix", view_right);
+	renderState->addData("/ViewMatrix", view_right * VRMatrix4::scale(VRVector3(1.0 / deviceUnitsToRoomUnits, 1.0 / deviceUnitsToRoomUnits, 1.0 / deviceUnitsToRoomUnits)) *deviceToRoom);
 	renderState->addData("/Eye", "Right");
 	if (_children.size() == 0) {
 		renderHandler->onVRRenderScene(renderState, this);
@@ -168,50 +175,112 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 		VRDisplayNode::render(renderState, renderHandler);
 	}
 
- 	glBindFramebuffer( GL_FRAMEBUFFER, 0 );	
-	glDisable( GL_MULTISAMPLE );
- 	glBindFramebuffer(GL_READ_FRAMEBUFFER, rightEyeDesc.m_nRenderFramebufferId );
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, rightEyeDesc.m_nResolveFramebufferId );
-    glBlitFramebuffer( 0, 0, m_nRenderWidth, m_nRenderHeight, 0, 0, m_nRenderWidth, m_nRenderHeight, 
-		GL_COLOR_BUFFER_BIT,
- 		GL_LINEAR  );
- 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0 );
+	if (m_rendermodelhandler)
+		m_rendermodelhandler->draw(m_mat4ProjectionRight, view_right);
 
+ 	glBindFramebuffer( GL_FRAMEBUFFER, 0 );	
+	if (m_MSAA_buffers > 1) {
+		glDisable(GL_MULTISAMPLE);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, rightEyeDesc.m_nRenderFramebufferId);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, rightEyeDesc.m_nResolveFramebufferId);
+		glBlitFramebuffer(0, 0, m_nRenderWidth, m_nRenderHeight, 0, 0, m_nRenderWidth, m_nRenderHeight,
+			GL_COLOR_BUFFER_BIT,
+			GL_LINEAR);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	}
 	renderState->popState();
-	glFinish();
 
 	vr::Texture_t leftEyeTexture = { (void*)leftEyeDesc.m_nResolveTextureId, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
 	vr::EVRCompositorError error =  vr::VRCompositor()->Submit(vr::Eye_Left, &leftEyeTexture );
+
 	vr::Texture_t rightEyeTexture = { (void*)rightEyeDesc.m_nResolveTextureId, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
-	error = vr::VRCompositor()->Submit(vr::Eye_Right, &rightEyeTexture );
+	error = vr::VRCompositor()->Submit(vr::Eye_Right, &rightEyeTexture  );
 
-	renderState->pushState();
-	int width = renderState->getValue("/WindowWidth");
-	int height = renderState->getValue("/WindowHeight");
-
-	glViewport(0, 0, width, height);
-	glClearColor(0, 0, 0, 1);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	renderState->addData("/ProjectionMatrix", m_mat4ProjectionRight);
-	renderState->addData("/ViewMatrix", view_right);
-	renderState->addData("/Eye", "Cyclops");
-	if (_children.size() == 0) {
-		renderHandler->onVRRenderScene(renderState, this);
-	}
-	else {
-		VRDisplayNode::render(renderState, renderHandler);
-	}
-	renderState->popState();
-
+	glFlush();
 	vr::VRCompositor()->PostPresentHandoff();
+
+	if (!m_draw_HMD_Only){
+		renderState->pushState();
+		int width = renderState->getValue("/WindowWidth");
+		int height = renderState->getValue("/WindowHeight");
+
+		glViewport(0, 0, width, height);
+		glClearColor(0, 0, 0, 1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		renderState->addData("/ProjectionMatrix", m_mat4ProjectionRight);
+		renderState->addData("/ViewMatrix", view_right);
+		renderState->addData("/Eye", "Cyclops");
+		if (_children.size() == 0) {
+			renderHandler->onVRRenderScene(renderState, this);
+		}
+		else {
+			VRDisplayNode::render(renderState, renderHandler);
+		}
+
+		if (m_rendermodelhandler)
+			m_rendermodelhandler->draw(m_mat4ProjectionRight, view_right);
+
+		renderState->popState();
+	}
 }
 
 VRDisplayNode* VROpenVRNode::create(VRMainInterface *vrMain, VRDataIndex *config,  const std::string &nameSpace) {
 	std::string nodeNameSpace = config->validateNameSpace(nameSpace);
 
-	VRDisplayNode *node = new VROpenVRNode(vrMain, nameSpace, 0.1f, 100000.0f);
+	int drawController = true;
+	if (config->exists("DrawController", nameSpace))
+	{
+		drawController = config->getValue("DrawController", nameSpace);
+	}
+	int hide_tracker = false;
+	if (config->exists("HideTracker", nameSpace))
+	{
+		hide_tracker = config->getValue("HideTracker", nameSpace);
+	}
+
+	unsigned char flags = Pressed | Touched | Axis | Pose;
+	if (config->exists("ReportStatePressed", nameSpace) && !((int) config->getValue("ReportStatePressed", nameSpace)))
+	{
+		flags = flags & ~Pressed;
+	}
+	if (config->exists("ReportStateTouched", nameSpace) && !((int)config->getValue("ReportStateTouched", nameSpace)))
+	{
+		flags = flags & ~Touched;
+	}
+	if (config->exists("ReportStateAxis", nameSpace) && !((int)config->getValue("ReportStateAxis", nameSpace)))
+	{
+		flags = flags & ~Axis;
+	}
+	if (config->exists("ReportStatePose", nameSpace) && !((int)config->getValue("ReportStatePose", nameSpace)))
+	{
+		flags = flags & ~Pose;
+	}
+	bool draw_HMD_Only = false;
+	if (config->exists("DrawHMDOnly", nameSpace) && ((int)config->getValue("DrawHMDOnly", nameSpace)))
+	{
+		draw_HMD_Only = true;
+	}
+	int MSAA_buffers = 4;
+	if (config->exists("MSAA_buffers", nameSpace))
+	{
+		MSAA_buffers = config->getValue("MSAA_buffers", nameSpace);
+		MSAA_buffers = (MSAA_buffers < 1) ? 1 : MSAA_buffers;
+	}
+
+	float deviceUnitsToRoomUnits = 1.0f;
+	if (config->exists("DeviceUnitsToRoomUnitsScale", nameSpace)) {
+		deviceUnitsToRoomUnits = config->getValue("DeviceUnitsToRoomUnitsScale", nameSpace);
+	}
+
+	VRMatrix4 deviceToRoom = VRMatrix4();
+	if (config->exists("DeviceToRoom", nameSpace)) {
+		deviceToRoom = config->getValue("DeviceToRoom", nameSpace);
+		deviceToRoom = deviceToRoom.orthonormal();
+	}
+
+	VRDisplayNode *node = new VROpenVRNode(vrMain, nameSpace, 0.1f, 100000.0f, drawController, hide_tracker, draw_HMD_Only, flags, MSAA_buffers, deviceUnitsToRoomUnits, deviceToRoom);
 	
 	return node;
 }
@@ -223,17 +292,25 @@ bool VROpenVRNode::CreateFrameBuffer( int nWidth, int nHeight, FramebufferDesc &
 
 	glGenRenderbuffers(1, &framebufferDesc.m_nDepthBufferId);
 	glBindRenderbuffer(GL_RENDERBUFFER, framebufferDesc.m_nDepthBufferId);
-	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH_COMPONENT, nWidth, nHeight );
+	if (m_MSAA_buffers > 1){
+		glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH_COMPONENT, nWidth, nHeight);
+	}
+	else
+	{
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, nWidth, nHeight);
+	}
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER,	framebufferDesc.m_nDepthBufferId );
+	
+	if (m_MSAA_buffers > 1){
+		glGenTextures(1, &framebufferDesc.m_nRenderTextureId);
+		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, framebufferDesc.m_nRenderTextureId);
+		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8, nWidth, nHeight, true);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, framebufferDesc.m_nRenderTextureId, 0);
 
-	glGenTextures(1, &framebufferDesc.m_nRenderTextureId );
-	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, framebufferDesc.m_nRenderTextureId );
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8, nWidth, nHeight, true);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, framebufferDesc.m_nRenderTextureId, 0);
-
-	glGenFramebuffers(1, &framebufferDesc.m_nResolveFramebufferId );
-	glBindFramebuffer(GL_FRAMEBUFFER, framebufferDesc.m_nResolveFramebufferId);
-
+		glGenFramebuffers(1, &framebufferDesc.m_nResolveFramebufferId);
+		glBindFramebuffer(GL_FRAMEBUFFER, framebufferDesc.m_nResolveFramebufferId);
+	}
+	
 	glGenTextures(1, &framebufferDesc.m_nResolveTextureId );
 	glBindTexture(GL_TEXTURE_2D, framebufferDesc.m_nResolveTextureId );
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

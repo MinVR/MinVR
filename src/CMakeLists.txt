@@ -149,12 +149,10 @@ set(vr_api_h
 )
 
 set(vr_main_cpp
-  ${vr_src_dir}/main/VRAppLauncher.cpp
   ${vr_src_dir}/main/VREventInternal.cpp
   ${vr_src_dir}/main/VRFactory.cpp
   ${vr_src_dir}/main/VRGraphicsHandler.cpp
   ${vr_src_dir}/main/VRGraphicsStateInternal.cpp
-  ${vr_src_dir}/main/VRLocalAppLauncher.cpp
   ${vr_src_dir}/main/VRMain.cpp
   ${vr_src_dir}/main/VRSearchPath.cpp
   ${vr_src_dir}/main/VRSystem.cpp
@@ -169,12 +167,13 @@ set(vr_main_h
   ${vr_src_dir}/main/VRGraphicsHandler.h
   ${vr_src_dir}/main/VRGraphicsStateInternal.h
   ${vr_src_dir}/main/VRItemFactory.h
-  ${vr_src_dir}/main/VRLocalAppLauncher.h
   ${vr_src_dir}/main/VRMain.h
   ${vr_src_dir}/main/VRMainInterface.h
   ${vr_src_dir}/main/VRRenderHandler.h
   ${vr_src_dir}/main/VRSearchPath.h
   ${vr_src_dir}/main/VRSystem.h
+  ${vr_src_dir}/main/VRError.h
+  ${vr_src_dir}/main/VRSearchPath.h
 )
 
 set(vr_math_cpp
@@ -245,6 +244,12 @@ source_group("Config Files" FILES ${vr_config_files})
 
 
 add_library(MinVR ${vr_sources})
+
+# Needed for some Linux machines
+# TODO: confirm that it is really necessary
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+	target_link_libraries(MinVR dl)
+endif()
 
 install(TARGETS MinVR
         LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib

@@ -93,7 +93,7 @@ int doTheRealWork(int argc, char **argv) {
 
   case MinVR::VRCORETYPE_INTARRAY: {
     MinVR::VRIntArray ia = index->getValue(argv[2]);
-    if (nth >= ia.size())
+    if (nth >= (int)ia.size())
       throw std::runtime_error("N too large for array");
     std::cout << ia[nth];
     break;
@@ -101,7 +101,7 @@ int doTheRealWork(int argc, char **argv) {
     
   case MinVR::VRCORETYPE_FLOATARRAY: {
     MinVR::VRFloatArray ia = index->getValue(argv[2]);
-    if (nth >= ia.size())
+    if (nth >= (int)ia.size())
       throw std::runtime_error("N too large for array");
     std::cout << ia[nth];
     break;
@@ -109,7 +109,7 @@ int doTheRealWork(int argc, char **argv) {
 
   case MinVR::VRCORETYPE_STRINGARRAY: {
     MinVR::VRStringArray ia = index->getValue(argv[2]);
-    if (nth >= ia.size())
+    if (nth >= (int)ia.size())
       throw std::runtime_error("N too large for array");
     std::cout << ia[nth];
     break;
