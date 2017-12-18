@@ -51,15 +51,15 @@ endif()
 
 # Define names based on the options above
 
-set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_DIR}/MinVR/${DASHBOARD_TEST_NAME}/src")
-set(CTEST_BINARY_DIRECTORY "${DASHBOARD_DIR}/MinVR/${DASHBOARD_TEST_NAME}/build")
+set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_DIR}/MinVR_${DASHBOARD_TEST_NAME}/src")
+set(CTEST_BINARY_DIRECTORY "${DASHBOARD_DIR}/MinVR_${DASHBOARD_TEST_NAME}/build")
 
 set(CTEST_TRACK "${CTEST_GIT_BRANCH}_${DASHBOARD_TEST_NAME}")
 
 # This would be a more typical build name, but since we can't set a custom track without
 # paying for a pro version of CDash, we add the branch and test name to the build name.
 # set(CTEST_BUILD_NAME "${CMAKE_HOST_SYSTEM}_${CTEST_BUILD_CONFIGURATION}")
-set(CTEST_BUILD_NAME "${CTEST_GIT_BRANCH}_${DASHBOARD_TEST_NAME}_${CMAKE_HOST_SYSTEM}_${CTEST_BUILD_CONFIGURATION}")    
+set(CTEST_BUILD_NAME "${CTEST_GIT_BRANCH}_MinVR_${DASHBOARD_TEST_NAME}_${CMAKE_HOST_SYSTEM}_${CTEST_BUILD_CONFIGURATION}")    
 
 
 
@@ -110,7 +110,7 @@ ctest_submit(PARTS Configure)
 
 # Step 4: ctest_build()
 message("\n4. ctest_build()")
-ctest_build()
+ctest_build(TARGET install)
 ctest_submit(PARTS Build)
 
 
