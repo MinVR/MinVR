@@ -33,6 +33,10 @@ set(DASHBOARD_TEST_NAME WithDefaults)
 set(CTEST_CONFIGURE_OPTIONS "")
 include(${CTEST_SCRIPT_DIRECTORY}/ctest-common.cmake)
 
+# Examples are not part of the main MinVR build, so we use an additional script to test
+# building examples that link with libMinVR
+set(EXAMPLE_NAME CavePainting-Lite)
+include(${CTEST_SCRIPT_DIRECTORY}/ctest-addexample.cmake)
 
 
 # TEST 2:
@@ -58,4 +62,8 @@ set(CTEST_CONFIGURE_OPTIONS
 )
 include(${CTEST_SCRIPT_DIRECTORY}/ctest-common.cmake)
 
+# Examples are not part of the main MinVR build, so we use an additional script to test
+# building examples that link with libMinVR
+set(EXAMPLE_NAME CavePainting-Lite)
+include(${CTEST_SCRIPT_DIRECTORY}/ctest-addexample.cmake)
 

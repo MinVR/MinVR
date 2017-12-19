@@ -25,7 +25,6 @@ using namespace MinVR;
 
 #include <glm/glm.hpp>
 #include <vector>
-#include <set>
 
 /** This example program is meant to illustrate how to create a MinVR program
     that includes an interesting 3D user interface.  Here, the user interface
@@ -67,16 +66,15 @@ public:
     
 private:
 
-    // Sets of event names that will trigger right hand tracking, left hand
-    // tracking, painting, and grabbing.  These are sets of names rather than
-    // just a single name so that you can easily run the program in different
-    // modes, such as in a Cave, Vive, Oculus, zSpace, desktop.
-    std::set< std::string > _rHandTrackerEvents;
-    std::set< std::string > _lHandTrackerEvents;
-    std::set< std::string > _paintOnEvents;
-    std::set< std::string > _paintOffEvents;
-    std::set< std::string > _grabOnEvents;
-    std::set< std::string > _grabOffEvents;
+    // The names of events that will trigger right hand tracking, left hand
+    // tracking, painting, and grabbing.  These are different depending upon
+    // whether you are running in a Cave, Vive, Oculus, zSpace, desktop, etc.
+    std::string _rHandTrackerEvent;
+    std::string _lHandTrackerEvent;
+    std::string _paintOnEvent;
+    std::string _paintOffEvent;
+    std::string _grabOnEvent;
+    std::string _grabOffEvent;
     
     // Transformation matrices for the left hand and right hand
     glm::mat4 _lhand;
@@ -89,6 +87,10 @@ private:
 
     // Transforms paint blobs to "room" space (the fixed physical space of
     // the room as defined by the coordinate system of the VR trackers).
+    // Initially _paintingToRoom equals the identity matrix, but when the user
+    // grabs and reframes the painting using the left hand, this matrix is
+    // updated based on that left hand movement so that the user can rotate or
+    // move the painting around within the phyiscal "room".
     glm::mat4 _paintingToRoom;
 
     class PaintBlob {
@@ -98,7 +100,9 @@ private:
         float color[3];
     };
     std::vector<PaintBlob> _paintBlobs;
-    
+
+    // Could be replaced with much fancier graphics... just a quick way to draw
+    // a few 3D shapes using OpenGL VBOs and shaders.
     QuickShapes *_quickShapes;
 };
 

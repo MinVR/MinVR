@@ -129,13 +129,17 @@ public:
 
 	}
 
-  int getLeftoverArgc() {
-    return _main->getLeftoverArgc();
-  }
+    std::string getVRSetupName() {
+        return _main->getName();
+    }
 
-  char** getLeftoverArgv() {
-    return _main->getLeftoverArgv();
-  }
+    int getLeftoverArgc() {
+        return _main->getLeftoverArgc();
+    }
+
+    char** getLeftoverArgv() {
+        return _main->getLeftoverArgv();
+    }
 
 private:
 
@@ -159,6 +163,10 @@ void VRApp::run()  {
 
 void VRApp::shutdown() {
 	_internal->shutdown();
+}
+
+std::string VRApp::getVRSetupName() {
+    return _internal->getVRSetupName();
 }
 
 int VRApp::getLeftoverArgc() {
