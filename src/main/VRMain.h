@@ -76,6 +76,12 @@ class VRParseCommandLine {
   /// \brief Accepts the name of a configuration or configuration file.
   virtual void loadConfig(const std::string &configName) = 0;
 
+  /// \brief If no command line arguments are provided to MinVR, then
+  /// this function is called to load the default.minvr config file
+  /// shipped with MinVR.
+  virtual void loadDefaultConfig() = 0;
+
+
   /// \brief Turns off command-line parsing.
   ///
   /// An application program may choose not to use the MinVR-supplied
@@ -245,7 +251,10 @@ class VRParseCommandLine {
       "                   do if you ran it.  Comparable to 'make -n'.\n\n" +
       getMinVRData() +
       "=xxxx  A special command line argument reserved for internal\n" +
-      "                   use by MinVR.\n";
+      "                   use by MinVR.\n" +
+      "[NO CONFIG ARGS]   MinVR cannot run without a configuration, so if no MinVR config\n" +
+      "                   files or settings are specified on the command line, then the\n"
+      "                   default.minvr config file shipped with MinVR is loaded.\n";
 
     if (additionalText.size() > 0) {
       out += additionalText;
@@ -287,6 +296,14 @@ class VRParseCommandLine {
   char* _leftoverArgv[50];
 
 };
+
+
+
+
+
+
+
+
 
 /** Advanced application programmers who require more flexibility than what is
     provided via api/VRApp should use this class as the main interface to the
@@ -390,6 +407,11 @@ public:
         rules.
      */
     void loadConfig(const std::string &pathAndFilename);
+
+    /** For use before calling initialize().  This will either load the
+        default.minvr config file shipped with MinVR.
+     */
+    void loadDefaultConfig();
 
     /** For use before calling initializeWIthUserCommandLineParsing(..).
         This can be used to set a specific config key=value setting for MinVR

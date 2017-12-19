@@ -29,7 +29,7 @@
 #include <sstream>
 #include <cstdlib>
 
-// TESTARG is true is the strings match and are not empty.
+// TESTARG is true if the strings match and are not empty.
 #define TESTARG(ARG, CMDSTR) ((!CMDSTR.empty()) && (ARG.compare(0, CMDSTR.size(), CMDSTR) == 0))
 
 // This checks an argument to an option (i.e. "-s CMDSTR") to see if
@@ -158,7 +158,7 @@ bool VRParseCommandLine::parseCommandLine(int argc, char** argv,
   // one final case -- if no MinVR configuration settings were on the command 
   // line, then load the pre-installed default configuration
   if ((configFileList.empty()) && (configValList.empty())) {
-    loadConfig("default.minvr");
+    loadDefaultConfig();
   }
 
   return _execute;
@@ -344,6 +344,11 @@ void VRMain::loadConfig(const std::string &configName) {
   }
 }
 
+
+void VRMain::loadDefaultConfig() {
+  loadConfig("default");
+}
+
 void VRMain::setConfigValue(const std::string &keyAndValStr) {
   std::string name = _config->addData(keyAndValStr);
 }
@@ -388,7 +393,11 @@ void VRMain::_startSSHProcess(const std::string &setupName,
   if (noSSH) {
     SHOWMSG("(Not starting:" + sshcmd + ")");
   } else {
-    system(sshcmd.c_str());
+    int exitcode = system(sshcmd.c_str());
+    if (exitcode != 0) {
+      VRERROR("Non-zero exit code returned from system() ssh call.",
+              "SSH command: " + sshcmd);
+    }
   }
 }
 

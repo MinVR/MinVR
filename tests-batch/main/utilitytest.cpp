@@ -95,12 +95,13 @@ int testSearchPath() {
 #endif
 
   // Extend the directory structure for libraries.
+    executeShellCommand("pwd > /Users/keefe/ivlab-github/sw/MinVR/MinVR/build/wd.txt");
   executeShellCommand("mkdir -p testSearch/test2/test3/lib");
   executeShellCommand("mkdir -p testSearch/test2/test4/lib");
   executeShellCommand("echo hello >testSearch/test2/test3/lib/" + libName);
 
-  executeShellCommand("mkdir -p testSearch/test2/test4/" + libRoot + "/lib");
-  executeShellCommand("echo hello >testSearch/test2/test4/" + libRoot + "/lib/" + libName);
+//  executeShellCommand("mkdir -p testSearch/test2/test4/" + libRoot + "/lib");
+//  executeShellCommand("echo hello >testSearch/test2/test4/" + libRoot + "/lib/" + libName);
 
     // Plant a couple of config files
   executeShellCommand("echo hello >testSearch/test2/test3/Chester.minvr");
@@ -160,12 +161,16 @@ int testSearchPath() {
 
   // Look for a plugin, using the root name.
   MinVR::VRSearchPlugin spp;
+  sp.addPathEntry("testSearch/test2/test3/lib");
+  std::cout << "sp: " << sp.getPath() << std::endl;
   spp.digestPathString(sp.getPath());
+
+  std::cout << "plug search path: " << spp << std::endl;
 
   std::cout << "spp:" << spp.findFile(libRoot) << std::endl;
 
   // Did we find it?
-  std::string compareString = "testSearch/test2/test4/Henry/lib/lib" + libRoot +
+  std::string compareString = "testSearch/test2/test3/lib/lib" + libRoot +
 #ifdef MinVR_DEBUG
     "d" +
 #endif
@@ -175,8 +180,10 @@ int testSearchPath() {
     ".so"
 #endif
     ;
+  std::cout << "compare: " << compareString << std::endl;
 
   out += spp.findFile(libRoot).compare(compareString);
+  std::cout << "spp:" << spp.findFile(libRoot) << " out:" << out << std::endl;
 
   MinVR::VRSearchConfig spc;
   spc.digestPathString(sp.getPath());
@@ -215,6 +222,11 @@ public:
     std::cout << "LOAD CONFIG:" << configName << std::endl;
     testCount += 5;
   };
+
+  void loadDefaultConfig() {
+    std::cout << "LOAD DEFAULT CONFIG" << std::endl;
+    testCount += 0;
+  }
 };
 
 
