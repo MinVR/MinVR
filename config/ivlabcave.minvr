@@ -67,8 +67,8 @@
     <AllowMaximize>1</AllowMaximize>
     <Visible>1</Visible>
     <SharedContextGroupID>-1</SharedContextGroupID>
-    <ContextVersionMajor>3</ContextVersionMajor>
-    <ContextVersionMinor>0</ContextVersionMinor>
+    <ContextVersionMajor>4</ContextVersionMajor>
+    <ContextVersionMinor>3</ContextVersionMinor>
     <UseGPUAffinity>1</UseGPUAffinity>
     <UseDebugContext>0</UseDebugContext>
     <MSAASamples>1</MSAASamples>
@@ -93,7 +93,7 @@
     <Height>1300</Height>
 
     <FrontWall hostType="VRClient">
-      <XPos>4240</XPos>
+      <XPos>1680</XPos>
       <TopLeft type="floatarray">-4,4,-4</TopLeft>
       <TopRight type="floatarray">4,4,-4</TopRight>
       <BottomLeft type="floatarray">-4,-4,-4</BottomLeft>
@@ -101,7 +101,7 @@
       <DisplayGraph linkNode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
     </FrontWall>
     <Floor hostType="VRClient">
-      <XPos>5520</XPos>
+      <XPos>2960</XPos>
       <TopLeft type="floatarray">-4,-4,-4</TopLeft>
       <TopRight type="floatarray">4,-4,-4</TopRight>
       <BottomLeft type="floatarray">-4,-4,4</BottomLeft>
@@ -109,7 +109,7 @@
       <DisplayGraph linkNode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
     </Floor>
     <LeftWall hostType="VRClient">
-      <XPos>1680</XPos>
+      <XPos>4240</XPos>
       <TopLeft type="floatarray">-4,4,4</TopLeft>
       <TopRight type="floatarray">-4,4,-4</TopRight>
       <BottomLeft type="floatarray">-4,-4,4</BottomLeft>
@@ -117,7 +117,7 @@
       <DisplayGraph linkNode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
     </LeftWall>
     <RightWall hostType="VRClient">
-      <XPos>2960</XPos>
+      <XPos>5520</XPos>
       <TopLeft type="floatarray">4,4,-4</TopLeft>
       <TopRight type="floatarray">4,4,4</TopRight>
       <BottomLeft type="floatarray">4,-4,-4</BottomLeft>
