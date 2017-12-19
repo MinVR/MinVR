@@ -103,13 +103,17 @@ public:
 	    app to exit from run() the next time through the mainloop. */
 	void shutdown();
 
-  /** After parsing the command line, the number of arguments unused by MinVR
-      can be retrieved with this function.  */
-  int getLeftoverArgc();
+    /** Returns the name of the VRSetup that this app is running.  Set by the
+        config files read by VRMain. */
+	std::string getVRSetupName();
 
-  /** After parsing the command line, the values of arguments unused by MinVR
-      can be retrieved with this function.  */
-  char** getLeftoverArgv();
+    /** After parsing the command line, the number of arguments unused by MinVR
+        can be retrieved with this function.  */
+    int getLeftoverArgc();
+
+    /** After parsing the command line, the values of arguments unused by MinVR
+        can be retrieved with this function.  */
+    char** getLeftoverArgv();
 
 private:
 
