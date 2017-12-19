@@ -107,6 +107,7 @@ endif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   # Apple-specific code
   set(CMAKE_CXX_FLAGS "-DOSX")
+  set(CMAKE_MACOSX_RPATH false)
 endif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 if (WIN32)
