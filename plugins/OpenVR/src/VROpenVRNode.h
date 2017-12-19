@@ -39,7 +39,7 @@ public:
 	
 	PLUGIN_API virtual ~VROpenVRNode();
 
-	PLUGIN_API virtual std::string getType() { return "VROpenVRNode"; }
+	PLUGIN_API virtual std::string getType() const { return "VROpenVRNode"; }
 
 	PLUGIN_API virtual void render(VRDataIndex *renderState, VRRenderHandler *renderHandler);
 
