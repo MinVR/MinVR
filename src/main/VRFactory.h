@@ -5,6 +5,7 @@
 #include <display/VRGraphicsToolkit.h>
 #include <display/VRWindowToolkit.h>
 #include <input/VRInputDevice.h>
+#include <main/VRLog.h>
 #include <main/VRMainInterface.h>
 #include <main/VRItemFactory.h>
 
@@ -35,14 +36,14 @@ public:
   /// Plugins call this method to add a new "sub-factory" to this master factory.
   void addSubFactory(VRItemFactory* factory);
 
-  std::string getRegisteredTypes() { return _registeredTypes; };
+  std::vector<std::string> getRegisteredTypes() { return _registeredTypes; };
 
 protected:
   std::vector<VRItemFactory*> _itemFactories;
 
   // It's useful to keep around a list of what we do know about so we can be
   // more informative when someone asks for something we *don't* know about.
-  std::string _registeredTypes;
+  std::vector<std::string> _registeredTypes;
 };
 
 template <typename T>
@@ -63,9 +64,15 @@ T* VRFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::st
   // Issue a warning here, but we assume the caller will issue an error when it
   // gets a NULL back.  We let the caller kill off the process because it has more
   // information with which to make a decent error message.
-  VRWARNING("Nothing in the factory catalog with the type (" +
-          std::string(typeid(T).name()) + ") and subtype you specified.",
-          "This is usually caused by a typo in your config file, which is where the subtype (inputdeviceType, displaynodeType, etc) is specified.");
+  std::string typeStr = std::string(typeid(T).name());
+  std::string helpmsg = std::string("This might be caused by a typo in your config file where the subtype (inputdeviceType, displaynodeType, etc) is specified.\n") + 
+    "Or if " + typeStr + " is provided by a plugin, there might have been a problem loading that plugin.\n" +
+    "VRFactory is currently aware of the following types:";
+  for (std::vector<std::string>::iterator it = _registeredTypes.begin(); it < _registeredTypes.end(); ++it) {
+    helpmsg += "  " + *it + "\n";
+  } 
+  VRWARNING("VRFactory was unable to create Nothing in the factory catalog with the type (" +
+          typeStr + ") and subtype you specified.", helpmsg);
 
   // Return NULL to indicate failure.
   return NULL;
@@ -74,7 +81,7 @@ T* VRFactory::create(VRMainInterface *vrMain, VRDataIndex *config, const std::st
 template <typename ParentType, typename T>
 void VRFactory::registerItemType(const std::string typeName) {
 
-  _registeredTypes += typeName + " ";
+  _registeredTypes.push_back(typeName);
 
   addSubFactory(new VRConcreteItemFactory<ParentType, T>(typeName));
 }
