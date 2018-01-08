@@ -35,12 +35,12 @@
 
 namespace MinVR {
 
-	VROpenVRNode::VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double _near, double _far, bool draw_controller, bool hide_tracker, bool draw_HMD_Only, unsigned char openvr_plugin_flags, unsigned int MSAA_buffers, float deviceUnitsToRoomUnits, VRMatrix4 deviceToRoom) : VRDisplayNode(name), isInitialized(false), m_fNearClip(_near), m_fFarClip(_far), m_draw_controller(draw_controller), m_draw_HMD_Only(draw_HMD_Only), m_rendermodelhandler(NULL), m_MSAA_buffers(MSAA_buffers), deviceUnitsToRoomUnits(deviceUnitsToRoomUnits), deviceToRoom(deviceToRoom) {
+	VROpenVRNode::VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double _near, double _far, bool draw_controller, bool hide_tracker, bool draw_HMD_Only, unsigned int MSAA_buffers, float deviceUnitsToRoomUnits, VRMatrix4 deviceToRoom) : VRDisplayNode(name), isInitialized(false), m_fNearClip(_near), m_fFarClip(_far), m_draw_controller(draw_controller), m_draw_HMD_Only(draw_HMD_Only), m_rendermodelhandler(NULL), m_MSAA_buffers(MSAA_buffers), deviceUnitsToRoomUnits(deviceUnitsToRoomUnits), deviceToRoom(deviceToRoom) {
 	vr::EVRInitError eError = vr::VRInitError_None;
 	m_pHMD = vr::VR_Init( &eError, vr::VRApplication_Scene );
 	int idx = name.find_last_of('/');
 	std::cerr << name.substr(idx + 1) << std::endl;
-	_inputDev = new VROpenVRInputDevice(m_pHMD, name.substr(idx + 1), this, openvr_plugin_flags, deviceUnitsToRoomUnits, deviceToRoom);
+	_inputDev = new VROpenVRInputDevice(m_pHMD, name.substr(idx + 1), this, deviceUnitsToRoomUnits, deviceToRoom);
 	
 
 	vrMain->addInputDevice(_inputDev);
@@ -196,11 +196,12 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 	}
 	renderState->popState();
 
-	vr::Texture_t leftEyeTexture = { (void*)leftEyeDesc.m_nResolveTextureId, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
+	vr::Texture_t leftEyeTexture = { (void*) leftEyeDesc.m_nResolveTextureId, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
 	vr::EVRCompositorError error =  vr::VRCompositor()->Submit(vr::Eye_Left, &leftEyeTexture );
 
-	vr::Texture_t rightEyeTexture = { (void*)rightEyeDesc.m_nResolveTextureId, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
+	vr::Texture_t rightEyeTexture = { (void*) rightEyeDesc.m_nResolveTextureId, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
 	error = vr::VRCompositor()->Submit(vr::Eye_Right, &rightEyeTexture  );
+
 
 	glFlush();
 	vr::VRCompositor()->PostPresentHandoff();
@@ -245,23 +246,6 @@ VRDisplayNode* VROpenVRNode::create(VRMainInterface *vrMain, VRDataIndex *config
 		hide_tracker = config->getValue("HideTracker", nameSpace);
 	}
 
-	unsigned char flags = Pressed | Touched | Axis | Pose;
-	if (config->exists("ReportStatePressed", nameSpace) && !((int) config->getValue("ReportStatePressed", nameSpace)))
-	{
-		flags = flags & ~Pressed;
-	}
-	if (config->exists("ReportStateTouched", nameSpace) && !((int)config->getValue("ReportStateTouched", nameSpace)))
-	{
-		flags = flags & ~Touched;
-	}
-	if (config->exists("ReportStateAxis", nameSpace) && !((int)config->getValue("ReportStateAxis", nameSpace)))
-	{
-		flags = flags & ~Axis;
-	}
-	if (config->exists("ReportStatePose", nameSpace) && !((int)config->getValue("ReportStatePose", nameSpace)))
-	{
-		flags = flags & ~Pose;
-	}
 	bool draw_HMD_Only = false;
 	if (config->exists("DrawHMDOnly", nameSpace) && ((int)config->getValue("DrawHMDOnly", nameSpace)))
 	{
@@ -285,7 +269,7 @@ VRDisplayNode* VROpenVRNode::create(VRMainInterface *vrMain, VRDataIndex *config
 		deviceToRoom = deviceToRoom.orthonormal();
 	}
 
-	VRDisplayNode *node = new VROpenVRNode(vrMain, nameSpace, 0.1f, 100000.0f, drawController, hide_tracker, draw_HMD_Only, flags, MSAA_buffers, deviceUnitsToRoomUnits, deviceToRoom);
+	VRDisplayNode *node = new VROpenVRNode(vrMain, nameSpace, 0.1f, 100000.0f, drawController, hide_tracker, draw_HMD_Only, MSAA_buffers, deviceUnitsToRoomUnits, deviceToRoom);
 	
 	return node;
 }
