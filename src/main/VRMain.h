@@ -344,7 +344,7 @@ public:
 
     // STEP 2:  INITIALIZE MINVR BASED ON CONFIG FILE SETTINGS
 
-    /** STEP 2 (option 1): The MinVR initialize step loads MinVR configuration
+    /** STEP 2 The MinVR initialize step loads MinVR configuration
         files, spawns additional sub-processes (in the case of clustered VR
         setups), and creates any InputDevices and DisplayDevices specified in
         the config files.
@@ -355,7 +355,6 @@ public:
         configuration values.  After initialize() is called, command-line
         options are accessible to your code via getLeftoverArgc() and
         getLeftoverArgv().
-
 
         You can redefine the command-line options for MinVR, or disable most of
         them, using the VRParseCommandLine methods, such as noParsing().  If you
@@ -393,11 +392,11 @@ public:
     void initialize(int argc, char **argv);
 
     /** Use this method to get the number of command line arguments that the 
-	initialize() methods did not need.
+	      initialize() methods did not need.
     */
     int getArgc() { return getLeftoverArgc(); };
     /** Use this method to get the arguments on a command line that the 
-	initialize() methods did not need.
+	      initialize() methods did not need.
     */
     char** getArgv() { return getLeftoverArgv(); };
 
@@ -548,9 +547,6 @@ public:
 
     int _frame;
     bool _shutdown;
-
-
-      
 };
 
 
