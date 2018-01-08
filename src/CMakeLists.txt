@@ -119,6 +119,7 @@ set(vr_main_h
   src/main/VREventHandler.h
   src/main/VRFactory.h
   src/main/VRItemFactory.h
+  src/main/VRLog.h
   src/main/VRMain.h
   src/main/VRMainInterface.h
   src/main/VRRenderHandler.h
