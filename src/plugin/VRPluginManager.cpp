@@ -44,7 +44,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <main/VRMainInterface.h>
 #include <plugin/VRPluginManager.h>
-
+#include <main/VRLog.h>
 
 // special: include this only once here and once in one .cpp file per plugin
 #include <plugin/VRPluginVersion.h>

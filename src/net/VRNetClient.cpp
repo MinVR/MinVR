@@ -1,5 +1,9 @@
 #include <net/VRNetClient.h>
-//#include <math/VRMath.h>
+#include <main/VRLog.h>
+#include <main/VRError.h>
+
+#include <iostream>
+#include <sstream>
 
 namespace MinVR {
 
@@ -15,7 +19,7 @@ void *get_in_addr2(struct sockaddr *sa) {
 
 VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverPort)
 {
-  std::cerr << "client: connecting..." << std::endl;
+  VRLOG_STATUS("VRNetClient connecting...");
 
 #ifdef WIN32  // WinSock implementation
 
@@ -26,7 +30,9 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
 
   rv = WSAStartup(MAKEWORD(2,2), &wsaData);
   if (rv != 0) {
-	std::cerr << "WSAStartup failed with error: " << rv << std::endl;
+    stringstream s;
+    s << "WSAStartup failed with error: " << rv;
+    VRERROR(s, "Check for a problem with Windows networking.");
     exit(1);
   }
 
@@ -36,7 +42,9 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
   hints.ai_protocol = IPPROTO_TCP;
 
   if ((rv = getaddrinfo(serverIP.c_str(), serverPort.c_str(), &hints, &servinfo)) != 0) {
-	std::cerr << "getaddrinfo() failed with error: " << rv << std::endl;
+    stringstream s;
+    s << "getaddrinfo() failed with error: " << rv;
+    VRERROR(s.str(), "Check for a problem with Windows networking.");
     WSACleanup();
     exit(1);
   }
@@ -47,14 +55,18 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
     // loop through all the results and connect to the first we can
     for (p = servinfo; p != NULL; p = p->ai_next) {
       if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == INVALID_SOCKET) {
-	    std::cerr << "socket() failed with error: " << WSAGetLastError() << std::endl;
+	      stringstream s;
+        s << "socket() failed with error " << WSAGetLastError() << "; will retry.";
+        VRLOG_STATUS(s.str());
         continue;
       }
 
       if (connect(sockfd, p->ai_addr, (int)p->ai_addrlen) == SOCKET_ERROR) {
         closesocket(sockfd);
         sockfd = INVALID_SOCKET;
-	    std::cerr << "connect() to server socket failed" << std::endl;
+	      stringstream s;
+        s << "connect() to server socket failed; will retry.";
+        VRLOG_STATUS(s.str());
         continue;
       }
 
@@ -63,14 +75,13 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
   }
 
   if (p == NULL) {
-    fprintf(stderr, "client: failed to connect\n");
-    //return 2;
+    VRERROR("VRNetClient failed to connect -- exiting.", "Check for a problem with Windows networking.");
     exit(2);
   }
 
   //inet_ntop(p->ai_family, get_in_addr2((struct sockaddr *)p->ai_addr), s, sizeof s);
   //printf("client: connecting to %s\n", s);
-  printf("client: connected\n");
+  VRLOG_STATUS("VRNetClient connected.");
 
   freeaddrinfo(servinfo); // all done with this structure
 
@@ -94,8 +105,9 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
   hints.ai_socktype = SOCK_STREAM;
 
   if ((rv = getaddrinfo(serverIP.c_str(), serverPort.c_str(), &hints, &servinfo)) != 0) {
-    std::cerr << "getaddrinfo: " << std::string(gai_strerror(rv)) << std::endl;
-    //return 1;
+    stringstream s;
+    s << "getaddrinfo() failed with error: " << rv;
+    VRERROR(s.str(), "Check for a problem with networking.");
     exit(1);
   }
 
@@ -105,15 +117,17 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
     // loop through all the results and connect to the first we can
     for (p = servinfo; p != NULL; p = p->ai_next) {
       if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
-        perror("client: socket");
+        stringstream s;
+        s << "socket() failed; will retry.";
+        VRLOG_STATUS(s.str());
         continue;
       }
 
       if (connect(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
         close(sockfd);
-        sprintf(problemString,
-                "client (pid=%d) connection issue, will retry", getpid());
-        perror(problemString);
+        stringstream s;
+        s << "client (pid=" << getpid() << "): connect() to server socket failed; will retry.";
+        VRLOG_STATUS(s.str());
         continue;
       }
 
@@ -121,13 +135,12 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
     }
   }
   if (p == NULL) {
-    std::cerr << "client: failed to connect" << std::endl;
-    //return 2;
+    VRERROR("VRNetClient failed to connect -- exiting.", "Check for a problem with networking.");
     exit(2);
   }
 
   inet_ntop(p->ai_family, get_in_addr2((struct sockaddr *)p->ai_addr), s, sizeof(s));
-  std::cerr << "client: connected to " << s << std::endl;
+  VRLOG_STATUS("VRNetClient connected to " + std::string(s));
 
   freeaddrinfo(servinfo); // all done with this structure
 
@@ -143,6 +156,7 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
 
 VRNetClient::~VRNetClient()
 {
+  VRLOG_STATUS("VRNetClient closing socket.");
 #ifdef WIN32
   closesocket(_socketFD);
   WSACleanup();
