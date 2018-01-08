@@ -53,7 +53,7 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
   if (rv != 0) {
     stringstream s;
     s << "WSAStartup failed with error: " << rv;
-    VRERROR(s, "Check for a problem with Windows networking.");    exit(1);
+    VRERROR(s.str(), "Check for a problem with Windows networking.");    exit(1);
   }
 
   ZeroMemory(&hints, sizeof(hints));
