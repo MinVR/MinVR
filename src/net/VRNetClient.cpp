@@ -32,7 +32,7 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
   if (rv != 0) {
     stringstream s;
     s << "WSAStartup failed with error: " << rv;
-    VRERROR(s, "Check for a problem with Windows networking.");
+    VRERROR(s.str(), "Check for a problem with Windows networking.");
     exit(1);
   }
 
