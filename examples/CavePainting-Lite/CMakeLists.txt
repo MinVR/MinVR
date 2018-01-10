@@ -122,7 +122,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC glm)
 target_include_directories(${PROJECT_NAME} PUBLIC ${GLM_INCLUDE_DIRS})
 
 
-if (WIN32)
+if (NOT APPLE)
     # GLEW (GLEW's installation provides a cmake config package with the imported target GLEW::GLEW)
     find_package(GLEW)
     if (NOT ${GLEW_FOUND})
