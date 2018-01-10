@@ -36,12 +36,12 @@ FIND_PATH(FREEGLUT_INCLUDE_DIR
 # Look for the library.
 FIND_LIBRARY(FREEGLUT_LIBRARY 
   NAMES 
-    glut
-    glutd
     freeglut
     freeglutd
     freeglut_static
     freeglut_staticd
+    glut
+    glutd
   HINTS
     ${CMAKE_INSTALL_PREFIX}/lib 
     $ENV{FREEGLUT_ROOT}/lib 
