@@ -184,7 +184,7 @@ void UIExample::onRenderGraphicsContext(const VRGraphicsState &renderState) {
     // frame when in stereo mode.
     
     if (renderState.isInitialRenderCall()) {
-        #ifndef OSX
+        #ifndef __APPLE__
             glewExperimental = GL_TRUE;
             GLenum err = glewInit();
             if (GLEW_OK != err) {
