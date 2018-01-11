@@ -110,7 +110,11 @@ ctest_submit(PARTS Configure)
 
 # Step 4: ctest_build()
 message("\n4. ctest_build()")
-ctest_build(TARGET install)
+if (WIN32)
+  ctest_build(TARGET INSTALL)
+else()
+  ctest_build(TARGET install)
+endif()
 ctest_submit(PARTS Build)
 
 
