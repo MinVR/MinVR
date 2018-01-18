@@ -14,10 +14,22 @@
 
 
 #include <list>
+#include <sstream>
 
 using namespace TUIO;
 
 namespace MinVR {
+
+
+// using this rather than std::to_string() to avoid dependency on C++-11
+std::string intToStr(int i) {
+  std::ostringstream s;
+  s << i;
+  return s.str();
+}
+
+
+
 
 VRTUIODevice::VRTUIODevice(int port, double xScale, double yScale)
 {
@@ -63,7 +75,7 @@ void VRTUIODevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents)
 			}
 		}
 		if (!stillDown) {
-            VRDataIndex event = VRButtonEvent::createValidDataIndex("Touch" + std::to_string(downLast[i]) + "_Up", 0);
+            VRDataIndex event = VRButtonEvent::createValidDataIndex("Touch" + intToStr(downLast[i]) + "_Up", 0);
             event.addData("TouchID", downLast[i]);
             events.push_back(event);
 			_cursorsDown.erase(downLast[i]);
@@ -75,7 +87,7 @@ void VRTUIODevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents)
 		TuioCursor *tcur = (*iter);
 
 		if (_cursorsDown.find(tcur->getCursorID()) == _cursorsDown.end()) {
-            VRDataIndex event = VRButtonEvent::createValidDataIndex("Touch" + std::to_string(tcur->getCursorID()) + "_Down", 1);
+            VRDataIndex event = VRButtonEvent::createValidDataIndex("Touch" + intToStr(tcur->getCursorID()) + "_Down", 1);
             event.addData("TouchID", tcur->getCursorID());
             event.addData("X", (float)_xScale*tcur->getX());
             event.addData("Y", (float)_yScale*tcur->getY());
@@ -92,7 +104,7 @@ void VRTUIODevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents)
             npos.push_back((float)tcur->getX());
             npos.push_back((float)tcur->getY());
             
-            VRDataIndex event = VRCursorEvent::createValidDataIndex("Touch" + std::to_string(tcur->getCursorID()) + "_Move", pos, npos);
+            VRDataIndex event = VRCursorEvent::createValidDataIndex("Touch" + intToStr(tcur->getCursorID()) + "_Move", pos, npos);
             event.addData("TouchID", tcur->getCursorID());
             events.push_back(event);
 		}

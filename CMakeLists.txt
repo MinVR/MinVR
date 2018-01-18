@@ -290,7 +290,7 @@ file(MAKE_DIRECTORY ${EXTERNAL_DIR})
 
 macro(minvr_optional_adddir optionflag description dependsnote dir)
   h2("Configuring ${description}. ${dependsnote}")
-  option(${optionflag} "Include ${description} in the build.  ${dependsnote}")
+  option(${optionflag} "If enabled, includes ${description} in the build.  ${dependsnote}")
   if (${optionflag})
     message(STATUS "ON: Will build and install ${description}.")
     add_subdirectory(${dir})
@@ -301,7 +301,7 @@ endmacro()
 
 macro(minvr_optional optionflag description dependsnote)
   h2("Configuring ${description}. ${dependsnote}")
-  option(${optionflag} "Include ${description} in the build.  ${dependsnote}")
+  option(${optionflag} "If enabled, includes ${description} in the build.  ${dependsnote}")
   if (${optionflag})
     message(STATUS "ON: Will build and install ${description}.")
   else()
@@ -523,6 +523,7 @@ if (WITH_DOCUMENTATION)
   install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html 
       DESTINATION ${INSTALL_DOC_DEST}
       COMPONENT Docs
+      OPTIONAL
   )
 endif()
 

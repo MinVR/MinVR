@@ -12,11 +12,13 @@
 #include "VROpenVRRenderModelHandler.h"
 #include "VROpenVRInputDevice.h"
 #include "VROpenVRNode.h"
+#include "api/VRButtonEvent.h"
+#include "api/VRTrackerEvent.h"
+#include "api/VRAnalogEvent.h"
 
 namespace MinVR {
                        
-	VROpenVRInputDevice::VROpenVRInputDevice(vr::IVRSystem *pHMD, string name, VROpenVRNode * node, unsigned char openvr_plugin_flags, float deviceUnitsToRoomUnits, VRMatrix4 deviceToRoom) :m_pHMD(pHMD), m_name(name), m_node(node),
-		m_report_state(openvr_plugin_flags), m_report_state_touched(openvr_plugin_flags & Touched), m_report_state_pressed(openvr_plugin_flags & Pressed), m_report_state_axis(openvr_plugin_flags & Axis), m_report_state_pose(openvr_plugin_flags & Pose), deviceUnitsToRoomUnits(deviceUnitsToRoomUnits), deviceToRoom(deviceToRoom)
+	VROpenVRInputDevice::VROpenVRInputDevice(vr::IVRSystem *pHMD, string name, VROpenVRNode * node, float deviceUnitsToRoomUnits, VRMatrix4 deviceToRoom) :m_pHMD(pHMD), m_name(name), m_node(node), deviceUnitsToRoomUnits(deviceUnitsToRoomUnits), deviceToRoom(deviceToRoom)
 	{
 		updateDeviceNames();
 
@@ -39,7 +41,7 @@ void VROpenVRInputDevice::appendNewInputEventsSinceLastCall(VRDataQueue* queue) 
 	}
 
 	//Report current States
-	reportStates();
+	reportAnalog();
 
     for (int f = 0; f < _events.size(); f++)
 	{
@@ -61,8 +63,8 @@ void VROpenVRInputDevice::updatePoses(){
 			pose(1, 3) *= deviceUnitsToRoomUnits;
 			pose(2, 3) *= deviceUnitsToRoomUnits;
 
-			_dataIndex.addData(event_name + "/Pose", deviceToRoom.inverse() * pose);
-			_events.push_back(_dataIndex.serialize(event_name));
+			VRDataIndex event = VRTrackerEvent::createValidDataIndex(event_name + "_Move", (deviceToRoom.inverse() * pose).toVRFloatArray());
+			_events.push_back(event);
 		}
 	}
 }
@@ -79,77 +81,41 @@ std::string VROpenVRInputDevice::getAxisType(int device, int axis){
 	int32_t type = m_pHMD->GetInt32TrackedDeviceProperty( device, ((vr::ETrackedDeviceProperty) (vr::Prop_Axis0Type_Int32 +  axis)));
 	switch(type){
 		case vr::k_eControllerAxis_None:
-			return "None";
+			return "None" + to_string(axis);
 		case vr::k_eControllerAxis_TrackPad:
-			return "TrackPad";
+			return "TrackPad" + to_string(axis);
 		case vr::k_eControllerAxis_Joystick:
-			return "Joystick";
+			return "Joystick" + to_string(axis);
 		case vr::k_eControllerAxis_Trigger:
-			return "Trigger";
+			return "Trigger" + to_string(axis);
 	}
 	return "Invalid";
 }
 
-void VROpenVRInputDevice::reportStates(){
-	if (m_report_state){
-		for (vr::TrackedDeviceIndex_t unDevice = 0; unDevice < vr::k_unMaxTrackedDeviceCount; unDevice++)
+void VROpenVRInputDevice::reportAnalog()
+{
+	for (vr::TrackedDeviceIndex_t unDevice = 0; unDevice < vr::k_unMaxTrackedDeviceCount; unDevice++)
+	{
+		if (m_pHMD->IsTrackedDeviceConnected(unDevice))
 		{
-			if (m_pHMD->IsTrackedDeviceConnected(unDevice)){
-				vr::VRControllerState_t state;
-				vr::TrackedDevicePose_t pose;
-				std::string event_name = getDeviceName(unDevice);
-				m_pHMD->GetControllerStateWithPose(vr::VRCompositor()->GetTrackingSpace(), unDevice, &state, sizeof(state), &pose);//){
-
-				if (m_report_state_pose){
-					_dataIndex.addData(event_name + "/State/Pose", poseToMatrix4(&pose) * m_tip_offset[unDevice]);
+			std::string event_name = getDeviceName(unDevice);
+			vr::VRControllerState_t state;
+			m_pHMD->GetControllerState(unDevice, &state, sizeof(state));
+			for (int axis = 0; axis < vr::k_unControllerStateAxisCount; axis++){
+				int32_t type = m_pHMD->GetInt32TrackedDeviceProperty(unDevice, ((vr::ETrackedDeviceProperty) (vr::Prop_Axis0Type_Int32 + axis)));
+				if (type == vr::k_eControllerAxis_Trigger)
+				{
+					VRDataIndex di = VRAnalogEvent::createValidDataIndex(event_name + "_" + getAxisType(unDevice, axis), state.rAxis[axis].x);
+					_events.push_back(di);
 				}
-				if (m_pHMD->GetTrackedDeviceClass(unDevice) == vr::TrackedDeviceClass_Controller){
-					
-					if (m_report_state_pressed){
-						_dataIndex.addData(event_name + "/State/" + "SystemButton" + "_Pressed", getButtonState(vr::k_EButton_System, state.ulButtonPressed));
-						_dataIndex.addData(event_name + "/State/" + "ApplicationMenuButton" + "_Pressed", getButtonState(vr::k_EButton_ApplicationMenu, state.ulButtonPressed));
-						_dataIndex.addData(event_name + "/State/" + "GripButton" + "_Pressed", getButtonState(vr::k_EButton_Grip, state.ulButtonPressed));
-						_dataIndex.addData(event_name + "/State/" + "DPad_LeftButton" + "_Pressed", getButtonState(vr::k_EButton_DPad_Left, state.ulButtonPressed));
-						_dataIndex.addData(event_name + "/State/" + "DPad_UpButton" + "_Pressed", getButtonState(vr::k_EButton_DPad_Up, state.ulButtonPressed));
-						_dataIndex.addData(event_name + "/State/" + "DPad_RightButton" + "_Pressed", getButtonState(vr::k_EButton_DPad_Right, state.ulButtonPressed));
-						_dataIndex.addData(event_name + "/State/" + "DPad_DownButton" + "_Pressed", getButtonState(vr::k_EButton_DPad_Down, state.ulButtonPressed));
-						_dataIndex.addData(event_name + "/State/" + "AButton" + "_Pressed", getButtonState(vr::k_EButton_A, state.ulButtonPressed));
-						_dataIndex.addData(event_name + "/State/" + "Axis0Button" + "_Pressed", getButtonState(vr::k_EButton_Axis0, state.ulButtonPressed));
-						_dataIndex.addData(event_name + "/State/" + "Axis1Button" + "_Pressed", getButtonState(vr::k_EButton_Axis1, state.ulButtonPressed));
-						_dataIndex.addData(event_name + "/State/" + "Axis2Button" + "_Pressed", getButtonState(vr::k_EButton_Axis2, state.ulButtonPressed));
-						_dataIndex.addData(event_name + "/State/" + "Axis3Button" + "_Pressed", getButtonState(vr::k_EButton_Axis3, state.ulButtonPressed));
-						_dataIndex.addData(event_name + "/State/" + "Axis4Button" + "_Pressed", getButtonState(vr::k_EButton_Axis4, state.ulButtonPressed));
-					}
+				else if (type == vr::k_eControllerAxis_TrackPad || type == vr::k_eControllerAxis_Joystick)
+				{
+					VRDataIndex dix = VRAnalogEvent::createValidDataIndex(event_name + "_" + getAxisType(unDevice, axis) + "_X", state.rAxis[axis].x);
+					_events.push_back(dix);
 
-					if (m_report_state_touched){
-						_dataIndex.addData(event_name + "/State/" + "SystemButton" + "_Touched", getButtonState(vr::k_EButton_System, state.ulButtonPressed));
-						_dataIndex.addData(event_name + "/State/" + "ApplicationMenuButton" + "_Touched", getButtonState(vr::k_EButton_ApplicationMenu, state.ulButtonPressed));
-						_dataIndex.addData(event_name + "/State/" + "GripButton" + "_Touched", getButtonState(vr::k_EButton_Grip, state.ulButtonPressed));
-						_dataIndex.addData(event_name + "/State/" + "DPad_LeftButton" + "_Touched", getButtonState(vr::k_EButton_DPad_Left, state.ulButtonPressed));
-						_dataIndex.addData(event_name + "/State/" + "DPad_UpButton" + "_Touched", getButtonState(vr::k_EButton_DPad_Up, state.ulButtonPressed));
-						_dataIndex.addData(event_name + "/State/" + "DPad_RightButton" + "_Touched", getButtonState(vr::k_EButton_DPad_Right, state.ulButtonPressed));
-						_dataIndex.addData(event_name + "/State/" + "DPad_DownButton" + "_Touched", getButtonState(vr::k_EButton_DPad_Down, state.ulButtonPressed));
-						_dataIndex.addData(event_name + "/State/" + "AButton" + "_Touched", getButtonState(vr::k_EButton_A, state.ulButtonPressed));
-						_dataIndex.addData(event_name + "/State/" + "Axis0Button" + "_Touched", getButtonState(vr::k_EButton_Axis0, state.ulButtonPressed));
-						_dataIndex.addData(event_name + "/State/" + "Axis1Button" + "_Touched", getButtonState(vr::k_EButton_Axis1, state.ulButtonPressed));
-						_dataIndex.addData(event_name + "/State/" + "Axis2Button" + "_Touched", getButtonState(vr::k_EButton_Axis2, state.ulButtonPressed));
-						_dataIndex.addData(event_name + "/State/" + "Axis3Button" + "_Touched", getButtonState(vr::k_EButton_Axis3, state.ulButtonPressed));
-						_dataIndex.addData(event_name + "/State/" + "Axis4Button" + "_Touched", getButtonState(vr::k_EButton_Axis4, state.ulButtonPressed));
-					}
-
-					if (m_report_state_axis){
-						for (int axis = 0; axis < vr::k_unControllerStateAxisCount; axis++){
-							//for (int axis = 0; axis < 2; axis++){
-							std::ostringstream stringStream;
-							stringStream << event_name << +"/State/Axis" << axis << "/";
-							std::string axis_name = stringStream.str();
-							_dataIndex.addData(axis_name + "Type", getAxisType(unDevice, 0));
-							_dataIndex.addData(axis_name + "XPos", state.rAxis[axis].x);
-							_dataIndex.addData(axis_name + "YPos", state.rAxis[axis].y);
-						}
-					}
-				}
-				_events.push_back(_dataIndex.serialize(event_name));
+					VRDataIndex diy = VRAnalogEvent::createValidDataIndex(event_name + "_" + getAxisType(unDevice, axis) + "_Y", state.rAxis[axis].y);
+					_events.push_back(diy);
+				}	
 			}
 		}
 	}
@@ -251,7 +217,6 @@ std::string  VROpenVRInputDevice::getButtonName(vr::EVRButtonId id){
 
 void VROpenVRInputDevice::processVREvent( const vr::VREvent_t & event ,vr::TrackedDevicePose_t *pose)
 {	
-	
 	switch( event.eventType )
 	{
 		case vr::VREvent_TrackedDeviceActivated:
@@ -277,31 +242,30 @@ void VROpenVRInputDevice::processVREvent( const vr::VREvent_t & event ,vr::Track
 		break;
 	case vr::VREvent_ButtonPress :
 		{							
-			std::string event_name = getDeviceName(event.trackedDeviceIndex) + "_" + getButtonName((vr::EVRButtonId) event.data.controller.button) + "_Pressed";
-			//std::cerr << event_name << std::endl;
-			_dataIndex.addData(event_name + "/Pose", poseToMatrix4(pose));
-			_events.push_back(_dataIndex.serialize(event_name));
+			std::string event_name = getDeviceName(event.trackedDeviceIndex) + "_" + getButtonName((vr::EVRButtonId) event.data.controller.button) + "_Down";
+			VRDataIndex di = VRButtonEvent::createValidDataIndex(event_name, 1);
+			_events.push_back(di);
 		}
 		break;
 	case vr::VREvent_ButtonUnpress:
 		{
-			std::string event_name = getDeviceName(event.trackedDeviceIndex) + "_" + getButtonName((vr::EVRButtonId) event.data.controller.button) + "_Released";
-			_dataIndex.addData(event_name + "/Pose", poseToMatrix4(pose));
-			_events.push_back(_dataIndex.serialize(event_name));
+			std::string event_name = getDeviceName(event.trackedDeviceIndex) + "_" + getButtonName((vr::EVRButtonId) event.data.controller.button) + "_Up";
+			VRDataIndex di = VRButtonEvent::createValidDataIndex(event_name, 0);
+			_events.push_back(di);
 		}
 		break;
 	case vr::VREvent_ButtonTouch:
 		{
-			std::string event_name = getDeviceName(event.trackedDeviceIndex) + "_" + getButtonName((vr::EVRButtonId) event.data.controller.button) + "_Touched";
-			_dataIndex.addData(event_name + "/Pose", poseToMatrix4(pose));
-			_events.push_back(_dataIndex.serialize(event_name));
+			std::string event_name = getDeviceName(event.trackedDeviceIndex) + "_" + getButtonName((vr::EVRButtonId) event.data.controller.button) + "_Touch";
+			VRDataIndex di = VRButtonEvent::createValidDataIndex(event_name, 3);
+			_events.push_back(di);
 		}
 		break;
 	case vr::VREvent_ButtonUntouch:
 		{
-			std::string event_name = getDeviceName(event.trackedDeviceIndex) + "_" + getButtonName((vr::EVRButtonId) event.data.controller.button) + "_Untouched";
-			_dataIndex.addData(event_name + "/Pose", poseToMatrix4(pose));
-			_events.push_back(_dataIndex.serialize(event_name));
+			std::string event_name = getDeviceName(event.trackedDeviceIndex) + "_" + getButtonName((vr::EVRButtonId) event.data.controller.button) + "_Untouch";
+			VRDataIndex di = VRButtonEvent::createValidDataIndex(event_name, 4);
+			_events.push_back(di);
 		}
 		break;
 	}

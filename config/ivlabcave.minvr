@@ -8,7 +8,7 @@
   <Port type="string">3456</Port>
   <ServerIP>localhost</ServerIP>
 
-  <CaveServer hostType="VRServer">
+  <IVLABCave_Server hostType="VRServer">
     <NumClients>4</NumClients>
     <VRPNPlugin pluginType="MinVR_VRPN"/>
     <!-- Common to all three Optitrack virtual devices -->
@@ -54,7 +54,7 @@
       <VRPNDeviceName type="string">Wixel1@tcp:127.0.0.1:3883</VRPNDeviceName>
       <EventsToGenerate type="stringarray">BlueStylusFrontBtn,BlueStylusBackBtn</EventsToGenerate>
     </BlueStylusBtns>
-  </CaveServer>
+  </IVLABCave_Server>
   
   <MyClients>
 
@@ -67,8 +67,8 @@
     <AllowMaximize>1</AllowMaximize>
     <Visible>1</Visible>
     <SharedContextGroupID>-1</SharedContextGroupID>
-    <ContextVersionMajor>3</ContextVersionMajor>
-    <ContextVersionMinor>0</ContextVersionMinor>
+    <ContextVersionMajor>4</ContextVersionMajor>
+    <ContextVersionMinor>3</ContextVersionMinor>
     <UseGPUAffinity>1</UseGPUAffinity>
     <UseDebugContext>0</UseDebugContext>
     <MSAASamples>1</MSAASamples>
@@ -92,38 +92,38 @@
     <Width>1280</Width>
     <Height>1300</Height>
 
-    <FrontWall hostType="VRClient">
-      <XPos>4240</XPos>
+    <IVLABCave_FrontWall hostType="VRClient">
+      <XPos>1680</XPos>
       <TopLeft type="floatarray">-4,4,-4</TopLeft>
       <TopRight type="floatarray">4,4,-4</TopRight>
       <BottomLeft type="floatarray">-4,-4,-4</BottomLeft>
       <BottomRight type="floatarray">4,-4,-4</BottomRight>
       <DisplayGraph linkNode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
-    </FrontWall>
-    <Floor hostType="VRClient">
-      <XPos>5520</XPos>
+    </IVLABCave_FrontWall>
+    <IVLABCave_Floor hostType="VRClient">
+      <XPos>2960</XPos>
       <TopLeft type="floatarray">-4,-4,-4</TopLeft>
       <TopRight type="floatarray">4,-4,-4</TopRight>
       <BottomLeft type="floatarray">-4,-4,4</BottomLeft>
       <BottomRight type="floatarray">4,-4,4</BottomRight>
       <DisplayGraph linkNode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
-    </Floor>
-    <LeftWall hostType="VRClient">
-      <XPos>1680</XPos>
+    </IVLABCave_Floor>
+    <IVLABCave_LeftWall hostType="VRClient">
+      <XPos>4240</XPos>
       <TopLeft type="floatarray">-4,4,4</TopLeft>
       <TopRight type="floatarray">-4,4,-4</TopRight>
       <BottomLeft type="floatarray">-4,-4,4</BottomLeft>
       <BottomRight type="floatarray">-4,-4,-4</BottomRight>
       <DisplayGraph linkNode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
-    </LeftWall>
-    <RightWall hostType="VRClient">
-      <XPos>2960</XPos>
+    </IVLABCave_LeftWall>
+    <IVLABCave_RightWall hostType="VRClient">
+      <XPos>5520</XPos>
       <TopLeft type="floatarray">4,4,-4</TopLeft>
       <TopRight type="floatarray">4,4,4</TopRight>
       <BottomLeft type="floatarray">4,-4,-4</BottomLeft>
       <BottomRight type="floatarray">4,-4,4</BottomRight>
       <DisplayGraph linkNode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
-    </RightWall>
+    </IVLABCave_RightWall>
 
     <!-- ********************** Display Graph ********************** -->
     <MyDisplayGraph>
@@ -131,7 +131,7 @@
         <HeadTracker displaynodeType="VRHeadTrackingNode">
           <StereoNode displaynodeType="VRStereoNode">
             <ProjectionNode displaynodeType="VROffAxisProjectionNode">
-				<DUMMY/>
+				      <DUMMY/>
             </ProjectionNode>
           </StereoNode>
         </HeadTracker>

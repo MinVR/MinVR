@@ -20,6 +20,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <cmath>
+#include <cctype>
 
 
 
@@ -28,23 +29,56 @@ UIExample::UIExample(int argc, char** argv) : VRApp(argc, argv),
     _grabbing(false), _painting(false),
     _paintingToRoom(glm::mat4(1.0))
 {
-    // Desktop mode
-    _rHandTrackerEvents.insert("RHandTracker_Move");
-    _lHandTrackerEvents.insert("LHandTracker_Move");
-    _paintOnEvents.insert("MouseBtnLeft_Down");
-    _paintOffEvents.insert("MouseBtnLeft_Up");
-    _grabOnEvents.insert("KbdSpace_Down");
-    _grabOffEvents.insert("KbdSpace_Up");
-
-    // IV/LAB Cave mode
-    _rHandTrackerEvents.insert("RedStylus_Move");
-    _lHandTrackerEvents.insert("BlueStylus_Move");
-    _paintOnEvents.insert("RedStylusFrontBtn_Down");
-    _paintOffEvents.insert("RedStylusFrontBtn_Up");
-    _grabOnEvents.insert("BlueStylusFrontBtn_Down");
-    _grabOffEvents.insert("BlueStylusFrontBtn_Up");
-
-    // ...
+    
+    // This is an important idiom for programming with MinVR.  We want to write
+    // our program so that it will work across multiple VR setups.  Each setup
+    // will have some form of trackers and buttons, but the events they generate
+    // will be named something different depending on whether we are running in
+    // a Cave or Vive or in desktop mode.  So, here in the constructor, we check
+    // the name of the current VR setup and then set the name of the event to
+    // listen for accordingly.
+    
+    std::string name = getVRSetupName();
+    if (name.find("IVLABCave") != string::npos) {
+        // IV/LAB Cave mode
+        _rHandTrackerEvent = "RedStylus_Move";
+        _lHandTrackerEvent = "BlueStylus_Move";
+        _paintOnEvent = "RedStylusFrontBtn_Down";
+        _paintOffEvent = "RedStylusFrontBtn_Up";
+        _grabOnEvent = "BlueStylusFrontBtn_Down";
+        _grabOffEvent = "BlueStylusFrontBtn_Up";
+    }
+    else if ((name.find("Vive") != string::npos) || (name.find("rift") != string::npos)) {
+        // HTC Vive / Oculus Rift mode
+        _rHandTrackerEvent = "RightController_Move";
+        _lHandTrackerEvent = "LeftController_Move";
+        _paintOnEvent = "RightTriggerBtn_Down";
+        _paintOffEvent = "RightTriggerBtn_Up";
+        _grabOnEvent = "LeftTriggerBtn_Down";
+        _grabOffEvent = "LeftTriggerBtn_Up";
+    }
+    else if (name.find("Desktop") != string::npos) {
+        // Desktop mode
+        _rHandTrackerEvent = "RHandTracker_Move";
+        _lHandTrackerEvent = "LHandTracker_Move";
+        _paintOnEvent = "MouseBtnLeft_Down";
+        _paintOffEvent = "MouseBtnLeft_Up";
+        _grabOnEvent = "KbdSpace_Down";
+        _grabOffEvent = "KbdSpace_Up";
+    
+    }
+    // ... additional VRSetups can be added here ...
+    else {
+        std::cout << "Unrecognized VR setup `" << getVRSetupName() <<
+            "` -- using Desktop mode events." << std::endl;
+        // Assume desktop mode
+        _rHandTrackerEvent = "RHandTracker_Move";
+        _lHandTrackerEvent = "LHandTracker_Move";
+        _paintOnEvent = "MouseBtnLeft_Down";
+        _paintOffEvent = "MouseBtnLeft_Up";
+        _grabOnEvent = "KbdSpace_Down";
+        _grabOffEvent = "KbdSpace_Up";
+    }
 
     
     _quickShapes = new QuickShapes;
@@ -58,36 +92,49 @@ UIExample::~UIExample()
 
 
 void UIExample::onAnalogChange(const VRAnalogEvent &state) {
-
+    // This routine is called for all Analog_Change events.  Check event->getName()
+    // to see exactly which analog input has been changed, and then access the
+    // new value with event->getValue().
+    
 }
 
 
 void UIExample::onButtonDown(const VRButtonEvent &event) {
-    if (_paintOnEvents.find(event.getName()) != _paintOnEvents.end()) {
+    // This routine is called for all Button_Down events.  Check event->getName()
+    // to see exactly which button has been pressed down.
+
+    if (event.getName() == _paintOnEvent) {
         _painting = true;
     }
-    else if (_grabOnEvents.find(event.getName()) != _grabOnEvents.end()) {
+    else if (event.getName() == _grabOnEvent) {
         _grabbing = true;
     }
 }
 
 
 void UIExample::onButtonUp(const VRButtonEvent &event) {
-    if (_paintOffEvents.find(event.getName()) != _paintOffEvents.end()) {
+    // This routine is called for all Button_Up events.  Check event->getName()
+    // to see exactly which button has been released.
+    
+    if (event.getName() == _paintOffEvent) {
         _painting = false;
     }
-    else if (_grabOffEvents.find(event.getName()) != _grabOffEvents.end()) {
+    else if (event.getName() == _grabOffEvent) {
         _grabbing = false;
     }
 }
 
 
 void UIExample::onTrackerMove(const VRTrackerEvent &event) {
+    // This routine is called for all Tracker_Move events.  Check event->getName()
+    // to see exactly which tracker has moved, and then access the tracker's new
+    // 4x4 transformation matrix with event->getTransform().
+    
     
     //std::cout << event.getName() << " "
     //  << event.getPos()[0] << " " << event.getPos()[1] << " " << event.getPos()[2] << std::endl;
     
-    if (_rHandTrackerEvents.find(event.getName()) != _rHandTrackerEvents.end()) {
+    if (event.getName() == _rHandTrackerEvent) {
         _rhand = glm::make_mat4(event.getTransform());
         if (_painting) {
             // Transform the right hand transform into "painting space"
@@ -117,7 +164,7 @@ void UIExample::onTrackerMove(const VRTrackerEvent &event) {
             _paintBlobs.push_back(pb);
         }
     }
-    else if (_lHandTrackerEvents.find(event.getName()) != _lHandTrackerEvents.end()) {
+    else if (event.getName() == _lHandTrackerEvent) {
         glm::mat4 newHand = glm::make_mat4(event.getTransform());
         if (_grabbing) {
             // Update the paintingToRoom transform based upon the new transform
@@ -131,9 +178,13 @@ void UIExample::onTrackerMove(const VRTrackerEvent &event) {
 
     
 void UIExample::onRenderGraphicsContext(const VRGraphicsState &renderState) {
+    // This routine is called once per graphics context at the start of the
+    // rendering process.  So, this is the place to initialize textures,
+    // load models, or do other operations that you only want to do once per
+    // frame when in stereo mode.
+    
     if (renderState.isInitialRenderCall()) {
-
-        #ifdef WIN32
+        #ifndef __APPLE__
             glewExperimental = GL_TRUE;
             GLenum err = glewInit();
             if (GLEW_OK != err) {
@@ -150,6 +201,10 @@ void UIExample::onRenderGraphicsContext(const VRGraphicsState &renderState) {
 
 
 void UIExample::onRenderGraphicsScene(const VRGraphicsState &renderState) {
+    // This routine is called once per eye.  This is the place to actually
+    // draw the scene.
+    
+    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     
     // Draw a cursor for the left hand

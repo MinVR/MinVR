@@ -76,6 +76,12 @@ class VRParseCommandLine {
   /// \brief Accepts the name of a configuration or configuration file.
   virtual void loadConfig(const std::string &configName) = 0;
 
+  /// \brief If no command line arguments are provided to MinVR, then
+  /// this function is called to load the default.minvr config file
+  /// shipped with MinVR.
+  virtual void loadDefaultConfig() = 0;
+
+
   /// \brief Turns off command-line parsing.
   ///
   /// An application program may choose not to use the MinVR-supplied
@@ -245,7 +251,10 @@ class VRParseCommandLine {
       "                   do if you ran it.  Comparable to 'make -n'.\n\n" +
       getMinVRData() +
       "=xxxx  A special command line argument reserved for internal\n" +
-      "                   use by MinVR.\n";
+      "                   use by MinVR.\n" +
+      "[NO CONFIG ARGS]   MinVR cannot run without a configuration, so if no MinVR config\n" +
+      "                   files or settings are specified on the command line, then the\n"
+      "                   default.minvr config file shipped with MinVR is loaded.\n";
 
     if (additionalText.size() > 0) {
       out += additionalText;
@@ -288,6 +297,14 @@ class VRParseCommandLine {
 
 };
 
+
+
+
+
+
+
+
+
 /** Advanced application programmers who require more flexibility than what is
     provided via api/VRApp should use this class as the main interface to the
     MinVR library.  The comments in the code are organized so as to walk the
@@ -327,7 +344,7 @@ public:
 
     // STEP 2:  INITIALIZE MINVR BASED ON CONFIG FILE SETTINGS
 
-    /** STEP 2 (option 1): The MinVR initialize step loads MinVR configuration
+    /** STEP 2 The MinVR initialize step loads MinVR configuration
         files, spawns additional sub-processes (in the case of clustered VR
         setups), and creates any InputDevices and DisplayDevices specified in
         the config files.
@@ -338,7 +355,6 @@ public:
         configuration values.  After initialize() is called, command-line
         options are accessible to your code via getLeftoverArgc() and
         getLeftoverArgv().
-
 
         You can redefine the command-line options for MinVR, or disable most of
         them, using the VRParseCommandLine methods, such as noParsing().  If you
@@ -376,11 +392,11 @@ public:
     void initialize(int argc, char **argv);
 
     /** Use this method to get the number of command line arguments that the 
-	initialize() methods did not need.
+	      initialize() methods did not need.
     */
     int getArgc() { return getLeftoverArgc(); };
     /** Use this method to get the arguments on a command line that the 
-	initialize() methods did not need.
+	      initialize() methods did not need.
     */
     char** getArgv() { return getLeftoverArgv(); };
 
@@ -390,6 +406,11 @@ public:
         rules.
      */
     void loadConfig(const std::string &pathAndFilename);
+
+    /** For use before calling initialize().  This will either load the
+        default.minvr config file shipped with MinVR.
+     */
+    void loadDefaultConfig();
 
     /** For use before calling initializeWIthUserCommandLineParsing(..).
         This can be used to set a specific config key=value setting for MinVR
@@ -526,9 +547,6 @@ public:
 
     int _frame;
     bool _shutdown;
-
-
-      
 };
 
 

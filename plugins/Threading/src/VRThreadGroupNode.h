@@ -27,7 +27,7 @@ public:
 	VRThreadGroupNode(const std::string &name, bool asyncEnabled);
 	virtual ~VRThreadGroupNode();
 
-	virtual std::string getType() { return "VRThreadGroupNode"; }
+	virtual std::string getType() const { return "VRThreadGroupNode"; }
 
 	// The three main methods that need to be synchronized at the thread level
 	virtual void render(VRDataIndex *renderState, VRRenderHandler *renderHandler);

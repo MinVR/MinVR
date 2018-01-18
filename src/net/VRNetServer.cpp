@@ -1,5 +1,9 @@
 #include <net/VRNetServer.h>
 
+#include <main/VRLog.h>
+#include <main/VRError.h>
+
+
 
 using namespace std;
 
@@ -28,6 +32,9 @@ void *get_in_addr(struct sockaddr *sa) {
 VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
 {
 
+  VRLOG_STATUS("VRNetServer starting networking.");
+
+
 #ifdef WIN32  // Winsock implementation
 
   WSADATA wsaData;
@@ -39,13 +46,14 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
   struct sockaddr_storage their_addr; // connector's address information
   socklen_t sin_size;
   const char yes = 1;
-  char s[INET6_ADDRSTRLEN];
+  char saddr[INET6_ADDRSTRLEN];
   int rv;
 
   rv = WSAStartup(MAKEWORD(2,2), &wsaData);
   if (rv != 0) {
-    cerr << "WSAStartup failed with error: " << rv << endl;
-    exit(1);
+    stringstream s;
+    s << "WSAStartup failed with error: " << rv;
+    VRERROR(s.str(), "Check for a problem with Windows networking.");    exit(1);
   }
 
   ZeroMemory(&hints, sizeof(hints));
@@ -55,7 +63,9 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
   hints.ai_flags = AI_PASSIVE; // use my IP
 
   if ((rv = getaddrinfo(NULL, listenPort.c_str(), &hints, &servinfo)) != 0) {
-    cerr << "getaddrinfo() failed with error: " << rv << endl;
+    stringstream s;
+    s << "getaddrinfo() failed with error: " << rv;
+    VRERROR(s.str(), "Check for a problem with Windows networking.");
     WSACleanup();
     exit(1);
   }
@@ -63,12 +73,16 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
   // loop through all the results and bind to the first we can
   for (p = servinfo; p != NULL; p = p->ai_next) {
     if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == INVALID_SOCKET) {
-      cerr << "socket() failed with error: " << WSAGetLastError() << endl;
+      stringstream s;
+      s << "socket() failed with error " << WSAGetLastError() << "; will retry.";
+      VRLOG_STATUS(s.str());
       continue;
     }
 
     if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == SOCKET_ERROR) {
-      cerr << "setsockopt() failed with error: " << WSAGetLastError() << endl;
+      stringstream s;
+      s << "setsockopt() failed with error " << WSAGetLastError() << ".";
+      VRERROR(s.str(), "Check for a problem with Windows networking.");
       closesocket(sockfd);
       WSACleanup();
       exit(1);
@@ -77,7 +91,9 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
     if (bind(sockfd, p->ai_addr, (int)p->ai_addrlen) == SOCKET_ERROR) {
       closesocket(sockfd);
       sockfd = INVALID_SOCKET;
-      cerr << "bind() failed with error: " << WSAGetLastError() << endl;
+      stringstream s;
+      s << "bind() failed with error " << WSAGetLastError() << "; will retry.";
+      VRLOG_STATUS(s.str());
       continue;
     }
 
@@ -85,15 +101,16 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
   }
 
   if (p == NULL) {
-    cerr << "server: failed to bind" << endl;
-    //return 2;
+    VRERROR("VRNetServer failed to bind -- exiting.", "Check for a problem with Windows networking.");
     exit(2);
   }
 
   freeaddrinfo(servinfo); // all done with this structure
 
   if (listen(sockfd, BACKLOG) == SOCKET_ERROR) {
-    cerr << "listen failed with errror: " << WSAGetLastError() << endl;
+    stringstream s;
+    s << "listen() failed with error " << WSAGetLastError() << ".";
+    VRERROR(s.str(), "Check for a problem with Windows networking.");
     closesocket(sockfd);
     WSACleanup();
     exit(1);
@@ -101,14 +118,16 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
 
   // Should we do the "reap all dead processes" as in the linux implementation below?
 
-  printf("server: waiting for connections...\n");
+  VRLOG_STATUS("VRNetServer waiting for client connection(s)...");
 
   int numConnected = 0;
   while (numConnected < numExpectedClients) {
     sin_size = sizeof their_addr;
     new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
     if (new_fd == INVALID_SOCKET) {
-      cerr << "server: got invalid socket while accepting connection" << endl;
+      stringstream s;
+      s << "accept() got an INVALID_SOCKET; will retry.";
+      VRLOG_STATUS(s.str());
       continue;
     }
 
@@ -117,11 +136,14 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
     setsockopt(new_fd, IPPROTO_TCP, TCP_NODELAY, &value, sizeof(value));
 
     numConnected++;
-    inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr), s, sizeof s);
-    printf("server: got connection %d from %s\n", numConnected, s);
+    inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr), saddr, sizeof saddr);
+    stringstream s;
+    s << "Received connection " << numConnected << " of " << numExpectedClients << " from " << saddr;
+    VRLOG_STATUS(s.str());
 
     _clientSocketFDs.push_back(new_fd);
   }
+  VRLOG_STATUS("Established all expected connections.");
 
 
 #else  // BSD sockets implementation
@@ -132,7 +154,7 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
   socklen_t sin_size;
   struct sigaction sa;
   int yes=1;
-  char s[INET6_ADDRSTRLEN];
+  char saddr[INET6_ADDRSTRLEN];
   int rv;
 
   memset(&hints, 0, sizeof hints);
@@ -141,26 +163,33 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
   hints.ai_flags = AI_PASSIVE; // use my IP
 
   if ((rv = getaddrinfo(NULL, listenPort.c_str(), &hints, &servinfo)) != 0) {
-    fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
-    //return 1;
+    stringstream s;
+    s << "getaddrinfo() failed with error: " << gai_strerror(rv);
+    VRERROR(s.str(), "Check for a problem with networking.");
     exit(1);
   }
 
   // loop through all the results and bind to the first we can
   for (p = servinfo; p != NULL; p = p->ai_next) {
     if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) {
-      perror("server: socket");
+      stringstream s;
+      s << "socket() failed; will retry.";
+      VRLOG_STATUS(s.str());
       continue;
     }
 
     if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
-      perror("setsockopt");
+      stringstream s;
+      s << "setsockopt() failed.";
+      VRERROR(s.str(), "Check for a problem with networking.");
       exit(1);
     }
 
       if (::bind(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
       close(sockfd);
-      perror("server: bind");
+      stringstream s;
+      s << "bind() failed; will retry.";
+      VRLOG_STATUS(s.str());
       continue;
     }
 
@@ -168,15 +197,16 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
   }
 
   if (p == NULL)  {
-    fprintf(stderr, "server: failed to bind\n");
-    //return 2;
+    VRERROR("VRNetServer failed to bind -- exiting.", "Check for a problem with networking.");
     exit(2);
   }
 
   freeaddrinfo(servinfo); // all done with this structure
 
   if (listen(sockfd, BACKLOG) == -1) {
-    perror("listen");
+    stringstream s;
+    s << "listen() failed.";
+    VRERROR(s.str(), "Check for a problem with networking.");
     exit(1);
   }
 
@@ -184,18 +214,22 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
   sigemptyset(&sa.sa_mask);
   sa.sa_flags = SA_RESTART;
   if (sigaction(SIGCHLD, &sa, NULL) == -1) {
-    perror("sigaction");
+    stringstream s;
+    s << "sigaction() failed.";
+    VRERROR(s.str(), "Check for a problem with networking.");
     exit(1);
   }
 
-  printf("server: waiting for connections...\n");
+  VRLOG_STATUS("VRNetServer waiting for client connection(s)...");
 
   int numConnected = 0;
   while (numConnected < numExpectedClients) {
     sin_size = sizeof their_addr;
     new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
     if (new_fd == -1) {
-      perror("accept");
+      stringstream s;
+      s << "accept() failed; will retry.";
+      VRLOG_STATUS(s.str());
       continue;
     }
 
@@ -204,8 +238,11 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
     setsockopt(new_fd, IPPROTO_TCP, TCP_NODELAY, &value, sizeof(value));
 
     numConnected++;
-    inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr), s, sizeof s);
-    printf("server: got connection %d from %s\n", numConnected, s);
+    inet_ntop(their_addr.ss_family, get_in_addr((struct sockaddr *)&their_addr), saddr, sizeof saddr);
+
+    stringstream s;
+    s << "Received connection " << numConnected << " of " << numExpectedClients << " from " << saddr;
+    VRLOG_STATUS(s.str());
 
     _clientSocketFDs.push_back(new_fd);
   }
@@ -215,6 +252,7 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
 
 VRNetServer::~VRNetServer()
 {
+  VRLOG_STATUS("VRNetServer closing all sockets.");
   for (std::vector<SOCKET>::iterator i=_clientSocketFDs.begin(); i < _clientSocketFDs.end(); i++) {
 	#ifdef WIN32
       closesocket(*i);
