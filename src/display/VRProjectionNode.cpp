@@ -8,7 +8,7 @@ VRProjectionNode::VRProjectionNode(const std::string &name, float fovX, float fo
   VRDisplayNode(name), _fovX(fovX), _fovY(fovY), _nearClip(nearClip), _farClip(farClip)
 {
   // in:
-  _addValuesNeeded("CameraMatrix");
+  _addValueNeeded("CameraMatrix");
 
   // out:
   _valuesAdded.push_back("ViewMatrix");

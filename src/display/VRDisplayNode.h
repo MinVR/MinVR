@@ -134,7 +134,7 @@ protected:
   /// add needed values to the audit.  Set the "required" argument to false for
   /// optional arguments, but remember that if you check for optional arguments,
   /// the user will see a warning during the audit if they're not there.
-  void _addValuesNeeded(const std::string name, const bool required = true) {
+  void _addValueNeeded(const std::string name, const bool required = true) {
     _valuesNeeded.push_back(std::pair<std::string, bool>(name, required));
   }
 
