@@ -57,10 +57,13 @@ macro(UseOpenVR YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
         MinVRExternalProject_BuildAndInstallNow(
             OpenVR
             src
+			-DBUILD_SHARED=ON
         )
 
         # OpenVR's install target seems to only install the lib.  So, install headers manually here.
         file(INSTALL ${EXTERNAL_DIR}/OpenVR/src/headers/ DESTINATION ${CMAKE_INSTALL_PREFIX}/include/openvr)
+		file(INSTALL ${CMAKE_INSTALL_PREFIX}/lib/openvr_api64.dll DESTINATION ${CMAKE_INSTALL_PREFIX}/bin OPTIONAL)
+		file(INSTALL ${CMAKE_INSTALL_PREFIX}/lib/openvr_api.dll DESTINATION ${CMAKE_INSTALL_PREFIX}/bin OPTIONAL)
 
         # Try find_package() again
         message(STATUS "Searching (again, right after autobuilding) for OpenVR library...")
