@@ -12,12 +12,19 @@ find_path(OPENVR_INCLUDE_DIR
 	/usr/local/include/openvr
 	/usr/local/include/OpenVR
 )
+set(OPENVR_LIBNAME openvr_api)
+if(WIN32)
+	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+		set(OPENVR_LIBNAME "openvr_api64" )
+	endif()
+endif()
 
 find_library(OPENVR_LIBRARY 
   NAMES 
 	openvr_api.lib 
 	openvr_api.so 
 	openvr_api
+	openvr_api64.lib
   HINTS 
 	${CMAKE_INSTALL_PREFIX}/lib 
 	$ENV{OPENVR_ROOT}/lib 
