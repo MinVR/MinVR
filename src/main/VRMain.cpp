@@ -157,7 +157,7 @@ bool VRParseCommandLine::parseCommandLine(int argc, char** argv,
     }
   }
 
-  // one final case -- if no MinVR configuration settings were on the command 
+  // one final case -- if no MinVR configuration settings were on the command
   // line, then load the pre-installed default configuration
   if ((configFileList.empty()) && (configValList.empty())) {
     loadDefaultConfig();
@@ -625,8 +625,8 @@ void VRMain::initialize(int argc, char **argv) {
 
     // Find the actual library that is the plugin, and load it, if possible.
     std::string fullLibName = _pluginSearchPath.findFile(pluginName);
-      
-    VRLOG_STATUS("Loading plugin " + pluginName + " from file " + fullLibName + ".");  
+
+    VRLOG_STATUS("Loading plugin " + pluginName + " from file " + fullLibName + ".");
     if (!_pluginMgr->loadPlugin(fullLibName)) {
       VRERROR("VRMain Error: Problem loading plugin: " + pluginName,
               "Could not load from any of the following filenames: " +
@@ -639,7 +639,7 @@ void VRMain::initialize(int argc, char **argv) {
   //std::replace(factoryTypes.begin(), factoryTypes.end(), ' ', '\n');
   for (std::vector<std::string>::iterator it = factoryTypes.begin(); it < factoryTypes.end(); ++it) {
     VRLOG_STATUS("  " + *it);
-  }  
+  }
 
 	// STEP 6: CONFIGURE NETWORKING:
   VRLOG_H2("Start Networking");
@@ -879,6 +879,17 @@ VRMain::synchronizeAndProcessEvents() {
   // safely get out.
 }
 
+void
+VRMain::updateAllModels() {
+
+  for (std::vector<VRModelHandler*>::iterator it = _modelHandlers.begin();
+       it != _modelHandlers.end(); it++) {
+    (*it)->updateWorld();
+  }
+}
+
+
+
 void VRMain::renderOnAllDisplays() {
 
   if (!_initialized) throw std::runtime_error("VRMain not initialized.");
@@ -942,6 +953,12 @@ void
 VRMain::addEventHandler(VREventHandler* eventHandler)
 {
 	_eventHandlers.push_back(eventHandler);
+}
+
+void
+VRMain::addModelHandler(VRModelHandler* modelHandler)
+{
+	_modelHandlers.push_back(modelHandler);
 }
 
 void

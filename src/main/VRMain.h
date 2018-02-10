@@ -10,6 +10,7 @@
 #include <display/VRWindowToolkit.h>
 #include <input/VRInputDevice.h>
 #include <main/VREventHandler.h>
+#include <main/VRModelHandler.h>
 #include <main/VRFactory.h>
 #include <main/VRMainInterface.h>
 #include <main/VRRenderHandler.h>
@@ -331,6 +332,14 @@ public:
 
     // TODO: Add function:  void removeEventHandler();
 
+    /** Register your own class that implements the VRModelHandler interface
+        in order to be able to update the model without having to do it in
+        the render handler or event handler.  You can register more
+        than one handler, and they will be called in the order they were
+        registered.
+     */
+    void addModelHandler(VRModelHandler* modelHandler);
+
     /** Register your own class that implements the VRRenderHandler interface
         in order to recieve MinVR renderScene (and all other rendering-related)
         callbacks.  You can register more than one handler, and they will be
@@ -391,11 +400,11 @@ public:
      */
     void initialize(int argc, char **argv);
 
-    /** Use this method to get the number of command line arguments that the 
+    /** Use this method to get the number of command line arguments that the
 	      initialize() methods did not need.
     */
     int getArgc() { return getLeftoverArgc(); };
-    /** Use this method to get the arguments on a command line that the 
+    /** Use this method to get the arguments on a command line that the
 	      initialize() methods did not need.
     */
     char** getArgv() { return getLeftoverArgv(); };
@@ -442,6 +451,7 @@ public:
      */
     bool mainloop() {
         synchronizeAndProcessEvents();
+        updateAllModels();
         renderOnAllDisplays();
         return (!_shutdown);
     }
@@ -451,6 +461,11 @@ public:
         rather than calling mainloop().
      */
     void synchronizeAndProcessEvents();
+
+    /** STEP 3 (option 2, part b): You can update whatever models are used
+        in your graphics here, and do so independently of the render functions.
+    */
+    void updateAllModels();
 
     /** STEP 3 (option 2, part b):  If you need more control, you can call
         synchronizeAndProcessEvents() then renderingOnAllDisplays() yourself
@@ -477,8 +492,8 @@ public:
     VRDataIndex* getConfig() { return _config; }
 
     /// Provides access to pointers to input devices based on the DeviceID,
-    /// which is a data field within all the eventData for all MinVR events.  
-    /// Note that it's only possible to access locally attached input devices.  
+    /// which is a data field within all the eventData for all MinVR events.
+    /// Note that it's only possible to access locally attached input devices.
     /// DeviceID = -1 is used for events that come from networked nodes, and
     /// getInputDevice will return NULL when deviceID=-1.
     VRInputDevice* getInputDevice(int deviceID);
@@ -536,6 +551,7 @@ public:
     VRPluginManager* _pluginMgr;
 
     std::vector<VREventHandler*>    _eventHandlers;
+    std::vector<VRModelHandler*>    _modelHandlers;
     std::vector<VRRenderHandler*>   _renderHandlers;
 
     std::vector<VRInputDevice*>     _inputDevices;

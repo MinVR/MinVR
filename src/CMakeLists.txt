@@ -1,4 +1,4 @@
-# This file is part of the MinVR cmake build system.  
+# This file is part of the MinVR cmake build system.
 # See the main MinVR/CMakeLists.txt file for authors, copyright, and license info.
 
 
@@ -117,6 +117,7 @@ set(vr_main_cpp
 
 set(vr_main_h
   src/main/VREventHandler.h
+  src/main/VRModelHandler.h
   src/main/VRFactory.h
   src/main/VRItemFactory.h
   src/main/VRLog.h
