@@ -20,6 +20,7 @@ VRFakeTrackerDevice::VRFakeTrackerDevice(const std::string &trackerName,
                                          VRVector3 lookAtCenter,
                                          VRVector3 lookAtUp)
 {
+    _trackerName = trackerName;
     _eventName = trackerName + "_Move";
     _toggleEvent = toggleOnOffEventName;
     _rotateOnEvent = rotateEventName + "_Down";
@@ -54,6 +55,10 @@ VRFakeTrackerDevice::VRFakeTrackerDevice(const std::string &trackerName,
 
     VRDataIndex di = VRTrackerEvent::createValidDataIndex(_eventName, _transform.toVRFloatArray());
     _pendingEvents.push(di);
+
+    // Explain how to use it, if we're logging.
+    VRLOG_H2("Initializing fake tracker: " + trackerName);
+    VRLOG_STATUS(printInstructions().c_str());
 }
 
 
@@ -190,6 +195,29 @@ void VRFakeTrackerDevice::appendNewInputEventsSinceLastCall(VRDataQueue* inputEv
   _pendingEvents.clear();
 }
 
+std::string VRFakeTrackerDevice::printInstructions() {
+
+  std::string out = "";
+
+  out += "Tracker " + _trackerName + " is listening to " + _eventName + " events.\n";
+  out += "Use " + _toggleEvent + " to toggle this tracker off and on.\n";
+  out += "Use " + _rotateOnEvent.substr(0, _rotateOnEvent.size() - 5);
+  out += std::string(" to rotate around X (pitch) and Y (yaw),");
+  out += " and " + _rollOnEvent.substr(0, _rollOnEvent.size() - 5);
+  out += std::string(" to rotate around Z (roll).\n");
+  out += "Use " + _translateOnEvent.substr(0, _translateOnEvent.size() - 5);
+  out += std::string(" to translate in X and Y,");
+  out += " and " + _translateZOnEvent.substr(0, _translateZOnEvent.size() - 5);
+  out += std::string(" to translate in Z.\n");
+  char tmp[50];
+  sprintf(tmp, "xyScale = %.3f, zScale = %.3f, rotation=%.3f",
+          _xyScale, _zScale, _rScale);
+  out += "The scale factors are: " + std::string(tmp) + "\n";
+  out += "Sticky mode is " + std::string(_sticky ? "on" : "off") + ",";
+  out += " and the observation style is '" + std::string(_seeker ? "seeker" : "looker") + "'.\n";
+
+  return out;
+}
 
 VRInputDevice*
 VRFakeTrackerDevice::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
@@ -226,15 +254,15 @@ VRFakeTrackerDevice::create(VRMainInterface *vrMain, VRDataIndex *config, const 
     bool seeker = !style.compare("Seeker");
 
     int pos[] = {0, 0, -1};
-    int dir[] = {0, 0, 1};
+    int ctr[] = {0, 0, 0};
     int up[] = {0, 1, 0};
     VRFloatArray defaultPos (pos, pos + sizeof(pos) / sizeof(pos[0]));
-    VRFloatArray defaultDir (dir, dir + sizeof(dir) / sizeof(dir[0]));
+    VRFloatArray defaultCtr (ctr, ctr + sizeof(ctr) / sizeof(ctr[0]));
     VRFloatArray defaultUp (up, up + sizeof(up) / sizeof(up[0]));
     VRVector3 startPos = config->getValueWithDefault("LookAtEye",
                                                      defaultPos, devNameSpace);
     VRVector3 startCtr = config->getValueWithDefault("LookAtCenter",
-                                                     defaultDir, devNameSpace);
+                                                     defaultCtr, devNameSpace);
     VRVector3 startUp = config->getValueWithDefault("LookAtUp",
                                                     defaultUp, devNameSpace);
 
