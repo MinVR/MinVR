@@ -9,6 +9,14 @@ VRProjectionNode::VRProjectionNode(const std::string &name, float fovX, float fo
 {
   // in:
   _addValueNeeded("CameraMatrix");
+  // These should be recorded as necessary, and the auditValues()
+  // method needs to be changed to accommodate not just the values
+  // added by nodes in teh display tree, but also from the config
+  // files.
+  // _addValueNeeded("NearClip");
+  // _addValueNeeded("FarClip");
+  // _addValueNeeded("FieldOfViewY");
+  // _addValueNeeded("FieldOfViewX");
 
   // out:
   _valuesAdded.push_back("ViewMatrix");
