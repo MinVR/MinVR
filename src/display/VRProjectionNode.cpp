@@ -55,10 +55,10 @@ void VRProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *renderH
 }
 
 VRDisplayNode* VRProjectionNode::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace){
-  float nearClip = config->getValue("NearClip", nameSpace);
-  float farClip = config->getValue("FarClip", nameSpace);
-  float fovY = config->getValue("FieldOfViewY", nameSpace);
-  float fovX = config->getValue("FieldOfViewX", nameSpace);
+  float nearClip = config->getValueWithDefault("NearClip", 0.001, nameSpace);
+  float farClip = config->getValueWithDefault("FarClip", 500.0, nameSpace);
+  float fovY = config->getValueWithDefault("FieldOfViewY", 60.0, nameSpace);
+  float fovX = config->getValueWithDefault("FieldOfViewX", 60.0, nameSpace);
 
   VRProjectionNode *node = new VRProjectionNode(nameSpace, fovX, fovY, nearClip, farClip);
 
