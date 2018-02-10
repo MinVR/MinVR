@@ -157,7 +157,7 @@ bool VRParseCommandLine::parseCommandLine(int argc, char** argv,
     }
   }
 
-  // one final case -- if no MinVR configuration settings were on the command 
+  // one final case -- if no MinVR configuration settings were on the command
   // line, then load the pre-installed default configuration
   if ((configFileList.empty()) && (configValList.empty())) {
     loadDefaultConfig();
@@ -373,6 +373,12 @@ void VRMain::_startSSHProcess(const std::string &setupName,
   if (_config->exists("HostDisplay", setupName)) {
     std::string displayVar = _config->getValue("HostDisplay",setupName);
     command += " export DISPLAY=" + displayVar + " ;";
+  }
+
+  // If there is a command to be issued before the base command on the
+  // remote host, issue it here.
+  if (_config->exists("PreCommand", setupName)) {
+    command += (std::string)_config->getValue() + ";" ;
   }
 
   // These arguments are to be added to the process
@@ -625,8 +631,8 @@ void VRMain::initialize(int argc, char **argv) {
 
     // Find the actual library that is the plugin, and load it, if possible.
     std::string fullLibName = _pluginSearchPath.findFile(pluginName);
-      
-    VRLOG_STATUS("Loading plugin " + pluginName + " from file " + fullLibName + ".");  
+
+    VRLOG_STATUS("Loading plugin " + pluginName + " from file " + fullLibName + ".");
     if (!_pluginMgr->loadPlugin(fullLibName)) {
       VRERROR("VRMain Error: Problem loading plugin: " + pluginName,
               "Could not load from any of the following filenames: " +
@@ -639,7 +645,7 @@ void VRMain::initialize(int argc, char **argv) {
   //std::replace(factoryTypes.begin(), factoryTypes.end(), ' ', '\n');
   for (std::vector<std::string>::iterator it = factoryTypes.begin(); it < factoryTypes.end(); ++it) {
     VRLOG_STATUS("  " + *it);
-  }  
+  }
 
 	// STEP 6: CONFIGURE NETWORKING:
   VRLOG_H2("Start Networking");
