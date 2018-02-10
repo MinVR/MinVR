@@ -73,9 +73,9 @@ public:
                         float rotScale,
                         bool sticky,
                         bool seeker,
-                        VRVector3 startPos,
-                        VRVector3 startDir,
-                        VRVector3 startUp);
+                        VRVector3 LookAtEye,
+                        VRVector3 LookAtCenter,
+                        VRVector3 LookAtUp);
 
     virtual ~VRFakeTrackerDevice();
 
