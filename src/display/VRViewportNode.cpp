@@ -50,7 +50,7 @@ VRDisplayNode* VRViewportNode::create(VRMainInterface *vrMain, VRDataIndex *conf
 	int width = config->getValue("Width", nameSpace);
 	int height = config->getValue("Height", nameSpace);
 
-	VRDisplayNode *node = new VRViewportNode(nameSpace, gfxToolkit, VRRect(xpos, ypos, width, height));
+	VRDisplayNode *node = new VRViewportNode(nameSpace, gfxToolkit, VRRect((float)xpos, (float)ypos, (float)width, (float)height));
 
 	return node;
 }

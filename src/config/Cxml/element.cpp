@@ -157,7 +157,7 @@ bool element::set_value(const char* the_value)
     if(the_value != NULL)
     {
         int l;
-        l=strlen(the_value)*sizeof(char);
+        l=(int)strlen(the_value)*sizeof(char);
         if(l == 0)
             return false;
         if(value_is_allocated)
@@ -190,7 +190,7 @@ bool element::set_name(const char* the_name)
     if(the_name != NULL)
     {
         int l;
-        l=strlen(the_name)*sizeof(char);
+        l=(int)strlen(the_name)*sizeof(char);
         if(l == 0)
             return false;
         if(name_is_allocated)

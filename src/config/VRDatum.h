@@ -364,7 +364,7 @@ public:
   const VRInt* getPointerInt() const { return &(value.front()); };
   VRIntArray getValueIntArray() const {
     VRIntArray out;  out.push_back(value.front());  return out; };
-  VRFloat getValueFloat() const { return (int)value.front(); };
+  VRFloat getValueFloat() const { return (float)value.front(); };
 };
 
 // The specialization for a float.
@@ -377,7 +377,7 @@ public:
   const VRFloat* getPointerFloat() const { return &(value.front()); };
   VRFloatArray getValueFloatArray() const {
     VRFloatArray out;  out.push_back(value.front());  return out; };
-  VRInt getValueInt() const { return (float)value.front(); };
+  VRInt getValueInt() const { return (int)value.front(); };
 };
 
 // Specialization for a string

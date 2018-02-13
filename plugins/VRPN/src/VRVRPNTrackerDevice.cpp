@@ -75,9 +75,9 @@ void VRPN_CALLBACK trackerHandler(void *thisPtr, const vrpn_TRACKERCB info)
         rotrawf[i] = (float)rotraw[i];
     }
     VRMatrix4 vrpnEvent(rotrawf);
-    vrpnEvent(0,3) = info.pos[0];
-    vrpnEvent(1,3) = info.pos[1];
-    vrpnEvent(2,3) = info.pos[2];
+    vrpnEvent(0,3) = (float)(info.pos[0]);
+    vrpnEvent(1,3) = (float)(info.pos[1]);
+    vrpnEvent(2,3) = (float)(info.pos[2]);
 
 	VRVRPNTrackerDevice* device = ((VRVRPNTrackerDevice*)thisPtr);
 	device->processEvent(vrpnEvent, info.sensor);
@@ -86,7 +86,7 @@ void VRPN_CALLBACK trackerHandler(void *thisPtr, const vrpn_TRACKERCB info)
 VRVRPNTrackerDevice::VRVRPNTrackerDevice(
 	const std::string              &vrpnTrackerDeviceName,
 	const std::vector<std::string> &eventsToGenerate,
-	const double                   &trackerUnitsToRoomUnitsScale,
+	const float                   &trackerUnitsToRoomUnitsScale,
 	const VRMatrix4                &deviceToRoom,
 	const std::vector<VRMatrix4>   &propToTracker,
 	const std::vector<VRMatrix4>   &finalOffset,
@@ -224,7 +224,7 @@ VRVRPNTrackerDevice::create(VRMainInterface *vrMain, VRDataIndex *config, const 
 
   std::string vrpnName = config->getValue("VRPNDeviceName", devNameSpace);
   std::vector<std::string> eventsToGenerate = config->getValue("EventsToGenerate", devNameSpace);
-  double scale = config->getValue("TrackerUnitsToRoomUnitsScale", devNameSpace);
+  float scale = config->getValue("TrackerUnitsToRoomUnitsScale", devNameSpace);
   VRMatrix4 d2r = config->getValue("DeviceToRoom", devNameSpace);
   d2r = d2r.orthonormal();
   bool wait = ((int)config->getValue("WaitForNewReportInPoll", nameSpace)) == 1;

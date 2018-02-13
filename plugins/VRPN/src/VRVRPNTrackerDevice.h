@@ -110,7 +110,7 @@ public:
 	PLUGIN_API VRVRPNTrackerDevice(
 		const std::string							   &vrpnTrackerDeviceName,
 		const std::vector<std::string>				   &eventsToGenerate,
-		const double								   &trackerUnitsToRoomUnitsScale,
+		const float								   &trackerUnitsToRoomUnitsScale,
 		const VRMatrix4								   &deviceToRoom,
 		const std::vector<VRMatrix4>			       &propToTracker,
 		const std::vector<VRMatrix4>				   &finalOffset,
@@ -130,7 +130,7 @@ public:
 private:
 	vrpn_Tracker_Remote      *_vrpnDevice;
 	std::vector<std::string>  _eventNames;
-	double                    _trackerUnitsToRoomUnitsScale;
+	float                    _trackerUnitsToRoomUnitsScale;
 	VRMatrix4                 _deviceToRoom;
 	std::vector<VRMatrix4>    _propToTracker;
 	std::vector<VRMatrix4>    _finalOffset;

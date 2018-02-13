@@ -35,8 +35,8 @@ void VROpenGLGraphicsToolkit::setDrawBuffer(VRDRAWBUFFER buffer) {
 
 void VROpenGLGraphicsToolkit::setSubWindow(VRRect rect) {
 	glEnable(GL_SCISSOR_TEST);
-	glViewport(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
-	glScissor(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
+	glViewport((GLint)rect.getX(), (GLint)rect.getY(), (GLsizei)rect.getWidth(), (GLsizei)rect.getHeight());
+	glScissor((GLint)rect.getX(), (GLint)rect.getY(), (GLsizei)rect.getWidth(), (GLsizei)rect.getHeight());
 }
 
 void VROpenGLGraphicsToolkit::flushGraphics() {

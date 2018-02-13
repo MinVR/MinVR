@@ -85,7 +85,7 @@ VRGLFWWindowToolkit::createWindow(VRWindowSettings settings) {
 #define MAX_AFFINITY_GPUS 16
 
 	if (settings.gpuAffinity) {
-		VRRect windowRect(settings.xpos, settings.ypos, settings.width, settings.height);
+		VRRect windowRect((float)settings.xpos, (float)settings.ypos, (float)settings.width, (float)settings.height);
 #ifdef MinVR_DEBUG
 		std::cout << "Window: " << windowRect.getX() << " " << windowRect.getY() << " " << windowRect.getWidth() << " " << windowRect.getHeight() << std::endl;
 #endif
@@ -105,7 +105,7 @@ VRGLFWWindowToolkit::createWindow(VRWindowSettings settings) {
 				gpus[gpu].cb = sizeof(GPU_DEVICE);
 				while (wglEnumGpuDevicesNV(hGPU, deviceIndex, &gpus[gpu])) {
 
-					VRRect deviceRect(gpus[gpu].rcVirtualScreen.left, gpus[gpu].rcVirtualScreen.top, gpus[gpu].rcVirtualScreen.right - gpus[gpu].rcVirtualScreen.left, gpus[gpu].rcVirtualScreen.bottom - gpus[gpu].rcVirtualScreen.top);
+					VRRect deviceRect((float)(gpus[gpu].rcVirtualScreen.left), (float)(gpus[gpu].rcVirtualScreen.top), (float)(gpus[gpu].rcVirtualScreen.right - gpus[gpu].rcVirtualScreen.left), (float)(gpus[gpu].rcVirtualScreen.bottom - gpus[gpu].rcVirtualScreen.top));
 					VRRect intersectionRect = deviceRect.intersect(windowRect);
 
 #ifdef MinVR_DEBUG
@@ -165,7 +165,7 @@ VRGLFWWindowToolkit::createWindow(VRWindowSettings settings) {
 	}
 
 	_windows.push_back(window);
-	return _windows.size()-1;
+	return (int)_windows.size()-1;
 
 	glfwShowWindow(window);
 }

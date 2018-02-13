@@ -136,11 +136,11 @@ VRInputDevice* VRTUIODevice::create(VRMainInterface* vrMain,
 	if (config->exists("Port", nameSpace)) {
 		port = config->getValue("Port", nameSpace);
 	}
-	int xs = 1.0;
+	double xs = 1.0;
 	if (config->exists("XScaleFactor", nameSpace)) {
 		xs = config->getValue("XScaleFactor", nameSpace);
 	}
-	int ys = 1.0;
+	double ys = 1.0;
 	if (config->exists("YScaleFactor", nameSpace)) {
 		ys = config->getValue("YScaleFactor", nameSpace);
 	}

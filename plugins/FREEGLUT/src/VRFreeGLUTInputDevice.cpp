@@ -99,8 +99,8 @@ void VRFreeGLUTInputDevice::keyCallback(int key, int x, int y, bool isDown, bool
 void VRFreeGLUTInputDevice::cursorPositionCallback(int xpos, int ypos, bool isActive) {
 
     std::vector<float> pos;
-    pos.push_back(xpos);
-    pos.push_back(ypos);
+    pos.push_back((float)xpos);
+    pos.push_back((float)ypos);
 
     std::vector<float> npos = pos;
     int width = glutGet(GLUT_WINDOW_WIDTH);
@@ -115,7 +115,7 @@ void VRFreeGLUTInputDevice::cursorPositionCallback(int xpos, int ypos, bool isAc
 
 
 void VRFreeGLUTInputDevice::mouseWheelCallback(int wheel, int direction, int x, int y){
-    VRDataIndex event = VRAnalogEvent::createValidDataIndex("MouseWheel_Spin", direction*wheel);
+    VRDataIndex event = VRAnalogEvent::createValidDataIndex("MouseWheel_Spin", (float)(direction*wheel));
     event.addData("Wheel", wheel);
     event.addData("Direction", direction);
     event.addData("Turns", direction*wheel);

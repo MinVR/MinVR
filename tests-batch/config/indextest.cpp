@@ -122,7 +122,7 @@ MinVR::VRDataIndex * setupIndex() {
   MinVR::VRDataIndex *n = new MinVR::VRDataIndex;
 
   MinVR::VRInt a = 4;
-  MinVR::VRFloat b = 3.1415926;
+  MinVR::VRFloat b = 3.1415926f;
 
   n->addData("/george/a0", a);
   n->addData("/george/a1", a + 1);
@@ -159,11 +159,11 @@ MinVR::VRDataIndex * setupIndex() {
   n->addData("/john/c9", c + "9");
 
   std::vector<float>d;
-  d.push_back(1.2);
-  d.push_back(2.3);
-  d.push_back(3.4);
-  d.push_back(4.5);
-  d.push_back(5.6);
+  d.push_back(1.2f);
+  d.push_back(2.3f);
+  d.push_back(3.4f);
+  d.push_back(4.5f);
+  d.push_back(5.6f);
 
   n->addData("/donna/d0", d);
 
@@ -404,7 +404,7 @@ int testPushPopIndex() {
     n->pushState();
 
     MinVR::VRInt a = 4;
-    MinVR::VRFloat b = 3.1415926;
+    MinVR::VRFloat b = 3.1415926f;
 
     n->addData("/MVR/george/a0", a);
     n->addData("/MVR/george/a1", a + 1);
@@ -452,11 +452,11 @@ int testPushPopIndex() {
 
 
     std::vector<float>d;
-    d.push_back(1.2);
-    d.push_back(2.3);
-    d.push_back(3.4);
-    d.push_back(4.5);
-    d.push_back(5.6);
+    d.push_back(1.2f);
+    d.push_back(2.3f);
+    d.push_back(3.4f);
+    d.push_back(4.5f);
+    d.push_back(5.6f);
 
     n->addData("/MVR/donna/d0", d);
 
@@ -611,7 +611,7 @@ int testIndexSerializeEntire() {
 
     out += test1.compare("glfw_display");
     out += test2.compare("heavy");
-    out += 2871 - output.size();
+    out += 2871 - (int)output.size();
     out += n->getName().compare("MVR");
 
     delete n;

@@ -63,10 +63,10 @@ void VRPN_CALLBACK analogHandler(void *thisPtr, const vrpn_ANALOGCB info)
 {
   int lastchannel = info.num_channel;
   if (lastchannel > (int)((VRVRPNAnalogDevice*)thisPtr)->numChannels()) {
-    lastchannel = ((VRVRPNAnalogDevice*)thisPtr)->numChannels();
+    lastchannel = (int)(((VRVRPNAnalogDevice*)thisPtr)->numChannels());
   }
   for (int i=0;i<lastchannel;i++) {
-    ((VRVRPNAnalogDevice*)thisPtr)->sendEventIfChanged(i, info.channel[i]);
+    ((VRVRPNAnalogDevice*)thisPtr)->sendEventIfChanged(i, (float)info.channel[i]);
   }
 }
 

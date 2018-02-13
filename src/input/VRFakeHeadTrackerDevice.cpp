@@ -76,22 +76,22 @@ void VRFakeHeadTrackerDevice::onVREvent(const VRDataIndex &event)
             VRMatrix4 M = _baseHead * VRMatrix4::rotationY(-_yaw);
             VRVector3 dir = M * VRVector3(0,0,-1);
             dir = dir.normalize();
-            _baseHead = _baseHead * VRMatrix4::translation(0.075 * _tScale * dir);
+            _baseHead = _baseHead * VRMatrix4::translation(0.075f * _tScale * dir);
             sendEvent = true;
         }
         else if (std::find(_backEvents.begin(), _backEvents.end(), event.getName()) != _backEvents.end()) {
             VRMatrix4 M = _baseHead * VRMatrix4::rotationY(-_yaw);
             VRVector3 dir = M * VRVector3(0,0,1);
             dir = dir.normalize();
-            _baseHead = _baseHead * VRMatrix4::translation(0.075 * _tScale * dir);
+            _baseHead = _baseHead * VRMatrix4::translation(0.075f * _tScale * dir);
             sendEvent = true;
         }
         else if (std::find(_leftEvents.begin(), _leftEvents.end(), event.getName()) != _leftEvents.end()) {
-            _baseHead = _baseHead *  VRMatrix4::rotationY(0.025 * _rScale);
+            _baseHead = _baseHead *  VRMatrix4::rotationY(0.025f * _rScale);
             sendEvent = true;
         }
         else if (std::find(_rightEvents.begin(), _rightEvents.end(), event.getName()) != _rightEvents.end()) {
-            _baseHead = _baseHead * VRMatrix4::rotationY(-0.025 * _rScale);
+            _baseHead = _baseHead * VRMatrix4::rotationY(-0.025f * _rScale);
             sendEvent = true;
         }
         else if (myEventMatch(event.getName(), _mouseRotKeys, "Down")) {
@@ -103,8 +103,8 @@ void VRFakeHeadTrackerDevice::onVREvent(const VRDataIndex &event)
         else if (event.getName() == "Mouse_Move") {
             VRFloatArray screenPos = event.getValue("NormalizedPosition");
             if (screenPos.size() >= 2) {
-                float mousex = 2.0*(screenPos[0] - 0.5);
-                float mousey = 2.0*((1.0-screenPos[1]) - 0.5);
+                float mousex = 2.0f*(screenPos[0] - 0.5f);
+                float mousey = 2.0f*((1.0f-screenPos[1]) - 0.5f);
                 
                 if (_mouseRotating) {
                     float deltaX = mousex - _lastMouseX;
@@ -145,8 +145,8 @@ VRFakeHeadTrackerDevice::create(VRMainInterface *vrMain, VRDataIndex *config, co
   
     std::string trackerName = config->getValue("TrackerName", devNameSpace);
     std::string toggleEvent = config->getValueWithDefault("ToggleOnOffEvent", std::string("Kbd1_Down"), devNameSpace);
-    float tScale = config->getValueWithDefault("TranslationScale", 1.0, devNameSpace);
-    float rScale = config->getValueWithDefault("RotationScale", 1.0, devNameSpace);
+    float tScale = config->getValueWithDefault("TranslationScale", 1.0f, devNameSpace);
+    float rScale = config->getValueWithDefault("RotationScale", 1.0f, devNameSpace);
     
     VRMatrix4 headMatrix = VRMatrix4::translation(VRVector3(0,0,4));
     if (config->exists("HeadMatrix", devNameSpace)){

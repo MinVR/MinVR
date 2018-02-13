@@ -22,7 +22,7 @@ VRProjectionNode::VRProjectionNode(const std::string &name, float fovX, float fo
   _valuesAdded.push_back("ViewMatrix");
   _valuesAdded.push_back("ProjectionMatrix");
 
-  double degreeToRadian = 3.1415926 / 180;
+  float degreeToRadian = 3.1415926f / 180;
   float _horizontalClip = tan(fovX * degreeToRadian / 2.0f) * _nearClip;
   float _verticalClip = tan(fovY * degreeToRadian / 2.0f) * _nearClip;
 
@@ -55,10 +55,10 @@ void VRProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *renderH
 }
 
 VRDisplayNode* VRProjectionNode::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace){
-  float nearClip = config->getValueWithDefault("NearClip", 0.001, nameSpace);
-  float farClip = config->getValueWithDefault("FarClip", 500.0, nameSpace);
-  float fovY = config->getValueWithDefault("FieldOfViewY", 60.0, nameSpace);
-  float fovX = config->getValueWithDefault("FieldOfViewX", 60.0, nameSpace);
+  float nearClip = config->getValueWithDefault("NearClip", 0.001f, nameSpace);
+  float farClip = config->getValueWithDefault("FarClip", 500.0f, nameSpace);
+  float fovY = config->getValueWithDefault("FieldOfViewY", 60.0f, nameSpace);
+  float fovX = config->getValueWithDefault("FieldOfViewX", 60.0f, nameSpace);
 
   VRProjectionNode *node = new VRProjectionNode(nameSpace, fovX, fovY, nearClip, farClip);
 

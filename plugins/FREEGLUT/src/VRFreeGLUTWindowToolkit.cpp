@@ -66,7 +66,7 @@ VRFreeGLUTWindowToolkit::createWindow(VRWindowSettings settings) {
 	
 	_windows.push_back(windowID);
 	
-	return _windows.size()-1;
+	return (int)_windows.size()-1;
 }
 
 void 

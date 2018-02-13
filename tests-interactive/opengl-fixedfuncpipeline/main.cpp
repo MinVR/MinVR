@@ -57,7 +57,7 @@ public:
             VRFloatArray viewMat = stateData.getValue("ViewMatrix");
 
             // Show gradient of red color over four seconds then restart
-            float red = std::fmod(time/4.0,1.0);
+            float red = (float)std::fmod(time/4.0f,1.0);
             glClearColor(red, 0, 0, 1);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 

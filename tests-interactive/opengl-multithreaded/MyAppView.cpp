@@ -103,7 +103,7 @@ void MyAppView::render(const VRGraphicsState &renderState) {
 /// Compiles shader
 GLuint MyAppView::compileShader(const std::string& shaderText, GLuint shaderType) {
 	const char* source = shaderText.c_str();
-	int length = shaderText.size();
+	int length = (int)shaderText.size();
 	GLuint shader = glCreateShader(shaderType);
 	glShaderSource(shader, 1, &source, &length);
 	glCompileShader(shader);

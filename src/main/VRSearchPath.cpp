@@ -44,13 +44,13 @@ std::string VRSearchPath::findFile(const std::string &desiredFile) {
 
   // If this is an absolute path name (starts with a /), just return
   // the file name intact, if it exists.
-  if ((desiredFile[0] == '/') && (open(desiredFile.c_str(), O_RDONLY) >= 0))
+  if ((desiredFile[0] == '/') && (_open(desiredFile.c_str(), O_RDONLY) >= 0))
     return desiredFile;
 
   for (std::list<std::string>::iterator it = _searchPath.begin();
        it != _searchPath.end(); it++) {
     std::string testFile = _selectFile(desiredFile, (*it));
-    if (open(testFile.c_str(), O_RDONLY) >= 0)
+    if (_open(testFile.c_str(), O_RDONLY) >= 0)
       return testFile;
   }
   return "";

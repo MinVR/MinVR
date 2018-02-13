@@ -304,7 +304,7 @@ VRStringArray VRDataIndex::_deserializeStringArray(const char* valueString,
     // means this delimiter was escaped. Go get another piece of the
     // line and append it to this string before pushing it onto the
     // array.
-    int lastchar = elem.size() - 1;
+    int lastchar = (int)elem.size() - 1;
     if (elem[lastchar] == '\\') {
 
       elem[lastchar] = separator;
@@ -430,8 +430,8 @@ std::string VRDataIndex::_walkXML(element* node, std::string nameSpace) {
     valueString = std::string(node->get_value());
 
     // Trim leading and trailing spaces, tabs, whatever.
-    int firstChar = valueString.find_first_not_of(" \t\r\n");
-    int lastChar = valueString.find_last_not_of(" \t\r\n");
+    int firstChar = (int)valueString.find_first_not_of(" \t\r\n");
+    int lastChar = (int)valueString.find_last_not_of(" \t\r\n");
 
     if ((firstChar >= 0) && (lastChar >= 0)) {
 
@@ -517,7 +517,7 @@ VRCORETYPE_ID VRDataIndex::_inferType(const std::string &valueString) const {
   int conInt = strtol(valueString.c_str(), &p, 10);
   if (!*p) return VRCORETYPE_INT;
 
-  float conFloat = strtod(valueString.c_str(), &p);
+  float conFloat = (float)strtod(valueString.c_str(), &p);
   if (!*p) return VRCORETYPE_FLOAT;
 
   // Is it a container?
@@ -534,7 +534,7 @@ VRCORETYPE_ID VRDataIndex::_inferType(const std::string &valueString) const {
     conInt = strtol(valueString.substr(0, firstChar).c_str(), &p, 10);
     if (!*p) return VRCORETYPE_INTARRAY;
 
-    conFloat = strtod(valueString.substr(0, firstChar).c_str(), &p);
+    conFloat = (float)strtod(valueString.substr(0, firstChar).c_str(), &p);
     if (!*p) return VRCORETYPE_FLOATARRAY;
   }
 
@@ -791,7 +791,7 @@ int VRDataIndex::isChild(const std::string &parentName,
 
     // Count the slashes in what remains.
     std::string s = childName.substr(pName.size());
-    return std::count(s.begin(), s.end(), '/');
+    return (int)std::count(s.begin(), s.end(), '/');
 
   } else if (out == 0) {
 
@@ -920,7 +920,7 @@ VRDataIndex::_getEntry(const std::string &key,
     // provides for the most local version of key to prevail.  The
     // last iteration creates an empty testSpace, on purpose, to test
     // the root level nameSpace.
-    for (int N = elems.size(); N >= 0; --N) {
+    for (int N = (int)elems.size(); N >= 0; --N) {
 
       std::vector<std::string> names(&elems[0], &elems[0] + N);
       std::string testSpace;

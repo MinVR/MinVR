@@ -73,7 +73,7 @@ public:
 		VRVector3 rectHigh = rectLow + VRVector3(rect.getWidth(), rect.getHeight(), 0);
 		VRVector3 maxLow(low.x > rectLow.x ? low.x : rectLow.x, low.y > rectLow.y ? low.y : rectLow.y, 0);
 		VRVector3 minHigh(high.x < rectHigh.x ? high.x : rectHigh.x, high.y < rectHigh.y ? high.y : rectHigh.y, 0);
-		VRRect intersection(maxLow.x, maxLow.y, minHigh.x - maxLow.x > 0 ? minHigh.x - maxLow.x : 0.0, minHigh.y - maxLow.y > 0 ? minHigh.y - maxLow.y : 0);
+		VRRect intersection(maxLow.x, maxLow.y, minHigh.x - maxLow.x > 0 ? minHigh.x - maxLow.x : 0.0f, minHigh.y - maxLow.y > 0 ? minHigh.y - maxLow.y : 0);
 		return intersection;
 	}
 

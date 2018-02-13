@@ -220,8 +220,10 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif()
 
 if (WIN32)
-  add_definitions(-DWIN32)
   # Windows-specific
+  add_definitions(-DWIN32)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+  add_definitions(-D_SCL_SECURE_NO_WARNINGS)
 endif()
 
 
