@@ -53,7 +53,7 @@ extern "C" {
         std::vector<int> v = ((VRDataIndex*)index)->getValue(valName, nameSpace);
         int *a = new int[v.size()];
         std::copy(v.begin(), v.end(), a);
-        *size = v.size();
+        *size = (int)v.size();
         return a;
 	}
 
@@ -61,7 +61,7 @@ extern "C" {
         std::vector<float> v = ((VRDataIndex*)index)->getValue(valName, nameSpace);
         float *a = new float[v.size()];
         std::copy(v.begin(), v.end(), a);
-        *size = v.size();
+        *size = (int)v.size();
         return a;
 	}
 }

@@ -122,7 +122,7 @@ long long VRDataQueue::makeTimeStamp() {
 	// start timer
 	QueryPerformanceCounter(&t1);
 
-	long long timeStamp = (t1.QuadPart) * 1000.0 / frequency.QuadPart + clock();;
+	long long timeStamp = (t1.QuadPart) * 1000 / frequency.QuadPart + clock();
 #else
 
   struct timeval tp;

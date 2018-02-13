@@ -24,13 +24,13 @@ void VRNetInterface::sendSwapBuffersNow(SOCKET socketID) {
 void VRNetInterface::sendEventData(SOCKET socketID,
                                    VRDataQueue::serialData eventData) {
 
-	int dataSize =  eventData.size() + 1 + VRNET_SIZEOFINT;
+	int dataSize =  (int)eventData.size() + 1 + VRNET_SIZEOFINT;
 	unsigned char *buf = new unsigned char[dataSize+1];
 	//1. add 1-byte message header
 	buf[0] = EVENTS_MSG;
 	// 2. add the size of the message data so receive will know how
 	// many bytes to expect.
-	packInt(&buf[1], eventData.size());
+	packInt(&buf[1], (int)eventData.size());
 	// 3. send the chars that make up the eventData.
 	memcpy(&buf[1 + VRNET_SIZEOFINT], (const unsigned char*)eventData.c_str(), eventData.size());
 	//4. send package

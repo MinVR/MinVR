@@ -75,10 +75,10 @@ void VRStereoNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandl
       }
 		}
 
-		_gfxToolkit->setSubWindow(VRRect(x,y,w/2,h));
+		_gfxToolkit->setSubWindow(VRRect((float)x, (float)y, (float)(w/2), (float)h));
 		renderOneEye(renderState, renderHandler, Left);
 
-		_gfxToolkit->setSubWindow(VRRect(x + w / 2 + 1, y, w / 2, h));
+		_gfxToolkit->setSubWindow(VRRect((float)(x + w / 2 + 1), (float)y, (float)(w / 2), (float)h));
 		renderOneEye(renderState, renderHandler, Right);
 	}
 	else if (_format == VRSTEREOFORMAT_COLUMNINTERLACED) {
@@ -114,9 +114,9 @@ void VRStereoNode::setCameraMatrix(VRDataIndex *renderState, VREyePosition eye)
 
   VRMatrix4 cameraMatrix = headMatrix;
   if (eye == Left) {
-    cameraMatrix = cameraMatrix * VRMatrix4::translation(VRVector3(-_iod / 2.0, 0, 0));
+    cameraMatrix = cameraMatrix * VRMatrix4::translation(VRVector3(-_iod / 2.0f, 0, 0));
 	} else if (eye == Right) {
-    cameraMatrix = cameraMatrix * VRMatrix4::translation(VRVector3(-_iod / 2.0, 0, 0));
+    cameraMatrix = cameraMatrix * VRMatrix4::translation(VRVector3(-_iod / 2.0f, 0, 0));
 	}
 
 	renderState->addData("CameraMatrix", cameraMatrix);

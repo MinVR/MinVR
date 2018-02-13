@@ -14,6 +14,13 @@
 #include <vector>
 #include <string>
 
+// This avoids APIENTRY macro redefinition warnings when including glfw3.h
+#if defined (WIN32)
+#define NOMINMAX
+#include <winsock2.h>
+#include <windows.h>
+#endif
+
 #include <GLFW/glfw3.h>
 
 #include <config/VRDataQueue.h>

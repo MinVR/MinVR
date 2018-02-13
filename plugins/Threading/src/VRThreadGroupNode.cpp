@@ -39,7 +39,7 @@ void VRThreadGroupNode::render(VRDataIndex* renderState,
 
 		// If the threadGroup has not been created, create the render threads
 		if (!threadGroup) {
-			int numThreads = getChildren().size();
+			int numThreads = (int)getChildren().size();
 			threadGroup = new VRThreadGroup(numThreads);
 
 			for (int f = 0; f < numThreads; f++) {

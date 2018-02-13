@@ -9,9 +9,17 @@
 #ifndef GLFWWINDOWTOOLKIT_H_
 #define GLFWWINDOWTOOLKIT_H_
 
-#include <vector>
+ // This avoids APIENTRY macro redefinition warnings when including glfw3.h
+#if defined (WIN32)
+#define NOMINMAX
+#include <winsock2.h>
+#include <windows.h>
+#endif
 
 #include <GLFW/glfw3.h>
+
+#include <vector>
+
 #include <display/VRWindowToolkit.h>
 #include <main/VRFactory.h>
 #include <main/VRMainInterface.h>

@@ -21,10 +21,7 @@ endif()
 
 find_library(OPENVR_LIBRARY 
   NAMES 
-	openvr_api.lib 
-	openvr_api.so 
-	openvr_api
-	openvr_api64.lib
+	${OPENVR_LIBNAME}
   HINTS 
 	${CMAKE_INSTALL_PREFIX}/lib 
 	$ENV{OPENVR_ROOT}/lib 

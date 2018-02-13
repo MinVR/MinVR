@@ -188,7 +188,7 @@ int testDatumFloat() {
   int out = 0;
 
   LOOP {
-    MinVR::VRDatumFloat a = MinVR::VRDatumFloat(37.123);
+    MinVR::VRDatumFloat a = MinVR::VRDatumFloat(37.123f);
 
     out = a.getDescription().compare("float");
 
@@ -401,7 +401,7 @@ int testDatumArrayConversions() {
 
     out += (e[0] == (MinVR::VRInt)d.getValue()) ? 0 : 1;
 
-    MinVR::VRDatumFloat f = MinVR::VRDatumFloat(3.1415926);
+    MinVR::VRDatumFloat f = MinVR::VRDatumFloat(3.1415926f);
 
     MinVR::VRFloatArray g = f.getValue();
 

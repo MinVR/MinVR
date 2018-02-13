@@ -30,7 +30,7 @@ static void glfw_size_callback(GLFWwindow* window, int width, int height) {
 
 
 static void glfw_cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
-    ((VRGLFWInputDevice*)(glfwGetWindowUserPointer(window)))->cursorPositionCallback(window, xpos, ypos);
+    ((VRGLFWInputDevice*)(glfwGetWindowUserPointer(window)))->cursorPositionCallback(window, (float)xpos, (float)ypos);
 }
 
 

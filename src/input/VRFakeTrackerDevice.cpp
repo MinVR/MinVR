@@ -124,8 +124,8 @@ void VRFakeTrackerDevice::onVREvent(const VRDataIndex &eventData)
     if (!screenPos.empty()) {
 
       // Transform range from [0,1] to [-1,1].
-      float mousex = 2.0 * (screenPos[0] - 0.5);
-      float mousey = 2.0 * ((1.0 - screenPos[1]) - 0.5);
+      float mousex = 2.0f * (screenPos[0] - 0.5f);
+      float mousey = 2.0f * ((1.0f - screenPos[1]) - 0.5f);
 
       // If we're not currently tracking, ignore the mouse.
       if (_tracking) {
@@ -253,9 +253,9 @@ VRFakeTrackerDevice::create(VRMainInterface *vrMain, VRDataIndex *config, const 
     // 'compare()' method returns a zero when the strings match.)
     bool seeker = !style.compare("Seeker");
 
-    int pos[] = {0, 0, -1};
-    int ctr[] = {0, 0, 0};
-    int up[] = {0, 1, 0};
+    float pos[] = {0, 0, -1};
+    float ctr[] = {0, 0, 0};
+    float up[] = {0, 1, 0};
     VRFloatArray defaultPos (pos, pos + sizeof(pos) / sizeof(pos[0]));
     VRFloatArray defaultCtr (ctr, ctr + sizeof(ctr) / sizeof(ctr[0]));
     VRFloatArray defaultUp (up, up + sizeof(up) / sizeof(up[0]));

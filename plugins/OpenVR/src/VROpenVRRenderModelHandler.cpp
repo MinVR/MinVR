@@ -247,7 +247,7 @@ namespace MinVR {
 		for (std::vector< VROpenVRRenderModel * >::iterator i = m_vecRenderModels.begin(); i != m_vecRenderModels.end(); i++)
 		{
 #ifdef WIN32
-			if (!stricmp((*i)->GetName().c_str(), pchRenderModelName))
+			if (!_stricmp((*i)->GetName().c_str(), pchRenderModelName))
 #else
                 if (!strcasecmp((*i)->GetName().c_str(), pchRenderModelName))
 #endif

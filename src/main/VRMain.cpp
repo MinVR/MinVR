@@ -168,7 +168,7 @@ bool VRParseCommandLine::parseCommandLine(int argc, char** argv,
 
 std::string VRParseCommandLine::argsToData(const std::string &argStr) {
     std::string encodedData =
-      base64_encode((unsigned char const*)argStr.c_str(), argStr.size());
+      base64_encode((unsigned char const*)argStr.c_str(), (int)argStr.size());
     return _minVRData + "=" + encodedData;
 }
 

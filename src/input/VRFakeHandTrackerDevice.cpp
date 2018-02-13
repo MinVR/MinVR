@@ -68,8 +68,8 @@ void VRFakeHandTrackerDevice::onVREvent(const VRDataIndex &event)
     else if (event.getName() == "Mouse_Move") {
         VRFloatArray screenPos = event.getValue("NormalizedPosition");
         if (screenPos.size() >= 2) {
-            float mousex = 2.0*(screenPos[0] - 0.5);
-            float mousey = 2.0*((1.0-screenPos[1]) - 0.5);
+            float mousex = 2.0f*(screenPos[0] - 0.5f);
+            float mousey = 2.0f*((1.0f-screenPos[1]) - 0.5f);
 
             if (_tracking) {
                 float deltaX = mousex - _lastMouseX;
@@ -110,9 +110,9 @@ VRFakeHandTrackerDevice::create(VRMainInterface *vrMain, VRDataIndex *config, co
   
     std::string trackerName = config->getValue("TrackerName", devNameSpace);
     std::string toggleEvent = config->getValueWithDefault("ToggleOnOffEvent", std::string("Kbd2_Down"), devNameSpace);
-    float xyScale = config->getValueWithDefault("XYTranslationScale", 1.0, devNameSpace);
-    float zScale = config->getValueWithDefault("ZTranslationScale", 1.0, devNameSpace);
-    float rScale = config->getValueWithDefault("RotationScale", 1.0, devNameSpace);
+    float xyScale = config->getValueWithDefault("XYTranslationScale", 1.0f, devNameSpace);
+    float zScale = config->getValueWithDefault("ZTranslationScale", 1.0f, devNameSpace);
+    float rScale = config->getValueWithDefault("RotationScale", 1.0f, devNameSpace);
     
     std::vector<std::string> zKeys;
     zKeys.push_back("KbdT");

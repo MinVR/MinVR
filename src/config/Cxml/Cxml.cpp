@@ -22,7 +22,7 @@ bool Cxml::parse_string(char* xml_string)
 {
     if(xml_string == NULL)
         return false;
-    m_length = strlen(xml_string);
+    m_length = (int)strlen(xml_string);
     get_node(xml_string);
     return true;
 }

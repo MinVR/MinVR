@@ -231,7 +231,7 @@ public:
   std::string printQueue() const;
 
   /// \brief How big is the queue?
-  int size() { return _dataMap.size(); };
+  int size() { return (int)_dataMap.size(); };
 
 };
 

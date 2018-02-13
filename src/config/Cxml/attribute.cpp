@@ -56,7 +56,7 @@ bool attribute::set_value(char* value)
     if(value != NULL)
     {
         int l;
-        l = strlen(value)*sizeof(char);
+        l = (int)strlen(value)*sizeof(char);
         if(l == 0)
             return false;
         if(value_is_allocated)
@@ -79,7 +79,7 @@ bool attribute::set_name(char* name)
     if(name != NULL)
     {
         int l;
-        l = strlen(name)*sizeof(char);
+        l = (int)strlen(name)*sizeof(char);
         if(l == 0)
             return false;
         if(name_is_allocated)

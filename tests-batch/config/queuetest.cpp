@@ -66,7 +66,7 @@ MinVR::VRDataIndex* setupQIndex() {
   MinVR::VRDataIndex *n = new MinVR::VRDataIndex;
 
   MinVR::VRInt a = 4;
-  MinVR::VRFloat b = 3.1415926;
+  MinVR::VRFloat b = 3.1415926f;
 
   n->addData("/george/a0", a);
   n->addData("/george/a1", a + 1);
@@ -103,11 +103,11 @@ MinVR::VRDataIndex* setupQIndex() {
   n->addData("/john/c9", c + "9");
 
   std::vector<float>d;
-  d.push_back(1.2);
-  d.push_back(2.3);
-  d.push_back(3.4);
-  d.push_back(4.5);
-  d.push_back(5.6);
+  d.push_back(1.2f);
+  d.push_back(2.3f);
+  d.push_back(3.4f);
+  d.push_back(4.5f);
+  d.push_back(5.6f);
 
   n->addData("/donna/d0", d);
 

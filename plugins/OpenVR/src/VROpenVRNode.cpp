@@ -38,7 +38,7 @@ namespace MinVR {
 	VROpenVRNode::VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double _near, double _far, bool draw_controller, bool hide_tracker, bool draw_HMD_Only, unsigned int MSAA_buffers, float deviceUnitsToRoomUnits, VRMatrix4 deviceToRoom) : VRDisplayNode(name), isInitialized(false), m_fNearClip(_near), m_fFarClip(_far), m_draw_controller(draw_controller), m_draw_HMD_Only(draw_HMD_Only), m_rendermodelhandler(NULL), m_MSAA_buffers(MSAA_buffers), deviceUnitsToRoomUnits(deviceUnitsToRoomUnits), deviceToRoom(deviceToRoom) {
 	vr::EVRInitError eError = vr::VRInitError_None;
 	m_pHMD = vr::VR_Init( &eError, vr::VRApplication_Scene );
-	int idx = name.find_last_of('/');
+	int idx = (int)name.find_last_of('/');
 	std::cerr << name.substr(idx + 1) << std::endl;
 	_inputDev = new VROpenVRInputDevice(m_pHMD, name.substr(idx + 1), this, deviceUnitsToRoomUnits, deviceToRoom);
 
@@ -46,7 +46,6 @@ namespace MinVR {
 	if ( eError != vr::VRInitError_None )
 	{
 		m_pHMD = NULL;
-		char buf[1024];
 		std::cerr<< "Unable to init VR runtime: " <<vr::VR_GetVRInitErrorAsEnglishDescription( eError ) << std::endl;
 
 		exit(0);
@@ -141,7 +140,7 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 
 	VRMatrix4 view_left = m_mat4eyePosLeft * head_pose;
 	renderState->addData("ProjectionMatrix", m_mat4ProjectionLeft);
-	renderState->addData("ViewMatrix", view_left * VRMatrix4::scale(VRVector3(1.0 / deviceUnitsToRoomUnits, 1.0 / deviceUnitsToRoomUnits, 1.0 / deviceUnitsToRoomUnits)) *deviceToRoom);
+	renderState->addData("ViewMatrix", view_left * VRMatrix4::scale(VRVector3(1.0f / deviceUnitsToRoomUnits, 1.0f / deviceUnitsToRoomUnits, 1.0f / deviceUnitsToRoomUnits)) *deviceToRoom);
 	renderState->addData("Eye", "Left");
 	if (_children.size() == 0) {
 		renderHandler->onVRRenderScene(*renderState);
@@ -177,7 +176,7 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 	VRMatrix4 view_right = m_mat4eyePosRight * head_pose;
 
 	renderState->addData("ProjectionMatrix",m_mat4ProjectionRight);
-	renderState->addData("ViewMatrix", view_right * VRMatrix4::scale(VRVector3(1.0 / deviceUnitsToRoomUnits, 1.0 / deviceUnitsToRoomUnits, 1.0 / deviceUnitsToRoomUnits)) *deviceToRoom);
+	renderState->addData("ViewMatrix", view_right * VRMatrix4::scale(VRVector3(1.0f / deviceUnitsToRoomUnits, 1.0f / deviceUnitsToRoomUnits, 1.0f / deviceUnitsToRoomUnits)) *deviceToRoom);
 	renderState->addData("Eye", "Right");
 	if (_children.size() == 0) {
 		renderHandler->onVRRenderScene(*renderState);
@@ -202,10 +201,10 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 	}
 	renderState->popState();
 
-	vr::Texture_t leftEyeTexture = { (void*) leftEyeDesc.m_nResolveTextureId, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
+	vr::Texture_t leftEyeTexture = { (void*)(uintptr_t)leftEyeDesc.m_nResolveTextureId, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
 	vr::EVRCompositorError error =  vr::VRCompositor()->Submit(vr::Eye_Left, &leftEyeTexture );
 
-	vr::Texture_t rightEyeTexture = { (void*) rightEyeDesc.m_nResolveTextureId, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
+	vr::Texture_t rightEyeTexture = { (void*)(uintptr_t)rightEyeDesc.m_nResolveTextureId, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
 	error = vr::VRCompositor()->Submit(vr::Eye_Right, &rightEyeTexture  );
 
 
@@ -342,7 +341,7 @@ VRMatrix4 VROpenVRNode::GetHMDMatrixProjectionEye( vr::Hmd_Eye nEye )
 	if ( !m_pHMD )
 		return VRMatrix4();
 
-	vr::HmdMatrix44_t mat = m_pHMD->GetProjectionMatrix( nEye, m_fNearClip, m_fFarClip);
+	vr::HmdMatrix44_t mat = m_pHMD->GetProjectionMatrix( nEye, (float)m_fNearClip, (float)m_fFarClip);
 
     VRMatrix4 out = VRMatrix4::fromRowMajorElements(
 		mat.m[0][0], mat.m[1][0], mat.m[2][0], mat.m[3][0],

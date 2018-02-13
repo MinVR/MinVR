@@ -294,9 +294,9 @@ VRMatrix4 VRMatrix4::projection(float left, float right,
                                 float bottom, float top,
 		                        float near, float far)
 {
-  return VRMatrix4::fromRowMajorElements(2.0*near/(right-left), 0, (right+left)/(right-left), 0,
-                                         0, 2.0*near/(top-bottom), (top+bottom)/(top-bottom), 0,
-                                         0, 0, -(far+near)/(far-near), -2.0*far*near/(far-near),
+  return VRMatrix4::fromRowMajorElements(2.0f*near/(right-left), 0, (right+left)/(right-left), 0,
+                                         0, 2.0f*near/(top-bottom), (top+bottom)/(top-bottom), 0,
+                                         0, 0, -(far+near)/(far-near), -2.0f*far*near/(far-near),
                                          0, 0, -1, 0);
 }
 
@@ -516,10 +516,10 @@ VRMatrix4 operator*(const float& s, const VRMatrix4& m) {
 VRPoint3 operator*(const VRMatrix4& m, const VRPoint3& p) {
 	// For our points, p[3]=1 and we don't even bother storing p[3], so need to homogenize
 	// by dividing by w before returning the new point.
-    const float winv = 1 / (p[0] * m(3,0) + p[1] * m(3,1) + p[2] * m(3,2) + 1.0 * m(3,3));
-    return VRPoint3(winv * (p[0] * m(0,0) + p[1] * m(0,1) + p[2] * m(0,2) + 1.0 * m(0,3)),
-                    winv * (p[0] * m(1,0) + p[1] * m(1,1) + p[2] * m(1,2) + 1.0 * m(1,3)),
-                    winv * (p[0] * m(2,0) + p[1] * m(2,1) + p[2] * m(2,2) + 1.0 * m(2,3)));
+    const float winv = 1 / (p[0] * m(3,0) + p[1] * m(3,1) + p[2] * m(3,2) + 1.0f * m(3,3));
+    return VRPoint3(winv * (p[0] * m(0,0) + p[1] * m(0,1) + p[2] * m(0,2) + 1.0f * m(0,3)),
+                    winv * (p[0] * m(1,0) + p[1] * m(1,1) + p[2] * m(1,2) + 1.0f * m(1,3)),
+                    winv * (p[0] * m(2,0) + p[1] * m(2,1) + p[2] * m(2,2) + 1.0f * m(2,3)));
 
 }
 

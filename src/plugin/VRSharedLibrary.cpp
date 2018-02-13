@@ -59,7 +59,7 @@ VRSharedLibrary::~VRSharedLibrary() {
 void VRSharedLibrary::load() {
 	if (!_isLoaded) {
 
-		const char* error;
+		const char* error = "";
 
 #if defined(WIN32)
 		_lib = LoadLibraryA(_filePath.c_str());
@@ -88,7 +88,7 @@ void VRSharedLibrary::load() {
 void VRSharedLibrary::unload() {
 	if (_isLoaded)
 	{
-		const char* error;
+		const char* error = "";
 #if defined(WIN32)
 		BOOL result = FreeLibrary(_lib);
 #else

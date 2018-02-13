@@ -55,8 +55,8 @@ public:
 		if (event.getName() == "FrameStart") {
             float time = event.getValue("ElapsedSeconds");
 			// Calculate model matrix based on time
-			VRMatrix4 modelMatrix = VRMatrix4::rotationX(0.5*time);
-			modelMatrix = modelMatrix * VRMatrix4::rotationY(0.5*time);
+			VRMatrix4 modelMatrix = VRMatrix4::rotationX(0.5f*time);
+			modelMatrix = modelMatrix * VRMatrix4::rotationY(0.5f*time);
 			for (int f = 0; f < 16; f++) {
 				model[f] = modelMatrix.getArray()[f];
 			}
@@ -256,7 +256,7 @@ public:
 	/// Compiles shader
 	GLuint compileShader(const std::string& shaderText, GLuint shaderType) {
 		const char* source = shaderText.c_str();
-		int length = shaderText.size();
+		int length = (int)shaderText.size();
 		GLuint shader = glCreateShader(shaderType);
 		glShaderSource(shader, 1, &source, &length);
 		glCompileShader(shader);
