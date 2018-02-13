@@ -152,3 +152,8 @@ if (NOT APPLE)
     target_link_libraries(${PROJECT_NAME} PUBLIC GLEW::GLEW)
 endif()
 
+
+
+#---------------------- Enable Testing - Needed for Nightly Builds of MinVR ----------------------
+enable_testing()
+include(CTest)

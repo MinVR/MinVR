@@ -36,10 +36,16 @@ function(MinVRExternalProject_Download DLHELPER_PROJECT_NAME)
     )
 
     h2("Generating build files for the ${DLHELPER_PROJECT_NAME} download helper project.")
-    execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" . WORKING_DIRECTORY "${EXTERNAL_DIR}/${DLHELPER_PROJECT_NAME}/download-helper")
+    execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" . WORKING_DIRECTORY "${EXTERNAL_DIR}/${DLHELPER_PROJECT_NAME}/download-helper" OUTPUT_VARIABLE stdout ERROR_VARIABLE stderr RESULT_VARIABLE exitcode)
+    if(NOT "${exitcode}" STREQUAL "0")
+        message(FATAL_ERROR "Error while creating download helper project: ${stdout} ${stderr}")
+    endif()
 
     h2("Building the ${DLHELPER_PROJECT_NAME} download helper project.  (This actually performs the download and may take some time...)")
-    execute_process(COMMAND "${CMAKE_COMMAND}" --build . WORKING_DIRECTORY "${EXTERNAL_DIR}/${DLHELPER_PROJECT_NAME}/download-helper")
+    execute_process(COMMAND "${CMAKE_COMMAND}" --build . WORKING_DIRECTORY "${EXTERNAL_DIR}/${DLHELPER_PROJECT_NAME}/download-helper"  OUTPUT_VARIABLE stdout ERROR_VARIABLE stderr RESULT_VARIABLE exitcode)
+    if(NOT "${exitcode}" STREQUAL "0")
+        message(FATAL_ERROR "Error running download helper project: ${stdout} ${stderr}")
+    endif()
 
     h2("Completed download of external project ${DLHELPER_PROJECT_NAME}.")
 
@@ -83,10 +89,17 @@ function(MinVRExternalProject_BuildAndInstallNow EXT_PROJECT_NAME RELPATH_TO_CMA
     message(STATUS "Using build dir: ${BUILD_DIR}")
     message(STATUS "Config options: ${CMAKE_CONFIG_OPTIONS}")
 
-    execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" ${SRC_DIR} ${CMAKE_CONFIG_OPTIONS} WORKING_DIRECTORY ${BUILD_DIR})
+    execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" ${SRC_DIR} ${CMAKE_CONFIG_OPTIONS} WORKING_DIRECTORY ${BUILD_DIR} OUTPUT_VARIABLE stdout ERROR_VARIABLE stderr RESULT_VARIABLE exitcode)
+    if(NOT "${exitcode}" STREQUAL "0")
+        message(FATAL_ERROR "Error generating build files for external project: ${stdout} ${stderr}")
+    endif()
+
 
     h2("Building external project ${EXT_PROJECT_NAME}.  (This may take some time...)")
-    execute_process(COMMAND "${CMAKE_COMMAND}" --build ${BUILD_DIR} --target install)
+    execute_process(COMMAND "${CMAKE_COMMAND}" --build ${BUILD_DIR} --target install OUTPUT_VARIABLE stdout ERROR_VARIABLE stderr RESULT_VARIABLE exitcode)
+    if(NOT "${exitcode}" STREQUAL "0")
+        message(FATAL_ERROR "Error building external project: ${stdout} ${stderr}")
+    endif()
 
     h2("Completed external build of ${EXT_PROJECT_NAME}.")
 
