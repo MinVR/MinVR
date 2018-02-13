@@ -1,7 +1,8 @@
 # To setup a nightly build and test on your system:
-# 1. Copy this file and ctest-common.cmake to some location on your system like /dashboards/
-# 2. Edit the top few lines of this file to define a unique name for your CTEST_SITE and
-#    tell ctest where to do the checkouts and testing.
+# 1. Copy this file to some location on your system like /dashboards/
+# 2. Edit the first section below (look for EDIT HERE) to define a 
+#    unique name for your CTEST_SITE and tell ctest where to do the 
+#    checkouts and testing.
 # 3. Test your setup by running manually with the command:
 #    ctest -S /your/path/ctest-nightly.cmake -V
 # 4. Follow the instructions here to schedule ctest to run each night as a cron job:
@@ -9,10 +10,15 @@
 # 5. Check the results on our dashboard:
 #    http://my.cdash.org/index.php?project=MinVR
 
+# References:
+# https://cmake.org/Wiki/CMake/Testing_With_CTest
+# https://cmake.org/Wiki/CMake_Scripting_Of_CTest
 
+
+# ---- EDIT HERE: THESE SETTINGS WILL CHANGE FOR YOUR SITE ----
 
 # Change this to a string that uniquely identifies the system you are setting up for testing
-set(CTEST_SITE mymachine.minvr.edu)
+set(CTEST_SITE mymachine.mysite.edu)
 
 # Change this to something that makes sense on your system
 #set(DASHBOARD_DIR "/dashboards")
@@ -20,30 +26,182 @@ set(CTEST_SITE mymachine.minvr.edu)
 set(DASHBOARD_DIR "$ENV{HOME}/tmp/dashboards")
 
 
-# --------------------------------------------------------
 
-# This script runs through the test suite twice.  The first time tests the build in the
-# situation where the default options are used to configure MinVR.  The second time turns
-# on all plugins and other optional apsects of the build.
+# ---- DEFINE THE test_libminvr AND test_example_program MACROS USED IN THE NEXT SECTION ----
 
-# TEST 1:
+# This macro is for checking out, configuring, building, and installing libminvr itself
+macro(test_libminvr)
+    message("\nRunning test_libminvr() with CTEST_CONFIGURE_OPTIONS set to:")
+    message("-- begin --")
+    message("${CTEST_CONFIGURE_OPTIONS}")
+    message("-- end --")
 
-# Run the build and tests once with default options (will not build any plugins)
-set(DASHBOARD_TEST_NAME WithDefaults)
+    set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_DIR}/MinVR_${DASHBOARD_TEST_NAME}/src")
+    set(CTEST_BINARY_DIRECTORY "${DASHBOARD_DIR}/MinVR_${DASHBOARD_TEST_NAME}/build")
+
+    set(CTEST_TRACK "MinVR ${DASHBOARD_TEST_NAME}")
+    set(CTEST_BUILD_NAME "${CMAKE_HOST_SYSTEM} ${CTEST_BUILD_CONFIGURATION} [${CTEST_GIT_BRANCH}]")
+
+    #set(CTEST_BUILD_NAME "MinVR_${DASHBOARD_TEST_NAME}_${CMAKE_HOST_SYSTEM}_${CTEST_BUILD_CONFIGURATION}")    
+
+    set(CTEST_USE_LAUNCHERS 1)
+
+    find_program(CTEST_GIT_COMMAND NAMES git)
+    set(CTEST_UPDATE_COMMAND "${CTEST_GIT_COMMAND}")
+    if(NOT EXISTS "${CTEST_SOURCE_DIRECTORY}")
+      set(CTEST_CHECKOUT_COMMAND "${CTEST_GIT_COMMAND} clone --single-branch --branch ${CTEST_GIT_BRANCH} ${CTEST_GIT_REPO} ${CTEST_SOURCE_DIRECTORY}")
+    endif()
+
+    # Step 1: ctest_start()
+    message("\n1. ctest_start()")
+    ctest_empty_binary_directory(${CTEST_BINARY_DIRECTORY})
+    ctest_start("${CTEST_MODEL}" TRACK ${CTEST_TRACK})
+    #ctest_start("${CTEST_MODEL}")
+
+    # Step 2: ctest_update()
+    message("\n2. ctest_update()")
+    ctest_update(RETURN_VALUE exitcode)
+    ctest_submit(PARTS Update)
+    if("${exitcode}" STREQUAL "0")
+
+        # Step 3: ctest_configure()
+        message("\n3. ctest_configure()")
+        ctest_configure(OPTIONS "${CTEST_CONFIGURE_OPTIONS}" RETURN_VALUE exitcode)
+        ctest_submit(PARTS Configure)
+        if("${exitcode}" STREQUAL "0")
+
+            # Step 4: ctest_build()
+            message("\n4. ctest_build()")
+            ctest_build(TARGET install RETURN_VALUE exitcode)
+            ctest_submit(PARTS Build)
+            if("${exitcode}" STREQUAL "0")
+
+                # Step 5: ctest_test()
+                message("\n5. ctest_test()")
+                ctest_test(RETURN_VALUE exitcode)
+                ctest_submit(PARTS Test)
+
+            endif()
+        
+        endif()
+    
+    endif()
+
+    # to assist with debugging, save this script in the notes that get uploaded to the cdash server
+    set(CTEST_NOTES_FILES "${CTEST_SCRIPT_DIRECTORY}/${CTEST_SCRIPT_NAME}")
+    ctest_submit(PARTS Notes)
+endmacro()
+
+
+# This macro is for configuring and building an example program that links with the
+# libminvr installed via the previous macro.
+macro(test_example_program)
+    # When building with ctest, the install directory is one level deeper than when building in the normal MinVR source tree
+    set(CTEST_CONFIGURE_OPTIONS
+      ${CTEST_CONFIGURE_OPTIONS}
+      -DCMAKE_PREFIX_PATH=../../../build/install
+    )
+
+    message("\nRunning test_example_program() with CTEST_CONFIGURE_OPTIONS set to:")
+    message("-- begin --")
+    message("${CTEST_CONFIGURE_OPTIONS}")
+    message("-- end --")
+
+    set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_DIR}/MinVR_${DASHBOARD_TEST_NAME}/src/examples/${EXAMPLE_NAME}")
+    set(CTEST_BINARY_DIRECTORY "${DASHBOARD_DIR}/MinVR_${DASHBOARD_TEST_NAME}/build/examples/${EXAMPLE_NAME}")
+
+
+    set(CTEST_TRACK "${EXAMPLE_NAME} ${DASHBOARD_TEST_NAME}")
+    set(CTEST_BUILD_NAME "${CMAKE_HOST_SYSTEM} ${CTEST_BUILD_CONFIGURATION} [${CTEST_GIT_BRANCH}]")
+
+    #set(CTEST_BUILD_NAME "${EXAMPLE_NAME}_${DASHBOARD_TEST_NAME}_${CMAKE_HOST_SYSTEM}_${CTEST_BUILD_CONFIGURATION}")    
+
+    set(CTEST_USE_LAUNCHERS 1)
+
+    find_program(CTEST_GIT_COMMAND NAMES git)
+    set(CTEST_UPDATE_COMMAND "${CTEST_GIT_COMMAND}")
+    # The source is already checked out since it is inside the tree created by the test_libminvr macro
+    unset(CTEST_CHECKOUT_COMMAND)
+
+    # Step 1: ctest_start()
+    message("\n1. ctest_start()")
+    ctest_empty_binary_directory(${CTEST_BINARY_DIRECTORY})
+    ctest_start("${CTEST_MODEL}" TRACK ${CTEST_TRACK})
+    #ctest_start("${CTEST_MODEL}")
+
+    # Step 2: ctest_update()
+    message("\n2. ctest_update()")
+    ctest_update(RETURN_VALUE exitcode)
+    ctest_submit(PARTS Update)
+    if("${exitcode}" STREQUAL "0")
+
+        # Step 3: ctest_configure()
+        message("\n3. ctest_configure()")
+        ctest_configure(OPTIONS "${CTEST_CONFIGURE_OPTIONS}" RETURN_VALUE exitcode)
+        ctest_submit(PARTS Configure)
+        if("${exitcode}" STREQUAL "0")
+
+            # Step 4: ctest_build()
+            message("\n4. ctest_build()")
+            ctest_build(TARGET install RETURN_VALUE exitcode)
+            ctest_submit(PARTS Build)
+            if("${exitcode}" STREQUAL "0")
+
+                # Step 5: ctest_test()
+                message("\n5. ctest_test()")
+                ctest_test(RETURN_VALUE exitcode)
+                ctest_submit(PARTS Test)
+
+            endif()
+
+        endif()
+
+    endif()
+
+    # to assist with debugging, save this script in the notes that get uploaded to the cdash server
+    set(CTEST_NOTES_FILES "${CTEST_SCRIPT_DIRECTORY}/${CTEST_SCRIPT_NAME}")
+    ctest_submit(PARTS Notes)
+endmacro()
+
+
+
+# ---- CALL THE MACROS TO TEST SEVERAL CONFIGURATIONS ----
+
+# Common to all the configurations we'll test
+set(CTEST_GIT_REPO https://github.com/MinVR/MinVR.git)
+set(CTEST_GIT_BRANCH beta)
+
+set(CTEST_MODEL "Experimental")
+
+set(CTEST_BUILD_CONFIGURATION "Release")
+
+if(NOT DEFINED CTEST_CMAKE_GENERATOR)
+  if (WIN32)
+    # Is this the best default?
+    set(CTEST_CMAKE_GENERATOR "Visual Studio 14 2015 Win64")
+  else()
+    set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
+  endif()
+endif()
+
+
+
+# -- TEST CONFIGURATION #1:  "WithDefaults" --
+
+set(DASHBOARD_TEST_NAME "WithDefaults")
 set(CTEST_CONFIGURE_OPTIONS "")
-include(${CTEST_SCRIPT_DIRECTORY}/ctest-common.cmake)
+test_libminvr()
 
-# Examples are not part of the main MinVR build, so we use an additional script to test
-# building examples that link with libMinVR
 set(EXAMPLE_NAME CavePainting-Lite)
-include(${CTEST_SCRIPT_DIRECTORY}/ctest-addexample.cmake)
+test_example_program()
 
 
-# TEST 2:
 
-# Run again with all plugins enabled
-set(DASHBOARD_TEST_NAME WithAllOn)
+# -- TEST CONFIGURATION #2:  "WithAllOn" --
+
+set(DASHBOARD_TEST_NAME "WithAllOn")
 set(CTEST_CONFIGURE_OPTIONS
+  # This is the only option turned off, it requires proprietary sw that only runs at some sites
   -DWITH_PLUGIN_SCALABLE=OFF
 
   -DWITH_DOCUMENTATION=ON
@@ -60,10 +218,8 @@ set(CTEST_CONFIGURE_OPTIONS
   -DWITH_PLUGIN_TUIO=ON
   -DWITH_PLUGIN_VRPN=ON
 )
-include(${CTEST_SCRIPT_DIRECTORY}/ctest-common.cmake)
+test_libminvr()
 
-# Examples are not part of the main MinVR build, so we use an additional script to test
-# building examples that link with libMinVR
 set(EXAMPLE_NAME CavePainting-Lite)
-include(${CTEST_SCRIPT_DIRECTORY}/ctest-addexample.cmake)
+test_example_program()
 
