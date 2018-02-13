@@ -1,17 +1,17 @@
-/** 
-This file is part of the MinVR Open Source Project, which is developed and 
+/**
+This file is part of the MinVR Open Source Project, which is developed and
 maintained collaboratively by the University of Minnesota and Brown University.
 
 Copyright (c) 2016 Regents of the University of Minnesota and Brown University.
 This software is distributed under the BSD-3 Clause license, which can be found
 at: MinVR/LICENSE.txt.
 
-Original Author(s) of this File: 
+Original Author(s) of this File:
 	Dan Orban, 2016, University of Minnesota (Originally VRRenderHelper.h/cpp)
-	
+
 Author(s) of Significant Updates/Modifications to the File:
-	Dan Keefe, 2016, University of Minnesota (Use only built-in types, comment, 
-	hide implementation details, put advanced functions in a separate class.) 
+	Dan Keefe, 2016, University of Minnesota (Use only built-in types, comment,
+	hide implementation details, put advanced functions in a separate class.)
 */
 
 #ifndef VRGRAPHICSSTATE_H_
@@ -25,16 +25,16 @@ class VRDataIndex;
 
 
 /** The VRGraphicsState class is used to convey state information to users of MinVR
-    within the two important rendering callbacks that users define:  
+    within the two important rendering callbacks that users define:
     VRMain::onRenderGraphicsContext(GraphicsState) and VRMain::onRenderGraphics(GraphicsState).
     Advanced users can refer to VRGraphicsStateInternal for more complex needs.
 */
 class VRGraphicsState {
 public:
-    
+
     VRGraphicsState(const VRDataIndex &internalIndex);
     virtual ~VRGraphicsState();
-    
+
 	/** Returns a pointer to a 16 element array that stores the current projection
 	    matrix, calculated by MinVR taking into account the current display geometry
 	    head tracking data, and stereo rendering state.  The pointer is valid as long
@@ -98,17 +98,17 @@ public:
 	bool isInitialRenderCall() const;
 
 
-    
+
     /** For advanced use, provides access to the VRDataIndex used internally by
 	    MinVR, which may contain some additional data fields beyond those
 	    accessible via this API.
      */
-    const VRDataIndex& index();
+    const VRDataIndex& index() const;
 
 private:
-    
+
     const VRDataIndex &_index;
-    
+
     static float projMat[16];
     static float viewMat[16];
     static float eyePos[3];

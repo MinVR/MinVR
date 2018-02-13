@@ -654,7 +654,8 @@ public:
   VRAnyCoreType getValue() const {
 
     if (_lastDatum == _theIndex.end()) {
-      VRERRORNOADV("Bad key access in data index.");
+      VRERROR("Bad key access in data index.",
+              "The no-arg version of getValue() must be preceded by a call to exists().");
     } else {
       return _lastDatum->second->getValue();
     }

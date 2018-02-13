@@ -9,6 +9,14 @@ VRProjectionNode::VRProjectionNode(const std::string &name, float fovX, float fo
 {
   // in:
   _addValueNeeded("CameraMatrix");
+  // These should be recorded as necessary, and the auditValues()
+  // method needs to be changed to accommodate not just the values
+  // added by nodes in teh display tree, but also from the config
+  // files.
+  // _addValueNeeded("NearClip");
+  // _addValueNeeded("FarClip");
+  // _addValueNeeded("FieldOfViewY");
+  // _addValueNeeded("FieldOfViewX");
 
   // out:
   _valuesAdded.push_back("ViewMatrix");
@@ -47,10 +55,10 @@ void VRProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *renderH
 }
 
 VRDisplayNode* VRProjectionNode::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace){
-  float nearClip = config->getValue("NearClip", nameSpace);
-  float farClip = config->getValue("FarClip", nameSpace);
-  float fovY = config->getValue("FieldOfViewY", nameSpace);
-  float fovX = config->getValue("FieldOfViewX", nameSpace);
+  float nearClip = config->getValueWithDefault("NearClip", 0.001, nameSpace);
+  float farClip = config->getValueWithDefault("FarClip", 500.0, nameSpace);
+  float fovY = config->getValueWithDefault("FieldOfViewY", 60.0, nameSpace);
+  float fovX = config->getValueWithDefault("FieldOfViewX", 60.0, nameSpace);
 
   VRProjectionNode *node = new VRProjectionNode(nameSpace, fovX, fovY, nearClip, farClip);
 
