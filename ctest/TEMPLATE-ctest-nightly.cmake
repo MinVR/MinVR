@@ -42,8 +42,6 @@ macro(test_libminvr)
     set(CTEST_TRACK "MinVR ${DASHBOARD_TEST_NAME}")
     set(CTEST_BUILD_NAME "${CMAKE_HOST_SYSTEM} ${CTEST_BUILD_CONFIGURATION} [${CTEST_GIT_BRANCH}]")
 
-    #set(CTEST_BUILD_NAME "MinVR_${DASHBOARD_TEST_NAME}_${CMAKE_HOST_SYSTEM}_${CTEST_BUILD_CONFIGURATION}")    
-
     set(CTEST_USE_LAUNCHERS 1)
 
     find_program(CTEST_GIT_COMMAND NAMES git)
@@ -56,13 +54,12 @@ macro(test_libminvr)
     message("\n1. ctest_start()")
     ctest_empty_binary_directory(${CTEST_BINARY_DIRECTORY})
     ctest_start("${CTEST_MODEL}" TRACK ${CTEST_TRACK})
-    #ctest_start("${CTEST_MODEL}")
 
     # Step 2: ctest_update()
     message("\n2. ctest_update()")
     ctest_update(RETURN_VALUE exitcode)
     ctest_submit(PARTS Update)
-    if("${exitcode}" STREQUAL "0")
+    if(NOT "${exitcode}" STREQUAL "-1")
 
         # Step 3: ctest_configure()
         message("\n3. ctest_configure()")
@@ -110,11 +107,8 @@ macro(test_example_program)
     set(CTEST_SOURCE_DIRECTORY "${DASHBOARD_DIR}/MinVR_${DASHBOARD_TEST_NAME}/src/examples/${EXAMPLE_NAME}")
     set(CTEST_BINARY_DIRECTORY "${DASHBOARD_DIR}/MinVR_${DASHBOARD_TEST_NAME}/build/examples/${EXAMPLE_NAME}")
 
-
     set(CTEST_TRACK "${EXAMPLE_NAME} ${DASHBOARD_TEST_NAME}")
     set(CTEST_BUILD_NAME "${CMAKE_HOST_SYSTEM} ${CTEST_BUILD_CONFIGURATION} [${CTEST_GIT_BRANCH}]")
-
-    #set(CTEST_BUILD_NAME "${EXAMPLE_NAME}_${DASHBOARD_TEST_NAME}_${CMAKE_HOST_SYSTEM}_${CTEST_BUILD_CONFIGURATION}")    
 
     set(CTEST_USE_LAUNCHERS 1)
 
@@ -127,13 +121,12 @@ macro(test_example_program)
     message("\n1. ctest_start()")
     ctest_empty_binary_directory(${CTEST_BINARY_DIRECTORY})
     ctest_start("${CTEST_MODEL}" TRACK ${CTEST_TRACK})
-    #ctest_start("${CTEST_MODEL}")
 
     # Step 2: ctest_update()
     message("\n2. ctest_update()")
     ctest_update(RETURN_VALUE exitcode)
     ctest_submit(PARTS Update)
-    if("${exitcode}" STREQUAL "0")
+    if(NOT "${exitcode}" STREQUAL "-1")
 
         # Step 3: ctest_configure()
         message("\n3. ctest_configure()")
