@@ -39,7 +39,7 @@ macro(UseFreeGLUT YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
     find_package(FreeGLUT)
 
     # Case 1: Already installed on the system
-    if (${FreeGLUT_FOUND})
+    if (${FREEGLUT_FOUND})
 
         message(STATUS "Ok: FreeGLUT Found.")
         message(STATUS "FreeGLUT headers: ${FREEGLUT_INCLUDE_DIR}")
