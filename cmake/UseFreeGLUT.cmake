@@ -1,9 +1,9 @@
-# This file is part of the MinVR cmake build system.  
+# This file is part of the MinVR cmake build system.
 # See the main MinVR/CMakeLists.txt file for authors, copyright, and license info.
 #
 # Tries to find a pre-installed version of FreeGLUT on this system using find_package().
 # Case 1: If found, then the script uses target_link_library() to link it to your target.
-# Case 2: If not found and AUTOBUILD_DEPENDENCIES is ON, then the script immediately 
+# Case 2: If not found and AUTOBUILD_DEPENDENCIES is ON, then the script immediately
 # downloads, builds, and installs the FreeGLUT library to the location specifed by
 # CMAKE_INSTALL_PREFIX. Then, it tries find_package() again and links to the newly install
 # library.
@@ -11,14 +11,14 @@
 # fatal error.
 
 # Usage: In your CMakeLists.txt, somewhere after you define the target that depends
-# on the FreeGLUT library (typical with something like add_executable(${PROJECT_NAME} ...) 
+# on the FreeGLUT library (typical with something like add_executable(${PROJECT_NAME} ...)
 # or add_library(${PROJECT_NAME} ...)), add the following two lines:
 
 #    include(UseFreeGLUT)
 #    UseFreeGLUT(${PROJECT_NAME} PRIVATE)
 
 # The second argument can be either PUBLIC, PRIVATE, or INTERFACE, following the keyword
-# usage described here: 
+# usage described here:
 # https://cmake.org/cmake/help/latest/command/target_include_directories.html
 
 
@@ -39,7 +39,7 @@ macro(UseFreeGLUT YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
     find_package(FreeGLUT)
 
     # Case 1: Already installed on the system
-    if (${FreeGLUT_FOUND})
+    if (${FREEGLUT_FOUND})
 
         message(STATUS "Ok: FreeGLUT Found.")
         message(STATUS "FreeGLUT headers: ${FREEGLUT_INCLUDE_DIR}")
