@@ -52,7 +52,13 @@ macro(test_libminvr)
 
     # Step 1: ctest_start()
     message("\n1. ctest_start()")
-    ctest_empty_binary_directory(${CTEST_BINARY_DIRECTORY})
+
+    # This is a strange command.  The intent is to avoid accidental deletes, but, it fails if certain cmake files are
+    # not found in the binary directory already, for example, if the last build failed, then this will fail the next
+    # time through, which is quite a problem.  So, we will simply delete the binary directory instead.
+    #ctest_empty_binary_directory(${CTEST_BINARY_DIRECTORY})
+    file(REMOVE_RECURSE ${CTEST_BINARY_DIRECTORY})
+
     ctest_start("${CTEST_MODEL}" TRACK ${CTEST_TRACK})
 
     # Step 2: ctest_update()
@@ -79,9 +85,9 @@ macro(test_libminvr)
                 ctest_submit(PARTS Test)
 
             endif()
-        
+
         endif()
-    
+
     endif()
 
     # to assist with debugging, save this script in the notes that get uploaded to the cdash server
@@ -119,7 +125,13 @@ macro(test_example_program)
 
     # Step 1: ctest_start()
     message("\n1. ctest_start()")
-    ctest_empty_binary_directory(${CTEST_BINARY_DIRECTORY})
+
+    # This is a strange command.  The intent is to avoid accidental deletes, but, it fails if certain cmake files are
+    # not found in the binary directory already, for example, if the last build failed, then this will fail the next
+    # time through, which is quite a problem.  So, we will simply delete the binary directory instead.
+    #ctest_empty_binary_directory(${CTEST_BINARY_DIRECTORY})
+    file(REMOVE_RECURSE ${CTEST_BINARY_DIRECTORY})
+
     ctest_start("${CTEST_MODEL}" TRACK ${CTEST_TRACK})
 
     # Step 2: ctest_update()
