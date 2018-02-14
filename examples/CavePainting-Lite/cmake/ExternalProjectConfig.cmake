@@ -36,10 +36,16 @@ function(ExternalProject_Download DLHELPER_PROJECT_NAME)
     )
 
     h2("Generating build files for the ${DLHELPER_PROJECT_NAME} download helper project.")
-    execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" . WORKING_DIRECTORY "${EXTERNAL_DIR}/${DLHELPER_PROJECT_NAME}/download-helper")
+    execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" . WORKING_DIRECTORY "${EXTERNAL_DIR}/${DLHELPER_PROJECT_NAME}/download-helper" OUTPUT_VARIABLE output ERROR_VARIABLE output RESULT_VARIABLE exitcode)
+    if(NOT "${exitcode}" STREQUAL "0")
+        message(FATAL_ERROR "Error while creating download helper project: ${output}")
+    endif()
 
     h2("Building the ${DLHELPER_PROJECT_NAME} download helper project.  (This actually performs the download and may take some time...)")
-    execute_process(COMMAND "${CMAKE_COMMAND}" --build . WORKING_DIRECTORY "${EXTERNAL_DIR}/${DLHELPER_PROJECT_NAME}/download-helper")
+    execute_process(COMMAND "${CMAKE_COMMAND}" --build . WORKING_DIRECTORY "${EXTERNAL_DIR}/${DLHELPER_PROJECT_NAME}/download-helper" OUTPUT_VARIABLE output ERROR_VARIABLE output RESULT_VARIABLE exitcode)
+    if(NOT "${exitcode}" STREQUAL "0")
+        message(FATAL_ERROR "Error while running download helper project: ${output}")
+    endif()
 
     h2("Completed download of external project ${DLHELPER_PROJECT_NAME}.")
 
@@ -80,10 +86,16 @@ function(ExternalProject_BuildAndInstallNow EXT_PROJECT_NAME RELPATH_TO_CMAKELIS
     message(STATUS "Using source dir: ${SRC_DIR}")
     message(STATUS "Using build dir: ${BUILD_DIR}")
 
-    execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" ${SRC_DIR} ${CMAKE_CONFIG_OPTIONS} WORKING_DIRECTORY ${BUILD_DIR})
+    execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" ${SRC_DIR} ${CMAKE_CONFIG_OPTIONS} WORKING_DIRECTORY ${BUILD_DIR} OUTPUT_VARIABLE output ERROR_VARIABLE output RESULT_VARIABLE exitcode)
+    if(NOT "${exitcode}" STREQUAL "0")
+        message(FATAL_ERROR "Error generating build files for external project: ${output}")
+    endif()
 
     h2("Building external project ${EXT_PROJECT_NAME}.  (This may take some time...)")
-    execute_process(COMMAND "${CMAKE_COMMAND}" --build ${BUILD_DIR} --target install)
+    execute_process(COMMAND "${CMAKE_COMMAND}" --build ${BUILD_DIR} --target install OUTPUT_VARIABLE output ERROR_VARIABLE output RESULT_VARIABLE exitcode)
+    if(NOT "${exitcode}" STREQUAL "0")
+        message(FATAL_ERROR "Error building external project: ${output}")
+    endif()
 
     h2("Completed external build of ${EXT_PROJECT_NAME}.")
 
