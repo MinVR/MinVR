@@ -472,23 +472,23 @@ public:
   /// \param value The VR core type data value to store under the given key.
   std::string addData(const std::string &key, VRInt value);
 
-  /// \copydoc VRDataIndex::addData(const std::string,VRInt)
+  /// \copydoc VRDataIndex::addData(const std::string &key, VRInt value);
   std::string addData(const std::string &key, VRFloat value);
 
-  /// \copydoc VRDataIndex::addData(const std::string,VRInt)
+  /// \copydoc VRDataIndex::addData(const std::string &key, VRInt value);
   std::string addData(const std::string &key, VRString value);
 
-  /// \copydoc VRDataIndex::addData(const std::string,VRInt)
+  /// \copydoc VRDataIndex::addData(const std::string &key, VRInt value);
   std::string addData(const std::string &key, VRIntArray value);
 
-  /// \copydoc VRDataIndex::addData(const std::string,VRInt)
+  /// \copydoc VRDataIndex::addData(const std::string &key, VRInt value);
   std::string addData(const std::string &key, VRFloatArray value);
 
-  /// \copydoc VRDataIndex::addData(const std::string,VRInt)
+  /// \copydoc VRDataIndex::addData(const std::string &key, VRInt value);
   std::string addData(const std::string &key, VRStringArray value);
 
 
-  /// \copydoc VRDataIndex::addData(const std::string,VRInt)
+  /// \copydoc VRDataIndex::addData(const std::string &key, VRInt value);
   ///
   /// There is a semantic difference between addData() for a primitive
   /// value and addData() for a container.  One creates an object of
@@ -702,8 +702,12 @@ public:
   /// (VRCORETYPE_CONTAINER).
   ///
   /// \param key Can be a full key (namespace + data field name) or just a
-  /// namespace.
+  /// data name.
   /// \param nameSpace The (optional) namespace in which to look for key.
+  /// \param inherit If this is false, the function will only succeed
+  /// if the specified key is found within the given nameSpace.
+  /// Otherwise, it will search in parent nameSpaces for the matching
+  /// key.  (Default: true)
   VRCORETYPE_ID getType(const std::string &key,
                         const std::string nameSpace = "",
                         const bool inherit = true) const {
@@ -727,6 +731,10 @@ public:
   /// \param key Can be a full name (namespace + data field name) or just a
   /// namespace.
   /// \param nameSpace The (optional) container in which to look for key.
+  /// \param inherit If this is false, the function will only succeed
+  /// if the specified key is found within the given nameSpace.
+  /// Otherwise, it will search in parent nameSpaces for the matching
+  /// key.  (Default: true)
   std::string getTypeString(const std::string key,
                             const std::string nameSpace = "",
                             const bool inherit = true) const {
@@ -749,6 +757,13 @@ public:
   ///
   /// Returns the fully qualified name of the specified value, starting with
   /// the root namespace.
+  /// \param key Can be a full key (namespace + data field name) or just a
+  /// data name.
+  /// \param nameSpace The (optional) namespace in which to look for key.
+  /// \param inherit If this is false, the function will only succeed
+  /// if the specified key is found within the given nameSpace.
+  /// Otherwise, it will search in parent nameSpaces for the matching
+  /// key.  (Default: true)
   std::string getFullKey(const std::string &key,
                          const std::string nameSpace = "",
                          const bool inherit = true) const;
@@ -780,8 +795,13 @@ public:
 
 
   /// \brief Returns true if the specified name exists in the index.
-  /// \param keyOrScope Can be a full name (namespace + data field name) or just a
-  /// namespace.
+  /// \param key Can be a full key (namespace + data field name) or just a
+  /// data name.
+  /// \param nameSpace The (optional) namespace in which to look for key.
+  /// \param inherit If this is false, the function will only succeed
+  /// if the specified key is found within the given nameSpace.
+  /// Otherwise, it will search in parent nameSpaces for the matching
+  /// key.  (Default: true)
   bool exists(const std::string &key,
               const std::string nameSpace = "",
               const bool inherit = true) const {
@@ -1224,16 +1244,37 @@ private:
   ///  ~~~
   ///  const_cast<VRDataIndex*>(this)->_getEntry(...)
   ///  ~~~
+  /// \param key Can be a full key (namespace + data field name) or just a
+  /// data name.
+  /// \param nameSpace The (optional) namespace in which to look for key.
+  /// \param inherit If this is false, the function will only succeed
+  /// if the specified key is found within the given nameSpace.
+  /// Otherwise, it will search in parent nameSpaces for the matching
+  /// key.  (Default: true)
   VRDataMap::iterator _getEntry(const std::string &key,
                                 const std::string nameSpace = "",
                                 const bool inherit = true);
 
   // Returns a pointer to the value with a given name (and namespace)
+  /// \param key Can be a full key (namespace + data field name) or just a
+  /// data name.
+  /// \param nameSpace The (optional) namespace in which to look for key.
+  /// \param inherit If this is false, the function will only succeed
+  /// if the specified key is found within the given nameSpace.
+  /// Otherwise, it will search in parent nameSpaces for the matching
+  /// key.  (Default: true)
   VRDatumPtr _getDatum(const std::string &key,
                        const std::string nameSpace = "",
                        const bool inherit = true);
 
   // Returns a pointer to the value with a given name (and namespace)
+  /// \param key Can be a full key (namespace + data field name) or just a
+  /// data name.
+  /// \param nameSpace The (optional) namespace in which to look for key.
+  /// \param inherit If this is false, the function will only succeed
+  /// if the specified key is found within the given nameSpace.
+  /// Otherwise, it will search in parent nameSpaces for the matching
+  /// key.  (Default: true)
   const VRDatumPtr _getDatum(const std::string &key,
                              const std::string nameSpace = "",
                              const bool inherit = true) const;

@@ -28,7 +28,7 @@ namespace MinVR {
 /** A "virtual input device" that converts mouse and keyboard events into 6
     Degree-of-Freedom tracker events.  This facilitates debugging VR programs
     on a desktop computer.  You can set up any number of devices, with
-    different names.  The events will be issued as <name>_Move events.  So if
+    different names.  The events will be issued as "name"_Move events.  So if
     your fake tracker is called "Head", it will issue "Head_Move" events.  A
     keyboard event is nominated to turn on and off the various trackers.
 

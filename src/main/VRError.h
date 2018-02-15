@@ -26,7 +26,7 @@
 /// of advice about what a user might do to address the error or
 /// warning issued.
 ///
-/// If you use them with the handy-dandy #defines here, you'll also
+/// If you use them with the handy-dandy \#defines here, you'll also
 /// get the file and where the error is issued (which is not the same
 /// as where it happened, of course), and maybe even the function
 /// name, depending on your compiler.
@@ -62,7 +62,7 @@ class VRError: public std::exception {
 public:
   /// Constructor.  Several of the calling values are meant to be picked up
   /// through preprocessor directives, so should be accompanied by a matching
-  /// #define to put them in.
+  /// \#define to put them in.
   ///  \param whatMsg The error message: what went wrong.  For example,
   ///  "file not found."
   ///  \param adviceMsg Some advice about what the user might do about this.
