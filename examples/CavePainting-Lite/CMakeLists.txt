@@ -137,7 +137,7 @@ if (NOT APPLE)
         )
         ExternalProject_BuildAndInstallNow(
             GLEW
-            src
+            src/build/cmake
         )
 
         message(STATUS "Searching (again, right after autobuilding) for GLEW...")
