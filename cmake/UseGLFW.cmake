@@ -94,6 +94,20 @@ macro(UseGLFW YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
         ${INTERFACE_PUBLIC_OR_PRIVATE} ${GLFW_corevideo_LIBRARY}
         ${INTERFACE_PUBLIC_OR_PRIVATE} ${GLFW_iokit_LIBRARY}
     )
+
+    if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+        find_package(Threads)
+        find_package(X11)
+        target_link_libraries(${YOUR_TARGET} 
+            ${INTERFACE_PUBLIC_OR_PRIVATE} rt
+            ${INTERFACE_PUBLIC_OR_PRIVATE} Xrandr
+            ${INTERFACE_PUBLIC_OR_PRIVATE} Xxf86vm
+            ${INTERFACE_PUBLIC_OR_PRIVATE} Xi
+            ${INTERFACE_PUBLIC_OR_PRIVATE} m
+            ${INTERFACE_PUBLIC_OR_PRIVATE} ${X11_LIBRARIES}
+        )
+    endif()
+
     target_compile_definitions(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} -DUSE_GLFW)
 
 endmacro()
