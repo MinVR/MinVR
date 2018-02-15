@@ -18,11 +18,76 @@
 
 namespace MinVR {
 
-/** VRDisplayNode is an abstract base class that can be inherited to
-    create a different types of displays.
- */
-
 class VRMainInterface;
+
+/// \brief VRDisplayNode is an abstract base class that can be inherited to
+///    create different types of display nodes.
+///
+/// Use VRDisplayNode to create new components for a render tree.
+/// This is a structure that MinVR uses to control the context within
+/// which the user's render function is called.  Using the structure
+/// specified in the configuration file, MinVR calls the render
+/// function of the root of the render tree, which adds some
+/// information to the render state and then calls the render function
+/// of its children.  They, in turn, add information to the state and
+/// call the render function of their children, and so on.  The leaf
+/// nodes in the tree call the user's render function, which has
+/// access to all of the information added to the render state by the
+/// nodes above it.
+///
+/// This example of a tree might be used for a simple desktop display:
+///
+///   ~~~
+///   Root Window Node > Head Tracking Node > Projection Node
+///   ~~~
+///
+/// The root node adds some display data to the render function, and
+/// passes it to a Head Tracking Node, which adds the camera matrix to
+/// the render state and passes it to a projection node, which adds a
+/// projection matrix, before calling the user's render function.
+///
+/// Another example, showing a branch in the tree for a stereo view:
+///
+///   ~~~
+///   Root Node > Head Tracking Node > Stereo Node > Left Projection Node
+///                                                > Right Projection Node
+///   ~~~
+///
+/// This is the same situation as above, but the stereo node moves the
+/// eye position it gets from the Head Tracking Node slightly to the
+/// left or the right before calling the render functions for each of
+/// its two children nodes.
+///
+/// ## STANDARDS
+///
+/// The render tree structure is a flexible way to control the context
+/// within which a user's render function is executed, but if you are
+/// writing a new node, life will be better for everyone if you can
+/// make your node conform to existing naming and data type standards.
+/// This will allow other (possibly existing) nodes to understand your
+/// node's data seamlessly.
+///
+/// These are the data names and types currently in use for various
+/// graphic functions.  If you can find the data you need in this
+/// list, you will also find the name under which it is likely to be
+/// filed.  Again, life will be better for everyone if you use these
+/// names wherever possible.
+///
+/// Name       |   Type           |   Data
+/// -----------|------------------|-------------
+/// WindowX    | VRInt            | X coordinate of upper-left window position in pixels.
+/// WindowY    | VRInt            | Y coordinate of upper-left window position in pixels.
+/// WindowWidth| VRInt            | Width of the window in pixels.
+/// WindowHeight| VRInt            | Height of the window.
+/// FrameBufferWidth | VRInt      | Width of the frame buffer in pixels.
+/// FrameBufferHeight | VRInt      | Height of the frame buffer in pixels.
+/// SharedContextId | VRInt        | ??
+/// WindowID    |   VRInt          | ??
+/// HeadMatrix | VRFloatArray(16) | 4x4 column-major pose matrix showing the pose of the user's head.
+/// CameraMatrix | VRFloatArray(16)| 4x4 column-major pose matrix showing the pose of the camera.  This will be related to the head matrix, but will be different by half the eye separation.
+/// ProjectionMatrix | VRFloatArray(16)| 4x4 column-major projection matrix.
+///
+
 
 class VRDisplayNode {
 public:
