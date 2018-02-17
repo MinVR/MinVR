@@ -211,7 +211,7 @@ void VRGLFWWindowToolkit::initGLEW()
 	GLFWwindow* tempWin = glfwCreateWindow(200, 200, "Temporary", NULL, NULL);
 	glfwMakeContextCurrent(tempWin);
     
-#ifdef _WIN32
+#ifndef __APPLE__
 	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
 	if (GLEW_OK != err)
