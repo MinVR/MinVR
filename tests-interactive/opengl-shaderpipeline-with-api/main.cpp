@@ -78,7 +78,7 @@ public:
     void onRenderGraphicsContext(const VRGraphicsState& state) {
         // If this is the inital call, initialize context variables
         if (state.isInitialRenderCall()) {
-#ifdef _WIN32
+#ifndef __APPLE__
             glewExperimental = GL_TRUE;
             GLenum err = glewInit();
             if (GLEW_OK != err)

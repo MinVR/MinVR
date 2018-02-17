@@ -10,7 +10,7 @@
 
 MyAppSharedContext::MyAppSharedContext(const MyAppModel& model, const VRGraphicsState &renderState) : model(model), version(0) {
 	// Initialize Graphics Context and variables
-    #ifdef WIN32
+    #ifndef __APPLE__
         glewExperimental = GL_TRUE;
         GLenum err = glewInit();
         if (GLEW_OK != err)
