@@ -5,6 +5,7 @@
 #    checkouts and testing.
 # 3. Test your setup by running manually with the command:
 #    ctest -S /your/path/ctest-nightly.cmake -V
+#       - If you are on windows, you need to add "-C Release" to the end of the above command in order to have the tests run.
 # 4. Follow the instructions here to schedule ctest to run each night as a cron job:
 #    https://cmake.org/Wiki/CMake_Scripting_Of_CTest#Setting_Up_Cron.2FScheduler
 # 5. Check the results on our dashboard:
