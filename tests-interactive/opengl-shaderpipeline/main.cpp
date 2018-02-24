@@ -77,7 +77,7 @@ public:
             // If this is the inital call, initialize context variables
             if ((int)stateData.getValue("InitRender") == 1) {
                 
-#ifdef _WIN32
+#ifndef __APPLE__
                 glewExperimental = GL_TRUE;
                 GLenum err = glewInit();
                 if (GLEW_OK != err)

@@ -104,7 +104,7 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 	//return;
 	if(!isInitialized){
 		isInitialized = true;
-#ifdef WIN32
+#ifndef __APPLE__
 		glewExperimental = true;
 		GLenum nGlewError = glewInit();
 		if (nGlewError != GLEW_OK)

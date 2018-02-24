@@ -41,24 +41,24 @@ const VRDataIndex& VRGraphicsState::index() const {
 
 const float * VRGraphicsState::getProjectionMatrix() const {
     if (_index.exists("ProjectionMatrix")) {
-        VRFloatArray mat = _index.getValue("ProjectionMatrix");
-        std::copy(mat.begin(), mat.end(), projMat);
+        const VRFloatArray* mat = (const VRFloatArray*)_index.getValue("ProjectionMatrix");
+        return &(*mat)[0];
     }
     return projMat;
 }
 
 const float * VRGraphicsState::getViewMatrix() const {
     if (_index.exists("ViewMatrix")) {
-        VRFloatArray mat = _index.getValue("ViewMatrix");
-        std::copy(mat.begin(), mat.end(), viewMat);
+        const VRFloatArray* mat = (const VRFloatArray*)_index.getValue("ViewMatrix");
+        return &(*mat)[0];
     }
     return viewMat;
 }
 
 const float * VRGraphicsState::getCameraPos() const {
     if (_index.exists("EyePosition")) {
-        VRFloatArray mat = _index.getValue("EyePosition");
-        std::copy(mat.begin(), mat.end(), eyePos);
+        const VRFloatArray* vec = (const VRFloatArray*)_index.getValue("EyePosition");
+        return &(*vec)[0];
     }
     return eyePos;
 }
