@@ -198,7 +198,7 @@ void VRParseCommandLine::decodeMinVRData(const std::string &payload) {
 
     //std::cout << "processing decoded >" << arg << "<" << std::endl;
 
-    newArgv[newArgc] = new char[arg.size()];
+    newArgv[newArgc] = new char[arg.size()+1];
     strcpy(newArgv[newArgc++], arg.c_str());
   }
 

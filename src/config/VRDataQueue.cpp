@@ -115,14 +115,15 @@ void VRDataQueue::clear() {
 long long VRDataQueue::makeTimeStamp() {
 
 #ifdef WIN32
-	LARGE_INTEGER frequency;        // ticks per second
 	LARGE_INTEGER t1;
-	QueryPerformanceFrequency(&frequency);
 
-	// start timer
-	QueryPerformanceCounter(&t1);
+	FILETIME ft;
+	GetSystemTimePreciseAsFileTime(&ft); // Requires windows 8 and above. Should give microsecond resolution and be consistent across different machines if they are using a time server.
 
-	long long timeStamp = (t1.QuadPart) * 1000 / frequency.QuadPart + clock();
+	t1.LowPart = ft.dwLowDateTime;
+	t1.HighPart = ft.dwHighDateTime;
+
+	long long timeStamp = t1.QuadPart;
 #else
 
   struct timeval tp;
