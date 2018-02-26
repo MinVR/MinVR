@@ -63,6 +63,7 @@ macro(UseFreeGLUT YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
         MinVRExternalProject_BuildAndInstallNow(
             FreeGLUT
             src
+	    -D_OPENGL_LIB_PATH=${_OPENGL_LIB_PATH} -D_OPENGL_INCLUDE_PATH=${_OPENGL_INCLUDE_PATH}
         )
 
         # Try find_package() again
