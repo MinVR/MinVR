@@ -884,7 +884,7 @@ VRMain::updateAllModels() {
 
   for (std::vector<VRModelHandler*>::iterator it = _modelHandlers.begin();
        it != _modelHandlers.end(); it++) {
-    (*it)->updateWorld();
+    (*it)->updateWorld(VRSystem::getTime());
   }
 }
 

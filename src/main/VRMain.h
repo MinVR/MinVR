@@ -9,13 +9,13 @@
 #include <display/VRGraphicsToolkit.h>
 #include <display/VRWindowToolkit.h>
 #include <input/VRInputDevice.h>
-#include <main/VREventHandler.h>
-#include <main/VRModelHandler.h>
 #include <main/VRFactory.h>
 #include <main/VRMainInterface.h>
-#include <main/VRRenderHandler.h>
 #include <net/VRNetInterface.h>
 #include <config/base64/base64.h>
+#include <main/VREventHandler.h>
+#include <main/VRRenderHandler.h>
+#include <main/VRModelHandler.h>
 #include <main/VRError.h>
 #include <main/VRSearchPath.h>
 

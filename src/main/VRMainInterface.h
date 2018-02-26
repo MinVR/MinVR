@@ -6,6 +6,7 @@
 #include <input/VRInputDevice.h>
 #include <main/VREventHandler.h>
 #include <main/VRRenderHandler.h>
+#include <main/VRModelHandler.h>
 #include <main/VRError.h>
 
 

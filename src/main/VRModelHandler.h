@@ -10,12 +10,21 @@ namespace MinVR {
     class with MinVR using VRMain::registerModelHandler(..);
 */
 
+/// \brief Takes care of the simulation model.
+///
+/// The model handler class takes care of the simulation your graphics
+/// program is rendering, but in a way that is independent of the event
+/// handler and render loop.  This can be important on systems with
+/// multiple displays, where even the graphics context handler can be
+/// called multiple times in a single iteration of the main render loop.
 class VRModelHandler {
 public:
-  /// Called from within VRMain::mainloop().  You can use the FrameStart
-  /// heartbeat events to establish a time and update the model here before
-  /// rendering.  Or use it for something else we haven't thought of yet.
-  virtual void updateWorld() {};
+  /// \brief Update the simulation to the current time.
+  ///
+  /// Called from within VRMain::mainloop().  Use a model handler to update
+  /// the model to be viewed.  The input is just the current time, as
+  /// understood by MinVR.
+  virtual void updateWorld(double currentTime) {};
 };
 
 
