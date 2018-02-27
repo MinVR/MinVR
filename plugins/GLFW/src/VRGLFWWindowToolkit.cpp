@@ -166,8 +166,6 @@ VRGLFWWindowToolkit::createWindow(VRWindowSettings settings) {
 
 	_windows.push_back(window);
 	return (int)_windows.size()-1;
-
-	glfwShowWindow(window);
 }
 
 void 
