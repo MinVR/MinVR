@@ -885,6 +885,17 @@ VRMain::synchronizeAndProcessEvents() {
   // safely get out.
 }
 
+void
+VRMain::updateAllModels() {
+
+  for (std::vector<VRModelHandler*>::iterator it = _modelHandlers.begin();
+       it != _modelHandlers.end(); it++) {
+    (*it)->updateWorld(VRSystem::getTime());
+  }
+}
+
+
+
 void VRMain::renderOnAllDisplays() {
 
   if (!_initialized) throw std::runtime_error("VRMain not initialized.");
@@ -948,6 +959,12 @@ void
 VRMain::addEventHandler(VREventHandler* eventHandler)
 {
 	_eventHandlers.push_back(eventHandler);
+}
+
+void
+VRMain::addModelHandler(VRModelHandler* modelHandler)
+{
+	_modelHandlers.push_back(modelHandler);
 }
 
 void

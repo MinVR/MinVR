@@ -6,6 +6,7 @@
 #include <input/VRInputDevice.h>
 #include <main/VREventHandler.h>
 #include <main/VRRenderHandler.h>
+#include <main/VRModelHandler.h>
 #include <main/VRError.h>
 
 
@@ -24,6 +25,7 @@ class VRMainInterface {
 public:
   virtual void addEventHandler(VREventHandler *eHandler) = 0;
   virtual void addRenderHandler(VRRenderHandler *rHandler) = 0;
+  virtual void addModelHandler(VRModelHandler* modelHandler) = 0;
   virtual void addInputDevice(VRInputDevice *dev) = 0;
   virtual VRDataIndex* getConfig() = 0;
   virtual VRGraphicsToolkit* getGraphicsToolkit(const std::string &name) = 0;
