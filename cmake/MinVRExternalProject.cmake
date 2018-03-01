@@ -75,6 +75,9 @@ function(MinVRExternalProject_BuildAndInstallNow EXT_PROJECT_NAME RELPATH_TO_CMA
 
     # always set the install prefix to be the same as for MinVR
     list(APPEND CMAKE_CONFIG_OPTIONS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX})
+	
+	# always set the build type to the same as for MinVR
+	list(APPEND CMAKE_CONFIG_OPTIONS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
 
     #string (REGEX REPLACE "(^|[^\\\\]);" "\\1 " CMAKE_CONFIG_OPTIONS "${CMAKE_CONFIG_OPTIONS}")
 
@@ -96,7 +99,7 @@ function(MinVRExternalProject_BuildAndInstallNow EXT_PROJECT_NAME RELPATH_TO_CMA
 
 
     h2("Building external project ${EXT_PROJECT_NAME}.  (This may take some time...)")
-    execute_process(COMMAND "${CMAKE_COMMAND}" --build ${BUILD_DIR} --target install OUTPUT_VARIABLE stdout ERROR_VARIABLE stderr RESULT_VARIABLE exitcode)
+    execute_process(COMMAND "${CMAKE_COMMAND}" --build ${BUILD_DIR} --config ${CMAKE_BUILD_TYPE} --target install OUTPUT_VARIABLE stdout ERROR_VARIABLE stderr RESULT_VARIABLE exitcode)
     if(NOT "${exitcode}" STREQUAL "0")
         message(FATAL_ERROR "Error building external project: ${stdout} ${stderr}")
     endif()
