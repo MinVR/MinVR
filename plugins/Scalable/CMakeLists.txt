@@ -60,8 +60,8 @@ endif()
 # the libScalable.
 find_package(LibSCALABLE REQUIRED)
 target_compile_definitions(${PROJECT_NAME} PUBLIC -D_EASYBLENDSDK_LINUX)
-target_include_directories(${PROJECT_NAME} ${LIBSCALABLE_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} ${LIBSCALABLE_ALL_LIBRARIES})
+target_include_directories(${PROJECT_NAME} PUBLIC ${LIBSCALABLE_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${LIBSCALABLE_ALL_LIBRARIES})
 
 
 # Installation:
