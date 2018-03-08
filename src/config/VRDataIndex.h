@@ -685,8 +685,9 @@ public:
   T getValueWithDefault(const std::string &key,
                         const T &defaultVal,
                         const std::string nameSpace = "",
-                        const bool inherit = true) {
-    VRDataMap::iterator p = _getEntry(key, nameSpace, inherit);
+                        const bool inherit = true) const {
+    VRDataMap::iterator p =
+      const_cast<VRDataIndex*>(this)->_getEntry(key, nameSpace, inherit);
 
     if (p == _theIndex.end()) {
       return defaultVal;
