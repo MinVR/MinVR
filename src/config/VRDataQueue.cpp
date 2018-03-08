@@ -118,8 +118,22 @@ long long VRDataQueue::makeTimeStamp() {
 	LARGE_INTEGER t1;
 
 	FILETIME ft;
-	GetSystemTimePreciseAsFileTime(&ft); // Requires windows 8 and above. Should give microsecond resolution and be consistent across different machines if they are using a time server.
 
+	// Determine if windows 8 or greater
+	OSVERSIONINFO osvi;
+	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
+	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	GetVersionEx(&osvi);
+
+	//https://en.wikipedia.org/wiki/List_of_Microsoft_Windows_versions
+	if (osvi.dwMajorVersion > 6 || (osvi.dwMajorVersion == 6) && (osvi.dwMinorVersion >= 2)) {
+		GetSystemTimePreciseAsFileTime(&ft); // Requires windows 8 and above. Should give microsecond resolution and be consistent across different machines if they are using a time server.
+	}
+	else {
+		GetSystemTimeAsFileTime(&ft);
+	}
+
+	
 	t1.LowPart = ft.dwLowDateTime;
 	t1.HighPart = ft.dwHighDateTime;
 
