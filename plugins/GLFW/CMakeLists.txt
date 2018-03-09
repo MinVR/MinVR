@@ -42,19 +42,19 @@ target_link_libraries(${PROJECT_NAME} PUBLIC MinVR)
 
 
 # Setup dependency on GLFW:
-include(UseGLFW)
-UseGLFW(${PROJECT_NAME} PUBLIC)
+include(AutoBuildGLFW)
+AutoBuild_use_package_GLFW(${PROJECT_NAME} PUBLIC)
 
 
 # Setup dependency on OpenGL:
-include(UseOpenGL)
-UseOpenGL(${PROJECT_NAME} PUBLIC)
+include(AutoBuildOpenGL)
+AutoBuild_use_package_OpenGL(${PROJECT_NAME} PUBLIC)
 
 
 # Setup dependency on GLEW (only needed on Windows):
 if (NOT APPLE)
-  include(UseGLEW)
-  UseGLEW(${PROJECT_NAME} PUBLIC)
+  include(AutoBuildGLEW)
+  AutoBuild_use_package_GLEW(${PROJECT_NAME} PUBLIC)
 endif()
 
 

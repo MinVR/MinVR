@@ -40,8 +40,8 @@ target_link_libraries(${PROJECT_NAME} PUBLIC MinVR)
 
 
 # Setup dependency on TUIO:
-include(UseTUIO)
-UseTUIO(${PROJECT_NAME} PRIVATE)
+include(AutoBuildTUIO)
+AutoBuild_use_package_TUIO(${PROJECT_NAME} PRIVATE)
 
 
 # Installation:

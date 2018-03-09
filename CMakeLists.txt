@@ -65,6 +65,7 @@ cmake_minimum_required (VERSION 3.9)
 cmake_policy(SET CMP0048 NEW)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
+message(STATUS ${CMAKE_MODULE_PATH})
 
 # Version is <major>.<minor>.<patch>
 project(MinVR_Toolkit VERSION 2.0.0)
@@ -82,6 +83,10 @@ set(MINVR_PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 # Organize folder structure for Xcode, Visual Studio, etc.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 include(MessageMacros)
+
+
+include(AutoBuild)
+AutoBuild_init()
 
 ## ************************************************ WHAT ARE WE BUILDING?
 
@@ -674,3 +679,11 @@ endforeach()
 file(WRITE ${CMAKE_BINARY_DIR}/cmake-repeat.sh "#!/usr/bin/env bash\n# Feel free to edit this file before executing it. The file will be\n# overwritten with each cmake invocation, but the saved version will\n# reflect your changes.\n${CMAKE_INVOCATION}\n")
 
 message(STATUS "CMAKE invocation stored in ${CMAKE_BINARY_DIR}/cmake-repeat.sh.\n   Feel free to edit, then execute that file.")
+
+
+## ************************************************ 
+
+AutoBuild_check_status()
+
+
+
