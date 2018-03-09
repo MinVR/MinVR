@@ -63,6 +63,24 @@ void VRSharedLibrary::load() {
 
 #if defined(WIN32)
 		_lib = LoadLibraryA(_filePath.c_str());
+		if (_lib==NULL) {
+
+			LPVOID lpMsgBuf;
+			DWORD dw = GetLastError();
+
+			FormatMessage(
+				FORMAT_MESSAGE_ALLOCATE_BUFFER |
+				FORMAT_MESSAGE_FROM_SYSTEM |
+				FORMAT_MESSAGE_IGNORE_INSERTS,
+				NULL,
+				dw,
+				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+				(LPTSTR)&lpMsgBuf,
+				0, NULL);
+
+			error = static_cast<const char *>(lpMsgBuf);
+		}
+
 #else
 		dlerror();
 		_lib = dlopen(_filePath.c_str(), RTLD_NOW);//RTLD_LAZY);
@@ -91,6 +109,24 @@ void VRSharedLibrary::unload() {
 		const char* error = "";
 #if defined(WIN32)
 		BOOL result = FreeLibrary(_lib);
+
+		if (result != 0) {
+
+			LPVOID lpMsgBuf;
+			DWORD dw = GetLastError();
+
+			FormatMessage(
+				FORMAT_MESSAGE_ALLOCATE_BUFFER |
+				FORMAT_MESSAGE_FROM_SYSTEM |
+				FORMAT_MESSAGE_IGNORE_INSERTS,
+				NULL,
+				dw,
+				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+				(LPTSTR)&lpMsgBuf,
+				0, NULL);
+
+			error = static_cast<const char *>(lpMsgBuf);
+		}
 #else
 		dlerror();
 		int result = dlclose(_lib);
