@@ -28,6 +28,7 @@
 # (See accompanying file LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
 
+
 set(VRPN_ROOT_DIR
 	"${VRPN_ROOT_DIR}"
 	CACHE
@@ -116,6 +117,7 @@ if(NOT WIN32)
 	list(APPEND _deps_libs ${CMAKE_THREAD_LIBS_INIT})
 	list(APPEND _deps_check CMAKE_HAVE_THREADS_LIBRARY)
 endif()
+
 
 
 # handle the QUIETLY and REQUIRED arguments and set xxx_FOUND to TRUE if

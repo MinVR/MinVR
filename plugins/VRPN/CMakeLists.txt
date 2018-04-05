@@ -45,8 +45,8 @@ target_link_libraries(${PROJECT_NAME} PUBLIC MinVR)
 
 
 # Setup dependency on VRPN:
-include(UseVRPN)
-UseVRPN(${PROJECT_NAME} PRIVATE)
+include(AutoBuildVRPN)
+AutoBuild_use_package_VRPN(${PROJECT_NAME} PRIVATE)
 
 
 # Installation:
