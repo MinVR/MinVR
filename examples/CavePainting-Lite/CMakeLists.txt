@@ -30,14 +30,15 @@ endif()
 list(APPEND CMAKE_MODULE_PATH  ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_INSTALL_PREFIX})
 list(INSERT CMAKE_PREFIX_PATH 0 ${CMAKE_INSTALL_PREFIX})
 
+include(AutoBuild)
+AutoBuild_init()
 
 
 #---------------------- Source for this Project ----------------------
 
 project(CavePainting-Lite)
 
-include(MessageMacros)
-h1("Building ${PROJECT_NAME}")
+message(STATUS "==== BUILDING ${PROJECT_NAME}")
 message(STATUS "Using install prefix: ${CMAKE_INSTALL_PREFIX}")
 
 
@@ -79,77 +80,21 @@ find_package(MinVR REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC MinVR::MinVR)
 
 
-# OpenGL (cmake's FindOpenGL.cmake in version 3.9+ provides imported targets for OpenGL
-# see FindOpenGL.cmake on cmake's website for details)
-find_package(OpenGL REQUIRED)
-target_link_libraries(${PROJECT_NAME} PUBLIC OpenGL::GL)
-if (${OPENGL_GLU_FOUND})
-    target_link_libraries(${PROJECT_NAME} PUBLIC OpenGL::GLU)
-endif()
+# OpenGL
+include(AutoBuildOpenGL)
+AutoBuild_use_package_OpenGL(${PROJECT_NAME} PUBLIC)
 
 
-# GLM (GLM's installation provides a cmake config package with the imported target 'glm')
-find_package(glm CONFIG)
-if (NOT ${glm_FOUND})
-    message(STATUS "Package not found (glm): Ok, will download, build, and install for you.")
-    message(STATUS "Download dir: ${EXTERNAL_DIR}.")
-    message(STATUS "Install dir: ${CMAKE_INSTALL_PREFIX}.")
-
-    include(ExternalProjectConfig)
-    ExternalProject_Download(
-        glm 
-        GIT_REPOSITORY "https://github.com/g-truc/glm.git" 
-        GIT_TAG master
-    )
-    ExternalProject_BuildAndInstallNow(
-        glm
-        src
-    )
-
-    message(STATUS "Searching (again, right after autobuilding) for GLM...")
-    find_package(glm CONFIG)
-
-    if (NOT ${glm_FOUND})
-        message(FATAL_ERROR "GLM was autobuilt for you, and it should now be installed at the prefix ${CMAKE_INSTALL_PREFIX}, but cmake is still unable to find it with find_package().")
-    endif()
-endif()
+# GLM
+AutoBuild_use_package(glm . ${PROJECT_NAME} PUBLIC glm
+    DOWNLOAD_ARGS  GIT_REPOSITORY "https://github.com/g-truc/glm.git" GIT_TAG master
+)
 
 
-
-# At this point, one or the other version of find_package() succeeded.
-message(STATUS ${GLM_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} PUBLIC glm)
-target_include_directories(${PROJECT_NAME} PUBLIC ${GLM_INCLUDE_DIRS})
-
-
+# GLEW
 if (NOT APPLE)
-    # GLEW (GLEW's installation provides a cmake config package with the imported target GLEW::GLEW)
-    find_package(GLEW)
-    if (NOT ${GLEW_FOUND})
-        message(STATUS "Package not found (GLEW): Ok, will download, build, and install for you.")
-        message(STATUS "Download dir: ${EXTERNAL_DIR}.")
-        message(STATUS "Install dir: ${CMAKE_INSTALL_PREFIX}.")
-
-        include(ExternalProjectConfig)
-        ExternalProject_Download(
-            GLEW
-            URL https://sourceforge.net/projects/glew/files/glew/2.1.0/glew-2.1.0.zip
-        )
-        ExternalProject_BuildAndInstallNow(
-            GLEW
-            src/build/cmake
-        )
-
-        message(STATUS "Searching (again, right after autobuilding) for GLEW...")
-        find_package(GLEW)
-
-        if (NOT ${GLEW_FOUND})
-            message(FATAL_ERROR "GLEW was autobuilt for you, and it should now be installed at the prefix ${CMAKE_INSTALL_PREFIX}, but cmake is still unable to find it with find_package().")
-        endif()
-    endif()
-
-    # At this point, one or the other version of find_package() succeeded.
-    target_link_libraries(${PROJECT_NAME} PUBLIC GLEW::GLEW)
+    include(AutoBuildGLEW)
+    AutoBuild_use_package_GLEW(${PROJECT_NAME} PUBLIC)
 endif()
 
 
@@ -157,3 +102,7 @@ endif()
 #---------------------- Enable Testing - Needed for Nightly Builds of MinVR ----------------------
 enable_testing()
 include(CTest)
+
+
+
+AutoBuild_check_status()
