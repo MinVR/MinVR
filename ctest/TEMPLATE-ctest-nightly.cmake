@@ -195,7 +195,7 @@ endif()
 # -- TEST CONFIGURATION #1:  "WithDefaults" --
 
 set(DASHBOARD_TEST_NAME "WithDefaults")
-set(CTEST_CONFIGURE_OPTIONS "")
+set(CTEST_CONFIGURE_OPTIONS "-DAUTOBUILD_EXECUTE_NOW=ON")
 test_libminvr()
 
 set(EXAMPLE_NAME CavePainting-Lite)
@@ -207,15 +207,17 @@ test_example_program()
 
 set(DASHBOARD_TEST_NAME "WithAllOn")
 set(CTEST_CONFIGURE_OPTIONS
-  # This is the only option turned off, it requires proprietary sw that only runs at some sites
+  # This requires proprietary sw that only runs at some sites
   -DWITH_PLUGIN_SCALABLE=OFF
+
+  # This is being dropped from the main repo
+  #  -DWITH_PLUGIN_FREEGLUT=ON
 
   -DWITH_DOCUMENTATION=ON
   -DWITH_ITEST_OPENGL_FIXEDFUNCPIPELINE=ON
   -DWITH_ITEST_OPENGL_MULTITHREADED=ON
   -DWITH_ITEST_OPENGL_SHADERPIPELINE=ON
   -DWITH_ITEST_OPENGL_SHADERPIPELINE_WITH_API=ON
-#  -DWITH_PLUGIN_FREEGLUT=ON
   -DWITH_PLUGIN_GLFW=ON
   -DWITH_PLUGIN_OPENGL=ON
   -DWITH_PLUGIN_OPENVR=ON
@@ -223,6 +225,8 @@ set(CTEST_CONFIGURE_OPTIONS
   -DWITH_PLUGIN_THREADING=ON
   -DWITH_PLUGIN_TUIO=ON
   -DWITH_PLUGIN_VRPN=ON
+
+  -DAUTOBUILD_EXECUTE_NOW=ON
 )
 test_libminvr()
 
