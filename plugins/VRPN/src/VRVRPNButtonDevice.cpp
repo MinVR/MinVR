@@ -105,7 +105,7 @@ void VRVRPNButtonDevice::sendEvent(int buttonNumber, bool down)
     else {
         name = name + "_Up";
     }
-    VRDataIndex di = VRButtonEvent::createValidDataIndex("name", down);
+    VRDataIndex di = VRButtonEvent::createValidDataIndex(name, down);
     _pendingEvents.push_back(di);
 }
 
