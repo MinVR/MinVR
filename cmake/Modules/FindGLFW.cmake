@@ -1,15 +1,23 @@
 
-
 find_path(GLFW_INCLUDE_DIR 
     GLFW/glfw3.h
+  NO_DEFAULT_PATH
   HINTS 
     ${CMAKE_INSTALL_PREFIX}/include 
     ${CMAKE_INSTALL_PREFIX}/include/GLFW
-    $ENV{GLFW_ROOT}/include 
-    $ENV{GLFW_ROOT}/include/GLFW 
-    /usr/local/include
-    /usr/local/include/GLFW
 )
+if (NOT GLFW_INCLUDE_DIR)
+    find_path(GLFW_INCLUDE_DIR 
+        GLFW/glfw3.h
+      HINTS 
+        ${CMAKE_INSTALL_PREFIX}/include 
+        ${CMAKE_INSTALL_PREFIX}/include/GLFW
+        $ENV{GLFW_ROOT}/include 
+        $ENV{GLFW_ROOT}/include/GLFW 
+        /usr/local/include
+        /usr/local/include/GLFW
+    )
+endif()
 
 
 find_library(GLFW_OPT_LIBRARIES 
@@ -17,11 +25,22 @@ find_library(GLFW_OPT_LIBRARIES
     libglfw3.a 
     glfw3.lib 
     glfw3
+  NO_DEFAULT_PATH
   HINTS 
     ${CMAKE_INSTALL_PREFIX}/lib 
-    $ENV{GLFW_ROOT}/lib 
-    /usr/local/lib
 )
+if (NOT GLFW_OPT_LIBRARIES)
+    find_library(GLFW_OPT_LIBRARIES 
+      NAMES 
+        libglfw3.a 
+        glfw3.lib 
+        glfw3
+      HINTS 
+        ${CMAKE_INSTALL_PREFIX}/lib 
+        $ENV{GLFW_ROOT}/lib 
+        /usr/local/lib
+    )
+endif()
 
           
 find_library(GLFW_DEBUG_LIBRARIES 
@@ -29,11 +48,22 @@ find_library(GLFW_DEBUG_LIBRARIES
     libglfw3d.a 
     glfw3d.lib 
     glfw3d
+  NO_DEFAULT_PATH
   HINTS 
     ${CMAKE_INSTALL_PREFIX}/lib 
-    $ENV{GLFW_ROOT}/lib 
-    /usr/local/lib
 )
+if (NOT GLFW_DEBUG_LIBRARIES)
+    find_library(GLFW_DEBUG_LIBRARIES 
+      NAMES 
+        libglfw3d.a 
+        glfw3d.lib 
+        glfw3d
+      HINTS 
+        ${CMAKE_INSTALL_PREFIX}/lib 
+        $ENV{GLFW_ROOT}/lib 
+        /usr/local/lib
+    )
+endif()
 
 
 if (GLFW_OPT_LIBRARIES AND GLFW_DEBUG_LIBRARIES)
@@ -75,4 +105,7 @@ mark_as_advanced(
     GLFW_OPT_LIBRARIES 
     GLFW_DEBUG_LIBRARIES 
     GLFW_LIBRARIES
+    GLFW_cocoa_LIBRARY
+    GLFW_iokit_LIBRARY
+    GLFW_corevideo_LIBRARY
 )
