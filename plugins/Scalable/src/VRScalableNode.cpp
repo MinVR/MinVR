@@ -63,12 +63,11 @@ VRScalableNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 
 	VRPoint3 pe(0,0,0);
 	if (renderState->exists("CameraMatrix","/")){
-		VRMatrix4 cameraMatrix = renderState->getValue("CameraMatrix","/");
-		VRMatrix4 head_frame = cameraMatrix.inverse();
-		pe = VRPoint3(head_frame(0,3),head_frame(1,3), head_frame(2,3));
+		VRMatrix4 cameraMatrix = renderState->getValue("CameraMatrix");
+		pe = pe + cameraMatrix.getColumn(3);
 	}
 
-	EasyBlendSDK_SetEyepoint(gMSDK,pe[0],-pe[1],-pe[2]);
+	EasyBlendSDK_SetEyepoint(gMSDK,pe[0],pe[1],pe[2]);
 
 	EasyBlendSDK_Frustum Frustum = gMSDK->Frustum;
 
@@ -82,7 +81,7 @@ VRScalableNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 
 	VRMatrix4 rotZ = VRMatrix4::rotationZ(DEGTORAD*Frustum.ViewAngleA);
 	VRMatrix4 rotY = VRMatrix4::rotationY(DEGTORAD*Frustum.ViewAngleB);
-	VRMatrix4 rotX = VRMatrix4::rotationX(DEGTORAD*(Frustum.ViewAngleC+90));
+	VRMatrix4 rotX = VRMatrix4::rotationX(DEGTORAD*(Frustum.ViewAngleC-90));
 	VRMatrix4 Mtrans = VRMatrix4::translation(VRPoint3(0, 0, 0) - pe);
 	VRMatrix4 viewMat = rotZ * rotY * rotX * Mtrans;
 
