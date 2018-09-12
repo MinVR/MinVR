@@ -38,6 +38,9 @@ static void glfw_mouse_button_callback(GLFWwindow* window, int button, int actio
   ((VRGLFWInputDevice*)(glfwGetWindowUserPointer(window)))->mouseButtonCallback(window, button, action, mods);
 }
 
+static void glfw_mouse_scroll_callback(GLFWwindow* window, double x, double y) {
+  ((VRGLFWInputDevice*)(glfwGetWindowUserPointer(window)))->mouseScrollCallback(window, x, y);
+}
 
 VRGLFWInputDevice::VRGLFWInputDevice() {
 }
@@ -62,6 +65,7 @@ void VRGLFWInputDevice::addWindow(GLFWwindow* window) {
 	glfwSetWindowSizeCallback(window, glfw_size_callback);
     glfwSetMouseButtonCallback(window, glfw_mouse_button_callback);
     glfwSetCursorPosCallback(window, glfw_cursor_position_callback);
+    glfwSetScrollCallback(window, glfw_mouse_scroll_callback);
     _windows.push_back(window);
 }
 
@@ -126,7 +130,23 @@ void VRGLFWInputDevice::mouseButtonCallback(GLFWwindow* window, int button, int 
 }
 
 
+void VRGLFWInputDevice::mouseScrollCallback(GLFWwindow* window, double x,
+		double y) {
+	  //std::string event = "MouseBtnMiddle_Scroll";
 
+	  std::string actionStr;
+	  int action;
+	  if (y > 0) {
+	      actionStr = "Up";
+	  }
+	  else {
+	      actionStr = "Down";
+	  }
+
+	  std::string name = "MouseBtnMiddle_Scroll" + actionStr;
+	  VRDataIndex event = VRButtonEvent::createValidDataIndex(name, 0);
+	  _events.push_back(event);
+}
 
 
 std::string getGlfwKeyName(int key) {
