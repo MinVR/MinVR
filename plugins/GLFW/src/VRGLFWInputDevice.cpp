@@ -314,7 +314,7 @@ std::string getGlfwKeyValue(int key, int mods)
 			case GLFW_KEY_5:            value = "5"; break;
 			case GLFW_KEY_6:            value = "6"; break;
 			case GLFW_KEY_7:            value = "7"; break;
-			case GLFW_KEY_8:            value =  "8"; break;
+			case GLFW_KEY_8:            value = "8"; break;
 			case GLFW_KEY_9:            value = "9"; break;
 			case GLFW_KEY_0:            value = "0"; break;
 			case GLFW_KEY_SPACE:        value = " "; break;
