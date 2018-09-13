@@ -43,6 +43,9 @@ public:
         vrMain->addEventHandler(this);
         vrMain->addRenderHandler(this);
         vrMain->initialize(argc,argv);
+
+        std::string vrSetupsToStart = vrMain->getName();
+        std::cout << vrSetupsToStart << std::endl;
     }
 
 
