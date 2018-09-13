@@ -76,6 +76,10 @@ public:
         if (stateData.exists("IsGraphics")) {
             // If this is the inital call, initialize context variables
             if ((int)stateData.getValue("InitRender") == 1) {
+
+
+           winToolkit = vrMain->getWindowToolkit("VRGLFWWindowToolkit");
+           VRglproc procAddress = winToolkit->getProcAddress("proc_name");
                 
 #ifndef __APPLE__
                 glewExperimental = GL_TRUE;
@@ -295,6 +299,7 @@ private:
 	GLuint vbo, vao, vshader, fshader, shaderProgram;
 	float model[16];
     VRMain *vrMain;
+    VRWindowToolkit *winToolkit;
 };
 
 /// Main method which creates and calls application
