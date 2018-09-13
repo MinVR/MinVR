@@ -1031,7 +1031,7 @@ std::string VRDataIndex::dereferenceEnvVars(const std::string &fileName) {
 
     size_t bracketPos = pathName.find_first_of("}", dollarPos);
 
-    if (bracketPos == string::npos) {
+    if (bracketPos == std::string::npos) {
       VRERROR("Bad environment variable syntax.",
               "Environment variables must be enclosed like ${THIS}.");
     }
@@ -1086,7 +1086,7 @@ bool VRDataIndex::processXMLFile(const std::string fileName,
 #ifdef DEBUG
   std::cout << "Reading from file = " << pathName << std::endl;
 #endif
-  ifstream file(pathName.c_str());
+  std::ifstream file(pathName.c_str());
 
   if(file.is_open()) {
     std::stringstream buffer;
@@ -1222,7 +1222,7 @@ std::string VRDataIndex::printStructure(const std::string itemName,
     if (elems.size() == 0) continue;
 
     // Is it the same as the itemName?
-    for (i = 1; i < min(itemElems.size(), elems.size()); i++) {
+    for (i = 1; i < std::min(itemElems.size(), elems.size()); i++) {
 
       if (itemElems[i].compare(elems[i]) != 0)
         printMe = false;

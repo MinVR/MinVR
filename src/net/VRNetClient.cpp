@@ -30,7 +30,7 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
 
   rv = WSAStartup(MAKEWORD(2,2), &wsaData);
   if (rv != 0) {
-    stringstream s;
+    std::stringstream s;
     s << "WSAStartup failed with error: " << rv;
     VRERROR(s.str(), "Check for a problem with Windows networking.");
     exit(1);
@@ -42,7 +42,7 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
   hints.ai_protocol = IPPROTO_TCP;
 
   if ((rv = getaddrinfo(serverIP.c_str(), serverPort.c_str(), &hints, &servinfo)) != 0) {
-    stringstream s;
+    std::stringstream s;
     s << "getaddrinfo() failed with error: " << rv;
     VRERROR(s.str(), "Check for a problem with Windows networking.");
     WSACleanup();
@@ -55,7 +55,7 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
     // loop through all the results and connect to the first we can
     for (p = servinfo; p != NULL; p = p->ai_next) {
       if ((sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == INVALID_SOCKET) {
-	      stringstream s;
+	      std::stringstream s;
         s << "socket() failed with error " << WSAGetLastError() << "; will retry.";
         VRLOG_STATUS(s.str());
         continue;
@@ -64,7 +64,7 @@ VRNetClient::VRNetClient(const std::string &serverIP, const std::string &serverP
       if (connect(sockfd, p->ai_addr, (int)p->ai_addrlen) == SOCKET_ERROR) {
         closesocket(sockfd);
         sockfd = INVALID_SOCKET;
-	      stringstream s;
+	      std::stringstream s;
         s << "connect() to server socket failed; will retry.";
         VRLOG_STATUS(s.str());
         continue;
