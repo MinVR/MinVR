@@ -46,6 +46,13 @@ public:
 
         std::string vrSetupsToStart = vrMain->getName();
         std::cout << vrSetupsToStart << std::endl;
+
+        // Print whether a the vrsetup is a host or a client
+        std::cout << vrMain->getConfig()->getAttributeValue(vrMain->getName(), "hostType") << std::endl;
+        if (vrMain->getConfig()->exists("NumClients", vrMain->getName())) {
+            // How to read configuration settings for the specific vrsetup
+            std::cout << "Number of Clients: " << (std::string)vrMain->getConfig()->getValue("NumClients", vrMain->getName()) << std::endl;
+        }
     }
 
 
