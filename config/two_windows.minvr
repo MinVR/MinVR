@@ -1,4 +1,3 @@
-
 <!-- This config works well for a desktop window that is designed to debug VR
   Apps. It includes fake trackers, one for the head and one for each hand,
   that are controlled through keyboard and mouse events.  In this way, you can
@@ -75,10 +74,12 @@
   <MSAASamples>1</MSAASamples>
 
 
+  <Server hostType="VRServer">
+    <NumClients>2</NumClients>
+  </Server>
 
 
-  <Desktop1 hostType="VRServer">
-    <NumClients>1</NumClients>
+  <Desktop1 hostType="VRClient">
 
    
     <!-- Input Devices: Three Fake Trackers -->
