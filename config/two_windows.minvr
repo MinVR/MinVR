@@ -11,7 +11,8 @@
 
 
 <MinVR>
-
+  <Port type="string">3456</Port>
+  <ServerIP>localhost</ServerIP>
 
   <!-- GLOBAL SETTINGS (LIKE GLOBAL VARIABLES) -->
 
@@ -76,7 +77,8 @@
 
 
 
-  <Desktop1 hostType="VRStandAlone">
+  <Desktop1 hostType="VRServer">
+    <NumClients>1</NumClients>
 
    
     <!-- Input Devices: Three Fake Trackers -->
@@ -115,7 +117,7 @@
 
   </Desktop1>
 
-  <Desktop2 hostType="VRStandAlone">
+  <Desktop2 hostType="VRClient">
   <XPos>700</XPos>
 
     <!-- Input Devices: Three Fake Trackers -->
