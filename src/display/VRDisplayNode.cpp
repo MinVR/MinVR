@@ -22,7 +22,7 @@ VRDisplayNode::~VRDisplayNode() {
 void VRDisplayNode::render(VRDataIndex *renderState,
                            VRRenderHandler *renderHandler) {
   if (_children.size() > 0) {
-		for (vector<VRDisplayNode*>::iterator it = _children.begin();
+		for (std::vector<VRDisplayNode*>::iterator it = _children.begin();
          it != _children.end(); it++) {
 			(*it)->render(renderState, renderHandler);
 		}
@@ -32,13 +32,13 @@ void VRDisplayNode::render(VRDataIndex *renderState,
 }
 
 void VRDisplayNode::waitForRenderToComplete(VRDataIndex *renderState) {
-	for (vector<VRDisplayNode*>::iterator it = _children.begin(); it != _children.end(); it++) {
+	for (std::vector<VRDisplayNode*>::iterator it = _children.begin(); it != _children.end(); it++) {
 		(*it)->waitForRenderToComplete(renderState);
 	}
 }
 
 void VRDisplayNode::displayFinishedRendering(VRDataIndex *renderState) {
-	for (vector<VRDisplayNode*>::iterator it = _children.begin(); it != _children.end(); it++) {
+	for (std::vector<VRDisplayNode*>::iterator it = _children.begin(); it != _children.end(); it++) {
 		(*it)->displayFinishedRendering(renderState);
 	}
 }
@@ -53,7 +53,7 @@ void VRDisplayNode::addChild(VRDisplayNode* child) {
 
 void VRDisplayNode::clearChildren(bool destroyChildren) {
 	if (destroyChildren) {
-		for (vector<VRDisplayNode*>::iterator it = _children.begin(); it != _children.end(); it++) {
+		for (std::vector<VRDisplayNode*>::iterator it = _children.begin(); it != _children.end(); it++) {
 				delete (*it);
 		}
 	}
@@ -104,7 +104,7 @@ std::map<std::string,std::string> VRDisplayNode::getValuesAdded() {
   // Look through all the children nodes, and append their values to
   // the list, with the current node name on the front.
   if (_children.size() > 0) {
-		for (vector<VRDisplayNode*>::iterator it = _children.begin();
+		for (std::vector<VRDisplayNode*>::iterator it = _children.begin();
          it != _children.end(); it++) {
 
       std::map<std::string,std::string> childOut = (*it)->getValuesAdded();

@@ -63,7 +63,7 @@
 cmake_minimum_required (VERSION 3.9)
 
 cmake_policy(SET CMP0048 NEW)
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/")
 
 message(STATUS ${CMAKE_MODULE_PATH})
 

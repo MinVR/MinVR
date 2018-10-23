@@ -1,0 +1,160 @@
+<!-- This config works well for a desktop window that is designed to debug VR
+  Apps. It includes fake trackers, one for the head and one for each hand,
+  that are controlled through keyboard and mouse events.  In this way, you can
+  test apps that expect input from 6-DOF trackers in a desktop mode.
+
+  It is rare that programmers will need to change anything in this config
+  file, but the settings that are most likely to change on an app-by-app
+  basis are listed first. -->
+
+
+
+<MinVR>
+  <Port type="string">3456</Port>
+  <ServerIP>localhost</ServerIP>
+
+  <!-- GLOBAL SETTINGS (LIKE GLOBAL VARIABLES) -->
+
+
+  <!-- MinVR Plugins to Load - Most Common is to Use OpenGL for the
+     MinVRs GraphicsTookit and GLFW for MinVRs WindowToolkit -->
+
+  <GLFWPlugin pluginType="MinVR_GLFW"/>
+  <GLFWToolkit windowtoolkitType="VRGLFWWindowToolkit"/>
+
+  <OpenGLPlugin pluginType="MinVR_OpenGL"/>
+  <OpenGLToolkit graphicstoolkitType="VROpenGLGraphicsToolkit"/>
+
+
+  <!-- Version Number to Request for the OpenGL Graphcis Rendering Context -->
+  <ContextVersionMajor>4</ContextVersionMajor>
+  <ContextVersionMinor>5</ContextVersionMinor>
+
+
+  <!-- Setup a Desktop-Style Camera -->
+  <NearClip>0.001</NearClip>
+  <FarClip>500.0</FarClip>
+  <!-- same x,y field of view b/c requesting a square window below -->
+  <FieldOfViewX>60.0</FieldOfViewX>
+  <FieldOfViewY>60.0</FieldOfViewY>
+
+
+  <!-- Stereo Settings -->
+  <QuadBuffered>0</QuadBuffered>
+  <StereoFormat>Mono</StereoFormat>
+  <EyeSeparation>0.203</EyeSeparation>
+
+
+  <!-- Head Tracking with a Default/Initial LookAt -->
+  <HeadTrackingEvent>HeadTracker_Move</HeadTrackingEvent>
+  <LookAtUp type="floatarray">0,1,0</LookAtUp>
+  <LookAtEye type="floatarray">0,0,4</LookAtEye>
+  <LookAtCenter type="floatarray">0,0,0</LookAtCenter>
+
+
+  <!-- Other Graphics Window Settings -->
+  <Caption>MinVR Desktop</Caption>
+  <Border>1</Border>
+  <XPos>100</XPos>
+  <YPos>100</YPos>
+  <Width>500</Width>
+  <Height>500</Height>
+  <RGBBits>8</RGBBits>
+  <AlphaBits>8</AlphaBits>
+  <DepthBits>24</DepthBits>
+  <StencilBits>8</StencilBits>
+  <FullScreen>0</FullScreen>
+  <Resizable>1</Resizable>
+  <AllowMaximize>1</AllowMaximize>
+  <Visible>1</Visible>
+  <SharedContextGroupID>-1</SharedContextGroupID>
+  <UseGPUAffinity>1</UseGPUAffinity>
+  <GPUAffinity>0</GPUAffinity>
+  <UseDebugContext>0</UseDebugContext>
+  <MSAASamples>1</MSAASamples>
+
+
+  <Server hostType="VRServer">
+    <NumClients>2</NumClients>
+  </Server>
+
+
+  <Desktop1 hostType="VRClient">
+
+   
+    <!-- Input Devices: Three Fake Trackers -->
+
+    <FakeHead inputdeviceType="VRFakeHeadTrackerDevice">
+      <TrackerName>HeadTracker</TrackerName>
+      <ToggleOnOffEvent>Kbd1_Down</ToggleOnOffEvent>
+    </FakeHead>
+
+    <FakeHand1 inputdeviceType="VRFakeHandTrackerDevice">
+      <TrackerName>RHandTracker</TrackerName>
+      <ToggleOnOffEvent>Kbd2_Down</ToggleOnOffEvent>
+      <XYTranslationScale>2.0</XYTranslationScale>
+      <ZTranslationScale>2.0</ZTranslationScale>
+    </FakeHand1>
+
+    <FakeHand2 inputdeviceType="VRFakeHandTrackerDevice">
+      <TrackerName>LHandTracker</TrackerName>
+      <ToggleOnOffEvent>Kbd3_Down</ToggleOnOffEvent>
+      <XYTranslationScale>2.0</XYTranslationScale>
+      <ZTranslationScale>2.0</ZTranslationScale>
+    </FakeHand2>
+
+
+    <!-- Display Devices: Just A Single Graphics Window -->
+
+    <WindowNode displaynodeType="VRGraphicsWindowNode">
+      <TrackingNode displaynodeType="VRHeadTrackingNode">
+        <StereoNode displaynodeType="VRStereoNode">
+          <ProjectionNode displaynodeType="VRProjectionNode">
+            <DUMMY/>
+          </ProjectionNode>
+        </StereoNode>
+      </TrackingNode>
+    </WindowNode>
+
+  </Desktop1>
+
+  <Desktop2 hostType="VRClient">
+  <XPos>700</XPos>
+
+    <!-- Input Devices: Three Fake Trackers -->
+
+    <FakeHead inputdeviceType="VRFakeHeadTrackerDevice">
+      <TrackerName>HeadTracker</TrackerName>
+      <ToggleOnOffEvent>Kbd1_Down</ToggleOnOffEvent>
+    </FakeHead>
+
+    <FakeHand1 inputdeviceType="VRFakeHandTrackerDevice">
+      <TrackerName>RHandTracker</TrackerName>
+      <ToggleOnOffEvent>Kbd2_Down</ToggleOnOffEvent>
+      <XYTranslationScale>2.0</XYTranslationScale>
+      <ZTranslationScale>2.0</ZTranslationScale>
+    </FakeHand1>
+
+    <FakeHand2 inputdeviceType="VRFakeHandTrackerDevice">
+      <TrackerName>LHandTracker</TrackerName>
+      <ToggleOnOffEvent>Kbd3_Down</ToggleOnOffEvent>
+      <XYTranslationScale>2.0</XYTranslationScale>
+      <ZTranslationScale>2.0</ZTranslationScale>
+    </FakeHand2>
+
+
+    <!-- Display Devices: Just A Single Graphics Window -->
+
+    <WindowNode displaynodeType="VRGraphicsWindowNode">
+      <TrackingNode displaynodeType="VRHeadTrackingNode">
+        <StereoNode displaynodeType="VRStereoNode">
+          <ProjectionNode displaynodeType="VRProjectionNode">
+            <DUMMY/>
+          </ProjectionNode>
+        </StereoNode>
+      </TrackingNode>
+    </WindowNode>
+
+  </Desktop2>
+
+</MinVR>
