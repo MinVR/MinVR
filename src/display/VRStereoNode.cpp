@@ -116,7 +116,7 @@ void VRStereoNode::setCameraMatrix(VRDataIndex *renderState, VREyePosition eye)
   if (eye == Left) {
     cameraMatrix = cameraMatrix * VRMatrix4::translation(VRVector3(-_iod / 2.0f, 0, 0));
 	} else if (eye == Right) {
-    cameraMatrix = cameraMatrix * VRMatrix4::translation(VRVector3(-_iod / 2.0f, 0, 0));
+    cameraMatrix = cameraMatrix * VRMatrix4::translation(VRVector3(_iod / 2.0f, 0, 0));
 	}
 
 	renderState->addData("CameraMatrix", cameraMatrix);
