@@ -195,6 +195,12 @@ VRGLFWWindowToolkit::swapBuffers(int windowID) {
   	glfwSwapBuffers(_windows[windowID]);
 }
 
+VRglproc VRGLFWWindowToolkit::getProcAddress(const char *name) {
+	//std::cerr << "getProcAddress()" << std::endl;
+	GLFWglproc proc = glfwGetProcAddress(name);
+	return proc;
+}
+
 VRWindowToolkit*
 VRGLFWWindowToolkit::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) {
 	return new VRGLFWWindowToolkit(vrMain);

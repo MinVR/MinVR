@@ -421,7 +421,7 @@ public:
      */
     void loadDefaultConfig();
 
-    /** For use before calling initializeWIthUserCommandLineParsing(..).
+    /** For use before calling initializeWithUserCommandLineParsing(..).
         This can be used to set a specific config key=value setting for MinVR
         directly from code rather than reading the setting in from a file.
         The type is inferred automatically using the VRDataIndex.
@@ -443,7 +443,7 @@ public:
         handlers that have been registered with MinVR.
 
         The second part of mainloop() is renderOnAllDisplays(). This tells MinVR
-        to traverse its DisplayGraph structure, updateing the appropriate
+        to traverse its DisplayGraph structure, updating the appropriate
         window, viewport, and other settings specified in the display nodes.
         As MinVR traverses the DisplayGraph, it calls any render handlers
         that have been registered with MinVR when it reaches an appropriate
@@ -502,6 +502,11 @@ public:
     /// which is a data field within the renderState data passed by MinVR
     /// to all rendering callbacks.
     VRDisplayNode* getDisplayNode(int nodeID);
+
+    /// Returns whether the application is currently in shutdown mode. This
+    /// function returns the same value as the _shutdown member variable and
+    /// can be used by customized implementations of the mainloop function
+    bool getShutdown() const { return _shutdown; }
 
 
 

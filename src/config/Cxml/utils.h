@@ -7,7 +7,6 @@
 #include <sstream>
 
 #include "element.h"
-using namespace std;
 
 namespace MinVR {
   
