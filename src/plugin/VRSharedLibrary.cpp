@@ -88,11 +88,8 @@ void VRSharedLibrary::load() {
 #endif
 
 		if (!_lib) {
-
-#ifdef MinVR_DEBUG
-			VRWARNING("Could not load library: " + _filePath + " - " + error,
-                "This is a harmless warning, unless the library can't be found anywhere else.");
-#endif
+			VRWARNING("Could not load library: " + _filePath + " - " + error, 
+				"Check if the plugin and all its dependencies are installed correctly.");
 			return;
 
 		}
