@@ -18,7 +18,7 @@
 
 namespace MinVR {
                        
-	VROpenVRInputDevice::VROpenVRInputDevice(vr::IVRSystem *pHMD, string name, VROpenVRNode * node, float deviceUnitsToRoomUnits, VRMatrix4 deviceToRoom) :m_pHMD(pHMD), m_name(name), m_node(node), deviceUnitsToRoomUnits(deviceUnitsToRoomUnits), deviceToRoom(deviceToRoom)
+	VROpenVRInputDevice::VROpenVRInputDevice(vr::IVRSystem *pHMD, std::string name, VROpenVRNode * node, float deviceUnitsToRoomUnits, VRMatrix4 deviceToRoom) :m_pHMD(pHMD), m_name(name), m_node(node), deviceUnitsToRoomUnits(deviceUnitsToRoomUnits), deviceToRoom(deviceToRoom)
 	{
 		updateDeviceNames();
 
@@ -81,13 +81,13 @@ std::string VROpenVRInputDevice::getAxisType(int device, int axis){
 	int32_t type = m_pHMD->GetInt32TrackedDeviceProperty( device, ((vr::ETrackedDeviceProperty) (vr::Prop_Axis0Type_Int32 +  axis)));
 	switch(type){
 		case vr::k_eControllerAxis_None:
-			return "None" + to_string(axis);
+			return "None" + std::to_string(axis);
 		case vr::k_eControllerAxis_TrackPad:
-			return "TrackPad" + to_string(axis);
+			return "TrackPad" + std::to_string(axis);
 		case vr::k_eControllerAxis_Joystick:
-			return "Joystick" + to_string(axis);
+			return "Joystick" + std::to_string(axis);
 		case vr::k_eControllerAxis_Trigger:
-			return "Trigger" + to_string(axis);
+			return "Trigger" + std::to_string(axis);
 	}
 	return "Invalid";
 }
