@@ -47,6 +47,9 @@ public:
 
 	static VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 
+	void setIOD(float iod){ _iod = iod; }
+	float getIod() const { return _iod; }
+
 protected:
 	void renderOneEye(VRDataIndex *renderState, VRRenderHandler *renderHandler, VREyePosition eye);
 	void setCameraMatrix(VRDataIndex *renderState, VREyePosition eye);

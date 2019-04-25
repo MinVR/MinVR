@@ -1000,7 +1000,30 @@ VRMain::addInputDevice(VRInputDevice* dev) {
 	_inputDevices.push_back(dev);
 }
 
+std::vector<VRDisplayNode*> VRMain::getDisplayNodesByName(std::string name, VRDisplayNode* node)
+{
+	std::vector<VRDisplayNode*> vec;
+	std::vector<VRDisplayNode*> nodes;
+	if (node = nullptr){
+		nodes = _displayGraphs;
+	}
+	else
+	{
+		nodes = node->getChildren();
+	}
 
+	for (int i = 0; i < nodes.size(); i++)
+	{
+		if (nodes[i]->getName() == name)
+		{
+			vec.push_back(nodes[i]);
+		}
+
+		std::vector<VRDisplayNode*> vec2 = getDisplayNodesByName(name, nodes[i]);
+		vec.insert(vec.end(), vec2.begin(), vec2.end());
+	}
+	return vec;
+}
 
 /**
 void VRMain::removeEventHandler(VREventHandler* eventHandler) {

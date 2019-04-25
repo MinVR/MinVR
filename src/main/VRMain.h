@@ -503,8 +503,17 @@ public:
     /// to all rendering callbacks.
     VRDisplayNode* getDisplayNode(int nodeID);
 
+	/// Provides access to pointers to display nodes based on the type of the node,
+	/// If no node of the requested type is found an empty vector is returned.
+	/// If there are multiple ones with the same type all of them are returned.
+	/// e.g. std::vector<VRStereoNode*> nodes = _main->getDisplayNodesByType<VRStereoNode>();
+   	template <class T>
+	std::vector<T*> getDisplayNodesByType(VRDisplayNode* node = nullptr);
 
-
+	/// Provides access to pointers to display nodes based on the name of the node,
+	/// If no node with the requested name are found an empty vector is returned.
+	/// If there are multiple ones with the same type all of them are returned.
+	std::vector<VRDisplayNode*> getDisplayNodesByName(std::string name, VRDisplayNode* node = nullptr);
 
     /***** USED INTERNALLY BY MINVR -- THESE COULD PROBABLY BE MOVED TO AN IMPLEMENTATION FILE *****/
 
@@ -565,7 +574,33 @@ public:
     bool _shutdown;
 };
 
+	template <class T>
+	std::vector<T*> VRMain::getDisplayNodesByType(VRDisplayNode* node)
+	{
+			
+			std::vector<T*> vec;
+			std::vector<VRDisplayNode*> nodes;
 
+			if (node == nullptr){
+				nodes = _displayGraphs;
+			}
+			else
+			{
+				nodes = node->getChildren();
+			}
+
+			for (int i = 0; i < nodes.size(); i++)
+			{
+				T* tmp = dynamic_cast<T*>(nodes[i]);
+				if (tmp != nullptr)
+				{
+					vec.push_back(tmp);
+				}
+				std::vector<T*> vec2 = getDisplayNodesByType<T>(nodes[i]);
+				if(!vec2.empty())vec.insert(vec.end(), vec2.begin(), vec2.end());
+			}
+			return vec;	
+	}
 } // end namespace
 
 #endif
