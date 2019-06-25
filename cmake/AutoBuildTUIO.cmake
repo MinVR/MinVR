@@ -36,6 +36,7 @@ macro(AutoBuild_use_package_TUIO YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
                 set(TUIO_CONFIG_OPTIONS
                     -DCMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD=c++11 
                     -DCMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY=libc++
+					-DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
                 )
             endif()
 

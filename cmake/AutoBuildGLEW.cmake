@@ -34,7 +34,7 @@ macro(AutoBuild_use_package_GLEW YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
             AutoBuild_build_and_install_project(
                 ${PACKAGE_NAME}
                 build/cmake
-                -D_OPENGL_LIB_PATH=${_OPENGL_LIB_PATH} -D_OPENGL_INCLUDE_PATH=${_OPENGL_INCLUDE_PATH}
+                -D_OPENGL_LIB_PATH=${_OPENGL_LIB_PATH} -D_OPENGL_INCLUDE_PATH=${_OPENGL_INCLUDE_PATH} -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
             )
 
             AutoBuild_find_built_package_module_mode(${PACKAGE_NAME})
