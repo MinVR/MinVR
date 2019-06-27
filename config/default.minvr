@@ -28,7 +28,7 @@
 
   <!-- Version Number to Request for the OpenGL Graphcis Rendering Context -->
   <ContextVersionMajor>4</ContextVersionMajor>
-  <ContextVersionMinor>5</ContextVersionMinor>
+  <ContextVersionMinor>1</ContextVersionMinor>
 
 
   <!-- Setup a Desktop-Style Camera -->

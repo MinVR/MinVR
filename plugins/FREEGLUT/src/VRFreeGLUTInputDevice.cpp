@@ -162,7 +162,7 @@ std::string getKeyName(int key, bool isSpecial) {
 				return "Esc";
 
 			default:
-				stringstream s;
+				std::stringstream s;
 				s << (unsigned char) key;
 				return s.str();
 		}

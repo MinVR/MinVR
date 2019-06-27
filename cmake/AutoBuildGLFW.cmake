@@ -43,6 +43,7 @@ macro(AutoBuild_use_package_GLFW YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
             AutoBuild_build_and_install_project(
                 ${PACKAGE_NAME}
                 .
+				-DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
             )
 
             AutoBuild_find_built_package_module_mode(${PACKAGE_NAME})
