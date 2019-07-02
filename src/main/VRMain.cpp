@@ -954,6 +954,19 @@ VRMain::shutdown()
     _shutdown = true;
 }
 
+bool VRMain::isMasterNode() {
+    if (_net == NULL) {
+        // If there is no networking, then we're in standalone mode,
+        // so this process is the master.
+        return true;
+    } else {
+        // If networking is active, then there is one server and the
+        // rest of the nodes are clients.  So, return true if this
+        // process is the server.
+        VRNetServer *serverPtr = dynamic_cast<VRNetServer*>(_net);
+        return (serverPtr != NULL);
+    }
+}
 
 void
 VRMain::addEventHandler(VREventHandler* eventHandler)

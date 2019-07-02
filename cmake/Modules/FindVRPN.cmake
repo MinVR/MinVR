@@ -1,152 +1,206 @@
-# - try to find VRPN library
-#
-# Cache Variables:
-#  VRPN_LIBRARY
-#  VRPN_SERVER_LIBRARY
-#  VRPN_INCLUDE_DIR
-#
-# Non-cache variables you might use in your CMakeLists.txt:
-#  VRPN_FOUND
-#  VRPN_SERVER_LIBRARIES - server libraries
-#  VRPN_LIBRARIES - client libraries
-#  VRPN_CLIENT_DEFINITIONS - definitions if you only use the client library
-#  VRPN_DEFINITIONS - Client-only definition if all we found was the client library.
-#  VRPN_INCLUDE_DIRS
-#
-# VRPN_ROOT_DIR is searched preferentially for these files
-#
-# Requires these CMake modules:
-#  FindPackageHandleStandardArgs (known included with CMake >=2.6.2)
-#
-# Original Author:
-# 2009-2012 Ryan Pavlik <rpavlik@iastate.edu> <abiryan@ryand.net>
-# http://academic.cleardefinition.com
-# Iowa State University HCI Graduate Program/VRAC
-#
-# Copyright Iowa State University 2009-2012.
-# Distributed under the Boost Software License, Version 1.0.
-# (See accompanying file LICENSE_1_0.txt or copy at
-# http://www.boost.org/LICENSE_1_0.txt)
+# This finds both libvrpn and libquat, since vrpn ships with and depends upon libquat
+# The VRPN_INCLUDE_DIR and VRPN_LIBRARIES flags will contain paths to both vrpn and quat
+
+# Search order:  This Find module forces the search to look first inside CMAKE_INSTALL_PREFIX
+# before proceeding to other typical library install locations.  The reason is that this is
+# where the lib will be installed if it was built using AutoBuild as part of the current 
+# build process.  If this is the case, we want to be sure to pick up this most recent
+# version of the library rather than some (older) version that might be installed elsewhere
+# on the system.
 
 
-set(VRPN_ROOT_DIR
-	"${VRPN_ROOT_DIR}"
-	CACHE
-	PATH
-	"Root directory to search for VRPN")
+# First, check for the main VRPN library
 
-if("${CMAKE_SIZEOF_VOID_P}" MATCHES "8")
-	set(_libsuffixes lib64 lib)
-
-	# 64-bit dir: only set on win64
-	file(TO_CMAKE_PATH "$ENV{ProgramW6432}" _progfiles)
-else()
-	set(_libsuffixes lib)
-	if(NOT "$ENV{ProgramFiles\(x86\)}" STREQUAL "")
-		# 32-bit dir: only set on win64
-		file(TO_CMAKE_PATH "$ENV{ProgramFiles\(x86\)}" _progfiles)
-	else()
-		# 32-bit dir on win32, useless to us on win64
-		file(TO_CMAKE_PATH "$ENV{ProgramFiles}" _progfiles)
-	endif()
+find_path(VRPN_INCLUDE_DIR 
+    vrpn_Connection.h
+  NO_DEFAULT_PATH
+  HINTS 
+    ${CMAKE_INSTALL_PREFIX}/include 
+    ${CMAKE_INSTALL_PREFIX}/include/vrpn
+)
+if (NOT VRPN_INCLUDE_DIR)
+    find_path(VRPN_INCLUDE_DIR 
+        vrpn_Connection.h
+      HINTS 
+        ${CMAKE_INSTALL_PREFIX}/include 
+        ${CMAKE_INSTALL_PREFIX}/include/vrpn
+        $ENV{VRPN_ROOT}/include 
+        $ENV{VRPN_ROOT}/include/vrpn
+        /usr/local/include
+        /usr/local/include/vrpn
+    )
 endif()
 
-###
-# Configure VRPN
-###
 
-find_path(VRPN_INCLUDE_DIR
-	NAMES
-	vrpn_Connection.h
-	PATH_SUFFIXES
-	include
-	include/vrpn
-	HINTS
-        ${CMAKE_INSTALL_PREFIX}
-	"${VRPN_ROOT_DIR}"
-	ENV CPATH # For OSCAR modules at Brown/CCV
-	PATHS
-	"${_progfiles}/VRPN"
-	C:/usr/local
-	/usr/local)
+find_library(VRPN_OPT_LIBRARIES 
+  NAMES 
+    libvrpn.a 
+    vrpn.lib 
+    vrpn
+  NO_DEFAULT_PATH
+  HINTS 
+    ${CMAKE_INSTALL_PREFIX}/lib 
+)
+if (NOT VRPN_OPT_LIBRARIES)
+    find_library(VRPN_OPT_LIBRARIES 
+      NAMES 
+        libvrpn.a 
+        vrpn.lib 
+        vrpn
+      HINTS 
+        ${CMAKE_INSTALL_PREFIX}/lib 
+        $ENV{VRPN_ROOT}/lib 
+        /usr/local/lib
+    )
+endif()
 
-find_library(VRPN_LIBRARY
-	NAMES
-	vrpn
+          
+find_library(VRPN_DEBUG_LIBRARIES 
+  NAMES 
+    libvrpnd.a 
+    vrpnd.lib 
+    vrpnd
+  NO_DEFAULT_PATH
+  HINTS 
+    ${CMAKE_INSTALL_PREFIX}/lib 
+)
+if (NOT VRPN_DEBUG_LIBRARIES)
+    find_library(VRPN_DEBUG_LIBRARIES 
+      NAMES 
+        libvrpnd.a 
+        vrpnd.lib 
         vrpnd
-	PATH_SUFFIXES
-	${_libsuffixes}
-	HINTS
-        ${CMAKE_INSTALL_PREFIX}
-	"${VRPN_ROOT_DIR}"
-	ENV LIBRARY_PATH # For OSCAR modules at Brown/CCV
-	PATHS
-	"${_progfiles}/VRPN"
-	C:/usr/local
-	/usr/local)
-
-find_library(VRPN_SERVER_LIBRARY
-	NAMES
-	vrpnserver
-        vrpnserverd
-	PATH_SUFFIXES
-	${_libsuffixes}
-	HINTS
-        ${CMAKE_INSTALL_PREFIX}
-	"${VRPN_ROOT_DIR}"
-	ENV LIBRARY_PATH # For OSCAR modules at Brown/CCV
-	PATHS
-	"${_progfiles}/VRPN"
-	C:/usr/local
-	/usr/local)
-
-###
-# Dependencies
-###
-set(_deps_libs)
-set(_deps_includes)
-set(_deps_check)
-
-find_package(quatlib)
-list(APPEND _deps_libs ${QUATLIB_LIBRARIES})
-list(APPEND _deps_includes ${QUATLIB_INCLUDE_DIRS})
-list(APPEND _deps_check QUATLIB_FOUND)
-
-if(NOT WIN32)
-	find_package(Threads)
-	list(APPEND _deps_libs ${CMAKE_THREAD_LIBS_INIT})
-	list(APPEND _deps_check CMAKE_HAVE_THREADS_LIBRARY)
+      HINTS 
+        ${CMAKE_INSTALL_PREFIX}/lib 
+        $ENV{VRPN_ROOT}/lib 
+        /usr/local/lib
+    )
 endif()
 
 
+if (VRPN_OPT_LIBRARIES)
+    set(VRPN_OPT_LIBRARIES optimized ${VRPN_OPT_LIBRARIES})
+endif()
+if (VRPN_DEBUG_LIBRARIES)
+    set(VRPN_DEBUG_LIBRARIES debug ${VRPN_DEBUG_LIBRARIES})
+endif()
 
-# handle the QUIETLY and REQUIRED arguments and set xxx_FOUND to TRUE if
-# all listed variables are TRUE
+set(VRPN_LIBRARIES ${VRPN_OPT_LIBRARIES} ${VRPN_DEBUG_LIBRARIES})
+
+
+
+
+# VRPN depends on quatlib, so we need to also check for that
+
+find_path(QUAT_INCLUDE_DIR 
+    quat.h
+  NO_DEFAULT_PATH
+  HINTS 
+    ${CMAKE_INSTALL_PREFIX}/include 
+    ${CMAKE_INSTALL_PREFIX}/include/vrpn
+    ${CMAKE_INSTALL_PREFIX}/include/vrpn/quat
+)
+if (NOT QUAT_INCLUDE_DIR)
+    find_path(QUAT_INCLUDE_DIR 
+        vrpn_Connection.h
+      HINTS 
+        ${CMAKE_INSTALL_PREFIX}/include 
+        ${CMAKE_INSTALL_PREFIX}/include/vrpn
+        ${CMAKE_INSTALL_PREFIX}/include/vrpn/quat
+        $ENV{VRPN_ROOT}/include 
+        $ENV{VRPN_ROOT}/include/vrpn
+        $ENV{VRPN_ROOT}/include/vrpn/quat
+        /usr/local/include
+        /usr/local/include/vrpn
+        /usr/local/include/vrpn/quat
+    )
+endif()
+
+
+find_library(QUAT_OPT_LIBRARIES 
+  NAMES 
+    libquat.a 
+    quat.lib 
+    quat
+  NO_DEFAULT_PATH
+  HINTS 
+    ${CMAKE_INSTALL_PREFIX}/lib 
+)
+if (NOT QUAT_OPT_LIBRARIES)
+    find_library(QUAT_OPT_LIBRARIES 
+      NAMES 
+        libquat.a 
+        quat.lib 
+        quat
+      HINTS 
+        ${CMAKE_INSTALL_PREFIX}/lib 
+        $ENV{VRPN_ROOT}/lib 
+        /usr/local/lib
+    )
+endif()
+
+          
+find_library(QUAT_DEBUG_LIBRARIES 
+  NAMES 
+    libquatd.a 
+    quatd.lib 
+    quatd
+  NO_DEFAULT_PATH
+  HINTS 
+    ${CMAKE_INSTALL_PREFIX}/lib 
+)
+if (NOT QUAT_DEBUG_LIBRARIES)
+    find_library(QUAT_DEBUG_LIBRARIES 
+      NAMES 
+        libquat.a 
+        quatd.lib 
+        quatd
+      HINTS 
+        ${CMAKE_INSTALL_PREFIX}/lib 
+        $ENV{VRPN_ROOT}/lib 
+        /usr/local/lib
+    )
+endif()
+
+
+if (QUAT_OPT_LIBRARIES)
+    set(QUAT_OPT_LIBRARIES optimized ${QUAT_OPT_LIBRARIES})
+endif()
+if (QUAT_DEBUG_LIBRARIES)
+    set(QUAT_DEBUG_LIBRARIES debug ${QUAT_DEBUG_LIBRARIES})
+endif()
+
+set(QUAT_LIBRARIES ${QUAT_OPT_LIBRARIES} ${QUAT_DEBUG_LIBRARIES})
+
+
+# Add libquat flags to the vrpn flags
+set(VRPN_INCLUDE_DIR ${VRPN_INCLUDE_DIR} ${QUAT_INCLUDE_DIR})
+set(VRPN_LIBRARIES ${VRPN_LIBRARIES} ${QUAT_LIBRARIES})
+
+
+
+
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(VRPN
-	DEFAULT_MSG
-	VRPN_LIBRARY
-	VRPN_INCLUDE_DIR
-	${_deps_check})
+find_package_handle_standard_args(
+    VRPN
+    DEFAULT_MSG
+    VRPN_INCLUDE_DIR
+    VRPN_OPT_LIBRARIES 
+    VRPN_DEBUG_LIBRARIES 
+    VRPN_LIBRARIES
+    QUAT_INCLUDE_DIR
+    QUAT_OPT_LIBRARIES 
+    QUAT_DEBUG_LIBRARIES 
+    QUAT_LIBRARIES
+)
 
-if(VRPN_FOUND)
-	set(VRPN_INCLUDE_DIRS "${VRPN_INCLUDE_DIR}" ${_deps_includes})
-	set(VRPN_LIBRARIES "${VRPN_LIBRARY}" ${_deps_libs})
-	set(VRPN_SERVER_LIBRARIES "${VRPN_SERVER_LIBRARY}" ${_deps_libs})
-
-	if(VRPN_LIBRARY)
-		set(VRPN_CLIENT_DEFINITIONS -DVRPN_CLIENT_ONLY)
-	else()
-		unset(VRPN_CLIENT_DEFINITIONS)
-	endif()
-
-	if(VRPN_LIBRARY AND NOT VRPN_SERVER_LIBRARY)
-		set(VRPN_DEFINITIONS -DVRPN_CLIENT_ONLY)
-	else()
-		unset(VRPN_DEFINITIONS)
-	endif()
-
-	mark_as_advanced(VRPN_ROOT_DIR)
-endif()
-
-mark_as_advanced(VRPN_LIBRARY VRPN_SERVER_LIBRARY VRPN_INCLUDE_DIR)
+mark_as_advanced(
+    VRPN_INCLUDE_DIR 
+    VRPN_OPT_LIBRARIES 
+    VRPN_DEBUG_LIBRARIES 
+    VRPN_LIBRARIES
+    QUAT_INCLUDE_DIR
+    QUAT_OPT_LIBRARIES 
+    QUAT_DEBUG_LIBRARIES 
+    QUAT_LIBRARIES
+)

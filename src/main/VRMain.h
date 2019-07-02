@@ -508,6 +508,10 @@ public:
     /// can be used by customized implementations of the mainloop function
     bool getShutdown() const { return _shutdown; }
 
+    /// Returns true if either of the following is true:
+    /// 1. the current process is running in standalone mode (i.e., no networking).
+    /// 2. the current process is the server for cluster rendering.
+    bool isMasterNode();
 
 
 
