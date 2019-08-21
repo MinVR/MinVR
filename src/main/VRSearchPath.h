@@ -88,14 +88,20 @@ class VRSearchPlugin : public VRSearchPath {
     buildType = "d";
 #endif
 
+    std::string dir_with_slash = directory;
+    if ((dir_with_slash[dir_with_slash.length() - 1] != '/') || (dir_with_slash[dir_with_slash.length() - 1] != '\\')) {
+        dir_with_slash = dir_with_slash + "/";
+    }
+
+
 #if defined(WIN32)
-    return directory + "/" + file + buildType + ".dll";
+    return dir_with_slash + file + buildType + ".dll";
 
 #elif defined(__APPLE__)
-    return directory + "/lib" + file + buildType + ".dylib";
+    return dir_with_slash + "lib" + file + buildType + ".dylib";
 
 #else // Linux
-    return directory + "/lib" + file + buildType + ".so";
+    return dir_with_slash + "lib" + file + buildType + ".so";
 
 #endif
   }

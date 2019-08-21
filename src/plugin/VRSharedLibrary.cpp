@@ -79,6 +79,7 @@ void VRSharedLibrary::load() {
 				0, NULL);
 
 			error = static_cast<const char *>(lpMsgBuf);
+            std::cerr << "error = " << error << std::endl;
 		}
 
 #else
@@ -89,10 +90,10 @@ void VRSharedLibrary::load() {
 
 		if (!_lib) {
 
-#ifdef MinVR_DEBUG
+//#ifdef MinVR_DEBUG
 			VRWARNING("Could not load library: " + _filePath + " - " + error,
                 "This is a harmless warning, unless the library can't be found anywhere else.");
-#endif
+//#endif
 			return;
 
 		}

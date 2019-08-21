@@ -58,8 +58,7 @@ public:
 	VRPluginManager(VRMainInterface *_vrMain);
 	virtual ~VRPluginManager();
 
-	/// Argument provides the path to the shared lib that contains the plugin
-	bool loadPlugin(const std::string& filePath, const std::string& baseFileName);
+	/// Argument provides the full path including filename to the shared lib that contains the plugin
 	bool loadPlugin(const std::string& pluginFilePath);
 
 private:

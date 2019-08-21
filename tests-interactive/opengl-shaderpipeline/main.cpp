@@ -43,6 +43,16 @@ public:
         vrMain->addEventHandler(this);
         vrMain->addRenderHandler(this);
         vrMain->initialize(argc,argv);
+
+        std::string vrSetupsToStart = vrMain->getName();
+        std::cout << vrSetupsToStart << std::endl;
+
+        // Print whether a the vrsetup is a host or a client
+        std::cout << vrMain->getConfig()->getAttributeValue(vrMain->getName(), "hostType") << std::endl;
+        if (vrMain->getConfig()->exists("NumClients", vrMain->getName())) {
+            // How to read configuration settings for the specific vrsetup
+            std::cout << "Number of Clients: " << (std::string)vrMain->getConfig()->getValue("NumClients", vrMain->getName()) << std::endl;
+        }
     }
 
 
@@ -76,6 +86,10 @@ public:
         if (stateData.exists("IsGraphics")) {
             // If this is the inital call, initialize context variables
             if ((int)stateData.getValue("InitRender") == 1) {
+
+
+           winToolkit = vrMain->getWindowToolkit("VRGLFWWindowToolkit");
+           VRglproc procAddress = winToolkit->getProcAddress("proc_name");
                 
 #ifndef __APPLE__
                 glewExperimental = GL_TRUE;
@@ -295,6 +309,7 @@ private:
 	GLuint vbo, vao, vshader, fshader, shaderProgram;
 	float model[16];
     VRMain *vrMain;
+    VRWindowToolkit *winToolkit;
 };
 
 /// Main method which creates and calls application

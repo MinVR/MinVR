@@ -60,6 +60,8 @@ public:
 // 	Window1_Visible         0
 };
 
+typedef void(* VRglproc) (void);
+
 
 /** Abstract base class for window toolkits (GLFW, glut, etc.) that are implemented
     in plugins.
@@ -86,6 +88,11 @@ public:
 
 	virtual void getFramebufferSize(int windowID, int& width, int& height) {
 		std::cerr << "getFramebufferSize() not enabled in this VRWindowToolkit." << std::endl;
+	}
+
+	virtual VRglproc getProcAddress(const char *name) {
+		std::cerr << "getProcAddress() not enabled in this VRWindowToolkit." << std::endl;
+		return NULL;
 	}
 
 	static std::string getAttributeName(){ return "windowtoolkitType"; };

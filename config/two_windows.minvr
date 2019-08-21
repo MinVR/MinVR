@@ -1,4 +1,3 @@
-
 <!-- This config works well for a desktop window that is designed to debug VR
   Apps. It includes fake trackers, one for the head and one for each hand,
   that are controlled through keyboard and mouse events.  In this way, you can
@@ -11,7 +10,8 @@
 
 
 <MinVR>
-
+  <Port type="string">3456</Port>
+  <ServerIP>localhost</ServerIP>
 
   <!-- GLOBAL SETTINGS (LIKE GLOBAL VARIABLES) -->
 
@@ -28,7 +28,7 @@
 
   <!-- Version Number to Request for the OpenGL Graphcis Rendering Context -->
   <ContextVersionMajor>4</ContextVersionMajor>
-  <ContextVersionMinor>1</ContextVersionMinor>
+  <ContextVersionMinor>5</ContextVersionMinor>
 
 
   <!-- Setup a Desktop-Style Camera -->
@@ -57,8 +57,8 @@
   <Border>1</Border>
   <XPos>100</XPos>
   <YPos>100</YPos>
-  <Width>1024</Width>
-  <Height>1024</Height>
+  <Width>500</Width>
+  <Height>500</Height>
   <RGBBits>8</RGBBits>
   <AlphaBits>8</AlphaBits>
   <DepthBits>24</DepthBits>
@@ -74,9 +74,52 @@
   <MSAASamples>1</MSAASamples>
 
 
+  <Server hostType="VRServer">
+    <NumClients>2</NumClients>
+  </Server>
 
 
-  <Desktop hostType="VRStandAlone">
+  <Desktop1 hostType="VRClient">
+
+   
+    <!-- Input Devices: Three Fake Trackers -->
+
+    <FakeHead inputdeviceType="VRFakeHeadTrackerDevice">
+      <TrackerName>HeadTracker</TrackerName>
+      <ToggleOnOffEvent>Kbd1_Down</ToggleOnOffEvent>
+    </FakeHead>
+
+    <FakeHand1 inputdeviceType="VRFakeHandTrackerDevice">
+      <TrackerName>RHandTracker</TrackerName>
+      <ToggleOnOffEvent>Kbd2_Down</ToggleOnOffEvent>
+      <XYTranslationScale>2.0</XYTranslationScale>
+      <ZTranslationScale>2.0</ZTranslationScale>
+    </FakeHand1>
+
+    <FakeHand2 inputdeviceType="VRFakeHandTrackerDevice">
+      <TrackerName>LHandTracker</TrackerName>
+      <ToggleOnOffEvent>Kbd3_Down</ToggleOnOffEvent>
+      <XYTranslationScale>2.0</XYTranslationScale>
+      <ZTranslationScale>2.0</ZTranslationScale>
+    </FakeHand2>
+
+
+    <!-- Display Devices: Just A Single Graphics Window -->
+
+    <WindowNode displaynodeType="VRGraphicsWindowNode">
+      <TrackingNode displaynodeType="VRHeadTrackingNode">
+        <StereoNode displaynodeType="VRStereoNode">
+          <ProjectionNode displaynodeType="VRProjectionNode">
+            <DUMMY/>
+          </ProjectionNode>
+        </StereoNode>
+      </TrackingNode>
+    </WindowNode>
+
+  </Desktop1>
+
+  <Desktop2 hostType="VRClient">
+  <XPos>700</XPos>
 
     <!-- Input Devices: Three Fake Trackers -->
 
@@ -112,7 +155,6 @@
       </TrackingNode>
     </WindowNode>
 
-  </Desktop>
-
+  </Desktop2>
 
 </MinVR>
