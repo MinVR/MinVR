@@ -38,6 +38,7 @@ macro(AutoBuild_use_package_VRPN YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
                 -DVRPN_BUILD_PYTHON=OFF
                 -DVRPN_USE_DIRECTINPUT=OFF
                 -DVRPN_USE_DIRECTSHOW=OFF
+                -DCMAKE_CXX_STANDARD=17
             )
 
             if (MSVC)
