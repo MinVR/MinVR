@@ -83,8 +83,8 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
     
     if (::bind(serv_fd, result->ai_addr, (int)result->ai_addrlen) == SOCKET_ERROR) {
         VRERROR("VRServer: bind() failed.", "Check for a problem with networking.");
-        close(serv_fd);
         WSACleanup();
+        closesocket(serv_fd);
         exit(1);
     }
     
