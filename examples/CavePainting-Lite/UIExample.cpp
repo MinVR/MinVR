@@ -43,10 +43,10 @@ UIExample::UIExample(int argc, char** argv) : VRApp(argc, argv),
         // IV/LAB Cave mode
         _rHandTrackerEvent = "RedStylus_Move";
         _lHandTrackerEvent = "BlueStylus_Move";
-        _paintOnEvent = "RedStylusFrontBtn_Down";
-        _paintOffEvent = "RedStylusFrontBtn_Up";
-        _grabOnEvent = "BlueStylusFrontBtn_Down";
-        _grabOffEvent = "BlueStylusFrontBtn_Up";
+        _paintOnEvent = "RedStylusBackBtn_Down";
+        _paintOffEvent = "RedStylusBackBtn_Up";
+        _grabOnEvent = "BlueStylusBackBtn_Down";
+        _grabOffEvent = "BlueStylusBackBtn_Up";
     }
     else if ((name.find("Vive") != string::npos) || (name.find("rift") != string::npos)) {
         // HTC Vive / Oculus Rift mode
@@ -207,18 +207,30 @@ void UIExample::onRenderGraphicsScene(const VRGraphicsState &renderState) {
     
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     
+
+	// Draw something just for debugging
+	//const GLfloat col[] = { 0.75, 0.75, 0.75 };
+	//glm::mat4 id = glm::mat4(1.0);
+	//_quickShapes->drawCube(glm::value_ptr(id), renderState.getViewMatrix(), renderState.getProjectionMatrix(), col);
+
+
     // Draw a cursor for the left hand
     const GLfloat lcolor [] = {0.8, 0.5, 0.5};
     glm::mat4 scaleHandCursor = glm::mat4(1.0);
-    scaleHandCursor[0].x = 0.25;
-    scaleHandCursor[1].y = 0.25;
-    scaleHandCursor[2].z = 0.25;
+    scaleHandCursor[0].x = 0.1;
+    scaleHandCursor[1].y = 0.1;
+    scaleHandCursor[2].z = 0.1;
     glm::mat4 lHandScaled = _lhand * scaleHandCursor;
     _quickShapes->drawCube(glm::value_ptr(lHandScaled), renderState.getViewMatrix(), renderState.getProjectionMatrix(), lcolor);
     
     // Draw a cursor for the right hand
     const float rcolor [] = {0.5, 0.5, 0.8};
-    _quickShapes->drawBrush(glm::value_ptr(_rhand), renderState.getViewMatrix(), renderState.getProjectionMatrix(), rcolor);
+	glm::mat4 scaleBrushCursor = glm::mat4(1.0);
+	scaleBrushCursor[0].x = 0.3;
+	scaleBrushCursor[1].y = 0.3;
+	scaleBrushCursor[2].z = 0.3;
+	glm::mat4 brushScaled = _rhand * scaleBrushCursor;
+    _quickShapes->drawBrush(glm::value_ptr(brushScaled), renderState.getViewMatrix(), renderState.getProjectionMatrix(), rcolor);
     
     // Draw the "painting"
     for (int i=0; i<_paintBlobs.size(); i++) {

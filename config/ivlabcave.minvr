@@ -45,6 +45,7 @@
       </BlueStylus>
     </Optitrack3>
 
+	<!----
     <RedStylusBtns inputdeviceType="VRVRPNButtonDevice">
       <VRPNDeviceName type="string">Wixel0@tcp:127.0.0.1:3883</VRPNDeviceName>
       <EventsToGenerate type="stringarray">RedStylusFrontBtn,RedStylusBackBtn</EventsToGenerate>
@@ -54,6 +55,8 @@
       <VRPNDeviceName type="string">Wixel1@tcp:127.0.0.1:3883</VRPNDeviceName>
       <EventsToGenerate type="stringarray">BlueStylusFrontBtn,BlueStylusBackBtn</EventsToGenerate>
     </BlueStylusBtns>
+	---->
+	
   </IVLABCave_Server>
   
   <MyClients>
@@ -92,38 +95,42 @@
     <Width>1280</Width>
     <Height>1300</Height>
 
-    <IVLABCave_FrontWall hostType="VRClient">
-      <XPos>1680</XPos>
-      <TopLeft type="floatarray">-4,4,-4</TopLeft>
-      <TopRight type="floatarray">4,4,-4</TopRight>
-      <BottomLeft type="floatarray">-4,-4,-4</BottomLeft>
-      <BottomRight type="floatarray">4,-4,-4</BottomRight>
-      <DisplayGraph linkNode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
-    </IVLABCave_FrontWall>
-    <IVLABCave_Floor hostType="VRClient">
-      <XPos>2960</XPos>
-      <TopLeft type="floatarray">-4,-4,-4</TopLeft>
-      <TopRight type="floatarray">4,-4,-4</TopRight>
-      <BottomLeft type="floatarray">-4,-4,4</BottomLeft>
-      <BottomRight type="floatarray">4,-4,4</BottomRight>
-      <DisplayGraph linkNode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
-    </IVLABCave_Floor>
     <IVLABCave_LeftWall hostType="VRClient">
-      <XPos>4240</XPos>
+      <XPos>1680</XPos>
       <TopLeft type="floatarray">-4,4,4</TopLeft>
       <TopRight type="floatarray">-4,4,-4</TopRight>
       <BottomLeft type="floatarray">-4,-4,4</BottomLeft>
       <BottomRight type="floatarray">-4,-4,-4</BottomRight>
       <DisplayGraph linkNode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
     </IVLABCave_LeftWall>
-    <IVLABCave_RightWall hostType="VRClient">
-      <XPos>5520</XPos>
+ 
+    <IVLABCave_FrontWall hostType="VRClient">
+      <XPos>2960</XPos>
+      <TopLeft type="floatarray">-4,4,-4</TopLeft>
+      <TopRight type="floatarray">4,4,-4</TopRight>
+      <BottomLeft type="floatarray">-4,-4,-4</BottomLeft>
+      <BottomRight type="floatarray">4,-4,-4</BottomRight>
+      <DisplayGraph linkNode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
+    </IVLABCave_FrontWall>
+
+   <IVLABCave_RightWall hostType="VRClient">
+      <XPos>4240</XPos>
       <TopLeft type="floatarray">4,4,-4</TopLeft>
       <TopRight type="floatarray">4,4,4</TopRight>
       <BottomLeft type="floatarray">4,-4,-4</BottomLeft>
       <BottomRight type="floatarray">4,-4,4</BottomRight>
       <DisplayGraph linkNode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
     </IVLABCave_RightWall>
+
+    <IVLABCave_Floor hostType="VRClient">
+      <XPos>5520</XPos>
+	  <Height>720</Height>
+      <TopLeft type="floatarray">-4,-4,-4</TopLeft>
+      <TopRight type="floatarray">4,-4,-4</TopRight>
+      <BottomLeft type="floatarray">-4,-4,0</BottomLeft>
+      <BottomRight type="floatarray">4,-4,0</BottomRight>
+      <DisplayGraph linkNode="/MinVR/MyClients/MyDisplayGraph/WindowNode"/>
+    </IVLABCave_Floor>
 
     <!-- ********************** Display Graph ********************** -->
     <MyDisplayGraph>

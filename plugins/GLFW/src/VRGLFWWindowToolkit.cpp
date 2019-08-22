@@ -55,7 +55,6 @@ VRGLFWWindowToolkit::createWindow(VRWindowSettings settings) {
 	glfwWindowHint(GLFW_GREEN_BITS, settings.rgbBits);
 	glfwWindowHint(GLFW_BLUE_BITS, settings.rgbBits);
 	glfwWindowHint(GLFW_STENCIL_BITS, settings.stencilBits);
-	glfwWindowHint(GLFW_VISIBLE, settings.visible);
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, settings.debugContext);
 	glfwWindowHint(GLFW_DECORATED, settings.border);
 	if (settings.contextVersionMajor >= 4 || (settings.contextVersionMajor >= 3 && settings.contextVersionMinor >= 2))
@@ -142,16 +141,22 @@ VRGLFWWindowToolkit::createWindow(VRWindowSettings settings) {
 	}
 #endif
 
+	/* GLFW says: If you wish to set an initial window position, you should create a hidden window, set its position, then show it*/
+	glfwWindowHint(GLFW_VISIBLE, false);
 	GLFWwindow* window = glfwCreateWindow(settings.width, settings.height, settings.caption.c_str(), NULL, sharedContext);
 	if (!window) {
 		std::cout << "Error creating window." << std::endl;
 	}
+	glfwSetWindowPos(window, settings.xpos, settings.ypos);
+	if (settings.visible) {
+		glfwShowWindow(window);
+	}
+
 
 	if (settings.sharedContextGroupID >= 0 || !foundSharedContextGroup) {
 		_sharedContextGroups[settings.sharedContextGroupID] = window;
 	}
 
-    glfwSetWindowPos(window, settings.xpos, settings.ypos);
 
 	glfwMakeContextCurrent(window);
     glfwSwapInterval(1);

@@ -1,0 +1,9 @@
+<MinVR>
+
+  <IVLABCave_Server hostType="VRServer">
+	<NumClients>1</NumClients>
+    <Port type="string">3480</Port>
+    <ServerIP>128.101.106.72</ServerIP>
+  </IVLABCave_Server>
+  
+</MinVR>

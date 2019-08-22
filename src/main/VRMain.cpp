@@ -442,6 +442,9 @@ bool VRMain::_startLocalProcess(const std::string &setupName) {
   LPSTR cmd = new char[cmdLine.size() + 1];
   strcpy(cmd, cmdLine.c_str());
 
+
+  Sleep(2000);
+
   // Start the child process.
   if (!CreateProcess(NULL,   // No module name (use command line)
                      cmd,        // Command line
