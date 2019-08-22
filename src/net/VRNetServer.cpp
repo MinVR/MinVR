@@ -37,40 +37,60 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
 #ifdef WIN32  // Winsock implementation
 
     WSADATA wsaData;
-    int rv;
-    rv = WSAStartup(MAKEWORD(2,2), &wsaData);
-    if (rv != 0) {
+    int iResult;
+    iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
+    if (iResult != 0) {
         stringstream s;
-        s << "WSAStartup failed with error: " << rv;
-        VRERROR(s.str(), "Check for a problem with Windows networking.");    exit(1);
+        s << "WSAStartup failed with error: " << iResult;
+        VRERROR(s.str(), "Check for a problem with Windows networking.");
+        exit(1);
     }
 
-    const char yes = 1;
-    SOCKET serv_fd = INVALID_SOCKET;
 
-    if ((serv_fd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
-        VRERROR("VRServer: cannot create a socket", "socket(AF_INET, SOCK_STREAM, 0) failed");
+    struct addrinfo hints;
+    ZeroMemory(&hints, sizeof(hints));
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_protocol = IPPROTO_TCP;
+    hints.ai_flags = AI_PASSIVE;
+    
+    // Resolve the server address and port
+    struct addrinfo *result = NULL;
+    iResult = getaddrinfo(NULL, listenPort.c_str(), &hints, &result);
+    if ( iResult != 0 ) {
+        stringstream s;
+        s << "WSAStartup failed with error: " << iResult;
+        VRERROR(s.str(), "Check for a problem with Windows networking.");
+        WSACleanup();
         exit(1);
     }
     
+
+    SOCKET serv_fd = INVALID_SOCKET;
+    serv_fd = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
+    if (serv_fd == INVALID_SOCKET) {
+        VRERROR("VRServer: cannot create a socket", "socket() failed");
+        WSACleanup();
+        exit(1);
+    }
+    
+    const char yes = 1;
     if (setsockopt(serv_fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1) {
         VRERROR("VRServer: setsockopt() failed.", "Check for a problem with networking.");
+        WSACleanup();
         exit(1);
     }
     
-    struct sockaddr_in serv_addr;
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    serv_addr.sin_port = htons(stoi(listenPort.c_str()));
-    
-    if (::bind(serv_fd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) == -1) {
+    if (::bind(serv_fd, result->ai_addr, (int)result->ai_addrlen) == SOCKET_ERROR) {
         VRERROR("VRServer: bind() failed.", "Check for a problem with networking.");
-        close(serv_fd);
+        WSACleanup();
+        closesocket(serv_fd);
         exit(1);
     }
     
-    if (listen(serv_fd, BACKLOG) == -1) {
+    if (listen(serv_fd, BACKLOG) == SOCKET_ERROR) {
         VRERROR("VRServer: listen() failed.", "Check for a problem with networking.");
+        WSACleanup();
         exit(1);
     }
     
@@ -84,8 +104,9 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
     while (numConnected < numExpectedClients) {
         client_len = sizeof(client_addr);
         client_fd = accept(serv_fd, (struct sockaddr *) &client_addr, &client_len);
-        if (client_fd == -1) {
+        if (client_fd == INVALID_SOCKET) {
             VRERROR("VRServer: accept() failed.", "Check for a problem with networking.");
+            WSACleanup();
             exit(1);
         }
         
