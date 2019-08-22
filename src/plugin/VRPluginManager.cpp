@@ -68,45 +68,40 @@ VRPluginManager::~VRPluginManager() {
 	}
 }
 
-bool VRPluginManager::loadPlugin(const std::string& filePath, const std::string& name) {
-#if defined(WIN32)
-	std::string path = filePath + "/" + name + ".dll";
-#elif defined(__APPLE__)
-	std::string path = filePath + "/lib" + name + ".dylib";
-#else
-	std::string path = filePath + "/lib" + name + ".so";
-#endif
-    
-    //std::cerr << "Calling loadPlugin with: " << path << std::endl;
-
-	return loadPlugin(path);
-}
 
 bool VRPluginManager::loadPlugin(const std::string& pluginFilePath) {
-    //std::cerr << "Trying to load: " << pluginFilePath << std::endl;
+    std::cerr << "Trying to load: " << pluginFilePath << std::endl;
 	VRSharedLibrary* lib = new VRSharedLibrary(pluginFilePath);
 	if (lib->isLoaded())
 	{
+        std::cerr << "Loaded lib." << std::endl;
+
 		typedef int version_t();
 		version_t* getVersion = lib->loadSymbol<version_t>("getPluginFrameworkVersion");
 		if (getVersion() != getPluginFrameworkVersion())
 		{
-			//std::cerr << "Cannot load plugin: " << pluginFilePath << " - Incorrect framework version." << std::endl;
+		    std::cerr << "Cannot load plugin: " << pluginFilePath << " - Incorrect framework version." << std::endl;
 			delete lib;
 			return false;
 		}
+        else {
+            std::cerr << "Verified plugin framework version." << std::endl;
+        }
 
 		typedef VRPlugin* create_t();
 		create_t* createVRPlugin = lib->loadSymbol<create_t>("createPlugin");
 		if (createVRPlugin == NULL)
 		{
-			//std::cerr << "Cannot load plugin: " << pluginFilePath << " - createVRPlugin funciton not found." << std::endl;
+			std::cerr << "Cannot load plugin: " << pluginFilePath << " - createVRPlugin function not found." << std::endl;
 			delete lib;
 			return false;
 		}
+        std::cerr << "Loaded symbol for createVRPlugin()" << std::endl;
 
+        std::cerr << "Calling createVRPlugin()" << std::endl;
 		VRPlugin* plugin = createVRPlugin();
-		
+        std::cerr << "Finished createVRPlugin(); registering plugin with MinVR." << std::endl;
+
 		plugin->registerWithMinVR(_vrMain);
 
 		_plugins.push_back(plugin);

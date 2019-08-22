@@ -35,7 +35,7 @@ macro(AutoBuild_use_package_OpenVR YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
             AutoBuild_build_and_install_project(
                 ${PACKAGE_NAME}
                 .
-                -DBUILD_SHARED=ON
+                -DBUILD_SHARED=ON -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
             )
 
             # OpenVR's install target seems to only install the lib.  So, install headers manually here.

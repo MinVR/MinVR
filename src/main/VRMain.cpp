@@ -542,7 +542,7 @@ void VRMain::initialize(int argc, char **argv) {
 	}
   else {
     VRLOG_STATUS("Will start the following VRSetup(s) found in the MinVR config data:")
-    for (vector<std::string>::iterator it = vrSetupsToStartArray.begin(); it != vrSetupsToStartArray.end(); it++)  {
+    for (std::vector<std::string>::iterator it = vrSetupsToStartArray.begin(); it != vrSetupsToStartArray.end(); it++)  {
       VRLOG_STATUS("  " + *it)
     }
   }
@@ -556,7 +556,7 @@ void VRMain::initialize(int argc, char **argv) {
   // processes.
   VRLOG_H2("Parse VRSetups and Start Sub-Processes");
 
-  for (vector<std::string>::iterator it = vrSetupsToStartArray.begin();
+  for (std::vector<std::string>::iterator it = vrSetupsToStartArray.begin();
        it != vrSetupsToStartArray.end(); it++)  {
 
     if (_config->exists("HostIP", *it) && !_config->exists("StartedSSH", "/")) {
@@ -660,7 +660,7 @@ void VRMain::initialize(int argc, char **argv) {
 		if (type == "VRServer") {
 			std::string port = _config->getValue("Port", _name);
 			int numClients = _config->getValue("NumClients", _name);
-      stringstream s;
+      std::stringstream s;
       s << "This VRSetup is a SERVER running on Port " << port << " and expecting " << numClients << " clients.";
       VRLOG_STATUS(s.str());
 			_net = new VRNetServer(port, numClients);
@@ -668,7 +668,7 @@ void VRMain::initialize(int argc, char **argv) {
 		else if (type == "VRClient") {
 			std::string port = _config->getValue("Port", _name);
 			std::string ipAddress = _config->getValue("ServerIP", _name);
-      stringstream s;
+      std::stringstream s;
       s << "This VRSetup is a CLIENT that will connect to " << ipAddress << ":" << port << ".";
       VRLOG_STATUS(s.str());
       _net = new VRNetClient(ipAddress, port);
@@ -821,7 +821,7 @@ void VRMain::initialize(int argc, char **argv) {
 
   VRLOG_STATUS("Created the following Display Graph(s):")
   for (std::vector<VRDisplayNode*>::iterator it = _displayGraphs.begin(); it != _displayGraphs.end(); it++) {
-     stringstream s;
+     std::stringstream s;
      s << *(*it) << std::endl;
      VRLOG_STATUS(s.str());
   }

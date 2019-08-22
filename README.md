@@ -108,11 +108,17 @@ or as an even shorter shorthand that will load the ```default.minvr``` config fi
 
 #### 7. Run in VR Mode
 
-You can run the same example application in a variety of VR displays supported by MinVR just by changing the configuration file specified on the command line.  MinVR ships with configs that work for some common displays, such as the Oculus Rift, HTC Vive, and various 3DTVs.  If you have a Vive, try running the following.
+You can run the same example application in a variety of VR displays supported by MinVR just 
+by changing the configuration file specified on the command line.  MinVR ships with configs 
+that work for some common displays, such as the Oculus Rift, HTC Vive, and various 3DTVs.  
+If you have a Vive, try running the following.
 
 ```bin/itest-opengl-shaderpipeline-with-api -c HTC_Vive```
 
-MinVR also works with high-end displays, such as CAVEs and Powerwalls.  Some example config files for these environments are also included, but these high-end environments are not standardized, so these may writing a custom config file using one of the examples as a starting point.
+MinVR also works with high-end displays, such as CAVEs and Powerwalls.  Some example config 
+files for these environments are also included, but these high-end environments are not 
+standardized, so these may writing a custom config file using one of the examples as a 
+starting point.
 
 
 ## Installing the Library

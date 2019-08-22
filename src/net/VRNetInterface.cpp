@@ -12,17 +12,20 @@ const unsigned char VRNetInterface::SWAP_BUFFERS_NOW_MSG = 3;
 const unsigned char VRNetInterface::VRNET_SIZEOFINT = 4;
 
 void VRNetInterface::sendSwapBuffersRequest(SOCKET socketID) {
+  // std::cerr << "sendSwapBuffersRequest" << std::endl;
   // this message consists only of a 1-byte header
   sendall(socketID, &SWAP_BUFFERS_REQUEST_MSG, 1);
 }
 
 void VRNetInterface::sendSwapBuffersNow(SOCKET socketID) {
+  // std::cerr << "sendSwapBuffersNow" << std::endl;
   // this message consists only of a 1-byte header
   sendall(socketID, &SWAP_BUFFERS_NOW_MSG, 1);
 }
 
 void VRNetInterface::sendEventData(SOCKET socketID,
                                    VRDataQueue::serialData eventData) {
+    // std::cerr << "sendEventData" << std::endl;
 
 	int dataSize =  (int)eventData.size() + 1 + VRNET_SIZEOFINT;
 	unsigned char *buf = new unsigned char[dataSize+1];
@@ -63,7 +66,7 @@ void VRNetInterface::waitForAndReceiveOneByte(SOCKET socketID,
   while (receivedID != messageID) {
     int status = receiveall(socketID, &receivedID, 1);
     if (status == -1) {
-      std::cerr << "NetInterface error: receiveall failed receiving singly byte." << std::endl;
+      std::cerr << "NetInterface error: receiveall failed receiving single byte." << std::endl;
       exit(1);
     }
     else if ((status == 1) && (receivedID != messageID)) {
@@ -75,12 +78,14 @@ void VRNetInterface::waitForAndReceiveOneByte(SOCKET socketID,
 
 void
 VRNetInterface::waitForAndReceiveSwapBuffersRequest(SOCKET socketID) {
+  // std::cerr << "waitForAndReceiveSwapBuffersRequest" << std::endl;
   // this message consists only of a 1-byte header
   waitForAndReceiveOneByte(socketID, SWAP_BUFFERS_REQUEST_MSG);
 }
 
 void
 VRNetInterface::waitForAndReceiveSwapBuffersNow(SOCKET socketID) {
+  // std::cerr << "waitForAndReceiveSwapBuffersNow" << std::endl;
   // this message consists only of a 1-byte header
   waitForAndReceiveOneByte(socketID, SWAP_BUFFERS_NOW_MSG);
 }
@@ -88,6 +93,8 @@ VRNetInterface::waitForAndReceiveSwapBuffersNow(SOCKET socketID) {
 
 VRDataQueue::serialData
 VRNetInterface::waitForAndReceiveEventData(SOCKET socketID) {
+  // std::cerr << "waitForAndReceiveEventData" << std::endl;
+
   // 1. receive 1-byte message header
   waitForAndReceiveOneByte(socketID, EVENTS_MSG);
 
