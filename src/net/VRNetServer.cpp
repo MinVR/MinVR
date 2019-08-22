@@ -65,7 +65,7 @@ VRNetServer::VRNetServer(const std::string &listenPort, int numExpectedClients)
     
     if (::bind(serv_fd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) == -1) {
         VRERROR("VRServer: bind() failed.", "Check for a problem with networking.");
-        close(serv_fd);
+        closesocket(serv_fd);
         exit(1);
     }
     
