@@ -36,6 +36,7 @@ macro(AutoBuild_use_package_VRPN YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
                 -DVRPN_BUILD_HID_GUI=OFF
                 -DVRPN_BUILD_JAVA=OFF
                 -DVRPN_BUILD_PYTHON=OFF
+				-DVRPN_BUILD_CLIENTS=OFF
                 -DVRPN_USE_DIRECTINPUT=OFF
                 -DVRPN_USE_DIRECTSHOW=OFF
                 -DCMAKE_CXX_STANDARD=17

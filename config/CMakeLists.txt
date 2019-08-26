@@ -8,6 +8,7 @@ set(vr_config_files
   desktop.minvr
   YURT.minvr
   ivlabcave.minvr
+  ivlabcave_unity_server.minvr
 )
 
 set_source_files_properties(${vr_config_files} PROPERTIES HEADER_FILE_ONLY TRUE)
