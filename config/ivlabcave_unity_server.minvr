@@ -1,0 +1,47 @@
+<MinVR>
+
+  <IVLABCave_Server hostType="VRServer">
+	<NumClients>8</NumClients>
+    <Port type="string">3490</Port>
+    <ServerIP>127.0.0.1</ServerIP>
+	
+	<VRPNPlugin pluginType="MinVR_VRPN"/>
+    
+	<!-- Common to all three Optitrack virtual devices -->
+    <ConvertLHtoRH>1</ConvertLHtoRH>
+    <IgnoreZeroes>1</IgnoreZeroes>
+    <WaitForNewReportInPoll>0</WaitForNewReportInPoll>
+    <TrackerUnitsToRoomUnitsScale>3.28084</TrackerUnitsToRoomUnitsScale>
+    <DeviceToRoom type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</DeviceToRoom>
+	
+    <!-- Input Devices -->
+    <Optitrack1 inputdeviceType="VRVRPNTrackerDevice">
+      <VRPNDeviceName type="string">head@tcp:128.101.106.73:3884</VRPNDeviceName>
+      <EventsToGenerate type="stringarray">Head</EventsToGenerate>
+      <Head>
+        <PropToTracker type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</PropToTracker>
+        <FinalOffset type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+      </Head>
+    </Optitrack1>
+
+    <Optitrack2 inputdeviceType="VRVRPNTrackerDevice">
+      <VRPNDeviceName type="string">stylus0@tcp:128.101.106.73:3884</VRPNDeviceName>
+      <EventsToGenerate type="stringarray">LHand</EventsToGenerate>
+      <LHand>
+        <PropToTracker type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0.25, 0,0,0,1</PropToTracker>
+        <FinalOffset type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+      </LHand>
+    </Optitrack2>
+
+    <Optitrack3 inputdeviceType="VRVRPNTrackerDevice">
+      <VRPNDeviceName type="string">stylus1@tcp:128.101.106.73:3884</VRPNDeviceName>
+      <EventsToGenerate type="stringarray">RHand</EventsToGenerate>
+      <RHand>
+        <PropToTracker type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0.25, 0,0,0,1</PropToTracker>
+        <FinalOffset type="floatarray">1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1</FinalOffset>
+      </RHand>
+    </Optitrack3>
+
+  </IVLABCave_Server>
+  
+</MinVR>
