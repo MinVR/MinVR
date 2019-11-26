@@ -53,6 +53,7 @@ public:
 
 	virtual void onTrackerMove(const VRTrackerEvent &state) {}
 
+	virtual void onGenericEvent(const VRDataIndex &index) {}
 
 	/** RENDERING CALLBACKS **/
 
