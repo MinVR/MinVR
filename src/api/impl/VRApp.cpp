@@ -76,8 +76,7 @@ public:
             _app->onTrackerMove(VRTrackerEvent(eventData));
         }
         else {
-            VRERROR("VRAppInternal::onVREvent() received an event of unknown type: " + type,
-                    "Perhaps an input device that sends a new type of event was rencently added.");
+			_app->onGenericEvent(eventData);
         }
 	}
 

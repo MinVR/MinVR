@@ -80,6 +80,7 @@ public:
 
     // Convert the line number to a string.
     std::stringstream ss; ss << whereLine; _whereLine = ss.str();
+	std::cerr << _errorMessage() << std::endl;
   };
 
   std::string _errorMessage() const {

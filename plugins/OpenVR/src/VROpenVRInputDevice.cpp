@@ -257,14 +257,14 @@ void VROpenVRInputDevice::processVREvent( const vr::VREvent_t & event ,vr::Track
 	case vr::VREvent_ButtonTouch:
 		{
 			std::string event_name = getDeviceName(event.trackedDeviceIndex) + "_" + getButtonName((vr::EVRButtonId) event.data.controller.button) + "_Touch";
-			VRDataIndex di = VRButtonEvent::createValidDataIndex(event_name, 3);
+			VRDataIndex di = VRButtonEvent::createValidDataIndex(event_name, 1);
 			_events.push_back(di);
 		}
 		break;
 	case vr::VREvent_ButtonUntouch:
 		{
 			std::string event_name = getDeviceName(event.trackedDeviceIndex) + "_" + getButtonName((vr::EVRButtonId) event.data.controller.button) + "_Untouch";
-			VRDataIndex di = VRButtonEvent::createValidDataIndex(event_name, 4);
+			VRDataIndex di = VRButtonEvent::createValidDataIndex(event_name, 0);
 			_events.push_back(di);
 		}
 		break;
