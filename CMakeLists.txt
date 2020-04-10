@@ -398,12 +398,19 @@ minvr_optional_adddir(
   "plugins/Scalable"
 )
 
+#---- G3D
+minvr_optional_adddir(
+  WITH_PLUGIN_G3D
+  "G3D Plugin"
+  "(Requires G3D and OpenGL, and GLEW)"
+  "plugins/G3D"
+)
 
 # ---- Plugins that Provide a Window Toolkit ----
 # Save a list of plugins that provide a window toolkit so that we can error out
 # if building a graphics program and no window toolkit is available.
 
-list(APPEND WINTOOLKIT_PLUGINS WITH_PLUGIN_GLFW WITH_PLUGIN_FREEGLUT)
+list(APPEND WINTOOLKIT_PLUGINS WITH_PLUGIN_GLFW WITH_PLUGIN_FREEGLUT WITH_PLUGIN_G3D)
 set(HAVE_WINTOOLKIT False)
 
 foreach(P ${WINTOOLKIT_PLUGINS})
