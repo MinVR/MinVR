@@ -20,9 +20,11 @@ project(MinVR_G3D)
 set (SOURCEFILES 
   src/VRG3DPlugin.cpp
   src/VRG3DWindowToolkit.cpp
+  src/VRG3DInputDevice.cpp
 )
 set (HEADERFILES
   src/VRG3DWindowToolkit.h
+  src/VRG3DInputDevice.h
 )
 
 
@@ -43,9 +45,9 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 target_link_libraries(${PROJECT_NAME} PUBLIC MinVR)
 
 
-# Setup dependency on OpenGL:
-#include(AutoBuildOpenGL)
-#AutoBuild_use_package_OpenGL(${PROJECT_NAME} PUBLIC)
+# Setup dependency on G3D:
+include(AutoBuildG3D)
+AutoBuild_use_package_G3D(${PROJECT_NAME} PUBLIC)
 
 
 # Setup dependency on GLEW (only needed on Windows):
