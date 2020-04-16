@@ -51,6 +51,9 @@ namespace MinVR {
 
     PLUGIN_API static VRWindowToolkit* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 
+    PLUGIN_API void getFramebufferSize(int windowID, int& width, int& height);
+     
+
   protected:
     
 

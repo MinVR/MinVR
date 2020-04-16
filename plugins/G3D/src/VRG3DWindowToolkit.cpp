@@ -16,6 +16,7 @@ namespace MinVR {
 
 
   VRG3DWindowToolkit::VRG3DWindowToolkit(VRMainInterface * vrMain)
+    : _vrMain(vrMain), _inputDev(NULL)
   {
     _inputDev = new VRG3DInputDevice();
   }
@@ -34,14 +35,19 @@ namespace MinVR {
       _vrMain->addInputDevice(_inputDev);
     }
     _inputDev->addWindow(g3dWindow);
-    _windows.push_back(g3dWindow);
+
+
+    if (g3dWindow)
+    {
+      _windows.push_back(g3dWindow);
+    }
 
     return (int)_windows.size() - 1;
   }
 
   PLUGIN_API void VRG3DWindowToolkit::makeWindowCurrent(int windowID)
   {
-
+    _windows[windowID]->makeCurrent();
   }
 
   PLUGIN_API void VRG3DWindowToolkit::destroyWindow(int windowID)
@@ -60,6 +66,14 @@ namespace MinVR {
     return new VRG3DWindowToolkit(vrMain);
   }
 
+  PLUGIN_API void VRG3DWindowToolkit::getFramebufferSize(int windowID, int& width, int& height)
+  {
+    G3DWindow::Settings settings;
+    G3DWindow* g3dWindow = _windows[windowID];
+    width = g3dWindow->width();
+    height = g3dWindow->height();
+  }
+
   G3DWindow * VRG3DWindowToolkit::createG3DWindow(VRWindowSettings settings)
   {
     G3DWindow* g3dWindow =  NULL;
@@ -72,12 +86,7 @@ namespace MinVR {
       g3dWindow = G3D::SDLWindow::create();
 #   endif
       
-     
-      if (g3dWindow)
-      {
-        _windows.push_back(g3dWindow);
-      }
-    
+   
     //debugAssert(g3dWindow == NULL);
     return g3dWindow;
 
