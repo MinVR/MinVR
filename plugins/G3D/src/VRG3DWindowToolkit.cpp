@@ -57,7 +57,7 @@ namespace MinVR {
 
   PLUGIN_API void VRG3DWindowToolkit::swapBuffers(int windowID)
   {
-
+    _windows[windowID]->swapGLBuffers();
   }
 
   PLUGIN_API VRWindowToolkit * VRG3DWindowToolkit::create(VRMainInterface * vrMain, VRDataIndex * config, const std::string & nameSpace)

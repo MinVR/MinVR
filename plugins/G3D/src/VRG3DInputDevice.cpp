@@ -16,13 +16,14 @@ namespace MinVR
 
   void VRG3DInputDevice::appendNewInputEventsSinceLastCall(VRDataQueue* queue)
   {
-     
+    G3D::GEvent g3dEvent;
+    _windows[0]->pollEvent(g3dEvent);
   }
 
 
   PLUGIN_API void VRG3DInputDevice::addWindow(G3DWindow* g3dWindow)
   {
-
+    _windows.push_back(g3dWindow);
   }
 
 }
