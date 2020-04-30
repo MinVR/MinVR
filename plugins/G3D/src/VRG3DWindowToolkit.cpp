@@ -10,13 +10,14 @@
 #endif
 
 #include "VRG3DInputDevice.h"
+#include "VRG3DGraphicsToolkit.h"
 
 namespace MinVR {
 
 
 
   VRG3DWindowToolkit::VRG3DWindowToolkit(VRMainInterface * vrMain)
-    : _vrMain(vrMain), _inputDev(NULL)
+    : _vrMain(vrMain), _inputDev(NULL), _frameCounter(0)
   {
     _inputDev = new VRG3DInputDevice();
   }
@@ -48,6 +49,11 @@ namespace MinVR {
   PLUGIN_API void VRG3DWindowToolkit::makeWindowCurrent(int windowID)
   {
     _windows[windowID]->makeCurrent();
+    _frameCounter++;
+    if (_frameCounter == 1)
+    {
+      g3dRenderDevice->beginFrame();
+    }
   }
 
   PLUGIN_API void VRG3DWindowToolkit::destroyWindow(int windowID)
@@ -57,7 +63,8 @@ namespace MinVR {
 
   PLUGIN_API void VRG3DWindowToolkit::swapBuffers(int windowID)
   {
-    _windows[windowID]->swapGLBuffers();
+    g3dRenderDevice->endFrame();
+    g3dRenderDevice->beginFrame();
   }
 
   PLUGIN_API VRWindowToolkit * VRG3DWindowToolkit::create(VRMainInterface * vrMain, VRDataIndex * config, const std::string & nameSpace)
@@ -74,19 +81,35 @@ namespace MinVR {
     height = g3dWindow->height();
   }
 
+  PLUGIN_API G3D::OSWindow* VRG3DWindowToolkit::getG3DWindow(int windId)
+  {
+    return _windows[windId];
+  }
+
+  PLUGIN_API void VRG3DWindowToolkit::setG3DRenderDevice(G3D::RenderDevice* rd)
+  {
+    g3dRenderDevice = rd;
+    this->_inputDev->g3dRenderDevice = g3dRenderDevice;
+  }
+
+  PLUGIN_API G3D::RenderDevice* VRG3DWindowToolkit::getG3DRenderDevice()
+  {
+    return g3dRenderDevice;
+  }
+
   G3DWindow * VRG3DWindowToolkit::createG3DWindow(VRWindowSettings settings)
   {
     G3DWindow* g3dWindow =  NULL;
 
 #   ifdef G3D_WIN32
       g3dWindow = G3D::Win32Window::create();
+      g3dWindow->setCaption("G3D Model Demo");
 #   elif defined(G3D_OSX)
       g3dWindow = G3D::CocoaWindow::create();
 #   else
       g3dWindow = G3D::SDLWindow::create();
 #   endif
       
-   
     //debugAssert(g3dWindow == NULL);
     return g3dWindow;
 

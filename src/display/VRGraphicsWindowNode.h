@@ -36,7 +36,7 @@ public:
 
 	static VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 
-private:
+protected:
 	int _windowID;
 	VRGraphicsToolkit *_gfxToolkit;
 	VRWindowToolkit   *_winToolkit;

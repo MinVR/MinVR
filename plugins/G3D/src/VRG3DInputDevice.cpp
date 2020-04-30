@@ -1,6 +1,7 @@
 #include "VRG3DInputDevice.h"
 #include <config/VRDataQueue.h>
 #include "VRG3DWindowToolkit.h"
+#include <GLG3D/RenderDevice.h>
 
 namespace MinVR
 {
@@ -16,8 +17,16 @@ namespace MinVR
 
   void VRG3DInputDevice::appendNewInputEventsSinceLastCall(VRDataQueue* queue)
   {
+    G3DWindow* gwindow = g3dRenderDevice->window();
+
+    if (!gwindow)
+    {
+      return;
+    }
     G3D::GEvent g3dEvent;
-    _windows[0]->pollEvent(g3dEvent);
+
+    gwindow->pollEvent(g3dEvent);
+    
   }
 
 

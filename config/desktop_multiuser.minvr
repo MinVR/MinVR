@@ -19,14 +19,11 @@
   <!-- MinVR Plugins to Load - Most Common is to Use OpenGL for the
      MinVRs GraphicsTookit and GLFW for MinVRs WindowToolkit -->
 
-  <G3Dlugin pluginType="MinVR_G3D"/>
   <GLFWPlugin pluginType="MinVR_GLFW"/>
-  <OpenGLPlugin pluginType="MinVR_OpenGL"/>
- 
-  <!-- <G3DToolkit graphicstoolkitType="VRG3DGraphicsToolkit"/> -->
+  <-- <GLFWToolkit windowtoolkitType="VRGLFWWindowToolkit"/> -->
 
-     <OpenGLPlugin pluginType="MinVR_OpenGL"/>  
-  <!--  <OpenGLToolkit graphicstoolkitType="VROpenGLGraphicsToolkit"/>   -->
+  <OpenGLPlugin pluginType="MinVR_OpenGL"/>
+  < -- <OpenGLToolkit graphicstoolkitType="VROpenGLGraphicsToolkit"/>  -->
 
 
   <!-- Version Number to Request for the OpenGL Graphcis Rendering Context -->
@@ -76,29 +73,29 @@
   <UseDebugContext>0</UseDebugContext>
   <MSAASamples>1</MSAASamples>
 
+  <Port type="string">3456</Port>
+  <ServerIP>localhost</ServerIP>
 
+  <ACaveServer hostType="VRServer">
+      <NumClients>1</NumClients>
+	  <HostIP>localhost</HostIP>
+  </ACaveServer>
 
+   <VRGRAPH>
+	   <RootNode displaynodeType="VRGraphicsWindowNode" windowtoolkitType="VRGLFWWindowToolkit" graphicstoolkitType="VROpenGLGraphicsToolkit">
+   </VRGRAPH>
 
-  <Desktop hostType="VRStandAlone">
+  <Desktop1 hostType="VRClient">
+    <HostIP>localhost</HostIP>
+    <HostDisplay>:0.0</HostDisplay>
+    <copiedNode linkNode="/MinVR/VRGRAPH/RootNode"/>
+  </Desktop1>
 
-    <!-- Display Devices: Just A Single Graphics Window -->
-
-    <G3DWinToolkit windowtoolkitType="VRG3DWindowToolkit"/>
-  	<G3DGraphToolkit graphicstoolkitType="VRG3DGraphicsToolkit"/>  
-	
-	<WindowNode displaynodeType="VRG3DDisplayNode">
-	   <TrackingNode displaynodeType="VRHeadTrackingNode">
-        <StereoNode displaynodeType="VRStereoNode">
-          <ProjectionNode displaynodeType="VRProjectionNode"/>
-        </StereoNode>
-      </TrackingNode>
-	</WindowNode>
-	
-    <!-- <OpenGLToolkit graphicstoolkitType="VROpenGLGraphicsToolkit"/> -->
-	<!--  <WindowNode displaynodeType="VRGraphicsWindowNode"> -->
-          
-
-  </Desktop>
+  <Desktop2 hostType="VRClient">
+    <HostIP>192.168.10.136</HostIP>
+    <HostDisplay>:0.0</HostDisplay>
+    <copiedNode linkNode="/MinVR/VRGRAPH/RootNode"/>
+  </Desktop2>
 
 
 </MinVR>

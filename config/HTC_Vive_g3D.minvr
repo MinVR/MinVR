@@ -1,0 +1,43 @@
+<MinVR>
+  <PluginPath>../../../MinVR2/build/Release/plugins</PluginPath>
+	<GLFWPlugin pluginType="MinVR_GLFW"/>
+	<OpenGLPlugin pluginType="MinVR_OpenGL"/>
+    <OpenVRPlugin pluginType="MinVR_OpenVR"/>	
+	<G3Dlugin pluginType="MinVR_G3D"/>
+
+	  <RGBBits>8</RGBBits>
+	  <AlphaBits>8</AlphaBits>
+	  <DepthBits>24</DepthBits>
+	  <StencilBits>8</StencilBits>
+	  <FullScreen>0</FullScreen>
+	  <Resizable>1</Resizable>
+	  <AllowMaximize>1</AllowMaximize>
+	  <Visible>1</Visible>
+	  <SharedContextGroupID>-1</SharedContextGroupID>
+	  <ContextVersionMajor>3</ContextVersionMajor>
+	  <ContextVersionMinor>3</ContextVersionMinor>
+	  <UseGPUAffinity>1</UseGPUAffinity>
+	  <UseDebugContext>0</UseDebugContext>
+	  <MSAASamples>1</MSAASamples>
+	  <QuadBuffered>0</QuadBuffered>
+	  
+	  <StereoFormat>Mono</StereoFormat>
+  
+	<VRSetups>
+		<Desktop hostType="VRStandAlone">
+	      <G3DWinToolkit windowtoolkitType="VRG3DWindowToolkit"/>
+	      <G3DGraphToolkit graphicstoolkitType="VRG3DGraphicsToolkit"/>
+	      <WindowNode displaynodeType="VRG3DDisplayNode">
+			<HTC displaynodeType="VROpenVRNode">
+				<HideTracker>0</HideTracker>
+				<ReportStatePressed>1</ReportStatePressed>
+				<ReportStateTouched>1</ReportStateTouched>
+				<ReportStateAxis>1</ReportStateAxis>
+				<ReportStatePose>1</ReportStatePose>
+				<DrawHMDOnly>0</DrawHMDOnly>
+				<MSAA_buffers>4</MSAA_buffers>	
+			</HTC>
+		</RootNode>
+		</Desktop>
+	</VRSetups>
+</MinVR>

@@ -25,7 +25,7 @@
 namespace MinVR {
   
   class G3D::OSWindow;
-  
+  class G3D::RenderDevice;
 
   class VRMain;
   class VRG3DInputDevice;
@@ -52,16 +52,28 @@ namespace MinVR {
     PLUGIN_API static VRWindowToolkit* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 
     PLUGIN_API void getFramebufferSize(int windowID, int& width, int& height);
-     
+
+    PLUGIN_API G3D::OSWindow* getG3DWindow(int windId);
+
+    PLUGIN_API void setG3DRenderDevice(G3D::RenderDevice*);
+
+    PLUGIN_API G3D::RenderDevice*  getG3DRenderDevice( );
+   
+  private:
+    
+    G3D::RenderDevice* g3dRenderDevice;
 
   protected:
+    
     
 
     VRMainInterface *_vrMain;
     
     VRG3DInputDevice *_inputDev;
+    G3D::int64                 _frameCounter;
 
     std::vector<G3DWindow*> _windows;
+    
     
     
   private:

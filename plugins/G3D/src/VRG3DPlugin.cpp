@@ -14,6 +14,8 @@
 #include <plugin/VRPlugin.h>
 #include <display/VRWindowToolkit.h>
 #include "VRG3DWindowToolkit.h"
+#include "VRG3DGraphicsToolkit.h"
+#include "VRG3DDisplayNode.h"
 
  // special: include this only once in one .cpp file per plugin
 #include <plugin/VRPluginVersion.h>
@@ -34,6 +36,8 @@ namespace MinVR {
       //std::cout << "Registering VROpenGLPlugin." << std::endl;
       //vrMain->getFactory()->registerItemType<VRGraphicsToolkit, VROpenGLGraphicsToolkit>("VROpenGLGraphicsToolkit");
       vrMain->getFactory()->registerItemType<VRWindowToolkit, VRG3DWindowToolkit>("VRG3DWindowToolkit");
+      vrMain->getFactory()->registerItemType<VRGraphicsToolkit, VRG3DGraphicsToolkit>("VRG3DGraphicsToolkit");
+      vrMain->getFactory()->registerItemType<VRDisplayNode, VRG3DDisplayNode>("VRG3DDisplayNode");
                                                               
     }
 

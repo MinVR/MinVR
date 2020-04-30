@@ -29,7 +29,7 @@ using namespace MinVR;
 // This is not required for use of MinVR in general
 #include <math/VRMath.h>
 
-
+#include "../build/tests-interactive/opengl-shaderpipeline-with-api/VRG3DApp.h"
 
 /**
  * MyVRApp is an example of a modern OpenGL using VBOs, VAOs, and shaders.  MyVRApp inherits
@@ -225,7 +225,9 @@ public:
     }
     
     void onRenderGraphicsScene(const VRGraphicsState& state) {
-        // clear screen
+        
+      
+      // clear screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         
         // Set shader parameters
@@ -244,6 +246,10 @@ public:
         
         // reset program
         glUseProgram(0);
+
+       
+
+
     }
     
     
@@ -294,7 +300,8 @@ private:
 
 /// Main method which creates and calls application
 int main(int argc, char **argv) {
-	MyVRApp app(argc, argv);
+	//MyVRApp app(argc, argv);
+  VRG3DApp app(argc, argv);
 	app.run();
     app.shutdown();
 	return 0;

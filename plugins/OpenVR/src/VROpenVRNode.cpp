@@ -123,8 +123,8 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 		SetupStereoRenderTargets();
 	}
 
-	if (m_rendermodelhandler)
-		m_rendermodelhandler->initModels();
+	//if (m_rendermodelhandler)
+	//	m_rendermodelhandler->initModels();
 
 	_inputDev->updatePoses();
 
@@ -199,7 +199,9 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	}
-	renderState->popState();
+  renderState->popState();
+  
+	
 
 	vr::Texture_t leftEyeTexture = { (void*)(uintptr_t)leftEyeDesc.m_nResolveTextureId, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
 	vr::EVRCompositorError error =  vr::VRCompositor()->Submit(vr::Eye_Left, &leftEyeTexture );
@@ -220,9 +222,15 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 		glClearColor(0, 0, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    //VRMatrix4 view_right = m_mat4eyePosRight * head_pose;
+
 		renderState->addData("ProjectionMatrix", m_mat4ProjectionRight);
 		renderState->addData("ViewMatrix", view_right);
 		renderState->addData("Eye", "Cyclops");
+
+    //GLenum e = glGetError(); 
+    //std::cout << e << std::endl;
+
 		if (_children.size() == 0) {
 			renderHandler->onVRRenderScene(*renderState);
 		}
@@ -230,8 +238,8 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 			VRDisplayNode::render(renderState, renderHandler);
 		}
 
-		if (m_rendermodelhandler)
-			m_rendermodelhandler->draw(m_mat4ProjectionRight, view_right);
+		//if (m_rendermodelhandler)
+		//	m_rendermodelhandler->draw(m_mat4ProjectionRight, view_right);
 
 		renderState->popState();
 	}
