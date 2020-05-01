@@ -14,8 +14,10 @@ project(itest-opengl-shaderpipeline-with-api)
 # Source:
 set (SOURCEFILES 
   main.cpp
+  VRG3DApp.cpp
 )
 set (HEADERFILES
+  VRG3DApp.h
 )
 set (CONFIGFILES
 )
