@@ -26,10 +26,20 @@ namespace MinVR {
   {
   }
 
-  PLUGIN_API int VRG3DWindowToolkit::createWindow(VRWindowSettings settings)
+  PLUGIN_API int VRG3DWindowToolkit::createG3DWindow(const G3DWindow::Settings& settings)
   {
-    G3DWindow* g3dWindow = createG3DWindow(settings);
-    std::cout << G3D::GLCaps::glslVersion(); 
+    G3DWindow* g3dWindow = NULL;
+
+#   ifdef G3D_WIN32
+    g3dWindow = G3D::Win32Window::create(settings);
+    g3dWindow->setCaption("G3D Model Demo");
+#   elif defined(G3D_OSX)
+    g3dWindow = G3D::CocoaWindow::create();
+#   else
+    g3dWindow = G3D::SDLWindow::create();
+#   endif
+
+       
     if (_windows.size() == 0) {
       // if this is the first window created, then register the virtual input device
       // with VRMain so that VRMain will start polling GLFW for input events
@@ -81,6 +91,31 @@ namespace MinVR {
     height = g3dWindow->height();
   }
 
+
+  PLUGIN_API int VRG3DWindowToolkit::createWindow(VRWindowSettings settings)
+  {
+    G3DWindow::Settings g3dSettings;
+    g3dSettings.width = settings.width;
+    g3dSettings.height = settings.height;
+    g3dSettings.x = settings.xpos;
+    g3dSettings.y = settings.ypos;
+    g3dSettings.rgbBits = settings.rgbBits;
+    g3dSettings.alphaBits = settings.alphaBits;
+    g3dSettings.depthBits = settings.depthBits;
+    g3dSettings.stencilBits = settings.stencilBits;
+    g3dSettings.msaaSamples = settings.msaaSamples;
+    g3dSettings.fullScreen = settings.fullScreen;
+    g3dSettings.resizable = settings.resizable;
+    g3dSettings.allowMaximize = settings.allowMaximize;
+    g3dSettings.msaaSamples = settings.msaaSamples;
+
+
+
+    int winId = createG3DWindow(g3dSettings);
+
+    return winId;
+  }
+
   PLUGIN_API G3D::OSWindow* VRG3DWindowToolkit::getG3DWindow(int windId)
   {
     return _windows[windId];
@@ -97,22 +132,6 @@ namespace MinVR {
     return g3dRenderDevice;
   }
 
-  G3DWindow * VRG3DWindowToolkit::createG3DWindow(VRWindowSettings settings)
-  {
-    G3DWindow* g3dWindow =  NULL;
-
-#   ifdef G3D_WIN32
-      g3dWindow = G3D::Win32Window::create();
-      g3dWindow->setCaption("G3D Model Demo");
-#   elif defined(G3D_OSX)
-      g3dWindow = G3D::CocoaWindow::create();
-#   else
-      g3dWindow = G3D::SDLWindow::create();
-#   endif
-      
-    //debugAssert(g3dWindow == NULL);
-    return g3dWindow;
-
-  }
+  
 
 }

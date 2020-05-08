@@ -12,7 +12,6 @@ using namespace MinVR;
 // This is not required for use of MinVR in general
 #include <math/VRMath.h>
 
-#include "VRG3DApp.h"
 
 /**
  * MyVRApp is an example of a modern OpenGL using VBOs, VAOs, and shaders.  MyVRApp inherits

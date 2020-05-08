@@ -6,9 +6,9 @@
 namespace MinVR
 {
   VRG3DApp::VRG3DApp(int argc, char *argv[]) :
-    VRApp(argc, argv)
+    VRApp(argc, argv), _log(NULL)
   {
-
+    
   }
 
   VRG3DApp::~VRG3DApp()
@@ -35,6 +35,10 @@ namespace MinVR
           if (g3dRenderDevice)
           {
             myRenderDevice = g3dRenderDevice;
+            if (!_log)
+            {
+              _log = new Log("MinVR_G3D_Log.txt");
+            }
           }
           else
           {

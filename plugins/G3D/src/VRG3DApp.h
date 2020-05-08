@@ -25,7 +25,7 @@ namespace MinVR
   protected:
     G3D::RenderDevice* myRenderDevice;
     
-    
+    G3D::Log*                  _log;
 
     
     

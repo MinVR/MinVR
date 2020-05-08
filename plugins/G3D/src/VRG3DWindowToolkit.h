@@ -41,7 +41,8 @@ namespace MinVR {
 
     PLUGIN_API std::string getName() const { return "VR3GDWindowToolkit"; }
 
-    PLUGIN_API int createWindow(VRWindowSettings settings);
+    PLUGIN_API virtual int createWindow(VRWindowSettings settings);
+
 
     PLUGIN_API void makeWindowCurrent(int windowID);
 
@@ -77,7 +78,7 @@ namespace MinVR {
     
     
   private:
-    G3DWindow* createG3DWindow(VRWindowSettings settings);
+    PLUGIN_API int createG3DWindow(const G3DWindow::Settings& settings);
   };
 
 
