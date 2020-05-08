@@ -17,8 +17,7 @@
 #include "VRG3DGraphicsToolkit.h"
 #include "VRG3DDisplayNode.h"
 
- // special: include this only once in one .cpp file per plugin
-#include <plugin/VRPluginVersion.h>
+
 
 namespace MinVR {
 

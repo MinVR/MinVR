@@ -23,12 +23,14 @@ set (SOURCEFILES
   src/VRG3DInputDevice.cpp
   src/VRG3DGraphicsToolkit.cpp
   src/VRG3DDisplayNode.cpp
+  src/VRG3DApp.cpp
 )
 set (HEADERFILES
   src/VRG3DWindowToolkit.h
   src/VRG3DInputDevice.h
   src/VRG3DGraphicsToolkit.h
   src/VRG3DDisplayNode.h
+  src/VRG3DApp.h
 )
 
 

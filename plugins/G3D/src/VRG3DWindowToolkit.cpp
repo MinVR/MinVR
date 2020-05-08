@@ -29,7 +29,7 @@ namespace MinVR {
   PLUGIN_API int VRG3DWindowToolkit::createWindow(VRWindowSettings settings)
   {
     G3DWindow* g3dWindow = createG3DWindow(settings);
-
+    std::cout << G3D::GLCaps::glslVersion(); 
     if (_windows.size() == 0) {
       // if this is the first window created, then register the virtual input device
       // with VRMain so that VRMain will start polling GLFW for input events

@@ -19,14 +19,12 @@
   <!-- MinVR Plugins to Load - Most Common is to Use OpenGL for the
      MinVRs GraphicsTookit and GLFW for MinVRs WindowToolkit -->
 
-  <G3Dlugin pluginType="MinVR_G3D"/>
-  <GLFWPlugin pluginType="MinVR_GLFW"/>
-  <OpenGLPlugin pluginType="MinVR_OpenGL"/>
+  <G3DPlugin pluginType="MinVR_G3D"/>
  
-  <!-- <G3DToolkit graphicstoolkitType="VRG3DGraphicsToolkit"/> -->
+ 
+  
 
-     <OpenGLPlugin pluginType="MinVR_OpenGL"/>  
-  <!--  <OpenGLToolkit graphicstoolkitType="VROpenGLGraphicsToolkit"/>   -->
+  
 
 
   <!-- Version Number to Request for the OpenGL Graphcis Rendering Context -->
@@ -77,14 +75,16 @@
   <MSAASamples>1</MSAASamples>
 
 
+    <G3DWinToolkit windowtoolkitType="VRG3DWindowToolkit"/>
+  	<G3DGraphToolkit graphicstoolkitType="VRG3DGraphicsToolkit"/>  
 
 
-  <Desktop hostType="VRStandAlone">
+  <VRSetups>
+    <Desktop hostType="VRStandAlone">
 
     <!-- Display Devices: Just A Single Graphics Window -->
 
-    <G3DWinToolkit windowtoolkitType="VRG3DWindowToolkit"/>
-  	<G3DGraphToolkit graphicstoolkitType="VRG3DGraphicsToolkit"/>  
+	
 	
 	<WindowNode displaynodeType="VRG3DDisplayNode">
 	   <TrackingNode displaynodeType="VRHeadTrackingNode">
@@ -94,11 +94,10 @@
       </TrackingNode>
 	</WindowNode>
 	
-    <!-- <OpenGLToolkit graphicstoolkitType="VROpenGLGraphicsToolkit"/> -->
-	<!--  <WindowNode displaynodeType="VRGraphicsWindowNode"> -->
           
 
-  </Desktop>
+    </Desktop>
+  </VRSetups>
 
 
 </MinVR>

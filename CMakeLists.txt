@@ -491,6 +491,12 @@ if (WITH_ITEST_OPENGL_SHADERPIPELINE_WITH_API AND NOT ${HAVE_WINTOOLKIT})
   message(FATAL_ERROR "WITH_ITEST_OPENGL_SHADERPIPELINE_WITH_API requires that you also build a plugin that provides a window toolkit.  You need to add one of the following: ${WINTOOLKIT_PLUGINS}.")
 endif()
 
+minvr_optional_adddir(
+  WITH_ITEST_G3D 
+  "itest-G3D-example"
+  "(Requires the G3D Plugin" 
+  "tests-interactive/g3d-example"
+)
 
 # There's not actually anything to build here, right?
 #minvr_optional_adddir(

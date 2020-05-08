@@ -71,7 +71,7 @@ namespace MinVR {
       std::cout << "G3D Render device init" << std::endl;
       _renderDevice->init(g3dWindow);
       std::cout << "Render device reset state" << std::endl;
-      _renderDevice->resetState();
+     // _renderDevice->resetState();
 
       isInitialized = true;
     }

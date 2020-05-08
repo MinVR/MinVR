@@ -23,13 +23,13 @@
 
 // MinVR header
 #include <api/MinVR.h>
+
 using namespace MinVR;
 
 // Just included for some simple Matrix math used below
 // This is not required for use of MinVR in general
 #include <math/VRMath.h>
 
-#include "../build/tests-interactive/opengl-shaderpipeline-with-api/VRG3DApp.h"
 
 /**
  * MyVRApp is an example of a modern OpenGL using VBOs, VAOs, and shaders.  MyVRApp inherits
@@ -300,8 +300,7 @@ private:
 
 /// Main method which creates and calls application
 int main(int argc, char **argv) {
-	//MyVRApp app(argc, argv);
-  VRG3DApp app(argc, argv);
+	MyVRApp app(argc, argv);
 	app.run();
     app.shutdown();
 	return 0;
