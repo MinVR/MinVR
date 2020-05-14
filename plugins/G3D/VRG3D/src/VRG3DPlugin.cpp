@@ -3,7 +3,7 @@
  *
  *
  * Code author(s):
- * 		Dan Camilo Diaz 
+ * 		 Camilo Diaz 
  */
 
 
@@ -13,9 +13,9 @@
 #include <iostream>
 #include <plugin/VRPlugin.h>
 #include <display/VRWindowToolkit.h>
-#include "VRG3DWindowToolkit.h"
-#include "VRG3DGraphicsToolkit.h"
-#include "VRG3DDisplayNode.h"
+#include "../include/VRG3DWindowToolkit.h"
+#include "../include/VRG3DGraphicsToolkit.h"
+#include "../include/VRG3DDisplayNode.h"
 
 
 

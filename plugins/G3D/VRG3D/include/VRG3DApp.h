@@ -8,7 +8,7 @@
 #include <G3D/G3D.h>
 #include <GLG3D/GLG3D.h>
 #include <G3D/G3DAll.h>
-
+#include "../include/ProjectionVRCamera.h"
 
 namespace MinVR
 {
@@ -17,14 +17,14 @@ namespace MinVR
   {
   public:
     PLUGIN_API VRG3DApp(int argc, char *argv[]);
-    PLUGIN_API ~VRG3DApp();
+    PLUGIN_API virtual ~VRG3DApp();
     PLUGIN_API virtual void onRenderGraphicsContext(const VRGraphicsState& state);
     PLUGIN_API virtual void onRenderGraphicsScene(const VRGraphicsState& state);
  
 
   protected:
     G3D::RenderDevice* myRenderDevice;
-    
+    G3D::Array<ProjectionVRCameraRef> _cameras;
     G3D::Log*                  _log;
 
     

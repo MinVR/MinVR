@@ -1,25 +1,28 @@
+# Template for creating a CMakeLists.txt for new interactive tests / other apps that are
+# built within the MinVR tree -- copy this, replace XXX and YYY, and follow the example of 
+# OpenGL and GLEW below if your app depends on an external library.
+# -----------------------------------------------------------------------------------------
 # This file is part of the MinVR cmake build system.  
 # See the main MinVR/CMakeLists.txt file for authors, copyright, and license info.
 
-# Builds itest-opengl-shaderpipeline-with-api.
+# Builds itest-XXX.
 
 # Note: This CMakeLists.txt is not intended to work on its own.  It inherits many settings 
 # from the root CMakeLists.txt (build and install directories, compiling flags, #defines, etc.)
 
 
 # By convention, interactive tests begin with "itest-"
-project(itest-opengl-shaderpipeline-with-api)
+project(cave-painting)
 
 
 # Source:
 set (SOURCEFILES 
   main.cpp
-  
 )
 set (HEADERFILES
-  
 )
 set (CONFIGFILES
+  desktop-oldopengl.minvr
 )
 
 
@@ -32,16 +35,12 @@ target_include_directories(${PROJECT_NAME} PUBLIC ../../src)
 target_link_libraries(${PROJECT_NAME} PUBLIC MinVR)
 
 
-# Setup dependency on OpenGL:
-include(AutoBuildOpenGL)
-AutoBuild_use_package_OpenGL(${PROJECT_NAME} PUBLIC)
-
 
 # Setup dependency on GLEW (not needed on OSX):
-if (NOT APPLE)
-  include(AutoBuildGLEW)
-  AutoBuild_use_package_GLEW(${PROJECT_NAME} PUBLIC)
-endif()
+#if (NOT APPLE)
+#  include(AutoG3D)
+#  AutoBuild_use_package_G3d(${PROJECT_NAME} PUBLIC)
+#endif()
 
 
 # Installation:
@@ -50,11 +49,8 @@ install( TARGETS ${PROJECT_NAME}
          COMPONENT ITests)
 
 
-
 # For better organization when using an IDE with folder structures:
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "tests-interactive")
 source_group("Header Files" FILES ${HEADERFILES})
 set_source_files_properties(${CONFIGFILES} PROPERTIES HEADER_FILE_ONLY TRUE)
 source_group("Config Files" FILES ${CONFIGFILES})
-
-

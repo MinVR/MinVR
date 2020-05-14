@@ -56,7 +56,7 @@ public:
         /*
          Make sure GlCaps is initialized.
         */
-        G3D::GLCaps::init();
+        GLCaps::init();
 
         std::string skydataDir = "F:\\vrg3d-code\\G3D\\data-files\\sky\\";
         

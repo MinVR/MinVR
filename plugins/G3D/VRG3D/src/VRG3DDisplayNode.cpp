@@ -1,6 +1,6 @@
-#include "VRG3DDisplayNode.h"
-#include "VRG3DGraphicsToolkit.h"
-#include "VRG3DWindowToolkit.h"
+#include "../include/VRG3DDisplayNode.h"
+#include "../include/VRG3DGraphicsToolkit.h"
+#include "../include/VRG3DWindowToolkit.h"
 
 namespace MinVR {
   PLUGIN_API VRG3DDisplayNode::

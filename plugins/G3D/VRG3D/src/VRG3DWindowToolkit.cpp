@@ -1,4 +1,4 @@
-#include "VRG3DWindowToolkit.h"
+#include "../include/VRG3DWindowToolkit.h"
 #include <GLG3D/OSWindow.h>
 
 #ifdef G3D_WIN32
@@ -9,8 +9,8 @@
 #    include <GLG3D/SDLWindow.h>
 #endif
 
-#include "VRG3DInputDevice.h"
-#include "VRG3DGraphicsToolkit.h"
+#include "../include/VRG3DInputDevice.h"
+#include "../include/VRG3DGraphicsToolkit.h"
 
 namespace MinVR {
 

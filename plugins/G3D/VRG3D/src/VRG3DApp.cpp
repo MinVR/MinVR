@@ -1,7 +1,7 @@
 
-#include "VRG3DApp.h"
-#include "VRG3DGraphicsToolkit.h"
-#include "VRG3DDisplayNode.h"
+#include "../include/VRG3DApp.h"
+#include "../include/VRG3DGraphicsToolkit.h"
+#include "../include/VRG3DDisplayNode.h"
 
 namespace MinVR
 {

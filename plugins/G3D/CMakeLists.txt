@@ -17,30 +17,100 @@ project(MinVR_G3D)
 
 
 # Source:
-set (SOURCEFILES 
-  src/VRG3DPlugin.cpp
-  src/VRG3DWindowToolkit.cpp
-  src/VRG3DInputDevice.cpp
-  src/VRG3DGraphicsToolkit.cpp
-  src/VRG3DDisplayNode.cpp
-  src/VRG3DApp.cpp
+set (VRG3DSOURCEFILES 
+  VRG3D/src/VRG3DPlugin.cpp
+  VRG3D/src/VRG3DWindowToolkit.cpp
+  VRG3D/src/VRG3DInputDevice.cpp
+  VRG3D/src/VRG3DGraphicsToolkit.cpp
+  VRG3D/src/VRG3DDisplayNode.cpp
+  VRG3D/src/VRG3DApp.cpp
+  VRG3D/src/ConfigMap.cpp
+  VRG3D/src/DisplayTile.cpp
+  VRG3D/src/G3DOperators.cpp
+  VRG3D/src/ProjectionVRCamera.cpp
+  VRG3D/src/Event.cpp
+  VRG3D/src/InputDevice.cpp
+  VRG3D/src/SynchedSystem.cpp
+
 )
-set (HEADERFILES
-  src/VRG3DWindowToolkit.h
-  src/VRG3DInputDevice.h
-  src/VRG3DGraphicsToolkit.h
-  src/VRG3DDisplayNode.h
-  src/VRG3DApp.h
+set (VRG3DHEADERFILES 
+  VRG3D/include/VRG3DWindowToolkit.h
+  VRG3D/include/VRG3DInputDevice.h
+  VRG3D/include/VRG3DGraphicsToolkit.h
+  VRG3D/include/VRG3DDisplayNode.h
+  VRG3D/include/VRG3DApp.h
+  VRG3D/include/ConfigMap.h
+  VRG3D/include/DisplayTile.h
+  VRG3D/include/G3DOperators.h
+  VRG3D/include/ProjectionVRCamera.h
+  VRG3D/include/Event.h
+  VRG3D/include/InputDevice.h
+  VRG3D/include/SynchedSystem.h
+  VRG3D/include/CommonInc.H
+)
+
+set (VRG3DBASESOURCEFILES 
+  VRG3DBase/src/VRG3DBaseApp.cpp
+  VRG3DBase/src/ConfigVal.cpp
+  VRG3DBase/src/GfxMgr.cpp
+  VRG3DBase/src/StringUtils.cpp
+  VRG3DBase/src/FsaHelper.cpp
+  VRG3DBase/src/Fsa.cpp
+  VRG3DBase/src/SMesh.cpp
+  VRG3DBase/src/CovarianceMatrix.cpp
+  VRG3DBase/src/Shadows.cpp
+  VRG3DBase/src/EventMgr.cpp
+  VRG3DBase/src/TexPerFrameSMesh.cpp
+  VRG3DBase/src/LoadingScreen.cpp
+  VRG3DBase/src/ViewerHCI.cpp
+  VRG3DBase/src/TextFileReader.cpp
+
+)
+
+set (VRG3DBASEHEADERFILES 
+ VRG3DBase/include/ConfigVal.H
+ VRG3DBase/include/GfxMgr.H
+ VRG3DBase/include/GfxMgrCallbacks.H
+ VRG3DBase/include/StringUtils.H
+ VRG3DBase/include/VRG3DBaseApp.h
+ VRG3DBase/include/FsaHelper.H
+ VRG3DBase/include/Fsa.H
+ VRG3DBase/include/SMesh.H
+ VRG3DBase/include/CovarianceMatrix.H
+ VRG3DBase/include/Shadows.H
+ VRG3DBase/include/EventMgr.H
+ VRG3DBase/include/EventFilter.H
+ VRG3DBase/include/TexPerFrameSMesh.H
+ VRG3DBase/include/LoadingScreen.H
+ VRG3DBase/include/ViewerHCI.H
+ VRG3DBase/include/TextFileReader.H
 )
 
 
 # Define the target
-add_library(${PROJECT_NAME} SHARED ${HEADERFILES} ${SOURCEFILES})
+add_library(${PROJECT_NAME} SHARED ${VRG3DHEADERFILES} ${VRG3DSOURCEFILES} ${VRG3DBASEHEADERFILES} ${VRG3DBASESOURCEFILES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>                  # for headers when building
     $<INSTALL_INTERFACE:${INSTALL_PLUGININCLUDE_DEST}/${PROJECT_NAME}>  # for client in install mode
 )
+
+message(STATUS "Setting up filters")
+message(STATUS ${CMAKE_CURRENT_SOURCE_DIR})
+
+#source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${VRG3DSOURCEFILES} )#
+#source_group("VRG3D" ${VRG3DHEADERFILES} ${VRG3DSOURCEFILES}  )
+#foreach(source IN LISTS VRG3DSOURCEFILES)
+#    get_filename_component(source_path "${source}" PATH)
+#    string(REPLACE "/" "\\" source_path_msvc "${source_path}")
+#    source_group("${source_path_msvc}" FILES "${source}")
+#endforeach()
+
+#foreach(myinclude IN LISTS VRG3DHEADERFILES)
+#    get_filename_component(source_path "${myinclude}" PATH)
+#    string(REPLACE "/" "\\" source_path_msvc "${source_path}")
+#    source_group("${source_path_msvc}" FILES "${source}")
+#endforeach()
 
 
 # Setup dependency on libMinVR:

@@ -1,6 +1,6 @@
-#include "VRG3DInputDevice.h"
+#include "../include/VRG3DInputDevice.h"
 #include <config/VRDataQueue.h>
-#include "VRG3DWindowToolkit.h"
+#include "../include/VRG3DWindowToolkit.h"
 #include <GLG3D/RenderDevice.h>
 
 namespace MinVR

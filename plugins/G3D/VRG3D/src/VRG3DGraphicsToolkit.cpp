@@ -1,4 +1,4 @@
-#include "VRG3DGraphicsToolkit.h"
+#include "../include/VRG3DGraphicsToolkit.h"
 
 
 namespace MinVR {
