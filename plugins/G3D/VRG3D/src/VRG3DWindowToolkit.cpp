@@ -32,7 +32,8 @@ namespace MinVR {
 
 #   ifdef G3D_WIN32
     g3dWindow = G3D::Win32Window::create(settings);
-    g3dWindow->setCaption("G3D Model Demo");
+    //g3dWindow = G3D::Win32Window::create();
+    
 #   elif defined(G3D_OSX)
     g3dWindow = G3D::CocoaWindow::create();
 #   else
@@ -97,6 +98,7 @@ namespace MinVR {
     G3DWindow::Settings g3dSettings;
     g3dSettings.width = settings.width;
     g3dSettings.height = settings.height;
+    g3dSettings.framed = settings.border;
     g3dSettings.x = settings.xpos;
     g3dSettings.y = settings.ypos;
     g3dSettings.rgbBits = settings.rgbBits;
@@ -108,7 +110,7 @@ namespace MinVR {
     g3dSettings.resizable = settings.resizable;
     g3dSettings.allowMaximize = settings.allowMaximize;
     g3dSettings.msaaSamples = settings.msaaSamples;
-
+    g3dSettings.caption = settings.caption;
 
 
     int winId = createG3DWindow(g3dSettings);

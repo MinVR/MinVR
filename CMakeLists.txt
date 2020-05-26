@@ -498,13 +498,6 @@ minvr_optional_adddir(
   "tests-interactive/g3d-example"
 )
 
-minvr_optional_adddir(
-  CAVE_PAINTING
-  "cave-painting"
-  "(Requires the G3D Plugin" 
-  "tests-interactive/cave-painting"
-)
-
 # There's not actually anything to build here, right?
 #minvr_optional_adddir(
 #  WITH_ITEST_PYTHONBINDINGS_OPENGL 

@@ -29,18 +29,30 @@ set (CONFIGFILES
 # Define the target
 add_executable(${PROJECT_NAME} ${HEADERFILES} ${SOURCEFILES})
 
+get_property(VRG3D_INCLUDE_DIR GLOBAL PROPERTY VRG3D_INCLUDE_DIR_PROPERTY)
+message(STATUS "VRG3D_PLUGIN_DIR is " ${VRG3D_INCLUDE_DIR})
+message(STATUS "PROJECT_NAME is " ${PROJECT_NAME})
 
 # Setup dependency on libMinVR:
-target_include_directories(${PROJECT_NAME} PUBLIC ../../src)
+target_include_directories(${PROJECT_NAME} PUBLIC ${VRG3D_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} PUBLIC MinVR)
 
+message(STATUS "HELLO WORLD is ${CMAKE_CURRENT_BINARY_DIR}")
+message(STATUS "CMAKE_CURRENT_BINARY_DIR is ${CMAKE_CURRENT_BINARY_DIR}")
+set(MinVR_G3D_LIB ${CMAKE_CURRENT_BINARY_DIR}/../../lib/MinVR_G3Dd.lib)
+message(STATUS "MinVR_G3Dd is ${MinVR_G3D_LIB}") 
 
+if(EXISTS ${MinVR_G3D_LIB})
+   message(STATUS "MinVR_G3Dd found in ${MinVR_G3D_LIB}") 
+   target_link_libraries(${PROJECT_NAME} PUBLIC ${MinVR_G3D_LIB})
+else()
+    message(SEND_ERROR "YOU MIGHT HAVE TO LINK MinVR_G3Dd.lib IN YOUR PROJECT MANUALLY")
+endif()
 
-# Setup dependency on GLEW (not needed on OSX):
-#if (NOT APPLE)
-#  include(AutoG3D)
-#  AutoBuild_use_package_G3d(${PROJECT_NAME} PUBLIC)
-#endif()
+# Setup dependency on G3D:
+include(AutoBuildG3D)
+AutoBuild_use_package_G3D(${PROJECT_NAME} PUBLIC)
+
 
 
 # Installation:

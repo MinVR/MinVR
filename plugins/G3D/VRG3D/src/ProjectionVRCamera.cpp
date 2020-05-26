@@ -20,7 +20,8 @@ namespace MinVR {
     const float* vMatrix = state.getViewMatrix();
     G3D::Matrix4 viewMatrix = state.getViewMatrix();
     viewMatrix = viewMatrix.transpose();
-    viewMatrix.setRow(1, -viewMatrix.row(1));
+    //viewMatrix.setColumn(1, viewMatrix.column(1));
+    viewMatrix.setColumn(3, viewMatrix.column(3) + G3D::Vector4(0,1,0.0,0));
     G3D::Matrix4 g3dPjMtx = rd->projectionMatrix();
     rd->setProjectionMatrix(projectionMtrx);
     rd->setCameraToWorldMatrix(viewMatrix.approxCoordinateFrame().inverse());

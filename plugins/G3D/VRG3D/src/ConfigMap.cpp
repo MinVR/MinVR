@@ -197,7 +197,7 @@ ConfigMap::ConfigMap( int  argc, char **argv, Log *log,
       {  readFile(decygifyPath(args[i]));
       }
     }
-    else if ((args[i] == "-c") || (args[i] == "--configval"))
+    else if (args[i] == "--configval")
     { i++;
  
       if (i >= args.size())

@@ -92,24 +92,24 @@ class ConfigMap : public G3D::ReferenceCountedObject
 {
 public:
   /// Creates an empty map
-  ConfigMap(G3D::Log *log) {
+  PLUGIN_API ConfigMap(G3D::Log *log) {
     _log = log;
   }
 
   /// Creates a map by reading in the config file
-  ConfigMap(const std::string &filename, G3D::Log *log) {
+  PLUGIN_API ConfigMap(const std::string &filename, G3D::Log *log) {
     _log = log;
     readFile(filename);
   }
 
   /// Create a map by reading in arguments that specify files to load
   /// and/or individual mappings
-  ConfigMap(int argc, char **argv, G3D::Log *log, bool exitOnUnrecognizedArgument);
+  PLUGIN_API ConfigMap(int argc, char **argv, G3D::Log *log, bool exitOnUnrecognizedArgument);
 
-  virtual ~ConfigMap() {}
+  PLUGIN_API virtual ~ConfigMap() {}
 
-  void printArgumentHelpAndExit(const std::string &programName);
-  bool readFile(const std::string &filename);
+  PLUGIN_API void printArgumentHelpAndExit(const std::string &programName);
+  PLUGIN_API bool readFile(const std::string &filename);
 
   template <class T>
   bool retypeString(const std::string &str, T &val) {
@@ -212,7 +212,7 @@ public:
   PLUGIN_API bool         containsKey(const std::string &keyString);
   PLUGIN_API std::string  getValue(const std::string &keyString);
   PLUGIN_API void         set(const std::string &key, const std::string &value);
-  void         debugPrint();
+  PLUGIN_API void         debugPrint();
 
 private:
   G3D::Table<std::string, std::string> _map;

@@ -20,7 +20,7 @@ typedef G3D::ReferenceCountedPointer<class Event> EventRef;
 
 /// Creates a copy of the Event pointed to by e and returns a ref
 /// counted pointer to the new copy.
-EventRef createCopyOfEvent(EventRef e);
+PLUGIN_API EventRef createCopyOfEvent(EventRef e);
 
 /** G3DVR Event class.  To keep things simple, there are no subclasses
     of Event.  The type of data that the event carries is interpreted
@@ -89,7 +89,7 @@ public:
   PLUGIN_API G3D::CoordinateFrame getCoordinateFrameData();
   PLUGIN_API std::string     getMsgData();
 
-  std::string     toString();
+  PLUGIN_API std::string     toString();
 
   PLUGIN_API void            rename(const std::string &newname) { _name = newname; }
 

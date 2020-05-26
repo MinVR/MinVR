@@ -34,7 +34,7 @@
 
   <!-- Setup a Desktop-Style Camera -->
   <NearClip>0.001</NearClip>
-  <FarClip>500.0</FarClip>
+  <FarClip>100.0</FarClip>
   <!-- same x,y field of view b/c requesting a square window below -->
   <FieldOfViewX>60.0</FieldOfViewX>
   <FieldOfViewY>60.0</FieldOfViewY>
@@ -49,19 +49,19 @@
   <!-- Head Tracking with a Default/Initial LookAt -->
   <HeadTrackingEvent>HeadTracker_Move</HeadTrackingEvent>
   <LookAtUp type="floatarray">0,1,0</LookAtUp>
-  <LookAtEye type="floatarray">0,0,4</LookAtEye>
+  <LookAtEye type="floatarray">0,0,1</LookAtEye>
   <LookAtCenter type="floatarray">0,0,0</LookAtCenter>
 
 
   <!-- Other Graphics Window Settings -->
   <Caption>MinVR Desktop</Caption>
   <Border>1</Border>
-  <XPos>100</XPos>
-  <YPos>100</YPos>
-  <Width>1024</Width>
-  <Height>1024</Height>
+  <XPos>0</XPos>
+  <YPos>0</YPos>
+  <Width>960</Width>
+  <Height>600</Height>
   <RGBBits>8</RGBBits>
-  <AlphaBits>8</AlphaBits>
+  <AlphaBits>0</AlphaBits>
   <DepthBits>24</DepthBits>
   <StencilBits>8</StencilBits>
   <FullScreen>0</FullScreen>

@@ -32,7 +32,7 @@ namespace MinVR {
     /** Sets the projection matrix and the camera to world matrix for
         the RenderDevice based on the current DisplayTile, HeadFrame,
         and which eye is about to be rendered. */
-    void applyProjection(G3D::RenderDevice *rd, const VRGraphicsState& state);
+    PLUGIN_API void applyProjection(G3D::RenderDevice *rd, const VRGraphicsState& state);
 
     void getCurrentMatrices(G3D::Matrix4  &view, G3D::Matrix4  &projection,
       G3D::Matrix4  &viewLeft, G3D::Matrix4  &projectionLeft,

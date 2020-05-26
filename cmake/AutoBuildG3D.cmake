@@ -31,13 +31,15 @@ macro(AutoBuild_use_package_G3D YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
     if ("${AUTOBUILD_PACKAGE_${PACKAGE_NAME_UPPER}}")
         if ("${AUTOBUILD_EXECUTE_NOW}")
 
-           #[[ message(STATUS "AutoBuild: Beginning download, build, install sequence.")
-
-            AutoBuild_download_project( 
-                ${PACKAGE_NAME}
-                GIT_REPOSITORY https://github.com/ivlab/glfw.git
-                GIT_TAG gpu-affinity
-            )
+            message(STATUS "AutoBuild: Beginning download, build, install sequence.")
+            if (EXISTS "${AUTOBUILD_DOWNLOAD_DIR}/${PACKAGE_NAME}/CmakeLists.txt")
+			     message(STATUS "AutoBuild: External project source found at ${AUTOBUILD_DOWNLOAD_DIR}/${PACKAGE_NAME}. Skipping download step.")
+            else()
+                AutoBuild_download_project( 
+                  ${PACKAGE_NAME}
+                 GIT_REPOSITORY https://github.com/brown-ccv/G3D.git
+                )
+            endif()
 
             AutoBuild_build_and_install_project(
                 ${PACKAGE_NAME}
@@ -49,7 +51,7 @@ macro(AutoBuild_use_package_G3D YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
 
             set(${PACKAGE_NAME_UPPER}_AUTOBUILT "TRUE" CACHE BOOL "Confirms that package ${PACKAGE_NAME} was successfully built by the AutoBuild system.")
             mark_as_advanced(${PACKAGE_NAME}_AUTOBUILT)
-			]]
+			
 
         else()
             message(STATUS "AutoBuild: Scheduled to build ${PACKAGE_NAME} the next time CMake Configure is run.")
@@ -68,6 +70,7 @@ macro(AutoBuild_use_package_G3D YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
             ${INTERFACE_PUBLIC_OR_PRIVATE} ${G3D_OPT_LIBRARIES}
             ${INTERFACE_PUBLIC_OR_PRIVATE} ${G3D_DEBUG_LIBRARIES}
 			${INTERFACE_PUBLIC_OR_PRIVATE} ${G3D_LIBRARIES}
+			${INTERFACE_PUBLIC_OR_PRIVATE} ${G3D_EXTRA_LIBRARIES}
         )
 
         if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")

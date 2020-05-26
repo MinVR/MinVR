@@ -6,6 +6,10 @@
 #include <GLG3D/GLG3D.h>
 #include <iostream>
 #include <sstream>
+#include <string>
+#include <fstream>
+#include <istream>
+
 using namespace std;
 
 //#include <VRG3D.h>

@@ -49,68 +49,26 @@ set (VRG3DHEADERFILES
   VRG3D/include/CommonInc.H
 )
 
-set (VRG3DBASESOURCEFILES 
-  VRG3DBase/src/VRG3DBaseApp.cpp
-  VRG3DBase/src/ConfigVal.cpp
-  VRG3DBase/src/GfxMgr.cpp
-  VRG3DBase/src/StringUtils.cpp
-  VRG3DBase/src/FsaHelper.cpp
-  VRG3DBase/src/Fsa.cpp
-  VRG3DBase/src/SMesh.cpp
-  VRG3DBase/src/CovarianceMatrix.cpp
-  VRG3DBase/src/Shadows.cpp
-  VRG3DBase/src/EventMgr.cpp
-  VRG3DBase/src/TexPerFrameSMesh.cpp
-  VRG3DBase/src/LoadingScreen.cpp
-  VRG3DBase/src/ViewerHCI.cpp
-  VRG3DBase/src/TextFileReader.cpp
-
-)
-
-set (VRG3DBASEHEADERFILES 
- VRG3DBase/include/ConfigVal.H
- VRG3DBase/include/GfxMgr.H
- VRG3DBase/include/GfxMgrCallbacks.H
- VRG3DBase/include/StringUtils.H
- VRG3DBase/include/VRG3DBaseApp.h
- VRG3DBase/include/FsaHelper.H
- VRG3DBase/include/Fsa.H
- VRG3DBase/include/SMesh.H
- VRG3DBase/include/CovarianceMatrix.H
- VRG3DBase/include/Shadows.H
- VRG3DBase/include/EventMgr.H
- VRG3DBase/include/EventFilter.H
- VRG3DBase/include/TexPerFrameSMesh.H
- VRG3DBase/include/LoadingScreen.H
- VRG3DBase/include/ViewerHCI.H
- VRG3DBase/include/TextFileReader.H
-)
 
 
 # Define the target
-add_library(${PROJECT_NAME} SHARED ${VRG3DHEADERFILES} ${VRG3DSOURCEFILES} ${VRG3DBASEHEADERFILES} ${VRG3DBASESOURCEFILES})
+add_library(${PROJECT_NAME} SHARED ${VRG3DHEADERFILES} ${VRG3DSOURCEFILES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>                  # for headers when building
     $<INSTALL_INTERFACE:${INSTALL_PLUGININCLUDE_DEST}/${PROJECT_NAME}>  # for client in install mode
 )
 
+set(VRG3D_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+
+set(VRG3D_INCLUDE "/VRG3D/include")
+
+message (STATUS "1.VRG3D_INCLUDE_DIR " ${VRG3D_INCLUDE_DIR}${VRG3D_INCLUDE})
+set_property(GLOBAL PROPERTY VRG3D_INCLUDE_DIR_PROPERTY "${VRG3D_INCLUDE_DIR}${VRG3D_INCLUDE}")
+
 message(STATUS "Setting up filters")
 message(STATUS ${CMAKE_CURRENT_SOURCE_DIR})
 
-#source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${VRG3DSOURCEFILES} )#
-#source_group("VRG3D" ${VRG3DHEADERFILES} ${VRG3DSOURCEFILES}  )
-#foreach(source IN LISTS VRG3DSOURCEFILES)
-#    get_filename_component(source_path "${source}" PATH)
-#    string(REPLACE "/" "\\" source_path_msvc "${source_path}")
-#    source_group("${source_path_msvc}" FILES "${source}")
-#endforeach()
-
-#foreach(myinclude IN LISTS VRG3DHEADERFILES)
-#    get_filename_component(source_path "${myinclude}" PATH)
-#    string(REPLACE "/" "\\" source_path_msvc "${source_path}")
-#    source_group("${source_path_msvc}" FILES "${source}")
-#endforeach()
 
 
 # Setup dependency on libMinVR:
@@ -118,6 +76,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../src>  # for headers when building
     $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DEST}>              # for client in install mode
 )
+
 target_link_libraries(${PROJECT_NAME} PUBLIC MinVR)
 
 
@@ -126,11 +85,6 @@ include(AutoBuildG3D)
 AutoBuild_use_package_G3D(${PROJECT_NAME} PUBLIC)
 
 
-# Setup dependency on GLEW (only needed on Windows):
-#if (WIN32)
-#  include(AutoBuildGLEW)
-#  AutoBuild_use_package_GLEW(${PROJECT_NAME} PUBLIC)
-#endif()
 
 # G3D depencies
 
