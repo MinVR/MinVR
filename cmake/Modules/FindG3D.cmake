@@ -302,22 +302,22 @@ endif()
 
 message(STATUS "JPEG_LIBRARIES is ${JPEG_LIBRARIES}")
 if (NOT JPEG_LIBRARIES)
-   message( FATAL_ERROR  "JPEG_LIBRARIES is not set" )
+   message( SEND_ERROR  "JPEG_LIBRARIES is not set" )
 endif()
 
 message(STATUS "ZLIB_LIBRARIES is ${ZLIB_LIBRARIES}")
 if (NOT ZLIB_LIBRARIES)
-   message( FATAL_ERROR  "ZLIB_LIBRARIES is not set" )
+   message( SEND_ERROR  "ZLIB_LIBRARIES is not set" )
 endif()
 
 message(STATUS "ZIP_LIBRARIES is ${ZIP_LIBRARIES}")
 if (NOT ZIP_LIBRARIES)
-   message( FATAL_ERROR  "ZIP_LIBRARIES is not set" )
+   message( SEND_ERROR  "ZIP_LIBRARIES is not set" )
 endif()
 
-message(STATUS "ZLIB_LIBRARIES is ${PNG_LIBRARIES}")
+message(STATUS "PNG_LIBRARIES is ${PNG_LIBRARIES}")
 if (NOT PNG_LIBRARIES)
-   message( FATAL_ERROR  "PNG_LIBRARIES is not set" )
+   message( SEND_ERROR  "PNG_LIBRARIES is not set" )
 endif()
 
 
@@ -359,6 +359,7 @@ find_package_handle_standard_args(
     G3D_INCLUDE_DIRS
     G3D_LIBRARIES
 	GLG3D_INCLUDE_DIR
+	JPEG_LIBRARIES
 )
 
 mark_as_advanced(
