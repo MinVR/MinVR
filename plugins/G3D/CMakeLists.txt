@@ -31,7 +31,7 @@ set (VRG3DSOURCEFILES
   VRG3D/src/Event.cpp
   VRG3D/src/InputDevice.cpp
   VRG3D/src/SynchedSystem.cpp
-
+  VRG3D/src/MouseToTracker.cpp
 )
 set (VRG3DHEADERFILES 
   VRG3D/include/VRG3DWindowToolkit.h
@@ -47,6 +47,7 @@ set (VRG3DHEADERFILES
   VRG3D/include/InputDevice.h
   VRG3D/include/SynchedSystem.h
   VRG3D/include/CommonInc.H
+  VRG3D/include/MouseToTracker.h
 )
 
 
