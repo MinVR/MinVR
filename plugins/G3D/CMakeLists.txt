@@ -28,10 +28,11 @@ set (VRG3DSOURCEFILES
   VRG3D/src/DisplayTile.cpp
   VRG3D/src/G3DOperators.cpp
   VRG3D/src/ProjectionVRCamera.cpp
-  VRG3D/src/Event.cpp
+  VRG3D/src/VRG3DEvent.cpp
   VRG3D/src/InputDevice.cpp
   VRG3D/src/SynchedSystem.cpp
   VRG3D/src/MouseToTracker.cpp
+  
 )
 set (VRG3DHEADERFILES 
   VRG3D/include/VRG3DWindowToolkit.h
@@ -43,7 +44,7 @@ set (VRG3DHEADERFILES
   VRG3D/include/DisplayTile.h
   VRG3D/include/G3DOperators.h
   VRG3D/include/ProjectionVRCamera.h
-  VRG3D/include/Event.h
+  VRG3D/include/VRG3DEvent.h
   VRG3D/include/InputDevice.h
   VRG3D/include/SynchedSystem.h
   VRG3D/include/CommonInc.H

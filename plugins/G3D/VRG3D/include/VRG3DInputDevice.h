@@ -19,9 +19,10 @@ namespace MinVR {
     PLUGIN_API void appendNewInputEventsSinceLastCall(VRDataQueue* queue);
     PLUGIN_API void addWindow(G3DWindow*);
     G3D::RenderDevice* g3dRenderDevice;
-  private:
+  protected:
+    void appendToMinVREvents(G3D::Array<G3D::GEvent>, VRDataQueue* minvrEventQueue);
     std::vector<G3DWindow* > _windows;
-    
+    //std::vector<VRDataIndex> _gEvents;
 
   };
 

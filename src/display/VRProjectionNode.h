@@ -44,11 +44,18 @@ public:
 
   static VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 
+  float getFoVX();
+  float getFoVY();
+  float getNearClip();
+  float getFarClip();
+
 protected:
   float _fovX;
   float _fovY;
   float _nearClip;
   float _farClip;
+  float _horizontalClip;
+  float _verticalClip;
   //The previous fields aren't necessary to store after computing the matrix, but I could see scenarios where having them would be useful (querying clip plane, adjusting FOV) so I keep them around.
   VRMatrix4 _projectionMatrix;
 };

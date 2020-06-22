@@ -25,9 +25,16 @@ namespace MinVR {
     /** Inter-ocular distance defaults to 2.5 inches = 0.2083 feet, this
         assumes your virtual coordinates are reported in feet.
     */
-    ProjectionVRCamera(
+    ProjectionVRCamera(float left, float right,
+      float bottom, float top,
+      float near, float far,
       double interOcularDist = 0.2083);
+
+    ProjectionVRCamera(double interOcularDist = 0.2083);
+
     virtual ~ProjectionVRCamera();
+
+
 
     /** Sets the projection matrix and the camera to world matrix for
         the RenderDevice based on the current DisplayTile, HeadFrame,
@@ -38,6 +45,9 @@ namespace MinVR {
       G3D::Matrix4  &viewLeft, G3D::Matrix4  &projectionLeft,
       G3D::Matrix4  &viewRight, G3D::Matrix4  &projectionRight);
 
+    PLUGIN_API void setViewMatrixCoordinate(G3D::Matrix4& viewMatrix);
+    PLUGIN_API void setProjectionMatrix(G3D::Matrix4& projectionMatrix);
+    PLUGIN_API void getInverseViewProjection(G3D::Matrix4& inverseMatrix);
 
     G3D::CoordinateFrame getHeadFrame() { return headFrame; }
     G3D::CoordinateFrame getLeftEyeFrame();
@@ -58,8 +68,16 @@ namespace MinVR {
     /// Inter-ocular distance, default = 2.5 inches = 0.2083 feet
     double           iod;
     DisplayTile      tile;
+    float _left;
+    float _right;
+    float _bottom;
+    float _top;
+    float _near;
+    float _far;
     G3D::CoordinateFrame  headFrame;
     EyeProjectionType lastProjectionEye;
+    G3D::Matrix projectionMatrix;
+    const G3D::Framebuffer::Ref& fbo;
   };
 
 } // end namespace

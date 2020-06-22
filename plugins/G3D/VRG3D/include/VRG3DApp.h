@@ -20,7 +20,12 @@ namespace MinVR
     PLUGIN_API virtual ~VRG3DApp();
     PLUGIN_API virtual void onRenderGraphicsContext(const VRGraphicsState& state);
     PLUGIN_API virtual void onRenderGraphicsScene(const VRGraphicsState& state);
- 
+    PLUGIN_API virtual void onCursorMove(const VRCursorEvent &state);
+    PLUGIN_API virtual void onAnalogChange(const VRAnalogEvent &state);
+    PLUGIN_API virtual void onButtonDown(const VRButtonEvent &state);
+    PLUGIN_API virtual void onButtonUp(const VRButtonEvent &state);
+    PLUGIN_API virtual void onTrackerMove(const VRTrackerEvent &state);
+
 
   protected:
     G3D::RenderDevice* myRenderDevice;

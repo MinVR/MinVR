@@ -13,7 +13,7 @@ VRProjectionNode::VRProjectionNode(const std::string &name, float fovX, float fo
   // method needs to be changed to accommodate not just the values
   // added by nodes in teh display tree, but also from the config
   // files.
-  // _addValueNeeded("NearClip");
+  //_addValueNeeded("NearClip");
   // _addValueNeeded("FarClip");
   // _addValueNeeded("FieldOfViewY");
   // _addValueNeeded("FieldOfViewX");
@@ -23,8 +23,8 @@ VRProjectionNode::VRProjectionNode(const std::string &name, float fovX, float fo
   _valuesAdded.push_back("ProjectionMatrix");
 
   float degreeToRadian = 3.1415926f / 180;
-  float _horizontalClip = tan(fovX * degreeToRadian / 2.0f) * _nearClip;
-  float _verticalClip = tan(fovY * degreeToRadian / 2.0f) * _nearClip;
+  _horizontalClip = tan(fovX * degreeToRadian / 2.0f) * _nearClip;
+  _verticalClip = tan(fovY * degreeToRadian / 2.0f) * _nearClip;
 
   VRMatrix4 projMat = VRMatrix4::projection(-_horizontalClip, _horizontalClip, -_verticalClip, _verticalClip, _nearClip, _farClip); //TODO: This should just be cacheable once since it doesn't change.
  _projectionMatrix = projMat;
@@ -41,6 +41,12 @@ void VRProjectionNode::render(VRDataIndex *renderState, VRRenderHandler *renderH
   renderState->pushState();
 
   renderState->addData("ProjectionMatrix", _projectionMatrix);
+  renderState->addData("ProjectionHorizontalClip", _horizontalClip);
+  renderState->addData("ProjectoinVerticalClip", _verticalClip);
+  renderState->addData("ProjectionFovX", _fovX);
+  renderState->addData("ProjectionFovY", _fovY);
+  renderState->addData("ProjectionNearClip", _nearClip);
+  renderState->addData("ProjectionFarClip", _farClip);
 
   VRMatrix4 cameraMat = renderState->getValue("CameraMatrix");
 
@@ -63,6 +69,26 @@ VRDisplayNode* VRProjectionNode::create(VRMainInterface *vrMain, VRDataIndex *co
   VRProjectionNode *node = new VRProjectionNode(nameSpace, fovX, fovY, nearClip, farClip);
 
   return node;
+}
+
+float VRProjectionNode::getFoVX()
+{
+  return _fovX;
+}
+
+float VRProjectionNode::getFoVY()
+{
+  return _fovY;
+}
+
+float VRProjectionNode::getNearClip()
+{
+  return _nearClip;
+}
+
+float VRProjectionNode::getFarClip()
+{
+  return _farClip;
 }
 
 } // end namespace

@@ -14,7 +14,7 @@
 
 #include <G3D/G3D.h>
 #include <GLG3D/GLG3D.h>
-#include "Event.h"
+#include "VRG3DEvent.h"
 #include "ProjectionVRCamera.h"
 
 namespace MinVR {

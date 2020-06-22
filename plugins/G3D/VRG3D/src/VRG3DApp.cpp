@@ -3,16 +3,48 @@
 #include "../include/VRG3DGraphicsToolkit.h"
 #include "../include/VRG3DDisplayNode.h"
 
+#include <api/VRApp.h>
+
 namespace MinVR
 {
   VRG3DApp::VRG3DApp(int argc, char *argv[]) :
     VRApp(argc, argv), _log(NULL)
   {
-    _cameras.append(new ProjectionVRCamera);
+
+    std::vector<VRDisplayNode*> projectionDisplayNode =
+      //getDisplayNodesByName("VRG3DGraphicsWindowNode");
+      //getDisplayNodesByName("/MinVR/Desktop/WindowNode");
+      getDisplayNodesByName("ProjectionNode");
+    if (projectionDisplayNode.size() > 0)
+    {
+      VRProjectionNode* projectionNode = dynamic_cast<MinVR::VRProjectionNode*>(projectionDisplayNode[0]);
+      if (projectionNode)
+      {
+        float degreeToRadian = 3.1415926f / 180;
+        float fovX = projectionNode->getFoVX();
+        float fovY = projectionNode->getFoVY();
+        float nearClip = projectionNode->getNearClip();
+        float farClip = projectionNode->getFarClip();
+        float horizontalClip = tan(fovX * degreeToRadian / 2.0f) * nearClip;
+        float verticalClip = tan(fovY * degreeToRadian / 2.0f) * nearClip;
+
+
+        _cameras.append(new ProjectionVRCamera(-horizontalClip, horizontalClip, -verticalClip
+          , verticalClip, nearClip, farClip));
+      }
+
+    }
+    else
+    {
+      _cameras.append(new ProjectionVRCamera());
+    }
+
+
+    
     std::vector<MinVR::VRDisplayNode*> g3dDisplayNode =
       //getDisplayNodesByName("VRG3DGraphicsWindowNode");
       //getDisplayNodesByName("/MinVR/Desktop/WindowNode");
-      getDisplayNodesByName("/MinVR/VRSetups/Desktop/WindowNode");
+      getDisplayNodesByName("WindowNode");
     for (int i = 0; i < g3dDisplayNode.size(); ++i)
     {
       std::cout << g3dDisplayNode[i]->getType() << std::endl;
@@ -96,6 +128,31 @@ namespace MinVR
 
   }
 
+
+  PLUGIN_API void VRG3DApp::onCursorMove(const VRCursorEvent &state)
+  {
+
+  }
+
+  PLUGIN_API void VRG3DApp::onAnalogChange(const VRAnalogEvent &state)
+  {
+
+  }
+
+  PLUGIN_API void VRG3DApp::onButtonDown(const VRButtonEvent &state)
+  {
+
+  }
+
+  PLUGIN_API void VRG3DApp::onButtonUp(const VRButtonEvent &state)
+  {
+
+  }
+
+  PLUGIN_API void VRG3DApp::onTrackerMove(const VRTrackerEvent &state)
+  {
+
+  }
 
 }
 

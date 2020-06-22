@@ -6,6 +6,7 @@
 
 #include <config/VRDataIndex.h>
 #include <display/VRDisplayNode.h>
+#include <display/VRProjectionNode.h>
 #include <display/VRGraphicsToolkit.h>
 #include <display/VRWindowToolkit.h>
 #include <input/VRInputDevice.h>

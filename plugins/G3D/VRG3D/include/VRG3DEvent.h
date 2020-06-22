@@ -15,8 +15,8 @@
 
 namespace MinVR {
 
-class Event;
-typedef G3D::ReferenceCountedPointer<class Event> EventRef;
+class VRG3DEvent;
+typedef G3D::ReferenceCountedPointer<class VRG3DEvent> EventRef;
 
 /// Creates a copy of the Event pointed to by e and returns a ref
 /// counted pointer to the new copy.
@@ -29,7 +29,7 @@ PLUGIN_API EventRef createCopyOfEvent(EventRef e);
     EVENTTYPE_STANDARD Events, the first named ButtonName_down and
     then when the button is released ButtonName_up.
 */
-class Event : public G3D::ReferenceCountedObject
+class VRG3DEvent : public G3D::ReferenceCountedObject
 {
 public:
 
@@ -42,42 +42,42 @@ public:
     EVENTTYPE_MSG = 5              /// stores a std::string
   };
 
-  Event(const std::string &name) {
+  VRG3DEvent(const std::string &name) {
     _name = name;
     _type = EVENTTYPE_STANDARD;
   }
 
-  Event(const std::string &name, const double data) {
+  VRG3DEvent(const std::string &name, const double data) {
     _name = name;
     _data1D = data;
     _type = EVENTTYPE_1D;
   }
 
-  Event(const std::string &name, const G3D::Vector2 &data) {
+  VRG3DEvent(const std::string &name, const G3D::Vector2 &data) {
     _name = name;
     _data2D = data;
     _type = EVENTTYPE_2D;
   }
 
-  Event(const std::string &name, const G3D::Vector3 &data) {
+  VRG3DEvent(const std::string &name, const G3D::Vector3 &data) {
     _name = name;
     _data3D = data;
     _type = EVENTTYPE_3D;
   }
 
-  Event(const std::string &name, const G3D::CoordinateFrame &data) {
+  VRG3DEvent(const std::string &name, const G3D::CoordinateFrame &data) {
     _name = name;
     _dataCF = data;
     _type = EVENTTYPE_COORDINATEFRAME;
   }
 
-  Event(const std::string &name, const std::string &data) {
+  VRG3DEvent(const std::string &name, const std::string &data) {
     _name = name;
     _dataMsg = data;
     _type = EVENTTYPE_MSG;
   }
 
-  virtual ~Event() {}
+  virtual ~VRG3DEvent() {}
 
 
   std::string     getName() const { return _name; }
