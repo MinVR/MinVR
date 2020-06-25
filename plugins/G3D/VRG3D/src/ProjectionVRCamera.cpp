@@ -5,15 +5,18 @@ namespace MinVR {
   ProjectionVRCamera::ProjectionVRCamera(float left, float right,
     float bottom, float top,
     float near, float far,
+    ViewConfiguration cameraViewConfiguration,
     double interOcularDist):_left(left),_right(right), _bottom(bottom),
     _top(top), _near(near), _far(far),iod(interOcularDist),
-    fbo(G3D::Framebuffer::create("MinVR_Fb"))
+    viewConfiguration(cameraViewConfiguration)
   {
     
   }
   
-  ProjectionVRCamera::ProjectionVRCamera(double interOcularDist):
-    iod(interOcularDist), fbo(G3D::Framebuffer::create("MinVR_Fb"))
+  ProjectionVRCamera::ProjectionVRCamera(ViewConfiguration cameraViewConfiguration,
+    double interOcularDist):
+    iod(interOcularDist),
+    viewConfiguration(cameraViewConfiguration)
   {
   
   }
@@ -29,54 +32,74 @@ namespace MinVR {
     projectionMtrx = projectionMtrx.transpose();
     const float* vMatrix = state.getViewMatrix();
     G3D::Matrix4 viewMatrix = state.getViewMatrix();
-    G3D::Matrix4 viewTransposed = viewMatrix.transpose();
-    G3D::CoordinateFrame cf = viewMatrix.approxCoordinateFrame();
-    G3D::CoordinateFrame tcf = viewTransposed.approxCoordinateFrame();
-    //G3D::Vector3 cf.translation;
-    std::cout << "View matrix: " << cf.translation << std::endl;
-    std::cout << "Transposed View matrix: " << tcf.translation << std::endl;
-    const float* vCamPos = state.getCameraPos();
+    viewMatrix = viewMatrix.transpose();
+    G3D::CoordinateFrame tcf = viewMatrix.approxCoordinateFrame();
+    //viewMatrix.setColumn(3, viewMatrix.column(3) + G3D::Vector4(0, 1, 0.0, 0));
+    G3D::Matrix4 g3dPjMtx = rd->projectionMatrix();
 
-    G3D::Vector3 camPos(vCamPos[0], vCamPos[1],vCamPos[2]) ;
-    std::cout << "CamPos: " <<  camPos << std::endl;
-    //camPos += G3D::Vector3(0, 0, -1.0);
+    rd->setProjectionMatrix(rd->invertYMatrix() * projectionMtrx);
 
-    //viewTransposed.setRow(1, viewTransposed.column(1) * -1);
-    //viewTransposed.setColumn(3,  G3D::Vector4(camPos.x, camPos.y, camPos.z,1.0));
-    //viewTransposed.setColumn(3, viewTransposed.column(3) );
-    //G3D::Matrix4 g3dPjMtx = rd->projectionMatrix();
-    //viewTransposed.setColumn(3, G3D::Vector4(camPos.x, camPos.y, camPos.z, 1.0));
+    if (viewConfiguration == VR)
+    {
+      // the openvr view matrix is already inverted
+      rd->setCameraToWorldMatrix(tcf);
+    }
+    else
+    {
+      rd->setCameraToWorldMatrix(tcf.inverse());
+    }
     
-    //position
-    G3D::Matrix4 translateM = G3D::Matrix4::translation(0, 0, -1);
-    //viewTransposed = viewTransposed * translateM;
-    //viewTransposed = viewTransposed.translation(0, 0, -1);
-    viewTransposed.setColumn(3, G3D::Vector4(0, 0, -1, 1.0));
-    //G3D::Vector3 upVector(viewTransposed[0][1], viewTransposed[1][1], viewTransposed[2][1]);
-    //upVector *= 1;
-    //viewTransposed.setColumn(1, G3D::Vector4(upVector.x, upVector.y, upVector.z, 0.0));
-    //viewTransposed.setColumn(3, G3D::Vector4(0, 0, 1, 0));
-    //viewTransposed.setColumn(0, -viewTransposed.column(0));
-    //viewTransposed.setColumn(2, -viewTransposed.column(2));
-    G3D::CoordinateFrame viewCoordinateF = viewMatrix.approxCoordinateFrame();
-    G3D::CoordinateFrame viewTransposedCoordinateF = viewTransposed.approxCoordinateFrame();
+    //projectionMtrx = projectionMtrx.transpose();
+    //const float* vMatrix = state.getViewMatrix();
+    //G3D::Matrix4 viewMatrix = state.getViewMatrix();
+    //G3D::Matrix4 viewTransposed = viewMatrix.transpose();
+    //G3D::CoordinateFrame cf = viewMatrix.approxCoordinateFrame();
+    //G3D::CoordinateFrame tcf = viewTransposed.approxCoordinateFrame();
+    ////G3D::Vector3 cf.translation;
+    ////std::cout << "View matrix: " << cf.translation << std::endl;
+    ////std::cout << "Transposed View matrix: " << tcf.translation << std::endl;
+    //const float* vCamPos = state.getCameraPos();
 
-    //G3D::Vector3 up = viewTransposedCoordinateF.upVector();
-     G3D::Matrix4 M(1, 0, 0, 0,
-      0, -1, 0, 0,
-      0, 0, 1, 0,
-      0, 0, 0, 1);
-     
+    //G3D::Vector3 camPos(vCamPos[0], vCamPos[1], vCamPos[2]);
+    ////std::cout << "CamPos: " <<  camPos << std::endl;
+    ////camPos += G3D::Vector3(0, 0, -1.0);
 
-    //rd->pushState(fbo);
-    rd->setProjectionMatrix( projectionMtrx);
+    ////viewTransposed.setRow(1, viewTransposed.column(1) * -1);
+    ////viewTransposed.setColumn(3,  G3D::Vector4(camPos.x, camPos.y, camPos.z,1.0));
+    ////viewTransposed.setColumn(3, viewTransposed.column(3) );
+    ////G3D::Matrix4 g3dPjMtx = rd->projectionMatrix();
+    ////viewTransposed.setColumn(3, G3D::Vector4(camPos.x, camPos.y, camPos.z, 1.0));
+
+    ////position
+    //G3D::Matrix4 translateM = G3D::Matrix4::translation(0, 0, -1);
+    ////viewTransposed = viewTransposed * translateM;
+    ////viewTransposed = viewTransposed.translation(0, 0, -1);
+    ////viewTransposed.setColumn(3, G3D::Vector4(0, 0, -1, 1.0));
+    ////G3D::Vector3 upVector(viewTransposed[0][1], viewTransposed[1][1], viewTransposed[2][1]);
+    ////upVector *= 1;
+    ////viewTransposed.setColumn(1, G3D::Vector4(upVector.x, upVector.y, upVector.z, 0.0));
+    ////viewTransposed.setColumn(3, G3D::Vector4(0, 0, 1, 0));
+    ////viewTransposed.setColumn(0, -viewTransposed.column(0));
+    ////viewTransposed.setColumn(2, -viewTransposed.column(2));
+    //G3D::CoordinateFrame viewCoordinateF = viewMatrix.approxCoordinateFrame();
+    //G3D::CoordinateFrame viewTransposedCoordinateF = viewTransposed.approxCoordinateFrame();
+
+    ////G3D::Vector3 up = viewTransposedCoordinateF.upVector();
+    //G3D::Matrix4 M(1, 0, 0, 0,
+    //  0, -1, 0, 0,
+    //  0, 0, 1, 0,
+    //  0, 0, 0, 1);
 
 
-    //rd->setProjectionMatrix(M * projectionMtrx);
+    ////rd->pushState(fbo);
     //rd->setProjectionMatrix(projectionMtrx);
-    rd->setCameraToWorldMatrix(viewTransposedCoordinateF);
-    //rd->clear();
-    //rd->popState();
+
+
+    ////rd->setProjectionMatrix(M * projectionMtrx);
+    ////rd->setProjectionMatrix(projectionMtrx);
+    //rd->setCameraToWorldMatrix(viewTransposedCoordinateF);
+    ////rd->clear();
+    ////rd->popState();
   }
 
   void ProjectionVRCamera::setViewMatrixCoordinate(G3D::Matrix4& viewMatrix)

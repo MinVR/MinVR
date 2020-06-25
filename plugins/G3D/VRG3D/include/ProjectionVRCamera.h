@@ -14,6 +14,12 @@ namespace MinVR {
   {
   public:
 
+    enum ViewConfiguration
+    {
+      DESKTOP,
+      VR
+    };
+
     enum EyeProjectionType {
       LeftEye,             // left eye for quad-buffered stereo rendering
       RightEye,            // right eye for quad-buffered stereo rendering
@@ -27,10 +33,10 @@ namespace MinVR {
     */
     ProjectionVRCamera(float left, float right,
       float bottom, float top,
-      float near, float far,
+      float near, float far, ViewConfiguration cameraViewConfiguration,
       double interOcularDist = 0.2083);
 
-    ProjectionVRCamera(double interOcularDist = 0.2083);
+    ProjectionVRCamera(ViewConfiguration cameraViewConfiguration , double interOcularDist = 0.2083);
 
     virtual ~ProjectionVRCamera();
 
@@ -77,7 +83,9 @@ namespace MinVR {
     G3D::CoordinateFrame  headFrame;
     EyeProjectionType lastProjectionEye;
     G3D::Matrix projectionMatrix;
-    const G3D::Framebuffer::Ref& fbo;
+    //const G3D::Framebuffer::Ref& fbo;
+    ViewConfiguration viewConfiguration;
+
   };
 
 } // end namespace

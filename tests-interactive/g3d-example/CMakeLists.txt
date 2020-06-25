@@ -46,7 +46,7 @@ if(EXISTS ${MinVR_G3D_LIB})
    message(STATUS "MinVR_G3Dd found in ${MinVR_G3D_LIB}") 
    target_link_libraries(${PROJECT_NAME} PUBLIC ${MinVR_G3D_LIB})
 else()
-    message(SEND_ERROR "YOU MIGHT HAVE TO LINK MinVR_G3Dd.lib IN YOUR PROJECT MANUALLY")
+    message(WARNING "YOU MIGHT HAVE TO LINK MinVR_G3Dd.lib IN YOUR PROJECT MANUALLY")
 endif()
 
 # Setup dependency on G3D:

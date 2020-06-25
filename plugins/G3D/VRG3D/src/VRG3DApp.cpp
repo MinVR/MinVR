@@ -9,38 +9,12 @@ namespace MinVR
 {
   VRG3DApp::VRG3DApp(int argc, char *argv[]) :
     VRApp(argc, argv), _log(NULL)
-  {
+  {    
 
-    std::vector<VRDisplayNode*> projectionDisplayNode =
-      //getDisplayNodesByName("VRG3DGraphicsWindowNode");
-      //getDisplayNodesByName("/MinVR/Desktop/WindowNode");
-      getDisplayNodesByName("ProjectionNode");
-    if (projectionDisplayNode.size() > 0)
-    {
-      VRProjectionNode* projectionNode = dynamic_cast<MinVR::VRProjectionNode*>(projectionDisplayNode[0]);
-      if (projectionNode)
-      {
-        float degreeToRadian = 3.1415926f / 180;
-        float fovX = projectionNode->getFoVX();
-        float fovY = projectionNode->getFoVY();
-        float nearClip = projectionNode->getNearClip();
-        float farClip = projectionNode->getFarClip();
-        float horizontalClip = tan(fovX * degreeToRadian / 2.0f) * nearClip;
-        float verticalClip = tan(fovY * degreeToRadian / 2.0f) * nearClip;
+    ProjectionVRCamera::ViewConfiguration cameraViewConfiguration =
+      ProjectionVRCamera::ViewConfiguration::DESKTOP;
+      ;
 
-
-        _cameras.append(new ProjectionVRCamera(-horizontalClip, horizontalClip, -verticalClip
-          , verticalClip, nearClip, farClip));
-      }
-
-    }
-    else
-    {
-      _cameras.append(new ProjectionVRCamera());
-    }
-
-
-    
     std::vector<MinVR::VRDisplayNode*> g3dDisplayNode =
       //getDisplayNodesByName("VRG3DGraphicsWindowNode");
       //getDisplayNodesByName("/MinVR/Desktop/WindowNode");
@@ -51,6 +25,16 @@ namespace MinVR
       MinVR::VRG3DDisplayNode* g3dGraphicsTK = dynamic_cast<MinVR::VRG3DDisplayNode*>(g3dDisplayNode[i]);
       if (g3dGraphicsTK)
       {
+        // check display configuration
+
+        for (VRDisplayNode* displayNode: g3dGraphicsTK->getChildren())
+        {
+          if (displayNode->getType() == "HTC")
+          {
+            cameraViewConfiguration = ProjectionVRCamera::ViewConfiguration::VR;
+          }
+        }
+
         G3D::RenderDevice* g3dRenderDevice = g3dGraphicsTK->getG3DRenderDevice();
         if (g3dRenderDevice)
         {
@@ -67,6 +51,33 @@ namespace MinVR
       }
 
 
+    }
+
+    std::vector<VRDisplayNode*> projectionDisplayNode =
+      getDisplayNodesByName("ProjectionNode");
+
+    if (projectionDisplayNode.size() > 0)
+    {
+      VRProjectionNode* projectionNode = dynamic_cast<MinVR::VRProjectionNode*>(projectionDisplayNode[0]);
+      if (projectionNode)
+      {
+        float degreeToRadian = 3.1415926f / 180;
+        float fovX = projectionNode->getFoVX();
+        float fovY = projectionNode->getFoVY();
+        float nearClip = projectionNode->getNearClip();
+        float farClip = projectionNode->getFarClip();
+        float horizontalClip = tan(fovX * degreeToRadian / 2.0f) * nearClip;
+        float verticalClip = tan(fovY * degreeToRadian / 2.0f) * nearClip;
+
+
+        _cameras.append(new ProjectionVRCamera(-horizontalClip, horizontalClip, -verticalClip
+          , verticalClip, nearClip, farClip, cameraViewConfiguration));
+      }
+
+    }
+    else
+    {
+      _cameras.append(new ProjectionVRCamera(cameraViewConfiguration));
     }
   }
 
