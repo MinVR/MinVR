@@ -93,7 +93,7 @@ void VRPhotonDevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents)
 			}
 		}
 		
-		m_photon->sendData(inputEvents->serialize());
+		m_photon->sendData(sendQueue.serialize());
 	}
 	m_photon->update();
 
