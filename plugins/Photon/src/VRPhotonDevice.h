@@ -93,6 +93,8 @@ private:
 	bool m_receiveOnly;
 	std::unordered_set <std::string> m_blacklist;
 	std::unordered_map <std::string, std::string> m_replacements;
+	int m_lastsend;
+	int m_lastreceived;
 };
 
 

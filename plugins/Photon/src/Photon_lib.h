@@ -12,6 +12,7 @@ public:
 
 	void update(void);
 	void sendData(std::string data);
+	bool isConnected();
 	std::vector <std::string> &getPendingEvents() {
 		return m_pendingEvents;
 	}

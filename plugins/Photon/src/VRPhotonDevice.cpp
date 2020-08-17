@@ -51,7 +51,7 @@ namespace MinVR {
 
 
 VRPhotonDevice::VRPhotonDevice(std::string appName, std::string appID, std::string appVersion, std::string playerName
-	, bool receiveOnly, std::vector<std::string> blacklist, std::vector<std::string> replacements) : m_receiveOnly{ receiveOnly }
+	, bool receiveOnly, std::vector<std::string> blacklist, std::vector<std::string> replacements) : m_receiveOnly{ receiveOnly }, m_lastsend{ 0 }, m_lastreceived{-1}
 {
 	PhotonLib::gameName = appName.c_str();
 	PhotonLib::appID = appID.c_str();
@@ -77,8 +77,15 @@ VRPhotonDevice::~VRPhotonDevice()
 }
 
 void VRPhotonDevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents) {
-	if (!m_receiveOnly) {
+
+	m_photon->update();
+
+	if (m_photon->isConnected() && !m_receiveOnly) {
 		VRDataQueue sendQueue;
+		//VRDataIndex di("ID");
+		//di.addData("val", m_lastsend);		
+		//sendQueue.push(di);
+
 		for (VRDataQueue::iterator iter = inputEvents->begin(); iter != inputEvents->end(); iter++) {
 			//check if event is blacklisted
 			if (m_blacklist.find(iter->second.getData().getName()) == m_blacklist.end())
@@ -94,13 +101,37 @@ void VRPhotonDevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents)
 		}
 		
 		m_photon->sendData(sendQueue.serialize());
+		m_lastsend++;
 	}
+
+
 	m_photon->update();
 
 	for (int f = 0; f < m_photon->getPendingEvents().size(); f++) {
         inputEvents->addSerializedQueue(m_photon->getPendingEvents()[f]);
+		/*VRDataQueue tmpQueue;
+		tmpQueue.addSerializedQueue(m_photon->getPendingEvents()[f]);
+		for (VRDataQueue::iterator iter = tmpQueue.begin(); iter != tmpQueue.end(); iter++) {
+			if (iter->second.getData().getName() == "ID" && iter->second.getData().exists("val")) {
+				int id = iter->second.getData().getValue("val");
+				if (m_lastreceived == -1) {
+					m_lastreceived = id;
+					std::cerr << "START " << m_lastreceived << std::endl;
+				}
+				if (id == m_lastreceived) {
+					m_lastreceived++;
+					std::cerr << "In order " << id << std::endl;
+				}
+				else {
+					std::cerr << "!!!!!!!!!!!!!!! OUT OF ORDER !!!!!!!!!!!!!!!!" << std::endl;
+				}
+			}
+		}
+		tmpQueue.clear();*/
     }
+
 	m_photon->getPendingEvents().clear();
+	m_photon->update();
 }
 
 

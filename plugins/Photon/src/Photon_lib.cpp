@@ -95,16 +95,21 @@ ExitGames::Common::JString PhotonLib::getStateString(void)
 
 void PhotonLib::sendData(std::string data)
 {
-	if (mState != State::JOINED)
+	if (!isConnected())
 		return;
 
 	ExitGames::Common::Hashtable event;
 	ExitGames::Common::JString jdata = data.c_str();
 	event.put(static_cast<nByte>(0), jdata);
 	
-	// send to ourselves only
-	int myPlayerNumber = mLoadBalancingClient.getLocalPlayer().getNumber();
+	//send to ourselves only
+	//int myPlayerNumber = mLoadBalancingClient.getLocalPlayer().getNumber();
+	//mLoadBalancingClient.opRaiseEvent(true, event, 0, ExitGames::LoadBalancing::RaiseEventOptions().setTargetPlayers(&myPlayerNumber, 1));
 	mLoadBalancingClient.opRaiseEvent(true, event, 0); // ExitGames::LoadBalancing::RaiseEventOptions().setTargetPlayers(&myPlayerNumber, 1));
+}
+
+bool PhotonLib::isConnected() {
+	return mState == State::JOINED;
 }
 
 void PhotonLib::debugReturn(int /*debugLevel*/, const ExitGames::Common::JString& string)
