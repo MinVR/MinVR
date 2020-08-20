@@ -45,13 +45,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Note: This include ordering is important!
 #include "VRPhotonDevice.h"
 #include <iostream>
+#include <api/VRAnalogEvent.h>
 
+//#define COUNTPACKAGES
+//#define WRITEEVENTSTOFILE
 
 namespace MinVR {
 
 
 VRPhotonDevice::VRPhotonDevice(std::string appName, std::string appID, std::string appVersion, std::string playerName
-	, bool receiveOnly, std::vector<std::string> blacklist, std::vector<std::string> replacements) : m_receiveOnly{ receiveOnly }, m_lastsend{ 0 }, m_lastreceived{-1}
+	, bool receiveOnly, std::vector<std::string> blacklist, std::vector<std::string> replacements, float updateSpeed) : m_receiveOnly{ receiveOnly }, m_lastsend{ 0 }, m_lastreceived{ -1 }, m_photon{ nullptr }, m_output_listener{ nullptr }, isRunning{ true }, m_updateSpeed{updateSpeed}
 {
 	PhotonLib::gameName = appName.c_str();
 	PhotonLib::appID = appID.c_str();
@@ -60,6 +63,7 @@ VRPhotonDevice::VRPhotonDevice(std::string appName, std::string appID, std::stri
 
 	m_output_listener = new StdIO_UIListener();
 	m_photon = new PhotonLib(m_output_listener);
+	th1 = new std::thread(&VRPhotonDevice::update_thread, this);
 
 	for (auto val : blacklist) {
 		m_blacklist.insert(val);
@@ -70,68 +74,105 @@ VRPhotonDevice::VRPhotonDevice(std::string appName, std::string appID, std::stri
 	}
 }
 
+void VRPhotonDevice::update_thread() {
+	while (isRunning) {
+		mtx.lock();
+		if (m_photon) {
+			m_photon->update();
+			if (!sendQueue.empty()) {
+				m_photon->sendData(sendQueue.serialize());
+				sendQueue.clear();
+			}
+			m_photon->update();
+		}
+		mtx.unlock();
+		Sleep(m_updateSpeed);
+	}
+}
+
 VRPhotonDevice::~VRPhotonDevice()
 {
+	isRunning = false;
+	th1->join();
+	delete th1;
+
 	delete m_photon;
 	delete m_output_listener;
 }
 
 void VRPhotonDevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents) {
-
-	m_photon->update();
-
-	if (m_photon->isConnected() && !m_receiveOnly) {
-		VRDataQueue sendQueue;
-		//VRDataIndex di("ID");
-		//di.addData("val", m_lastsend);		
-		//sendQueue.push(di);
-
-		for (VRDataQueue::iterator iter = inputEvents->begin(); iter != inputEvents->end(); iter++) {
-			//check if event is blacklisted
-			if (m_blacklist.find(iter->second.getData().getName()) == m_blacklist.end())
-			{
-				VRDataIndex tmpidx = iter->second.getData();
-				//change name if required
-				if (m_replacements.find(tmpidx.getName()) != m_replacements.end()) {
-					tmpidx.setName(m_replacements[tmpidx.getName()]);
+	if (m_photon && m_photon->isConnected() && !m_receiveOnly) {
+		mtx.lock();
+			for (VRDataQueue::iterator iter = inputEvents->begin(); iter != inputEvents->end(); iter++) {
+				//check if event is blacklisted
+				if (m_blacklist.find(iter->second.getData().getName()) == m_blacklist.end())
+				{
+					VRDataIndex tmpidx = iter->second.getData();
+					//change name if required
+					if (m_replacements.find(tmpidx.getName()) != m_replacements.end()) {
+						tmpidx.setName(m_replacements[tmpidx.getName()]);
+					}
+					VRDataQueueItem item = VRDataQueueItem(tmpidx.serialize());
+					sendQueue.push(iter->first.first, item);
 				}
-				VRDataQueueItem item = VRDataQueueItem(tmpidx.serialize());
-				sendQueue.push(iter->first.first, item);
 			}
-		}
+			if (m_lastsend >= INT_MAX)
+				m_lastsend = 0;
+			sendQueue.push(VRAnalogEvent::createValidDataIndex("PhotonLoopFinished", m_lastsend++));
+		mtx.unlock();
 		
-		m_photon->sendData(sendQueue.serialize());
-		m_lastsend++;
+#ifdef WRITEEVENTSTOFILE
+		std::ofstream outfile;
+		outfile.open("send.txt", std::ios_base::app); // append instead of overwrite
+		outfile << sendQueue.serialize() << std::endl;
+		outfile.close();
+#endif
+		
 	}
-
-
-	m_photon->update();
-
-	for (int f = 0; f < m_photon->getPendingEvents().size(); f++) {
-        inputEvents->addSerializedQueue(m_photon->getPendingEvents()[f]);
-		/*VRDataQueue tmpQueue;
-		tmpQueue.addSerializedQueue(m_photon->getPendingEvents()[f]);
-		for (VRDataQueue::iterator iter = tmpQueue.begin(); iter != tmpQueue.end(); iter++) {
-			if (iter->second.getData().getName() == "ID" && iter->second.getData().exists("val")) {
-				int id = iter->second.getData().getValue("val");
-				if (m_lastreceived == -1) {
-					m_lastreceived = id;
-					std::cerr << "START " << m_lastreceived << std::endl;
-				}
-				if (id == m_lastreceived) {
-					m_lastreceived++;
-					std::cerr << "In order " << id << std::endl;
-				}
-				else {
-					std::cerr << "!!!!!!!!!!!!!!! OUT OF ORDER !!!!!!!!!!!!!!!!" << std::endl;
+	mtx.lock();
+		for (int f = 0; f < m_photon->getPendingEvents().size(); f++) {
+			if (m_photon)
+				inputEvents->addSerializedQueue(m_photon->getPendingEvents()[f]);
+#ifdef COUNTPACKAGES
+			VRDataQueue tmpQueue;
+			tmpQueue.addSerializedQueue(m_photon->getPendingEvents()[f]);
+			for (VRDataQueue::iterator iter = tmpQueue.begin(); iter != tmpQueue.end(); iter++) {
+				if (iter->second.getData().getName() == "PhotonLoopFinished" && iter->second.getData().exists("AnalogValue")) {
+					int id = iter->second.getData().getValue("AnalogValue");
+					if (m_lastreceived == -1) {
+						m_lastreceived = id;
+						std::cerr << "START " << m_lastreceived << std::endl;
+					}
+					if (id == m_lastreceived) {
+						m_lastreceived++;
+						std::cerr << "In order " << id << std::endl;
+					}
+					else {
+						std::cerr << "!!!!!!!!!!!!!!! OUT OF ORDER !!!!!!!!!!!!!!!!" << std::endl;
+					}
 				}
 			}
+			tmpQueue.clear();
+#endif
+#ifdef WRITEEVENTSTOFILE
+			std::ofstream outfile;
+			outfile.open("receive.txt", std::ios_base::app); // append instead of overwrite
+			outfile << m_photon->getPendingEvents()[f] << std::endl;
+			outfile.close();
+#endif
 		}
-		tmpQueue.clear();*/
-    }
 
-	m_photon->getPendingEvents().clear();
-	m_photon->update();
+		m_photon->getPendingEvents().clear();
+	mtx.unlock();
+
+#ifdef WRITEEVENTSTOFILE
+	if (m_photon->isConnected() && m_receiveOnly) {
+		std::ofstream outfile;
+		outfile.open("receive_inputs.txt", std::ios_base::app); // append instead of overwrite
+		outfile << inputEvents->serialize() << std::endl;
+		outfile.close();
+	}
+#endif
 }
 
 
@@ -161,7 +202,13 @@ VRPhotonDevice::create(VRMainInterface *vrMain, VRDataIndex *config, const std::
 		replaceList = config->getValue("Replacements", devNameSpace);
 	}
 
-	VRInputDevice *dev = new VRPhotonDevice(appName, appID, appVersion, playerName, receiveOnly,  blacklist, replaceList);
+	float updateSpeed = 33.0f;
+	if (config->exists("PhotonUpdateSpeed", devNameSpace))
+	{
+		updateSpeed = config->getValue("PhotonUpdateSpeed", devNameSpace);
+	}
+
+	VRInputDevice *dev = new VRPhotonDevice(appName, appID, appVersion, playerName, receiveOnly,  blacklist, replaceList, updateSpeed);
 	return dev;
 }
 

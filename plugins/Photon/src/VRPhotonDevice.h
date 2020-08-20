@@ -70,6 +70,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Photon_lib.h"
 #include "StdIO_UIListener.h"
 
+#include <thread>
+#include <mutex>
+
 namespace MinVR {
 
 /**
@@ -79,15 +82,16 @@ class VRPhotonDevice : public VRInputDevice
 
 public:
 	PLUGIN_API VRPhotonDevice(std::string appName, std::string appID, std::string appVersion, std::string playerName
-		, bool receiveOnly, std::vector<std::string> blacklist, std::vector<std::string> replacements);
+		, bool receiveOnly, std::vector<std::string> blacklist, std::vector<std::string> replacements, float updateSpeed);
 	PLUGIN_API virtual ~VRPhotonDevice();
 
 	PLUGIN_API void appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents);
 	PLUGIN_API static VRInputDevice* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 
+	void update_thread();
+
 private:
     std::vector<VRDataIndex>   _pendingEvents;
-	PhotonLib * m_photon;
 	StdIO_UIListener * m_output_listener;
 
 	bool m_receiveOnly;
@@ -95,6 +99,13 @@ private:
 	std::unordered_map <std::string, std::string> m_replacements;
 	int m_lastsend;
 	int m_lastreceived;
+
+	std::mutex mtx;
+	PhotonLib * m_photon;
+	std::thread * th1;
+	bool isRunning;
+	float m_updateSpeed;
+	VRDataQueue sendQueue;
 };
 
 

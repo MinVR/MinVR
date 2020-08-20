@@ -45,10 +45,18 @@ The **Blacklist** option can be used to stop selected events from being sent. In
 ```
 The **Replacements** option can be used to change the names of events before being sent. In this example the even *LHandTracker_Move* will be renamed to *L_Move* and the event *RHandTracker_Move* will be renamed to *R_Move*
 
+```xml
+<PhotonUpdateSpeed>33</PhotonUpdateSpeed>
+```
+The **PhotonUpdateSpeed** option can be used to change the frequency of the update calls to the Photon library. This allows to define the frequency in which packets are received and send. The value defines the time between the update calls in ms.
+
+
 ### Considerations
 
 The plugin should be used to simply share events across different systems. How the events are being used depends on the application itself. In the simplest case one users sends the events to all other clients which have their plugin set to ReceiveOnly. 
 
 In order to work correctly it should be considered how the different systems are being setup. E.g. loading a file from the filesystem will not work properly as the different systems will have different filesystems. Also as the system is event based all systems need to be connected to the server before interaction with the environment is started and all systems need to have the same state, e.g. have loaded the same data.
+
+It should also be taken into accout that events from several render loops on the sender side can be received on the receiver side in the same render loop. In order to make sure that the applications on both side have the same state it might be required to apply application updates for every render loop of the sender. To facilitate this the sender send an analog event named *PhotonLoopFinished* to indicate when the events from on renderloop of the sender are finished which allows the receiver to update the application.
 
 Finally another problem might arise with time-sensitive interactions as the events will arrive with slight delay and the timedifferences between events might differ between different systems. If timing is an issue it is possible to make use of the timestamps of the events as these are the timestamps from the sending machine.
