@@ -104,7 +104,6 @@ MouseToTracker::cycleTracker()
 EventRef
 MouseToTracker::mouseMoveInPlane(EventRef e)
 {
-  // Mouse coordinates are reported from -1 -> 1, normalize to 0 -> 1
   Vector2 v = e->get2DData();
   double x = (v[0] / 2.0) + 0.5;
   double y = (v[1] / 2.0) + 0.5;
@@ -112,29 +111,14 @@ MouseToTracker::mouseMoveInPlane(EventRef e)
   //cout << "x=" << x << endl;
   //cout << "y=" << y << endl;
 
-  Vector3 topRight(0.65, 0.5, 0.0);
-  Vector3 topLeft(-0.65, 0.5, 0.0);
-  Vector3 botRight(0.65, -0.5, 0.0);
-  Vector3 botLeft(-0.65, -0.5, 0.0);
-  
-
-  Vector3 xvec = topRight - topLeft;
-  Vector3 yvec = topRight - botRight;
+  Vector3 xvec = _camera->_topRightCorner - _camera->_topLeftCorner;
+  Vector3 yvec = _camera->_topRightCorner - _camera->_botRightCorner;
   //cout << "xvec=" << xvec << endl;
   //cout << "yvec=" << yvec << endl;
 
   // Point on the filmplane
-  Vector3 fpPoint = botLeft + (x * xvec) + (y * yvec);
+  Vector3 fpPoint = _camera->_botLeftCorner + (x * xvec) + (y * yvec);
   //cout << "p=" << p << endl;
-   
-  //Matrix4 PVInverse;
-  //_camera->getInverseViewProjection(PVInverse);
-  //Vector3 deviceCoordinates(x, y,1);
-  //Vector4 ray_clip(deviceCoordinates.x, deviceCoordinates.y,-1.0,0.0);
-  //Vector3 ray_world = (PVInverse * ray_clip).xyz();
-  //ray_world = ray_world.unit();
-
-
 
   Vector3 cameraPos = _camera->getCameraPos();
   Vector3 dir = fpPoint - cameraPos;
@@ -143,23 +127,23 @@ MouseToTracker::mouseMoveInPlane(EventRef e)
 
   double z = _trans[2];
 
-  Vector3 xy_normal(0,0,-1);
-  Plane xyPlane(xy_normal, Vector3(0,0,z));
+  Vector3 xy_normal(0, 0, -1);
+  Plane xyPlane(xy_normal, Vector3(0, 0, z));
 
-  Ray r = Ray::fromOriginAndDirection(cameraPos, dir.unit());
-  //Ray r = Ray::fromOriginAndDirection(cameraPos, ray_world);  //+++
+  //Ray r = Ray::fromOriginAndDirection(cameraPos, dir);
+  Ray r = Ray::fromOriginAndDirection(cameraPos, dir.unit());  //+++
 
   Vector3 intersect = r.intersection(xyPlane);
   if (intersect == Vector3::inf()) {
     // try flipping the normal on the xyPlane
-    Plane xyPlane2(-xy_normal, Vector3(0,0,z));
+    Plane xyPlane2(-xy_normal, Vector3(0, 0, z));
     intersect = r.intersection(xyPlane2);
   }
 
   _trans[0] = intersect[0];
   _trans[1] = intersect[1];
   _lastPos = e->get2DData();
-  return (new VRG3DEvent("Mouse" + intToString(_curTracker) + "_Tracker", CoordinateFrame(_rot,_trans)));
+  return (new VRG3DEvent("Mouse" + intToString(_curTracker) + "_Tracker", CoordinateFrame(_rot, _trans)));
 }
 
 EventRef

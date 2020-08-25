@@ -32,9 +32,12 @@ public:
         if (state.getName() == "KbdEsc_Down") {
             shutdown();
         }
+        
     }
     
-    void onButtonUp(const VRButtonEvent &state) {}
+    void onButtonUp(const VRButtonEvent &state) {
+      
+    }
     
     void onCursorMove(const VRCursorEvent &state) {}
     
@@ -57,105 +60,28 @@ public:
          Make sure GlCaps is initialized.
         */
         G3D::GLCaps::init();
-
-        std::string skydataDir = "F:\\vrg3d-code\\G3D\\data-files\\sky\\";
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         
-        sky = Sky::fromFile(skydataDir);
-
-
-        skyParameters = G3D::SkyParameters(G3D::toSeconds(11, 00, 00, AM));
-        lighting = G3D::Lighting::fromSky(sky, skyParameters, Color3::white());
-
-        // This simple demo has no shadowing, so make all lights unshadowed
-        lighting->lightArray.append(lighting->shadowedLightArray);
-        lighting->shadowedLightArray.clear();
-
-
-       phongShader = G3D::Shader::fromFiles("F:\\vrg3d-code\\G3D\\samples\\shader\\data-files\\phong.vrt", "F:\\vrg3d-code\\G3D\\samples\\shader\\data-files\\phong.pix");
-       model = G3D::IFSModel::fromFile(System::findDataFile("F:\\vrg3d-code\\G3D\\data-files\\ifs\\teapot.ifs"));
-
-       //// makeColorList(G3D::GFont::fromFile(G3D::System::findDataFile("icon.fnt")));
-
-       // // Color 1 is red
-       // diffuseColorIndex = 1;
-       // // Last color is white
-       // //specularColorIndex = colorList.size() - 1;
-       // specularColorIndex = 2;
-
-        //GLCaps::init();
-        Texture::Settings settings;
-        settings.interpolateMode = Texture::TRILINEAR_MIPMAP;
-        settings.wrapMode = WrapMode::TILE;
-        Texture::Dimension        dim = Texture::DIM_2D_NPOT;
-        Texture::Preprocess preProcess;
-        double                    bright = 1.0;
-        preProcess.modulate = Color4(bright, bright, bright);
-        /* floorTexture = Texture::fromFile(
-           "F:\\vrg3d-code\\G3D\\data-files\\image\\checkerboard.jpg",
-           TextureFormat::RGBA8(), dim, settings, preProcess);*/
-        floorTexture = Texture::fromFile(
-          "F:\\DrawingOnAir-master\\share\\images\\32grid.jpg",
-          TextureFormat::RGBA8(), dim, settings, preProcess);
-        wallTexture = Texture::fromFile(
-          "F:\\DrawingOnAir-master\\share\\images\\wall-grid.jpg",
-          TextureFormat::RGBA8(), dim, settings, preProcess);
+       
       }
+
+      // You can make opengl calls
+      glClear(GL_COLOR_BUFFER_BIT);
     }
     
     void onRenderGraphicsScene(const VRGraphicsState& state) {
       VRG3DApp::onRenderGraphicsScene(state);
-      /*G3D::Draw::sphere(G3D::Sphere(
-        G3D::Vector3(0.0f, -1.0f, -1.0f), 0.5f), myRenderDevice,
+      G3D::Draw::sphere(G3D::Sphere(
+        G3D::Vector3(0.5f, 0.0f, -1.0f), 0.2f), myRenderDevice,
         G3D::Color3::blue(), G3D::Color4::clear());
       G3D::Draw::sphere(G3D::Sphere(
-        G3D::Vector3(0.0f, 1.0f, -1.0f), 0.5f), myRenderDevice,
+        G3D::Vector3(0.0f, 0.0f, -1.0f), 0.2f), myRenderDevice,
         G3D::Color3::red(), G3D::Color4::clear());
       G3D::Draw::sphere(G3D::Sphere(
-        G3D::Vector3(5.0f, 0.0f, -1.0f), 0.5f), myRenderDevice,
-        G3D::Color3::yellow(), G3D::Color4::clear());*/
+        G3D::Vector3(-0.5f, 0.0f, -1.0f), 0.2f), myRenderDevice,
+        G3D::Color3::yellow(), G3D::Color4::clear()); 
 
-      G3D::SkyParameters localSky = skyParameters;
-      G3D::LightingRef   localLighting = lighting;
-
-      myRenderDevice->setColorClearValue(G3D::Color3(0.1f, 0.5f, 1.0f));
-      myRenderDevice->clear(false, true, true);
-      sky->render(myRenderDevice, localSky);
-
-      myRenderDevice->pushState();
-      // Pose our model based on the manipulator axes
-      Surface::Ref posedModel = model->pose(CoordinateFrame());
-
-      // Enable the shader
-      configureShaderArgs(localLighting, state.getCameraPos());
-      myRenderDevice->setShader(phongShader);
-
-      // Send model geometry to the graphics card
-      myRenderDevice->setObjectToWorldMatrix(posedModel->coordinateFrame());
-      posedModel->sendGeometry(myRenderDevice);
-      myRenderDevice->popState();
-
-
-
-      myRenderDevice->pushState();
-      myRenderDevice->setColor(Color3(0.8, 0.8, 0.8));
-      myRenderDevice->setTexture(0, floorTexture);
-      myRenderDevice->setCullFace(RenderDevice::CULL_NONE);
-
-      double y = -0.32001 - 0.001;
-      double w = 1.3 * 2.0;
-      double h = 0.7 * 2.0;
-      myRenderDevice->beginPrimitive(PrimitiveType::QUADS);
-      myRenderDevice->setNormal(Vector3(0, 1, 0));
-      myRenderDevice->setTexCoord(0, Vector2(0, 1));
-      myRenderDevice->sendVertex(Vector3(-w / 2.0, y, h / 2.0));
-      myRenderDevice->setTexCoord(0, Vector2(0, 0));
-      myRenderDevice->sendVertex(Vector3(-w / 2.0, y, -h / 2.0));
-      myRenderDevice->setTexCoord(0, Vector2(1, 0));
-      myRenderDevice->sendVertex(Vector3(w / 2.0, y, -h / 2.0));
-      myRenderDevice->setTexCoord(0, Vector2(1, 1));
-      myRenderDevice->sendVertex(Vector3(w / 2.0, y, h / 2.0));
-      myRenderDevice->endPrimitive();
-      myRenderDevice->popState();
+     
     }
     
     

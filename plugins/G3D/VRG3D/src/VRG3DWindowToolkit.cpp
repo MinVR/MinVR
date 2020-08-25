@@ -74,6 +74,7 @@ namespace MinVR {
 
   PLUGIN_API void VRG3DWindowToolkit::swapBuffers(int windowID)
   {
+    glFlush();
     g3dRenderDevice->endFrame();
     g3dRenderDevice->beginFrame();
   }

@@ -27,9 +27,10 @@ namespace MinVR {
     }*/
 
     if (buffer == VRDRAWBUFFER_BACK) {
+      //glViewport(0, 0, 1024, 1024);
       _renderDevice->setDrawBuffer(G3D::RenderDevice::DRAW_BACK);
-      glDrawBuffer(GL_BACK);
-      _renderDevice->clear(true, true, true);
+      //glDrawBuffer(GL_BACK);
+     // _renderDevice->clear(true, true, true);
     }
     else if (buffer == VRDRAWBUFFER_FRONT) {
       _renderDevice->setDrawBuffer(G3D::RenderDevice::DRAW_FRONT);

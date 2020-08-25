@@ -23,7 +23,7 @@ namespace MinVR {
     void appendToMinVREvents(G3D::Array<G3D::GEvent>, VRDataQueue* minvrEventQueue);
     std::vector<G3DWindow* > _windows;
     //std::vector<VRDataIndex> _gEvents;
-
+    static std::string getKeyName(G3D::GKey::Value key, G3D::GKeyMod mod);
   };
 
 }

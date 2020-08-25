@@ -34,8 +34,8 @@ namespace MinVR {
     renderState->addData("WindowY", _settings.ypos);
     renderState->addData("WindowWidth", _settings.width);
     renderState->addData("WindowHeight", _settings.height);
-    renderState->addData("FramebufferWidth", _framebufferWidth);
-    renderState->addData("FramebufferHeight", _framebufferHeight);
+    renderState->addData("FramebufferWidth", _settings.width);
+    renderState->addData("FramebufferHeight", _settings.height);
     renderState->addData("SharedContextId", _settings.sharedContextGroupID);
     renderState->addData("WindowID", _windowID);
 

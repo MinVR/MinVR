@@ -8,12 +8,12 @@
 namespace MinVR
 {
   VRG3DApp::VRG3DApp(int argc, char *argv[]) :
-    VRApp(argc, argv), _log(NULL)
+    VRApp(argc, argv), _log(NULL),
+    _clearColor(Color4(0, 0, 0, 1))
   {    
 
-    ProjectionVRCamera::ViewConfiguration cameraViewConfiguration =
+    _cameraViewConfiguration =
       ProjectionVRCamera::ViewConfiguration::DESKTOP;
-      ;
 
     std::vector<MinVR::VRDisplayNode*> g3dDisplayNode =
       //getDisplayNodesByName("VRG3DGraphicsWindowNode");
@@ -29,9 +29,10 @@ namespace MinVR
 
         for (VRDisplayNode* displayNode: g3dGraphicsTK->getChildren())
         {
-          if (displayNode->getType() == "HTC")
+          if (displayNode->getType() == "VROpenVRNode")
+          //if (displayNode->getType() == "HTC")
           {
-            cameraViewConfiguration = ProjectionVRCamera::ViewConfiguration::VR;
+            _cameraViewConfiguration = ProjectionVRCamera::ViewConfiguration::VR;
           }
         }
 
@@ -69,15 +70,33 @@ namespace MinVR
         float horizontalClip = tan(fovX * degreeToRadian / 2.0f) * nearClip;
         float verticalClip = tan(fovY * degreeToRadian / 2.0f) * nearClip;
 
+        _cameras.append(
+          new ProjectionVRCamera(-horizontalClip, horizontalClip,
+            -verticalClip, verticalClip, nearClip, 
+            farClip, _cameraViewConfiguration));
 
-        _cameras.append(new ProjectionVRCamera(-horizontalClip, horizontalClip, -verticalClip
-          , verticalClip, nearClip, farClip, cameraViewConfiguration));
+        /*Vector3 topLeft =  Vector3(-0.65, 0.5, 0.0);
+        Vector3 topRight = Vector3(0.65, 0.5, 0.0);
+        Vector3 botLeft = Vector3(-0.65, -0.5, 0.0);
+        Vector3 botRight =  Vector3(0.65, -0.5, 0.0);
+        float nearclip =  0.01;
+        float farclip =  100.0;
+        int viewportX = 0;
+        int viewportY =  0;
+        int viewportW =  0;
+        int viewportH = 0;
+
+        _cameras.append(new ProjectionVRCamera(topLeft, topRight, 
+          botLeft
+          , botRight, _cameraViewConfiguration, nearclip, farclip,
+          viewportX, viewportY,
+          viewportW, viewportH));*/
       }
 
     }
     else
     {
-      _cameras.append(new ProjectionVRCamera(cameraViewConfiguration));
+      _cameras.append(new ProjectionVRCamera(_cameraViewConfiguration));
     }
   }
 
@@ -119,6 +138,7 @@ namespace MinVR
 
       //}
     }
+    myRenderDevice->setColorClearValue(_clearColor);
   }
 
   void VRG3DApp::onRenderGraphicsScene(const VRGraphicsState& state)
@@ -132,7 +152,7 @@ namespace MinVR
     G3D::Matrix4 viewMatrix = state.getViewMatrix();
     viewMatrix = viewMatrix.transpose();
     viewMatrix.setColumn(1, -viewMatrix.row(1));
-    viewMatrix.setColumn(3, G3D::Vector4(0,-1,0,0));
+    //viewMatrix.setColumn(3, G3D::Vector4(0,-1,0,0));
     G3D::Matrix4 g3dPjMtx = myRenderDevice->projectionMatrix();
     myRenderDevice->setProjectionMatrix(projectionMtrx);
     myRenderDevice->setCameraToWorldMatrix(viewMatrix.approxCoordinateFrame().inverse());

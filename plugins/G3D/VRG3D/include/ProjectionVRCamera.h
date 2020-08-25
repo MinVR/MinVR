@@ -31,9 +31,23 @@ namespace MinVR {
     /** Inter-ocular distance defaults to 2.5 inches = 0.2083 feet, this
         assumes your virtual coordinates are reported in feet.
     */
+    ProjectionVRCamera(G3D::Vector3 topLeftCorner,
+      G3D::Vector3 topRightCorner,
+      G3D::Vector3 botLeftCorner,
+      G3D::Vector3 botRightCorner, 
+      ViewConfiguration cameraViewConfiguration,
+      float nearClip,
+      float farClip,
+      int viewportXpos,
+      int viewportYpos,
+      int viewportWidth,
+      int viewportHeight,
+      double interOcularDist = 0.2083);
+
     ProjectionVRCamera(float left, float right,
       float bottom, float top,
-      float near, float far, ViewConfiguration cameraViewConfiguration,
+      float nearClip, float farClip,
+      ViewConfiguration cameraViewConfiguration,
       double interOcularDist = 0.2083);
 
     ProjectionVRCamera(ViewConfiguration cameraViewConfiguration , double interOcularDist = 0.2083);
@@ -78,8 +92,18 @@ namespace MinVR {
     float _right;
     float _bottom;
     float _top;
-    float _near;
-    float _far;
+    float _nearClip;
+    float _farClip;
+    // These are only needed in multi-tile situations where each displaytile
+// is rendered in a different gl viewport
+    int  _viewportX;
+    int             _viewportY;
+    int             _viewportW;
+    int             _viewportH;
+    G3D::Vector3 _topLeftCorner;
+    G3D::Vector3 _topRightCorner;
+    G3D::Vector3 _botLeftCorner;
+    G3D::Vector3 _botRightCorner;
     G3D::CoordinateFrame  headFrame;
     EyeProjectionType lastProjectionEye;
     G3D::Matrix projectionMatrix;

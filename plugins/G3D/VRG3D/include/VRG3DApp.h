@@ -32,8 +32,8 @@ namespace MinVR
     G3D::RenderDevice* myRenderDevice;
     G3D::Array<ProjectionVRCameraRef> _cameras;
     G3D::Log*                  _log;
-    
-    
+    G3D::Color4                _clearColor;
+    ProjectionVRCamera::ViewConfiguration _cameraViewConfiguration;
     
   };
 }

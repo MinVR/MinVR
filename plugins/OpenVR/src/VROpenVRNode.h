@@ -35,7 +35,7 @@ namespace MinVR {
  */
 class VROpenVRNode : public VRDisplayNode {
 public:
-	PLUGIN_API VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double near, double far, bool draw_controller, bool hide_tracker, bool draw_HMD_Only, unsigned int MSAA_buffers, float deviceUnitsToRoomUnits, VRMatrix4 deviceToRoom);
+	PLUGIN_API VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double near, double far, bool draw_controller, bool hide_tracker, bool draw_HMD_Only, unsigned int MSAA_buffers, float deviceUnitsToRoomUnits, VRMatrix4 deviceToRoom, bool clearScreen, VRFloatArray colorScreen);
 	
 	PLUGIN_API virtual ~VROpenVRNode();
 
@@ -47,6 +47,14 @@ public:
 	PLUGIN_API static VRDisplayNode* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 	
 	VROpenVRRenderModelHandler* getRenderModelHandler(){ return m_rendermodelhandler; }
+
+  PLUGIN_API virtual VRFloatArray& getClearColorScreen() { return _clearColor; };
+
+  PLUGIN_API virtual void setClearColorScreen(VRFloatArray& color) { _clearColor = color; };
+
+  PLUGIN_API virtual bool getClearScreen() { return _clearScreen; };
+
+  PLUGIN_API virtual void setClearScreen(bool clearScreen) { _clearScreen = clearScreen; };
 
 private:
 	unsigned int m_MSAA_buffers;
@@ -77,6 +85,9 @@ private:
 
 	bool SetupStereoRenderTargets();
 	bool CreateFrameBuffer( int nWidth, int nHeight, FramebufferDesc &framebufferDesc );
+
+  bool _clearScreen;
+  VRFloatArray _clearColor;
 };
 
 } // end namespace

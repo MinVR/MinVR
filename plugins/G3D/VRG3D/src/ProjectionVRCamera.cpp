@@ -2,13 +2,26 @@
 #include <GLG3D/Framebuffer.h>
 namespace MinVR {
    
-  ProjectionVRCamera::ProjectionVRCamera(float left, float right,
-    float bottom, float top,
-    float near, float far,
-    ViewConfiguration cameraViewConfiguration,
-    double interOcularDist):_left(left),_right(right), _bottom(bottom),
-    _top(top), _near(near), _far(far),iod(interOcularDist),
-    viewConfiguration(cameraViewConfiguration)
+  ProjectionVRCamera::ProjectionVRCamera(G3D::Vector3 topLeftCorner,
+    G3D::Vector3 topRightCorner,
+    G3D::Vector3 botLeftCorner,
+    G3D::Vector3 botRightCorner, ViewConfiguration cameraViewConfiguration,
+    float nearClip,
+    float farClip,
+    int viewportXpos,
+    int viewportYpos,
+    int viewportWidth,
+    int viewportHeight,
+    double interOcularDist):
+    _topLeftCorner(topRightCorner),
+    _topRightCorner(topRightCorner),
+    _botLeftCorner(botLeftCorner),
+    _botRightCorner(botRightCorner), _nearClip(nearClip), _farClip(farClip),iod(interOcularDist),
+    viewConfiguration(cameraViewConfiguration),
+    _viewportX(viewportXpos),
+    _viewportY(viewportYpos),
+    _viewportW(viewportWidth),
+    _viewportH(viewportHeight)
   {
     
   }
@@ -20,6 +33,15 @@ namespace MinVR {
   {
   
   }
+
+  ProjectionVRCamera::ProjectionVRCamera(float left, float right, float bottom, float top, float nearClip, float farClip, ViewConfiguration cameraViewConfiguration, double interOcularDist)
+    :_left(left), _right(right), _bottom(bottom),
+    _top(top), _nearClip(nearClip), _farClip(farClip), iod(interOcularDist),
+    viewConfiguration(cameraViewConfiguration)
+  {
+
+  }
+
   ProjectionVRCamera::~ProjectionVRCamera()
   {
   
@@ -39,7 +61,7 @@ namespace MinVR {
 
     rd->setProjectionMatrix(rd->invertYMatrix() * projectionMtrx);
 
-    if (viewConfiguration == VR)
+    /*if (viewConfiguration == VR)
     {
       // the openvr view matrix is already inverted
       rd->setCameraToWorldMatrix(tcf);
@@ -47,7 +69,8 @@ namespace MinVR {
     else
     {
       rd->setCameraToWorldMatrix(tcf.inverse());
-    }
+    }*/
+    rd->setCameraToWorldMatrix(tcf.inverse());
     
     //projectionMtrx = projectionMtrx.transpose();
     //const float* vMatrix = state.getViewMatrix();
