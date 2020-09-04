@@ -46,13 +46,11 @@ public:
 
 	void onVREvent(const VRDataIndex &eventData) {
         std::string type;
+		//here we set the type of the event. If the eventtype is not known the customEvent callback will be called.
         if (eventData.exists("EventType")) {
             type = (VRString)eventData.getValue("EventType");
         }
-        else {
-            VRERROR("VRAppInternal::onVREvent() received an event named " + eventData.getName() + " of unknown type.",
-                    "All events should have a data field named EventType but none was found for this event.");
-        }
+
 
         if (type == "AnalogUpdate") {
             _app->onAnalogChange(VRAnalogEvent(eventData));
