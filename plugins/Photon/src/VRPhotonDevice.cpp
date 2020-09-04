@@ -103,7 +103,9 @@ VRPhotonDevice::~VRPhotonDevice()
 void VRPhotonDevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents) {
 	if (m_photon && m_photon->isConnected() && !m_receiveOnly) {
 		mtx.lock();
+			int event_count = 0;
 			for (VRDataQueue::iterator iter = inputEvents->begin(); iter != inputEvents->end(); iter++) {
+				
 				//check if event is blacklisted
 				if (m_whitelist.empty() || m_whitelist.find(iter->second.getData().getName()) != m_whitelist.end())
 				{
@@ -114,11 +116,14 @@ void VRPhotonDevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents)
 					}
 					VRDataQueueItem item = VRDataQueueItem(tmpidx.serialize());
 					sendQueue.push(iter->first.first, item);
+					event_count++;
 				}
 			}
-			if (m_lastsend >= INT_MAX)
-				m_lastsend = 0;
-			sendQueue.push(VRAnalogEvent::createValidDataIndex("PhotonLoopFinished", m_lastsend++));
+			if (event_count > 0) {
+				if (m_lastsend >= INT_MAX)
+					m_lastsend = 0;
+				sendQueue.push(VRAnalogEvent::createValidDataIndex("PhotonLoopFinished", m_lastsend++));
+			}
 		mtx.unlock();
 		
 #ifdef WRITEEVENTSTOFILE
