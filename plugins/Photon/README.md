@@ -36,9 +36,9 @@ There several other optional settings which can be used to customize the event e
 **ReceiveOnly** can be used to stop the client from sending its event to the server. It will only receive events from other users.
 
 ```xml
-<Blacklist type="stringarray">FrameStart,Mouse_Move</Blacklist>	
+<Whitelist type="stringarray">FrameStart,Mouse_Move</Whitelist>	
 ```
-The **Blacklist** option can be used to stop selected events from being sent. In this example the events *FrameStart* and *MouseMove* will be ignored and not shared with other users.
+The **Whitelist** option can be used to select events from being sent. In this example the events *FrameStart* and *MouseMove* will be the only events shared. If no whitelist is defined all events will be sent.
 
 ```xml
 <Replacements type="stringarray">LHandTracker_Move,L_Move,RHandTracker_Move,R_Move</Replacements>

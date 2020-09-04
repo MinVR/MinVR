@@ -82,7 +82,7 @@ class VRPhotonDevice : public VRInputDevice
 
 public:
 	PLUGIN_API VRPhotonDevice(std::string appName, std::string appID, std::string appVersion, std::string playerName
-		, bool receiveOnly, std::vector<std::string> blacklist, std::vector<std::string> replacements, float updateSpeed);
+		, bool receiveOnly, std::vector<std::string> whitelist, std::vector<std::string> replacements, float updateSpeed);
 	PLUGIN_API virtual ~VRPhotonDevice();
 
 	PLUGIN_API void appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents);
@@ -95,7 +95,7 @@ private:
 	StdIO_UIListener * m_output_listener;
 
 	bool m_receiveOnly;
-	std::unordered_set <std::string> m_blacklist;
+	std::unordered_set <std::string> m_whitelist;
 	std::unordered_map <std::string, std::string> m_replacements;
 	int m_lastsend;
 	int m_lastreceived;

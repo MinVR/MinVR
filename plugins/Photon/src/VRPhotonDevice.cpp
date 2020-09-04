@@ -54,7 +54,7 @@ namespace MinVR {
 
 
 VRPhotonDevice::VRPhotonDevice(std::string appName, std::string appID, std::string appVersion, std::string playerName
-	, bool receiveOnly, std::vector<std::string> blacklist, std::vector<std::string> replacements, float updateSpeed) : m_receiveOnly{ receiveOnly }, m_lastsend{ 0 }, m_lastreceived{ -1 }, m_photon{ nullptr }, m_output_listener{ nullptr }, isRunning{ true }, m_updateSpeed{updateSpeed}
+	, bool receiveOnly, std::vector<std::string> whitelist, std::vector<std::string> replacements, float updateSpeed) : m_receiveOnly{ receiveOnly }, m_lastsend{ 0 }, m_lastreceived{ -1 }, m_photon{ nullptr }, m_output_listener{ nullptr }, isRunning{ true }, m_updateSpeed{updateSpeed}
 {
 	PhotonLib::gameName = appName.c_str();
 	PhotonLib::appID = appID.c_str();
@@ -65,8 +65,8 @@ VRPhotonDevice::VRPhotonDevice(std::string appName, std::string appID, std::stri
 	m_photon = new PhotonLib(m_output_listener);
 	th1 = new std::thread(&VRPhotonDevice::update_thread, this);
 
-	for (auto val : blacklist) {
-		m_blacklist.insert(val);
+	for (auto val : whitelist) {
+		m_whitelist.insert(val);
 	}
 
 	for (int i = 0; i < replacements.size(); i+=2) {
@@ -105,7 +105,7 @@ void VRPhotonDevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents)
 		mtx.lock();
 			for (VRDataQueue::iterator iter = inputEvents->begin(); iter != inputEvents->end(); iter++) {
 				//check if event is blacklisted
-				if (m_blacklist.find(iter->second.getData().getName()) == m_blacklist.end())
+				if (m_whitelist.empty() || m_whitelist.find(iter->second.getData().getName()) != m_whitelist.end())
 				{
 					VRDataIndex tmpidx = iter->second.getData();
 					//change name if required
@@ -191,10 +191,10 @@ VRPhotonDevice::create(VRMainInterface *vrMain, VRDataIndex *config, const std::
 		receiveOnly = true;
 	}
 
-	std::vector<std::string> blacklist;
-	if (config->exists("Blacklist", devNameSpace))
+	std::vector<std::string> whitelist;
+	if (config->exists("Whitelist", devNameSpace))
 	{
-		blacklist = config->getValue("Blacklist", devNameSpace);
+		whitelist = config->getValue("Whitelist", devNameSpace);
 	}
 	std::vector<std::string> replaceList;
 	if (config->exists("Replacements", devNameSpace))
@@ -208,7 +208,7 @@ VRPhotonDevice::create(VRMainInterface *vrMain, VRDataIndex *config, const std::
 		updateSpeed = config->getValue("PhotonUpdateSpeed", devNameSpace);
 	}
 
-	VRInputDevice *dev = new VRPhotonDevice(appName, appID, appVersion, playerName, receiveOnly,  blacklist, replaceList, updateSpeed);
+	VRInputDevice *dev = new VRPhotonDevice(appName, appID, appVersion, playerName, receiveOnly, whitelist, replaceList, updateSpeed);
 	return dev;
 }
 
