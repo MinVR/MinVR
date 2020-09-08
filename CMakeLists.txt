@@ -398,12 +398,19 @@ minvr_optional_adddir(
   "plugins/Scalable"
 )
 
+#---- G3D
+minvr_optional_adddir(
+  WITH_PLUGIN_G3D
+  "G3D Plugin"
+  "(Requires G3D and OpenGL, and GLEW)"
+  "plugins/G3D"
+)
 
 # ---- Plugins that Provide a Window Toolkit ----
 # Save a list of plugins that provide a window toolkit so that we can error out
 # if building a graphics program and no window toolkit is available.
 
-list(APPEND WINTOOLKIT_PLUGINS WITH_PLUGIN_GLFW WITH_PLUGIN_FREEGLUT)
+list(APPEND WINTOOLKIT_PLUGINS WITH_PLUGIN_GLFW WITH_PLUGIN_FREEGLUT WITH_PLUGIN_G3D)
 set(HAVE_WINTOOLKIT False)
 
 foreach(P ${WINTOOLKIT_PLUGINS})
@@ -484,6 +491,12 @@ if (WITH_ITEST_OPENGL_SHADERPIPELINE_WITH_API AND NOT ${HAVE_WINTOOLKIT})
   message(FATAL_ERROR "WITH_ITEST_OPENGL_SHADERPIPELINE_WITH_API requires that you also build a plugin that provides a window toolkit.  You need to add one of the following: ${WINTOOLKIT_PLUGINS}.")
 endif()
 
+minvr_optional_adddir(
+  WITH_ITEST_G3D 
+  "itest-G3D-example"
+  "(Requires the G3D Plugin" 
+  "tests-interactive/g3d-example"
+)
 
 # There's not actually anything to build here, right?
 #minvr_optional_adddir(

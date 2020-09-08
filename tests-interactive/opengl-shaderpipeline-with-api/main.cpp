@@ -23,12 +23,12 @@
 
 // MinVR header
 #include <api/MinVR.h>
+
 using namespace MinVR;
 
 // Just included for some simple Matrix math used below
 // This is not required for use of MinVR in general
 #include <math/VRMath.h>
-
 
 
 /**
@@ -225,7 +225,9 @@ public:
     }
     
     void onRenderGraphicsScene(const VRGraphicsState& state) {
-        // clear screen
+        
+      
+      // clear screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         
         // Set shader parameters
@@ -244,6 +246,10 @@ public:
         
         // reset program
         glUseProgram(0);
+
+       
+
+
     }
     
     

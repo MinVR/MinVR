@@ -35,7 +35,24 @@
 
 namespace MinVR {
 
-	VROpenVRNode::VROpenVRNode(VRMainInterface *vrMain, const std::string &name, double _near, double _far, bool draw_controller, bool hide_tracker, bool draw_HMD_Only, unsigned int MSAA_buffers, float deviceUnitsToRoomUnits, VRMatrix4 deviceToRoom) : VRDisplayNode(name), isInitialized(false), m_fNearClip(_near), m_fFarClip(_far), m_draw_controller(draw_controller), m_draw_HMD_Only(draw_HMD_Only), m_rendermodelhandler(NULL), m_MSAA_buffers(MSAA_buffers), deviceUnitsToRoomUnits(deviceUnitsToRoomUnits), deviceToRoom(deviceToRoom) {
+	VROpenVRNode::VROpenVRNode(VRMainInterface *vrMain, 
+    const std::string &name, double _near, double _far, 
+    bool draw_controller, bool hide_tracker, 
+    bool draw_HMD_Only, unsigned int MSAA_buffers, 
+    float deviceUnitsToRoomUnits, VRMatrix4 deviceToRoom,
+    bool clearScreen, VRFloatArray clearColor) :
+    VRDisplayNode(name), 
+    isInitialized(false), 
+    m_fNearClip(_near), 
+    m_fFarClip(_far), 
+    m_draw_controller(draw_controller), 
+    m_draw_HMD_Only(draw_HMD_Only), 
+    m_rendermodelhandler(NULL), 
+    m_MSAA_buffers(MSAA_buffers), 
+    deviceUnitsToRoomUnits(deviceUnitsToRoomUnits), 
+    deviceToRoom(deviceToRoom),
+    _clearScreen(clearScreen),
+   _clearColor(clearColor){
 	vr::EVRInitError eError = vr::VRInitError_None;
 	m_pHMD = vr::VR_Init( &eError, vr::VRApplication_Scene );
 	int idx = (int)name.find_last_of('/');
@@ -123,8 +140,8 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 		SetupStereoRenderTargets();
 	}
 
-	if (m_rendermodelhandler)
-		m_rendermodelhandler->initModels();
+	//if (m_rendermodelhandler)
+	//	m_rendermodelhandler->initModels();
 
 	_inputDev->updatePoses();
 
@@ -135,8 +152,13 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 	if (m_MSAA_buffers > 1) glEnable(GL_MULTISAMPLE);
 	glBindFramebuffer( GL_FRAMEBUFFER, leftEyeDesc.m_nRenderFramebufferId );
  	glViewport(0, 0, m_nRenderWidth, m_nRenderHeight );
- 	glClearColor( 0, 0, 0, 1 );
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+  if (_clearScreen)
+  {
+    glClearColor(_clearColor[0], _clearColor[1], _clearColor[2], _clearColor[3]);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  }
+ 	
 
 	VRMatrix4 view_left = m_mat4eyePosLeft * head_pose;
 	renderState->addData("ProjectionMatrix", m_mat4ProjectionLeft);
@@ -170,8 +192,12 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 	if (m_MSAA_buffers > 1) glEnable(GL_MULTISAMPLE);
 	glBindFramebuffer( GL_FRAMEBUFFER, rightEyeDesc.m_nRenderFramebufferId );
  	glViewport(0, 0, m_nRenderWidth, m_nRenderHeight );
-	glClearColor( 0, 0, 0, 1 );
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+  
+  if (_clearScreen)
+  {
+    glClearColor(_clearColor[0], _clearColor[1], _clearColor[2], _clearColor[3]);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  }
 
 	VRMatrix4 view_right = m_mat4eyePosRight * head_pose;
 
@@ -199,7 +225,9 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	}
-	renderState->popState();
+  renderState->popState();
+  
+	
 
 	vr::Texture_t leftEyeTexture = { (void*)(uintptr_t)leftEyeDesc.m_nResolveTextureId, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
 	vr::EVRCompositorError error =  vr::VRCompositor()->Submit(vr::Eye_Left, &leftEyeTexture );
@@ -217,12 +245,20 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 		int height = renderState->getValue("WindowHeight");
 
 		glViewport(0, 0, width, height);
-		glClearColor(0, 0, 0, 1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //if (_clearScreen)
+    //{
+      glClearColor(_clearColor[0], _clearColor[1], _clearColor[2], _clearColor[3]);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //}
+    //VRMatrix4 view_right = m_mat4eyePosRight * head_pose;
 
 		renderState->addData("ProjectionMatrix", m_mat4ProjectionRight);
 		renderState->addData("ViewMatrix", view_right);
 		renderState->addData("Eye", "Cyclops");
+
+    //GLenum e = glGetError(); 
+    //std::cout << e << std::endl;
+
 		if (_children.size() == 0) {
 			renderHandler->onVRRenderScene(*renderState);
 		}
@@ -230,8 +266,8 @@ VROpenVRNode::render(VRDataIndex *renderState, VRRenderHandler *renderHandler)
 			VRDisplayNode::render(renderState, renderHandler);
 		}
 
-		if (m_rendermodelhandler)
-			m_rendermodelhandler->draw(m_mat4ProjectionRight, view_right);
+		//if (m_rendermodelhandler)
+		//	m_rendermodelhandler->draw(m_mat4ProjectionRight, view_right);
 
 		renderState->popState();
 	}
@@ -267,6 +303,26 @@ VRDisplayNode* VROpenVRNode::create(VRMainInterface *vrMain, VRDataIndex *config
 	if (config->exists("DeviceUnitsToRoomUnitsScale", nameSpace)) {
 		deviceUnitsToRoomUnits = config->getValue("DeviceUnitsToRoomUnitsScale", nameSpace);
 	}
+  
+  VRFloatArray clearColor({ 0.0f,1.0f,0.0f,1.0f });
+
+  if (config->exists("ClearColor", nameSpace)) {
+    clearColor = config->getValue("ClearColor", nameSpace);
+  }
+
+  VRString strClearScreen;
+  bool clearScreen = true;
+  if (config->exists("ClearScreen", nameSpace)) {
+    strClearScreen = config->getValue("ClearScreen", nameSpace);
+    if(strClearScreen ==  "false")
+    {
+      clearScreen = false;
+    }
+    else if(strClearScreen == "true")
+    {
+      clearScreen = false;
+    }
+  }
 
 	VRMatrix4 deviceToRoom = VRMatrix4();
 	if (config->exists("DeviceToRoom", nameSpace)) {
@@ -274,7 +330,11 @@ VRDisplayNode* VROpenVRNode::create(VRMainInterface *vrMain, VRDataIndex *config
 		deviceToRoom = deviceToRoom.orthonormal();
 	}
 
-	VRDisplayNode *node = new VROpenVRNode(vrMain, nameSpace, 0.1f, 100000.0f, drawController, hide_tracker, draw_HMD_Only, MSAA_buffers, deviceUnitsToRoomUnits, deviceToRoom);
+	VRDisplayNode *node = new VROpenVRNode(vrMain, 
+    nameSpace, 0.1f, 100000.0f, drawController,
+    hide_tracker, draw_HMD_Only, MSAA_buffers, 
+    deviceUnitsToRoomUnits, deviceToRoom, clearScreen, clearColor);
+
 	return node;
 }
 

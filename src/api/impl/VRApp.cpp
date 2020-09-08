@@ -140,6 +140,19 @@ public:
         return _main->getLeftoverArgv();
     }
 
+  const std::vector<VRDisplayNode*> getDisplayNodesByName(const std::string& nodeName)
+  {
+    return _main->getDisplayNodesByName(nodeName);
+    
+  }
+
+  const std::vector<VRDisplayNode*> getDisplayNodesByType(VRDisplayNode* displaynode)
+  {
+    //std::vector<VRDisplayNode*> v = _main->getDisplayNodesByType<VRDisplayNode>(displaynode);
+    std::vector<VRDisplayNode*> v;
+    return v;
+  }
+
 private:
 
     VRApp *_app;
@@ -174,6 +187,16 @@ int VRApp::getLeftoverArgc() {
 
 char** VRApp::getLeftoverArgv() {
   return _internal->getLeftoverArgv();
+}
+
+const std::vector<VRDisplayNode*> VRApp::getDisplayNodesByName(const std::string& nodeName)
+{
+  return _internal->getDisplayNodesByName(nodeName);
+}
+
+const std::vector<VRDisplayNode*>& VRApp::getDisplayNodesByType(VRDisplayNode* displaynode  )
+{
+  return _internal->getDisplayNodesByType(displaynode);
 }
 
 }

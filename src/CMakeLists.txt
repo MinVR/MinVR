@@ -93,6 +93,7 @@ set(vr_api_cpp
   src/api/impl/VRGraphicsState.cpp
   src/api/impl/VRHapticsState.cpp
   src/api/impl/VRTrackerEvent.cpp
+  src/api/impl/VRWindowResizeEvent.cpp
 )
 
 set(vr_api_h
@@ -106,6 +107,7 @@ set(vr_api_h
   src/api/VRGraphicsState.h
   src/api/VRHapticsState.h
   src/api/VRTrackerEvent.h
+  src/api/VRWindowResizeEvent.h
 )
 
 set(vr_main_cpp

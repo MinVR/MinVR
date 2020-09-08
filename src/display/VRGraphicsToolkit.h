@@ -17,6 +17,7 @@ public:
 
   virtual std::string getName() const = 0;
 
+
 	enum VRDRAWBUFFER {
 		VRDRAWBUFFER_BACK = 0,
 		VRDRAWBUFFER_FRONT = 1,
@@ -54,6 +55,7 @@ public:
 	}
 
 	static std::string getAttributeName(){ return "graphicstoolkitType"; };
+
 
 };
 

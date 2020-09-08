@@ -30,6 +30,7 @@
 #include <sstream>
 #include <cstdlib>
 #include <algorithm>
+#include <regex>
 
 // TESTARG is true if the strings match and are not empty.
 #define TESTARG(ARG, CMDSTR) ((!CMDSTR.empty()) && (ARG.compare(0, CMDSTR.size(), CMDSTR) == 0))
@@ -797,7 +798,7 @@ void VRMain::initialize(int argc, char **argv) {
           }
         }
         if (!exists) {
-          VRLOG_STATUS("Creating Window Toolkit: " + graphicsToolkitName);
+          VRLOG_STATUS("Creating Window Toolkit: " + windowToolkitName);
           _winToolkits.push_back(wtk);
         }
       }	else {
@@ -1007,7 +1008,7 @@ std::vector<VRDisplayNode*> VRMain::getDisplayNodesByName(std::string name, VRDi
 {
 	std::vector<VRDisplayNode*> vec;
 	std::vector<VRDisplayNode*> nodes;
-	if (node = nullptr) {
+	if (node == nullptr) {
 		nodes = _displayGraphs;
 	}
 	else
@@ -1017,7 +1018,8 @@ std::vector<VRDisplayNode*> VRMain::getDisplayNodesByName(std::string name, VRDi
 
 	for (int i = 0; i < nodes.size(); i++)
 	{
-		if (nodes[i]->getName() == name)
+    if (nodes[i]->getName().find(name) != std::string::npos)
+		//if (nodes[i]->getName() == name)
 		{
 			vec.push_back(nodes[i]);
 		}

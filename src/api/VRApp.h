@@ -116,6 +116,10 @@ public:
         can be retrieved with this function.  */
     char** getLeftoverArgv();
 
+    const std::vector<VRDisplayNode*>  getDisplayNodesByName(const std::string& nodeName);
+
+    const std::vector<VRDisplayNode*>& getDisplayNodesByType(VRDisplayNode* displaynode = nullptr);
+
 private:
 
 	VRAppInternal *_internal;  // opaque pointer to internal implementation

@@ -14,8 +14,10 @@ project(itest-opengl-shaderpipeline-with-api)
 # Source:
 set (SOURCEFILES 
   main.cpp
+  
 )
 set (HEADERFILES
+  
 )
 set (CONFIGFILES
 )

@@ -1,0 +1,8 @@
+find_package(VRG3D MODULE REQUIRED)
+target_include_directories(VRG3D PUBLIC ${VRG3D_INCLUDE_DIRS})
+target_include_directories(VRG3D PUBLIC ${G3D_INCLUDE_DIRS})
+target_link_libraries(VRG3D PUBLIC ${G3D_LIBRARIES})
+target_link_libraries(VRG3D PUBLIC ${PNG_LIBRARIES})
+target_link_libraries(VRG3D PUBLIC ${JPEG_LIBRARIES})
+target_link_libraries(VRG3D PUBLIC ${ZIP_LIBRARIES})
+target_link_libraries(VRG3D PUBLIC ${ZLIB_LIBRARIES})
