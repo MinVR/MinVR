@@ -33,6 +33,8 @@ get_property(VRG3D_INCLUDE_DIR GLOBAL PROPERTY VRG3D_INCLUDE_DIR_PROPERTY)
 message(STATUS "VRG3D_PLUGIN_DIR is " ${VRG3D_INCLUDE_DIR})
 message(STATUS "PROJECT_NAME is " ${PROJECT_NAME})
 
+add_definitions(-DG3D_NO_FFMPEG)
+
 # Setup dependency on libMinVR:
 target_include_directories(${PROJECT_NAME} PUBLIC ${VRG3D_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} PUBLIC MinVR)
