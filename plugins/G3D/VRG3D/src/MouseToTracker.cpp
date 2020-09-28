@@ -104,45 +104,41 @@ MouseToTracker::cycleTracker()
 EventRef
 MouseToTracker::mouseMoveInPlane(EventRef e)
 {
-  Vector2 v = e->get2DData();
-  double x = (v[0] / 2.0) + 0.5;
-  double y = (v[1] / 2.0) + 0.5;
-  //cout << "v = " << v << endl;
-  //cout << "x=" << x << endl;
-  //cout << "y=" << y << endl;
-
-  Vector3 xvec = _camera->_topRightCorner - _camera->_topLeftCorner;
-  Vector3 yvec = _camera->_topRightCorner - _camera->_botRightCorner;
-  //cout << "xvec=" << xvec << endl;
-  //cout << "yvec=" << yvec << endl;
-
-  // Point on the filmplane
-  Vector3 fpPoint = _camera->_botLeftCorner + (x * xvec) + (y * yvec);
-  //cout << "p=" << p << endl;
-
-  Vector3 cameraPos = _camera->getCameraPos();
-  Vector3 dir = fpPoint - cameraPos;
-  //cout << "fp=" << fpPoint << endl;
-  //cout << "dir=" << dir << endl;
-
-  double z = _trans[2];
-
-  Vector3 xy_normal(0, 0, -1);
-  Plane xyPlane(xy_normal, Vector3(0, 0, z));
-
-  //Ray r = Ray::fromOriginAndDirection(cameraPos, dir);
-  Ray r = Ray::fromOriginAndDirection(cameraPos, dir.unit());  //+++
-
-  Vector3 intersect = r.intersection(xyPlane);
-  if (intersect == Vector3::inf()) {
-    // try flipping the normal on the xyPlane
-    Plane xyPlane2(-xy_normal, Vector3(0, 0, z));
-    intersect = r.intersection(xyPlane2);
-  }
-
-  _trans[0] = intersect[0];
-  _trans[1] = intersect[1];
-  _lastPos = e->get2DData();
+    // Mouse coordinates are reported from -1 -> 1, normalize to 0 -> 1
+    Vector2 v = e->get2DData();
+    double x = (v[0] / 2.0) + 0.5;
+    double y = (v[1] / 2.0) + 0.5;
+    /*cout << "v = " << v.x << ", "<< v.y<< endl;
+    cout << "x=" << x << endl;
+    cout << "y=" << y << endl;*/
+    Vector3 xvec = _camera->_topRightCorner - _camera->_topLeftCorner;
+    Vector3 yvec = _camera->_topRightCorner - _camera->_botRightCorner;
+  /*  cout << "xvec=" << xvec << endl;
+    cout << "yvec=" << yvec << endl;*/
+    // Point on the filmplane
+    Vector3 fpPoint = _camera->_botLeftCorner + (x * xvec) + (y * yvec);
+    //cout << "fpPoint=" << fpPoint << endl;
+    Vector3 cameraPos = _camera->getCameraPos();
+    Vector3 dir = fpPoint - cameraPos;
+   /* cout << "fpPoint=" << fpPoint << endl;
+    cout << "dir=" << dir << endl;*/
+    double z = _trans[2];
+    Vector3 xy_normal(0, 0, -1);
+    Plane xyPlane(xy_normal, Vector3(0, 0, z));
+    //Ray r = Ray::fromOriginAndDirection(cameraPos, dir);
+    Ray r = Ray::fromOriginAndDirection(cameraPos, dir.unit());  //+++
+    Vector3 intersect = r.intersection(xyPlane);
+    /*cout << "intersect=" << intersect << endl;*/
+    if (intersect == Vector3::inf()) {
+        // try flipping the normal on the xyPlane
+        Plane xyPlane2(-xy_normal, Vector3(0, 0, z));
+        intersect = r.intersection(xyPlane2);
+       /* cout << "INF intersect=" << intersect << endl;*/
+    }
+    _trans[0] = intersect[0];
+    _trans[1] = intersect[1];
+    _lastPos = e->get2DData();
+    
   return (new VRG3DEvent("Mouse" + intToString(_curTracker) + "_Tracker", CoordinateFrame(_rot, _trans)));
 }
 

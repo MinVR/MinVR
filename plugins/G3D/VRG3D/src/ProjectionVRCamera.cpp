@@ -13,7 +13,7 @@ namespace MinVR {
     int viewportWidth,
     int viewportHeight,
     double interOcularDist):
-    _topLeftCorner(topRightCorner),
+    _topLeftCorner(topLeftCorner),
     _topRightCorner(topRightCorner),
     _botLeftCorner(botLeftCorner),
     _botRightCorner(botRightCorner), _nearClip(nearClip), _farClip(farClip),iod(interOcularDist),
@@ -52,7 +52,7 @@ namespace MinVR {
   {
     G3D::Matrix4 projectionMtrx = state.getProjectionMatrix();
     projectionMtrx = projectionMtrx.transpose();
-    const float* vMatrix = state.getViewMatrix();
+    
     G3D::Matrix4 viewMatrix = state.getViewMatrix();
     viewMatrix = viewMatrix.transpose();
     G3D::CoordinateFrame tcf = viewMatrix.approxCoordinateFrame();
@@ -60,6 +60,8 @@ namespace MinVR {
     G3D::Matrix4 g3dPjMtx = rd->projectionMatrix();
 
     rd->setProjectionMatrix(rd->invertYMatrix() * projectionMtrx);
+    
+    updateHeadFrame(tcf);
 
     /*if (viewConfiguration == VR)
     {
