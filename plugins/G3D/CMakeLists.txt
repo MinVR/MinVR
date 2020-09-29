@@ -71,7 +71,7 @@ set_property(GLOBAL PROPERTY VRG3D_INCLUDE_DIR_PROPERTY "${VRG3D_INCLUDE_DIR}${V
 message(STATUS "Setting up filters")
 message(STATUS ${CMAKE_CURRENT_SOURCE_DIR})
 
-
+add_definitions(-DG3D_NO_FFMPEG)
 
 # Setup dependency on libMinVR:
 target_include_directories(${PROJECT_NAME} PUBLIC 

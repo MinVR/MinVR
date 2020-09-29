@@ -70,12 +70,12 @@ namespace MinVR
         float horizontalClip = tan(fovX * degreeToRadian / 2.0f) * nearClip;
         float verticalClip = tan(fovY * degreeToRadian / 2.0f) * nearClip;
 
-        _cameras.append(
+        /*_cameras.append(
           new ProjectionVRCamera(-horizontalClip, horizontalClip,
             -verticalClip, verticalClip, nearClip, 
-            farClip, _cameraViewConfiguration));
+            farClip, _cameraViewConfiguration));*/
 
-        /*Vector3 topLeft =  Vector3(-0.65, 0.5, 0.0);
+        Vector3 topLeft =  Vector3(-0.65, 0.5, 0.0);
         Vector3 topRight = Vector3(0.65, 0.5, 0.0);
         Vector3 botLeft = Vector3(-0.65, -0.5, 0.0);
         Vector3 botRight =  Vector3(0.65, -0.5, 0.0);
@@ -90,7 +90,7 @@ namespace MinVR
           botLeft
           , botRight, _cameraViewConfiguration, nearclip, farclip,
           viewportX, viewportY,
-          viewportW, viewportH));*/
+          viewportW, viewportH));
       }
 
     }
@@ -146,6 +146,7 @@ namespace MinVR
     /*
       Set up Projection and Camera-World Matrix
     */
+    
     G3D::Matrix4 projectionMtrx = state.getProjectionMatrix();
     projectionMtrx = projectionMtrx.transpose();
     const float* vMatrix = state.getViewMatrix();
@@ -156,7 +157,7 @@ namespace MinVR
     G3D::Matrix4 g3dPjMtx = myRenderDevice->projectionMatrix();
     myRenderDevice->setProjectionMatrix(projectionMtrx);
     myRenderDevice->setCameraToWorldMatrix(viewMatrix.approxCoordinateFrame().inverse());
-
+    _cameras[0]->updateHeadFrame(viewMatrix.approxCoordinateFrame().inverse());
   }
 
 

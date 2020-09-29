@@ -63,8 +63,8 @@ namespace MinVR
       case GEventType::KEY_DOWN:
       {
         std::string keyname = getKeyName(event.key.keysym.sym, event.key.keysym.mod);
-        VRDataIndex event = VRButtonEvent::createValidDataIndex("kbd_" + keyname + "_down", 1);
-        minvrEventQueue->push(event.serialize());
+        VRDataIndex keyEvent = VRButtonEvent::createValidDataIndex("kbd_" + keyname + "_down", 1);
+        minvrEventQueue->push(keyEvent.serialize());
       }
 
       break;
@@ -72,12 +72,76 @@ namespace MinVR
       case GEventType::KEY_UP:
       {
         std::string keyname = getKeyName(event.key.keysym.sym, event.key.keysym.mod);
-        VRDataIndex event = VRButtonEvent::createValidDataIndex("kbd_"+keyname +"_up", 0);
-        minvrEventQueue->push(event.serialize());
+        VRDataIndex keyEvent = VRButtonEvent::createValidDataIndex("kbd_"+keyname +"_up", 0);
+        minvrEventQueue->push(keyEvent.serialize());
 
         
       }
 
+      break;
+      case GEventType::MOUSE_BUTTON_DOWN:
+      {
+          VRDataIndex mouseEvent;
+          switch (event.button.button)
+          {
+          case 0: //SDL_BUTTON_LEFT:
+              mouseEvent = VRButtonEvent::createValidDataIndex("Mouse_Left_Btn_down", 1);
+              minvrEventQueue->push(mouseEvent.serialize());
+              break;
+          case 1: //SDL_BUTTON_MIDDLE:
+              mouseEvent = VRButtonEvent::createValidDataIndex("Mouse_Middle_Btn_down", 1);
+              minvrEventQueue->push(mouseEvent.serialize());
+              break;
+          case 2: //SDL_BUTTON_RIGHT:
+              mouseEvent = VRButtonEvent::createValidDataIndex("Mouse_Right_Btn_down", 1);
+              minvrEventQueue->push(mouseEvent.serialize());
+              break;
+          case 3:
+              mouseEvent = VRButtonEvent::createValidDataIndex("Mouse_WheelUp_Btn_down", 1);
+              minvrEventQueue->push(mouseEvent.serialize());
+              break;
+          case 4:
+              mouseEvent = VRButtonEvent::createValidDataIndex("Mouse_WheelDown_Btn_down", 1);
+              minvrEventQueue->push(mouseEvent.serialize());
+              break;
+          default:
+              mouseEvent = VRButtonEvent::createValidDataIndex("Mouse_" + std::to_string(event.button.button) + "_Btn_down", 1);
+              minvrEventQueue->push(mouseEvent.serialize());
+              break;
+          }
+      }
+      break;
+      case GEventType::MOUSE_BUTTON_UP:
+      {
+          VRDataIndex mouseEvent;
+          switch (event.button.button)
+          {
+          case 0: //SDL_BUTTON_LEFT:
+              mouseEvent = VRButtonEvent::createValidDataIndex("Mouse_Left_Btn_up", 0);
+              minvrEventQueue->push(mouseEvent.serialize());
+              break;
+          case 1: //SDL_BUTTON_MIDDLE:
+              mouseEvent = VRButtonEvent::createValidDataIndex("Mouse_Middle_Btn_up", 0);
+              minvrEventQueue->push(mouseEvent.serialize());
+              break;
+          case 2: //SDL_BUTTON_RIGHT:
+              mouseEvent = VRButtonEvent::createValidDataIndex("Mouse_Right_Btn_up", 0);
+              minvrEventQueue->push(mouseEvent.serialize());
+              break;
+          case 3:
+              mouseEvent = VRButtonEvent::createValidDataIndex("Mouse_WheelUp_Btn_up", 0);
+              minvrEventQueue->push(mouseEvent.serialize());
+              break;
+          case 4:
+              mouseEvent = VRButtonEvent::createValidDataIndex("Mouse_WheelDown_Btn_up", 0);
+              minvrEventQueue->push(mouseEvent.serialize());
+              break;
+          default:
+              mouseEvent = VRButtonEvent::createValidDataIndex("Mouse_" + std::to_string(event.button.button) + "_Btn_up", 0);
+              minvrEventQueue->push(mouseEvent.serialize());
+              break;
+          }
+      }
       break;
       case G3D::GEventType::QUIT:
         exit(0);
