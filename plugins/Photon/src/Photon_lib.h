@@ -3,6 +3,7 @@
 #include "LoadBalancing-cpp/inc/Client.h"
 #include "UIListener.h"
 #include <vector>
+#include <map>
 
 class PhotonLib : private ExitGames::LoadBalancing::Listener
 {
@@ -23,6 +24,12 @@ public:
 	static ExitGames::Common::JString appVersion;
 	static ExitGames::Common::JString gameName;
 	static ExitGames::Common::JString PLAYER_NAME;
+
+	int getServerTime() {
+		return mLoadBalancingClient.getServerTime();
+	}
+
+
 
 private:
 	// receive and print out debug out here
@@ -77,5 +84,7 @@ private:
 	int64 mSendCount;
 	int64 mReceiveCount;
 	std::vector <std::string> m_pendingEvents;
-	
+
+	int userID;
+	std::map <int , std::string > players;
 };

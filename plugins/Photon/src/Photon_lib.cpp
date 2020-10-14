@@ -22,6 +22,7 @@ PhotonLib::PhotonLib(UIListener* uiListener)
 #	pragma warning(pop)
 #endif
 {
+	userID = GETTIMEMS();
 	mLoadBalancingClient.setDebugOutputLevel(DEBUG_RELEASE(ExitGames::Common::DebugLevel::INFO, ExitGames::Common::DebugLevel::WARNINGS)); // that instance of LoadBalancingClient and its implementation details
 	mLogger.setListener(*this);
 	mLogger.setDebugOutputLevel(DEBUG_RELEASE(ExitGames::Common::DebugLevel::INFO, ExitGames::Common::DebugLevel::WARNINGS)); // this class
@@ -43,7 +44,7 @@ void PhotonLib::update(void)
 	switch(mState)
 	{
 		case State::INITIALIZED:
-			mLoadBalancingClient.connect(ExitGames::LoadBalancing::AuthenticationValues().setUserID(ExitGames::Common::JString()+GETTIMEMS()), PLAYER_NAME+GETTIMEMS());
+			mLoadBalancingClient.connect(ExitGames::LoadBalancing::AuthenticationValues().setUserID(ExitGames::Common::JString()+userID), PLAYER_NAME);
 			mState = State::CONNECTING;
 			break;
 		case State::CONNECTED:
@@ -140,6 +141,8 @@ void PhotonLib::serverErrorReturn(int errorCode)
 {
 	EGLOG(ExitGames::Common::DebugLevel::ERRORS, L"code: %d", errorCode);
 	mpOutputListener->writeString(ExitGames::Common::JString(L"received error ") + errorCode + " from server");
+
+
 }
 
 void PhotonLib::joinRoomEventAction(int playerNr, const ExitGames::Common::JVector<int>& /*playernrs*/, const ExitGames::LoadBalancing::Player& player)
@@ -147,6 +150,9 @@ void PhotonLib::joinRoomEventAction(int playerNr, const ExitGames::Common::JVect
 	EGLOG(ExitGames::Common::DebugLevel::INFO, L"%ls joined the game", player.getName().cstr());
 	mpOutputListener->writeString(L"");
 	mpOutputListener->writeString(ExitGames::Common::JString(L"player ") + playerNr + L" " + player.getName() + L" has joined the game");
+
+	std::string playername = player.getName().UTF8Representation();
+	players.insert(std::make_pair(playerNr, playername));
 }
 
 void PhotonLib::leaveRoomEventAction(int playerNr, bool isInactive)
@@ -154,6 +160,8 @@ void PhotonLib::leaveRoomEventAction(int playerNr, bool isInactive)
 	EGLOG(ExitGames::Common::DebugLevel::INFO, L"");
 	mpOutputListener->writeString(L"");
 	mpOutputListener->writeString(ExitGames::Common::JString(L"player ") + playerNr + L" has left the game");
+	
+	players.erase(playerNr);
 }
 
 //receive Handler
@@ -206,7 +214,6 @@ void PhotonLib::createRoomReturn(int localPlayerNr, const ExitGames::Common::Has
 
 	EGLOG(ExitGames::Common::DebugLevel::INFO, L"localPlayerNr: %d", localPlayerNr);
 	mpOutputListener->writeString(L"... room " + mLoadBalancingClient.getCurrentlyJoinedRoom().getName() + " has been created");
-	mpOutputListener->writeString(L"regularly sending dummy events now");
 	mState = State::JOINED;
 }
 
@@ -225,6 +232,14 @@ void PhotonLib::joinOrCreateRoomReturn(int localPlayerNr, const ExitGames::Commo
 	mpOutputListener->writeString(L"... room " + mLoadBalancingClient.getCurrentlyJoinedRoom().getName() + " has been entered");
 	mpOutputListener->writeString(L"regularly sending dummy events now");
 	mState = State::JOINED;
+
+	ExitGames::LoadBalancing::MutableRoom room = mLoadBalancingClient.getCurrentlyJoinedRoom();
+	ExitGames::Common::JVector< ExitGames::LoadBalancing::Player * > players_in_room = room.getPlayers();
+
+	for (unsigned int i = 0; i < players_in_room.getSize(); ++i){
+		std::string playername = players_in_room[i]->getName().UTF8Representation();
+		players.insert(std::make_pair(players_in_room[i]->getNumber(), playername));
+	}
 }
 
 void PhotonLib::joinRoomReturn(int localPlayerNr, const ExitGames::Common::Hashtable& /*gameProperties*/, const ExitGames::Common::Hashtable& /*playerProperties*/, int errorCode, const ExitGames::Common::JString& errorString)
