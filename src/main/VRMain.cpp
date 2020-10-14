@@ -1001,7 +1001,9 @@ VRMain::getWindowToolkit(const std::string &name) {
 
 void
 VRMain::addInputDevice(VRInputDevice* dev) {
-	_inputDevices.push_back(dev);
+	//In order to assure that the Photon plugin is the last plugin we have to add the inputdevices
+	//which are dependent on a window node at the beginning of the vector
+	_inputDevices.insert(_inputDevices.begin(), dev);
 }
 
 std::vector<VRDisplayNode*> VRMain::getDisplayNodesByName(std::string name, VRDisplayNode* node)
