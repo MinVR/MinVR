@@ -11,7 +11,6 @@ AutoBuild_init()
 
 
 
-
 # Usage:
 # AutoBuild_use_package_G3D(
 #    # The 1st argument is required.  It is the name of the target you wish to link this dependency to.
@@ -44,7 +43,7 @@ macro(AutoBuild_use_package_G3D YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
             AutoBuild_build_and_install_project(
                 ${PACKAGE_NAME}
                 .
-				-DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
+				-DWITHOUT_FFMPEG=ON -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
             )
 
             AutoBuild_find_built_package_module_mode(${PACKAGE_NAME})
@@ -65,21 +64,12 @@ macro(AutoBuild_use_package_G3D YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
 
         target_include_directories(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} ${G3D_INCLUDE_DIR} ${GLG3D_INCLUDE_DIR})
         target_link_libraries(${YOUR_TARGET} PUBLIC debug 
-            ${INTERFACE_PUBLIC_OR_PRIVATE} ${GLG3D_DEBUG_LIBRARIES}
-            ${INTERFACE_PUBLIC_OR_PRIVATE} ${G3D_DEBUG_LIBRARIES}
-			${INTERFACE_PUBLIC_OR_PRIVATE} ${G3D_LIBRARIES}
-			${INTERFACE_PUBLIC_OR_PRIVATE} ${G3D_EXTRA_LIBRARIES}
+            ${INTERFACE_PUBLIC_OR_PRIVATE} ${G3D_LIBRARIES}
         )
 		
 		target_link_libraries(${YOUR_TARGET} PUBLIC optimized  	
-		    ${INTERFACE_PUBLIC_OR_PRIVATE} ${GLG3D_OPT_LIBRARIES}
-		    ${INTERFACE_PUBLIC_OR_PRIVATE} ${G3D_OPT_LIBRARIES}
-			${INTERFACE_PUBLIC_OR_PRIVATE} ${G3D_LIBRARIES}
-			${INTERFACE_PUBLIC_OR_PRIVATE} ${G3D_EXTRA_LIBRARIES}
+		    ${INTERFACE_PUBLIC_OR_PRIVATE} ${G3D_LIBRARIES}
         )
-		
-		
-	
 
         if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
             find_package(Threads)
@@ -98,4 +88,3 @@ macro(AutoBuild_use_package_G3D YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
     endif()
 
 endmacro()
-
