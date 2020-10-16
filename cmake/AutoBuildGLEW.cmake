@@ -27,8 +27,10 @@ macro(AutoBuild_use_package_GLEW YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
 
             message(STATUS "AutoBuild: Beginning download, build, install sequence.")
 			message(STATUS "CMAKE_GENERATOR ${CMAKE_GENERATOR}")
+			message(STATUS "MSVC_VERSION ${MSVC_VERSION}")
 			
-            if(${CMAKE_GENERATOR} STREQUAL "Visual Studio 16 2019" )
+            if(WIN32 AND (${MSVC_VERSION} GREATER_EQUAL 1910) )
+			   message(STATUS "Getting GLEW support for VS 15.0")   
 			   set(GLEW_URL https://sourceforge.net/projects/glew/files/glew/snapshots/glew-20190928.zip )
 			else()
 			   set(GLEW_URL https://sourceforge.net/projects/glew/files/glew/2.1.0/glew-2.1.0.zip )
