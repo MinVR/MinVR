@@ -88,7 +88,11 @@ public:
 	PLUGIN_API void appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents);
 	PLUGIN_API static VRInputDevice* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 
-	void update_thread();
+	PLUGIN_API void update_thread();
+	PLUGIN_API void addEvents(VRDataQueue* queue);
+
+	PLUGIN_API std::string getUsername();
+	PLUGIN_API int getServerTime();
 
 private:
     std::vector<VRDataIndex>   _pendingEvents;

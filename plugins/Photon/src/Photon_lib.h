@@ -29,6 +29,9 @@ public:
 		return mLoadBalancingClient.getServerTime();
 	}
 
+	std::string getUsername() {
+		return m_playername;
+	}
 
 
 private:
@@ -86,5 +89,7 @@ private:
 	std::vector <std::string> m_pendingEvents;
 
 	int userID;
+	std::string m_playername;
+	int m_playerNb;
 	std::map <int , std::string > players;
 };
