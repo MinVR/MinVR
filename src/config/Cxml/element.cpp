@@ -3,12 +3,12 @@
 namespace MinVR {
 
 element::element() : is_empty_attribute_list(true),
-                   value_is_allocated(false),
+                   //value_is_allocated(false),
                    name_is_allocated(false),
                    is_comment(false),
 		   is_pi(false),
                    m_name(NULL),
-                   m_value(NULL),
+                   //m_value(NULL),
                    m_parent(NULL)
 {
     m_element_iterator = m_element_list.begin();
@@ -16,11 +16,11 @@ element::element() : is_empty_attribute_list(true),
 }
 
 element::element(element* node) : is_empty_attribute_list(true),
-                               value_is_allocated(false),
+                               //value_is_allocated(false),
                                name_is_allocated(false),
                                is_comment(false),
                                m_name(NULL),
-                               m_value(NULL),
+                               //m_value(NULL),
                                m_parent(NULL)
 {
     if(node != NULL)
@@ -36,8 +36,8 @@ element::element(element* node) : is_empty_attribute_list(true),
 
 element::~element()
 {
-    if(value_is_allocated)
-        free(m_value);
+    //if(value_is_allocated)
+        //free(m_value);
     if(name_is_allocated)
         free(m_name);
     if(is_empty_attribute_list == false)
@@ -143,29 +143,15 @@ attribute* element::get_previous_attribute()
     return NULL;
 }
 
-char* element::get_value()
+std::string element::get_value()
 {
     return m_value;
 }
 
 bool element::set_value(const std::string the_value) {
-  return set_value((char *)the_value.c_str());
-}
-
-bool element::set_value(const char* the_value)
-{
-    if(the_value != NULL)
+    if(!the_value.empty())
     {
-        int l;
-        l=(int)strlen(the_value)*sizeof(char);
-        if(l == 0)
-            return false;
-        if(value_is_allocated)
-            free(m_value);
-        m_value = (char*)malloc(l+sizeof(char));
-        memset(m_value,'\0',l+sizeof(char));
-        strcpy(m_value,the_value);
-        value_is_allocated = true;
+		m_value = the_value;
         return true;
     }
     return false;
