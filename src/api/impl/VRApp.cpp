@@ -144,12 +144,17 @@ public:
     
   }
 
-  const std::vector<VRDisplayNode*> getDisplayNodesByType(VRDisplayNode* displaynode)
+
+std::vector<VRDisplayNode*> getDisplayNodes(VRDisplayNode* displaynode)
   {
-    //std::vector<VRDisplayNode*> v = _main->getDisplayNodesByType<VRDisplayNode>(displaynode);
-    std::vector<VRDisplayNode*> v;
-    return v;
+	return _main->getDisplayNodesByType<VRDisplayNode>(displaynode);
   }
+
+std::vector<VRInputDevice*> getInputDevices()
+  {
+	return _main->getInputDeviceByType<VRInputDevice>();
+  }
+  
 
 private:
 
@@ -192,9 +197,14 @@ const std::vector<VRDisplayNode*> VRApp::getDisplayNodesByName(const std::string
   return _internal->getDisplayNodesByName(nodeName);
 }
 
-const std::vector<VRDisplayNode*>& VRApp::getDisplayNodesByType(VRDisplayNode* displaynode  )
+std::vector<VRDisplayNode*> VRApp::getDisplayNodes(VRDisplayNode* displaynode)
 {
-  return _internal->getDisplayNodesByType(displaynode);
+	return _internal->getDisplayNodes(displaynode);
+}
+
+std::vector<VRInputDevice*> VRApp::getInputDevices()
+{
+	return _internal->getInputDevices();
 }
 
 }
