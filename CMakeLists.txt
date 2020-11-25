@@ -415,6 +415,14 @@ minvr_optional_adddir(
   "plugins/Photon"
 )
 
+#---- Holoplay Plugin ----
+minvr_optional_adddir(
+  WITH_PLUGIN_HOLOPLAY
+  "HoloPlay Plugin"
+  "(Requires HoloPlayCoreSDK from LookingGlassFactory)"
+  "plugins/HoloPlay"
+)
+
 # ---- Plugins that Provide a Window Toolkit ----
 # Save a list of plugins that provide a window toolkit so that we can error out
 # if building a graphics program and no window toolkit is available.
