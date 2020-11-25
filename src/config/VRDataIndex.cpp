@@ -37,7 +37,7 @@ VRDataIndex::VRDataIndex(const std::string serializedData)  :
 
   // If you're here, the input data looks like XML. So parse it.
   Cxml *xml = new Cxml();
-  xml->parse_string((char*)serializedData.c_str());
+  xml->parse_string(serializedData);
   element *xml_node = xml->get_root_element();
   element* child = xml_node->get_next_child();
   element* grandChild = child->get_next_child();
@@ -236,25 +236,25 @@ std::string VRDataIndex::_serialize(const std::string &name,
   }
 }
 
-VRInt VRDataIndex::_deserializeInt(const char* valueString) {
+VRInt VRDataIndex::_deserializeInt(const std::string valueString) {
   int iVal;
-  sscanf(valueString, "%d", &iVal);
-
+  std::istringstream stream(valueString);
+  stream >> iVal;
   return iVal;
 }
 
-VRFloat VRDataIndex::_deserializeFloat(const char* valueString) {
+VRFloat VRDataIndex::_deserializeFloat(const std::string valueString) {
   float fVal;
-  sscanf(valueString, "%f", &fVal);
-
+  std::istringstream stream(valueString);
+  stream >> fVal;
   return fVal;
 }
 
-VRString VRDataIndex::_deserializeString(const char* valueString) {
-  return std::string(valueString);
+VRString VRDataIndex::_deserializeString(const std::string valueString) {
+  return valueString;
 }
 
-VRIntArray VRDataIndex::_deserializeIntArray(const char* valueString,
+VRIntArray VRDataIndex::_deserializeIntArray(const std::string valueString,
                                             const char separator) {
 
   VRIntArray vVal;
@@ -264,15 +264,15 @@ VRIntArray VRDataIndex::_deserializeIntArray(const char* valueString,
   VRInt iVal;
   std::stringstream ss(valueString);
   while (std::getline(ss, elem, separator)) {
-
-    sscanf(elem.c_str(), "%d", &iVal);
+	std::istringstream stream(elem);
+	stream >> iVal;
     vVal.push_back(iVal);
   }
 
   return vVal;
 }
 
-VRFloatArray VRDataIndex::_deserializeFloatArray(const char* valueString,
+VRFloatArray VRDataIndex::_deserializeFloatArray(const std::string valueString,
                                                   const char separator) {
 
   VRFloatArray vVal;
@@ -282,15 +282,15 @@ VRFloatArray VRDataIndex::_deserializeFloatArray(const char* valueString,
   VRFloat fVal;
   std::stringstream ss(valueString);
   while (std::getline(ss, elem, separator)) {
-
-    sscanf(elem.c_str(), "%f", &fVal);
+	std::istringstream stream(elem);
+	stream >> fVal;
     vVal.push_back(fVal);
   }
 
   return vVal;
 }
 
-VRStringArray VRDataIndex::_deserializeStringArray(const char* valueString,
+VRStringArray VRDataIndex::_deserializeStringArray(const std::string valueString,
                                                   const char separator) {
 
   VRStringArray vVal;
@@ -327,7 +327,7 @@ VRStringArray VRDataIndex::_deserializeStringArray(const char* valueString,
 
 std::string VRDataIndex::_processValue(const std::string &name,
                                        VRCORETYPE_ID &type,
-                                       const char* valueString,
+                                       std::string valueString,
                                        const char separator) {
 
   std::string out;
@@ -383,7 +383,7 @@ std::string VRDataIndex::_walkXML(element* node, std::string nameSpace) {
 
   // What type is this node?
   VRCORETYPE_ID typeId;
-  if (node->get_value() == NULL) {
+  if (node->get_value().empty()) {
     // If the node has no value, we hope it's a container.
     typeId = VRCORETYPE_CONTAINER;
 
@@ -420,7 +420,7 @@ std::string VRDataIndex::_walkXML(element* node, std::string nameSpace) {
 
   // Get a value for the node.
   std::string valueString;
-  if (node->get_value() == NULL) {
+  if (node->get_value().empty()) {
 
     valueString = "";
 
@@ -456,7 +456,7 @@ std::string VRDataIndex::_walkXML(element* node, std::string nameSpace) {
 
   out = _processValue(qualifiedName,
                      typeId,
-                     valueString.c_str(),
+                     valueString,
                      separator);
 
   // There should be a datum object entered for this by here.  So now
@@ -992,7 +992,7 @@ std::string VRDataIndex::addSerializedValue(const std::string serializedData,
                                             const bool expand) {
 
   Cxml *xml = new Cxml();
-  xml->parse_string((char*)serializedData.c_str());
+  xml->parse_string(serializedData);
   element *xml_node = xml->get_root_element();
   element* child = xml_node->get_next_child();
   std::string out;
@@ -1192,7 +1192,7 @@ std::string VRDataIndex::addData(const std::string &keyAndValue) {
   }
 
   // Got the name, type, value.  Go ahead and insert it into the index.
-  return _processValue(key, type, value.c_str(), MINVRSEPARATOR);
+  return _processValue(key, type, value, MINVRSEPARATOR);
 }
 
 // Returns a printable description of the data structure that isn't

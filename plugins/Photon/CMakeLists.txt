@@ -21,6 +21,7 @@ set (HEADERFILES
 	src/VRPhotonDevice.h
 	src/Photon_lib.h
 	src/StdIO_UIListener.h
+	src/UIListener.h
 )
 
 

@@ -90,6 +90,33 @@ void VRPhotonDevice::update_thread() {
 	}
 }
 
+void VRPhotonDevice::addEvents(VRDataQueue* queue) {
+	mtx.lock();
+	if(m_photon && !queue->empty()){
+		for (VRDataQueue::iterator iter = queue->begin(); iter != queue->end(); iter++) {
+				VRDataIndex tmpidx = iter->second.getData();
+				VRDataQueueItem item = VRDataQueueItem(tmpidx.serialize());
+				sendQueue.push(iter->first.first, item);
+		}
+	}
+	mtx.unlock();
+	queue->clear();
+}
+
+std::string VRPhotonDevice::getUsername() {
+	if (m_photon) {
+		m_photon->getUsername();
+	}
+	return std::string();
+}
+
+int VRPhotonDevice::getServerTime() {
+	if (m_photon) {
+		return m_photon->getServerTime();
+	}
+	return 0;
+}
+
 VRPhotonDevice::~VRPhotonDevice()
 {
 	isRunning = false;
@@ -101,7 +128,10 @@ VRPhotonDevice::~VRPhotonDevice()
 }
 
 void VRPhotonDevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents) {
-	if (m_photon && m_photon->isConnected() && !m_receiveOnly) {
+	if (!m_photon || !m_photon->isConnected())
+		return;
+	
+	if (!m_receiveOnly) {
 		mtx.lock();
 			int event_count = 0;
 			for (VRDataQueue::iterator iter = inputEvents->begin(); iter != inputEvents->end(); iter++) {
@@ -136,8 +166,10 @@ void VRPhotonDevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents)
 	}
 	mtx.lock();
 		for (int f = 0; f < m_photon->getPendingEvents().size(); f++) {
-			if (m_photon)
+			if (m_photon) {
 				inputEvents->addSerializedQueue(m_photon->getPendingEvents()[f]);
+			}
+
 #ifdef COUNTPACKAGES
 			VRDataQueue tmpQueue;
 			tmpQueue.addSerializedQueue(m_photon->getPendingEvents()[f]);

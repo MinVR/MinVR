@@ -93,16 +93,19 @@ ExitGames::Common::JString PhotonLib::getStateString(void)
 			return L"unknown state";
 	}
 }
-
+#include <string>
+#include <iostream>
 void PhotonLib::sendData(std::string data)
 {
 	if (!isConnected())
 		return;
 
 	ExitGames::Common::Hashtable event;
-	ExitGames::Common::JString jdata = data.c_str();
-	event.put(static_cast<nByte>(0), jdata);
-	
+	ExitGames::Common::JVector<unsigned char> vec;
+	unsigned char * str = (unsigned char *) data.c_str();
+	vec.addElements(str, data.length());
+	event.put(static_cast<nByte>(0), vec.getCArray(),vec.getSize());
+
 	//send to ourselves only
 	//int myPlayerNumber = mLoadBalancingClient.getLocalPlayer().getNumber();
 	//mLoadBalancingClient.opRaiseEvent(true, event, 0, ExitGames::LoadBalancing::RaiseEventOptions().setTargetPlayers(&myPlayerNumber, 1));
@@ -172,8 +175,11 @@ void PhotonLib::customEventAction(int playerNr, nByte eventCode, const ExitGames
 	{
 	case 0:
 		if (eventContent.getValue((nByte)0)) {
-			ExitGames::Common::JString jdata = ((ExitGames::Common::ValueObject<ExitGames::Common::JString>*)(eventContent.getValue((nByte)0)))->getDataCopy();
-			m_pendingEvents.push_back(jdata.UTF8Representation().cstr());
+			unsigned char * ary = (ExitGames::Common::ValueObject<unsigned char *> (eventContent.getValue((nByte)0))).getDataCopy();
+			short length = (ExitGames::Common::ValueObject<unsigned char *>(eventContent.getValue((nByte)0))).getSizes()[0];
+			char * c_arr = (char*) ary;
+			std::string str(c_arr, length);
+			m_pendingEvents.push_back(str);
 		}
 	default:
 		break;
@@ -236,8 +242,11 @@ void PhotonLib::joinOrCreateRoomReturn(int localPlayerNr, const ExitGames::Commo
 	ExitGames::LoadBalancing::MutableRoom room = mLoadBalancingClient.getCurrentlyJoinedRoom();
 	ExitGames::Common::JVector< ExitGames::LoadBalancing::Player * > players_in_room = room.getPlayers();
 
+	m_playername = room.getPlayerForNumber(localPlayerNr)->getName().UTF8Representation().cstr();
+	m_playerNb = localPlayerNr;
+
 	for (unsigned int i = 0; i < players_in_room.getSize(); ++i){
-		std::string playername = players_in_room[i]->getName().UTF8Representation();
+		std::string playername = players_in_room[i]->getName().UTF8Representation().cstr();
 		players.insert(std::make_pair(players_in_room[i]->getNumber(), playername));
 	}
 }

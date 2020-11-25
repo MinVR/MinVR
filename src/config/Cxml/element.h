@@ -34,7 +34,7 @@ class element
     bool add_attribute(char* attribute_name, char* value=NULL);
     bool add_attribute(attribute* m_attribute);
     bool set_value(const std::string value);
-    bool set_value(const char* value);
+    //bool set_value(const char* value);
     bool set_name(const std::string the_name);
     bool set_name(const char* the_name);
     bool set_parent(element* the_element);
@@ -59,17 +59,17 @@ class element
     void reset_iterators();
     element* get_parent();
     element* add_child_element(element* child_element);
-    char* get_value();
+    std::string get_value();
     char* get_name();
 private:
     bool is_empty_attribute_list;
     //flag set for the allocation of space for tha value
-    bool value_is_allocated;
+    //bool value_is_allocated;
     bool name_is_allocated;
     bool is_comment;
     bool is_pi;
     char* m_name;
-    char* m_value;
+	std::string m_value;
     element* m_parent;
 };
 

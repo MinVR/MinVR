@@ -18,16 +18,16 @@ Cxml::~Cxml()
 }
 
 // parse a string with the xml code
-bool Cxml::parse_string(char* xml_string)
+bool Cxml::parse_string(std::string xml_string)
 {
-    if(xml_string == NULL)
+    if(xml_string.empty())
         return false;
-    m_length = (int)strlen(xml_string);
+    m_length = xml_string.size();
     get_node(xml_string);
     return true;
 }
 
-bool Cxml::get_node(char* xml_string)
+bool Cxml::get_node(std::string xml_string)
 {
     int k = m_cursor;
     int j = 0;               //second level cursor;
@@ -116,10 +116,10 @@ bool Cxml::get_node(char* xml_string)
                     }
                     int stop = k;
                     k+=5;
-                    char* buffer = (char*)calloc(stop - start + 2, sizeof(char));
-                    copyx(buffer, xml_string, start, stop);
-                    Current->set_value(buffer);
-                    free(buffer);
+                    //char* buffer = (char*)calloc(stop - start + 2, sizeof(char));
+                    //copyx(buffer, xml_string, start, stop);
+                    Current->set_value(xml_string.substr(start, stop - start + 1));
+                    //free(buffer);
                     j = 0;
                     bCDATA = true;
                     break;
@@ -251,7 +251,7 @@ bool Cxml::get_node(char* xml_string)
   	    szNodeValBuff.clear();
             while((c != COPEN ) && (k < m_length))
             {
-                if(c != CNEW && c != CTAB && c != CRET/* && c != CSPACE*/)
+                //if(c != CNEW && c != CTAB && c != CRET/* && c != CSPACE*/)
                     szNodeValBuff += c;
                 c = xml_string[++k];
             }

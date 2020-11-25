@@ -3,6 +3,7 @@
 
 #include "utils.h"
 #include <stdlib.h>
+#include <string.h>
 
 namespace MinVR {
 
@@ -12,12 +13,12 @@ class Cxml
     Cxml();
     ~Cxml();
     // parse a string containg xml code
-    bool parse_string(char* xml_string);
+    bool parse_string(std::string xml_string);
   private:
     int m_cursor;
     int m_length;
     element* m_root_node;
-    bool get_node(char* xml_string);
+    bool get_node(std::string  xml_string);
   public:
     element* get_root_element();
 };
