@@ -406,6 +406,14 @@ minvr_optional_adddir(
   "plugins/G3D"
 )
 
+#---- G3D
+minvr_optional_adddir(
+  WITH_GAINPUT
+  "GAINPUT Plugin"
+  "(Requires GFW Plugin)"
+  "plugins/Gainput"
+)
+
 # ---- Plugins that Provide a Window Toolkit ----
 # Save a list of plugins that provide a window toolkit so that we can error out
 # if building a graphics program and no window toolkit is available.
