@@ -11,6 +11,7 @@
 #include <cctype>
 #include <api/VRButtonEvent.h>
 #include <api/VRCursorEvent.h>
+#include <api/VRAnalogEvent.h>
 
 namespace MinVR {
 
@@ -28,11 +29,13 @@ static void glfw_size_callback(GLFWwindow* window, int width, int height) {
     ((VRGLFWInputDevice*)(glfwGetWindowUserPointer(window)))->sizeCallback(window, width, height);
 }
 
-
 static void glfw_cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
-    ((VRGLFWInputDevice*)(glfwGetWindowUserPointer(window)))->cursorPositionCallback(window, (float)xpos, (float)ypos);
+	((VRGLFWInputDevice*)(glfwGetWindowUserPointer(window)))->cursorPositionCallback(window, (float)xpos, (float)ypos);
 }
 
+static void glfw_mouse_scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+	((VRGLFWInputDevice*)(glfwGetWindowUserPointer(window)))->mouseScrollCallback(window, (float)xoffset, (float)yoffset);
+}
 
 static void glfw_mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
   ((VRGLFWInputDevice*)(glfwGetWindowUserPointer(window)))->mouseButtonCallback(window, button, action, mods);
@@ -62,6 +65,7 @@ void VRGLFWInputDevice::addWindow(GLFWwindow* window) {
 	glfwSetWindowSizeCallback(window, glfw_size_callback);
     glfwSetMouseButtonCallback(window, glfw_mouse_button_callback);
     glfwSetCursorPosCallback(window, glfw_cursor_position_callback);
+	glfwSetScrollCallback(window, glfw_mouse_scroll_callback);
     _windows.push_back(window);
 }
 
@@ -125,9 +129,11 @@ void VRGLFWInputDevice::mouseButtonCallback(GLFWwindow* window, int button, int 
     _events.push_back(event);
 }
 
-
-
-
+void VRGLFWInputDevice::mouseScrollCallback(GLFWwindow* window, float xoffset, float yoffset) {
+	VRDataIndex event = VRAnalogEvent::createValidDataIndex("MouseWheel_Spin", yoffset);
+	event.addData("xoffset", xoffset);
+	_events.push_back(event);
+}
 
 std::string getGlfwKeyName(int key) {
     switch (key)
