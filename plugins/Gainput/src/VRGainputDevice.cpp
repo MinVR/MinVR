@@ -4,16 +4,13 @@ This file is part of the MinVR Open Source Project, which is developed and
 maintained collaboratively by the University of Minnesota's Interactive
 Visualization Lab and the Brown University Visualization Research Lab.
 
-File: VRVRPNAnalogDevice.cpp
+File: VRGainputDevice.cpp
 
 Original Author(s) of this File:
-	Daniel Keefe, 2004, Brown University (originally VRG3D/VRPNAnalogDevice.cpp)
-
-Author(s) of Significant Updates/Modifications to the File:
-	Bret Jackson, 2013, University of Minnesota (adapted to MinVR)
-	Dan Keefe, 2016, University of Minnesota (adapted to MinVR2)
+	Camilo Diaz, 2020, Brown University 
 
 -----------------------------------------------------------------------------------
+Copyright (c) 2016-2020 Brown University
 Copyright (c) 2008-2015 Regents of the University of Minnesota and Brown University
 Copyright (c) 2004-2008 Brown University
 All rights reserved.
@@ -46,42 +43,82 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 // Note: This include ordering is important!
-#include "GainputDevice.h"
+#include "VRGainputDevice.h"
 
 #include <iostream>
 
 #include <api/VRAnalogEvent.h>
 
+#include <api/MinVR.h>
 
 
 namespace MinVR {
 
 
-GainputDevice::GainputDevice(int windowWidth,int windowHeight)
+VRGainputDevice::VRGainputDevice(int windowWidth,int windowHeight, int numControllers)
 {
-	_manager.SetDisplaySize(windowWidth, windowHeight);
-	_padId = _manager.CreateDevice<gainput::InputDevicePad>();
+	_manager = new gainput::InputManager();
+	_manager->SetDisplaySize(windowWidth, windowHeight);
+	for (int i = 0 ; i < numControllers;++i)
+	{
+		gainput::DeviceId _padId = _manager->CreateDevice<gainput::InputDevicePad>();
+		_padIds.push_back(_padId);
+
+	}
+	
+	myDeviceButtonListener = new VRGainputDeviceButtonListener(*_manager, 1);
+	gainput::ListenerId myDeviceButtonListenerId = _manager->AddListener(myDeviceButtonListener);
+
 }
 
-GainputDevice::~GainputDevice()
+VRGainputDevice::~VRGainputDevice()
 {
+	delete myDeviceButtonListener;
+	delete _manager;
 }
 
-void GainputDevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents)
+void VRGainputDevice::appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents)
 {
-
+	//updates the listener queue
+	_manager->Update();
+	
+	//adds gainput events to minvr event queue
+	std::deque<VRDataIndex>& queue =  myDeviceButtonListener->vrInputDeviceEvents();
+	while (!queue.empty())
+	{
+		inputEvents->push(queue.front());
+		queue.pop_front();
+	}
+	
 }
 
 
 VRInputDevice*
-GainputDevice::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace) 
+VRGainputDevice::create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace)
 {
 	int windowHeight = config->exists("Height", nameSpace);
 	int windowWidth = config->exists("Width", nameSpace);
+	int numControllers = 1;
+	if (config->exists("GamePadControllers", nameSpace))
+	{
+		numControllers = config->getValue("GamePadControllers", nameSpace);
+	}
+	
+	
 
-	VRInputDevice *dev = new GainputDevice(windowWidth,windowHeight );
+	VRInputDevice *dev = new VRGainputDevice(windowWidth,windowHeight, numControllers);
 	return dev;
 }
+
+  gainput::InputManager* VRGainputDevice::getGainInputManager()
+{
+	return _manager;
+}
+
+	PLUGIN_API std::vector<gainput::DeviceId>& VRGainputDevice::getPaids()
+	{
+		return _padIds;
+	}
 
 
 } // end namespace

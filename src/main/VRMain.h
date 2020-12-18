@@ -521,6 +521,12 @@ public:
 	/// If there are multiple ones with the same type all of them are returned.
 	std::vector<VRDisplayNode*> getDisplayNodesByName(std::string name, VRDisplayNode* node = nullptr);
 
+  /// Provides access to pointers to input devices depicted in the MinVR configuration file graph,
+/// If no node of the requested type is found an empty vector is returned.
+/// If there are multiple ones with the same type all of them are returned.
+  
+  const std::vector<VRInputDevice*>& getInputDevices();
+
 
     /***** USED INTERNALLY BY MINVR -- THESE COULD PROBABLY BE MOVED TO AN IMPLEMENTATION FILE *****/
 
@@ -533,6 +539,9 @@ public:
 
     VRGraphicsToolkit* getGraphicsToolkit(const std::string &name);
     VRWindowToolkit* getWindowToolkit(const std::string &name);
+
+    const std::vector<VRWindowToolkit*>& getWindowToolkits();
+    
     void addPluginSearchPath(const std::string& path) {
       _pluginSearchPath.addPathEntry(path, true);
     }
@@ -606,8 +615,6 @@ public:
 		}
 		return vec;
 	}
-
-
 
     bool _shutdown;
 };

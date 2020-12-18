@@ -39,7 +39,6 @@ add_definitions(-DG3D_NO_FFMPEG)
 target_include_directories(${PROJECT_NAME} PUBLIC ${VRG3D_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} PUBLIC MinVR)
 
-message(STATUS "HELLO WORLD is ${CMAKE_CURRENT_BINARY_DIR}")
 message(STATUS "CMAKE_CURRENT_BINARY_DIR is ${CMAKE_CURRENT_BINARY_DIR}")
 set(MinVR_G3D_LIB ${CMAKE_CURRENT_BINARY_DIR}/../../lib/MinVR_G3Dd.lib)
 message(STATUS "MinVR_G3Dd is ${MinVR_G3D_LIB}") 

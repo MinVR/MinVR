@@ -18,11 +18,13 @@ project(MinVR_Gainput)
 
 # Source:
 set (SOURCEFILES 
-  src/GainputPlugin.cpp
-  src/GainputDevice.cpp
+  src/VRGainputPlugin.cpp
+  src/VRGainputDevice.cpp
+  src/VRGainputDeviceButtonListener.cpp
 )
 set (HEADERFILES
-  src/GainputDevice.h
+  src/VRGainputDevice.h
+  src/VRGainputDeviceButtonListener.h
 )
 
 
@@ -48,6 +50,7 @@ include(AutoBuildGainput)
 AutoBuild_use_package_Gainput(${PROJECT_NAME} PUBLIC)
 
 
+add_definitions(-DUSE_MIVR_GAINPUT)
 
 # Installation:
 install(TARGETS ${PROJECT_NAME} EXPORT MinVRTargets COMPONENT ${PROJECT_NAME}
@@ -55,6 +58,9 @@ install(TARGETS ${PROJECT_NAME} EXPORT MinVRTargets COMPONENT ${PROJECT_NAME}
     ARCHIVE DESTINATION ${INSTALL_PLUGINLIB_DEST}
     RUNTIME DESTINATION ${INSTALL_PLUGINDLL_DEST}
 )
+
+message(status "Gainput install")
+message(status "INSTALL_PLUGININCLUDE_DEST ${INSTALL_PLUGININCLUDE_DEST}/${PROJECT_NAME}")
 install(FILES ${HEADERFILES} DESTINATION ${INSTALL_PLUGININCLUDE_DEST}/${PROJECT_NAME} COMPONENT ${PROJECT_NAME})
 
 

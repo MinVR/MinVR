@@ -999,6 +999,12 @@ VRMain::getWindowToolkit(const std::string &name) {
 	return NULL;
 }
 
+const std::vector<VRWindowToolkit*>& VRMain::getWindowToolkits()
+{
+  // TODO: insert return statement here
+  return _winToolkits;
+}
+
 void
 VRMain::addInputDevice(VRInputDevice* dev) {
 	_inputDevices.push_back(dev);
@@ -1029,6 +1035,27 @@ std::vector<VRDisplayNode*> VRMain::getDisplayNodesByName(std::string name, VRDi
 	}
 	return vec;
 }
+
+const std::vector<VRInputDevice*>& VRMain::getInputDevices()
+{
+  return _inputDevices;
+}
+
+//template <class T>
+// VRInputDevice* VRMain::getInputDevicesNodeByType(T t)
+//{
+//  for (std::vector<VRInputDevice*>::iterator it = _inputDevices.begin(); it != _inputDevices.end();
+//    it++)
+//  {
+//    T* tmp = dynamic_cast<T*>(*it);
+//    if (tmp != nullptr)
+//    {
+//      return *it;
+//    }
+//  }
+//
+//  return nullptr;
+//}
 
 /**
 void VRMain::removeEventHandler(VREventHandler* eventHandler) {

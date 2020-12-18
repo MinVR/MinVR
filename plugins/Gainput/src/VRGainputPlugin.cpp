@@ -3,7 +3,7 @@
  * Source code originally developed at the University of Minnesota Interactive Visualization Lab (http://ivlab.cs.umn.edu).
  *
  * Code author(s):
- * 		Dan Orban (dtorban)
+ * 		Camilo Diaz 
  * 
  *  
  */
@@ -14,7 +14,7 @@
 
 // special: include this only once in one .cpp file per plugin
 #include <plugin/VRPluginVersion.h>
-#include "GainputDevice.h"
+#include "VRGainputDevice.h"
 
 namespace MinVR {
 
@@ -31,7 +31,7 @@ public:
 	PLUGIN_API void registerWithMinVR(VRMainInterface *vrMain)
 	{
         //std::cout << "Registering VRVRPNPlugin." << std::endl;
-		vrMain->getFactory()->registerItemType<VRInputDevice, GainputDevice>("GainputDevice");
+		vrMain->getFactory()->registerItemType<VRInputDevice, VRGainputDevice>("VRGainputDevice");
 		
 	}
 

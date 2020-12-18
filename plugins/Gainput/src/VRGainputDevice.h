@@ -4,18 +4,20 @@ This file is part of the MinVR Open Source Project, which is developed and
 maintained collaboratively by the University of Minnesota's Interactive 
 Visualization Lab and the Brown University Visualization Research Lab.
 
-File: VRVRPNAnalogDevice.h
+File: VRGainputDevice.h
 
 Original Author(s) of this File: 
-	Daniel Keefe, 2004, Brown University (originally VRG3D/VRPNAnalogDevice.H)
+	Camilo Diaz, 2020, 
 	
 Author(s) of Significant Updates/Modifications to the File:
 	Bret Jackson, 2013, University of Minnesota (adapted to MinVR)
 	Dan Keefe, 2016, University of Minnesota (adapted to MinVR2)
 
 -----------------------------------------------------------------------------------
+Copyright (c) 2016-2020 Brown University
 Copyright (c) 2008-2015 Regents of the University of Minnesota and Brown University
 Copyright (c) 2004-2008 Brown University
+
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -45,8 +47,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ================================================================================ */
 
 
-#ifndef GAINPUTDEVICE_H
-#define GAINPUTDEVICE_H
+#ifndef VRGAINPUTDEVICE_H
+#define VRGAINPUTDEVICE_H
 
 #ifdef WIN32
 #define NOMINMAX
@@ -63,28 +65,38 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #include <gainput/gainput.h>
-
+#include "VRGainputDeviceButtonListener.h"
 
 
 namespace MinVR {
 
+
 /**
 */
-class GainputDevice : public VRInputDevice
+class VRGainputDevice : public VRInputDevice
 {
 public:
-	PLUGIN_API GainputDevice(int windowWidth, int windowHeight);
-	PLUGIN_API virtual ~GainputDevice();
+	PLUGIN_API VRGainputDevice(int windowWidth, int windowHeight, int numControllers);
+	PLUGIN_API virtual ~VRGainputDevice();
 
 
 	PLUGIN_API void  appendNewInputEventsSinceLastCall(VRDataQueue *inputEvents);
 
 	PLUGIN_API static VRInputDevice* create(VRMainInterface *vrMain, VRDataIndex *config, const std::string &nameSpace);
 
-private:
+	PLUGIN_API  gainput::InputManager* getGainInputManager();
+
+	PLUGIN_API  std::vector<gainput::DeviceId>& getPaids();
+
+protected:
+
 	
-	gainput::InputManager _manager;
-	gainput::DeviceId _padId;
+	gainput::InputManager* _manager;
+	std::vector<gainput::DeviceId> _padIds;
+	VRGainputDeviceButtonListener* myDeviceButtonListener;
+	
+
+  
 };
 
 
