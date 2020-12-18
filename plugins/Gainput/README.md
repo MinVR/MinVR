@@ -16,7 +16,7 @@ To integrate with MinVR, build it enabling the **WITH_GAINPUT** option, and  add
 
 
 
-For guidance, build MinVR with the option **WITH_GAMEPAD_TEST**, and execute the example with the file configuration file 
+For guidance, build MinVR with the option **WITH_GAMEPAD_TEST**, and execute the example with the configuration file 
 
 *GamePadController.minvr*
 
