@@ -9,11 +9,13 @@ To integrate with MinVR, build it enabling the **WITH_GAINPUT** option, and  add
 
 
 <GamePad inputdeviceType="VRGainputDevice">
-     <TrackerName>InputGamePad\</TrackerName>
+     <TrackerName>InputGamePad</TrackerName>
       <GamePadControllers>1</GamePadControllers>
 </GamePad>
 ```
-<br/>
+
+
+
 For guidance, build MinVR with the option **WITH_GAMEPAD_TEST**, and execute the example with the file configuration file 
 
 *GamePadController.minvr*
