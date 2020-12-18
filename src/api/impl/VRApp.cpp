@@ -46,13 +46,11 @@ public:
 
 	void onVREvent(const VRDataIndex &eventData) {
         std::string type;
+		//here we set the type of the event. If the eventtype is not known the customEvent callback will be called.
         if (eventData.exists("EventType")) {
             type = (VRString)eventData.getValue("EventType");
         }
-        else {
-            VRERROR("VRAppInternal::onVREvent() received an event named " + eventData.getName() + " of unknown type.",
-                    "All events should have a data field named EventType but none was found for this event.");
-        }
+
 
         if (type == "AnalogUpdate") {
             _app->onAnalogChange(VRAnalogEvent(eventData));
@@ -146,12 +144,17 @@ public:
     
   }
 
-  const std::vector<VRDisplayNode*> getDisplayNodesByType(VRDisplayNode* displaynode)
+
+std::vector<VRDisplayNode*> getDisplayNodes(VRDisplayNode* displaynode)
   {
-    //std::vector<VRDisplayNode*> v = _main->getDisplayNodesByType<VRDisplayNode>(displaynode);
-    std::vector<VRDisplayNode*> v;
-    return v;
+	return _main->getDisplayNodesByType<VRDisplayNode>(displaynode);
   }
+
+std::vector<VRInputDevice*> getInputDevices()
+  {
+	return _main->getInputDeviceByType<VRInputDevice>();
+  }
+  
 
   
   const std::vector<VRInputDevice*>& getInputDevices()
@@ -200,9 +203,14 @@ const std::vector<VRDisplayNode*> VRApp::getDisplayNodesByName(const std::string
   return _internal->getDisplayNodesByName(nodeName);
 }
 
-const std::vector<VRDisplayNode*>& VRApp::getDisplayNodesByType(VRDisplayNode* displaynode  )
+std::vector<VRDisplayNode*> VRApp::getDisplayNodes(VRDisplayNode* displaynode)
 {
-  return _internal->getDisplayNodesByType(displaynode);
+	return _internal->getDisplayNodes(displaynode);
+}
+
+std::vector<VRInputDevice*> VRApp::getInputDevices()
+{
+	return _internal->getInputDevices();
 }
 
 const std::vector<VRInputDevice*>& VRApp::getInputDevices()

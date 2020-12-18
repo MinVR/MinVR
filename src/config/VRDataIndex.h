@@ -1186,13 +1186,13 @@ private:
   // These functions read an XML-encoded string and produce the value
   // implied.  There is no deserializeContainer, since that's what
   // _walkXML does.
-  VRInt _deserializeInt(const char* valueString);
-  VRFloat _deserializeFloat(const char* valueString);
-  VRString _deserializeString(const char* valueString);
-  VRIntArray _deserializeIntArray(const char* valueString, const char separator);
-  VRFloatArray _deserializeFloatArray(const char* valueString,
+  VRInt _deserializeInt(const std::string valueString);
+  VRFloat _deserializeFloat(const std::string valueString);
+  VRString _deserializeString(const std::string valueString);
+  VRIntArray _deserializeIntArray(const std::string valueString, const char separator);
+  VRFloatArray _deserializeFloatArray(const std::string valueString,
                                       const char separator);
-  VRStringArray _deserializeStringArray(const char* valueString,
+  VRStringArray _deserializeStringArray(const std::string valueString,
                                         const char separator);
 
   // Serializes the given VRDatum object, using the given name.
@@ -1217,7 +1217,7 @@ private:
   // A functional part of the walkXML apparatus.
   std::string _processValue(const std::string &name,
                            VRCORETYPE_ID &type,
-                           const char* valueString,
+                           std::string valueString,
                            const char separator);
 
   /// \brief Finds an entry in the data index.

@@ -406,12 +406,28 @@ minvr_optional_adddir(
   "plugins/G3D"
 )
 
-#---- G3D
+
+#---- GAINPUT
 minvr_optional_adddir(
   WITH_GAINPUT
   "GAINPUT Plugin"
   "(Requires GFW Plugin)"
   "plugins/Gainput"
+
+#---- Photon Plugin ----
+minvr_optional_adddir(
+  WITH_PLUGIN_PHOTON
+  "PhotonEngine Plugin"
+  "(Requires PhotonEngine to be downloaded and manually installed from https://www.photonengine.com/)"
+  "plugins/Photon"
+)
+
+#---- Holoplay Plugin ----
+minvr_optional_adddir(
+  WITH_PLUGIN_HOLOPLAY
+  "HoloPlay Plugin"
+  "(Requires HoloPlayCoreSDK from LookingGlassFactory)"
+  "plugins/HoloPlay"
 )
 
 # ---- Plugins that Provide a Window Toolkit ----

@@ -118,7 +118,24 @@ public:
 
     const std::vector<VRDisplayNode*>  getDisplayNodesByName(const std::string& nodeName);
 
-    const std::vector<VRDisplayNode*>& getDisplayNodesByType(VRDisplayNode* displaynode = nullptr);
+	//It would be nice if these template functions are working but it is not possible due to  
+	//_internal being not defined. As a result we have to return a generic list of VRDisplayNode and VRInputDevices
+	
+	std::vector<VRDisplayNode*> getDisplayNodes(VRDisplayNode* displaynode);
+
+	std::vector<VRInputDevice*> getInputDevices();
+
+	//template <class T>
+	//const std::vector<T*>& getDisplayNodesByType(VRDisplayNode* displaynode)
+	//{
+	//	return _internal->getDisplayNodesByType(displaynode);
+	//}
+
+	//template <class T>
+	//const std::vector<T*>& getInputDeviceByType()
+	//{
+	//	return _internal->getInputDeviceByType();
+	//}
 
 		const std::vector<VRInputDevice*>& getInputDevices();
 
