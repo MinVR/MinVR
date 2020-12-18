@@ -29,7 +29,7 @@ macro(AutoBuild_use_package_GLEW YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
 			message(STATUS "CMAKE_GENERATOR ${CMAKE_GENERATOR}")
 			message(STATUS "MSVC_VERSION ${MSVC_VERSION}")
 			
-            if(WIN32 AND (${MSVC_VERSION} GREATER_EQUAL 1910) )
+      if((${MSVC_VERSION} GREATER_EQUAL 1910) )
 			   message(STATUS "Getting GLEW support for VS 15.0")   
 			   set(GLEW_URL https://sourceforge.net/projects/glew/files/glew/snapshots/glew-20190928.zip )
 			else()
