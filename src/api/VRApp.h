@@ -120,6 +120,8 @@ public:
 
     const std::vector<VRDisplayNode*>& getDisplayNodesByType(VRDisplayNode* displaynode = nullptr);
 
+		const std::vector<VRInputDevice*>& getInputDevices();
+
 private:
 
 	VRAppInternal *_internal;  // opaque pointer to internal implementation
