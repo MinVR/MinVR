@@ -518,6 +518,12 @@ public:
 	/// If no node of the requested type is found an empty vector is returned.
 	/// If there are multiple ones with the same type all of them are returned.
 	/// e.g. std::vector<VRStereoNode*> nodes = _main->getDisplayNodesByType<VRStereoNode>();
+     
+ /// Provides access to pointers to input devices depicted in the MinVR configuration file graph,
+/// If no node of the requested type is found an empty vector is returned.
+/// If there are multiple ones with the same type all of them are returned.
+  
+  const std::vector<VRInputDevice*>& getInputDevices();
 
 	template <class T>
 	std::vector<T*> getDisplayNodesByType(VRDisplayNode* node)
@@ -533,6 +539,7 @@ public:
 		{
 			nodes = node->getChildren();
 		}
+
 
 		for (int i = 0; i < nodes.size(); i++)
 		{
@@ -578,6 +585,9 @@ public:
 
     VRGraphicsToolkit* getGraphicsToolkit(const std::string &name);
     VRWindowToolkit* getWindowToolkit(const std::string &name);
+
+    const std::vector<VRWindowToolkit*>& getWindowToolkits();
+    
     void addPluginSearchPath(const std::string& path) {
       _pluginSearchPath.addPathEntry(path, true);
     }
@@ -623,7 +633,7 @@ public:
     VRSearchPlugin                  _pluginSearchPath;
 
     int _frame;
-
+     
     bool _shutdown;
 };
 

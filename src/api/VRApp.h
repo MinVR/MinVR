@@ -137,6 +137,8 @@ public:
 	//	return _internal->getInputDeviceByType();
 	//}
 
+		const std::vector<VRInputDevice*>& getInputDevices();
+
 private:
 
 	VRAppInternal *_internal;  // opaque pointer to internal implementation

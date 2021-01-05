@@ -407,6 +407,13 @@ minvr_optional_adddir(
 )
 
 
+#---- GAINPUT
+minvr_optional_adddir(
+  WITH_GAINPUT
+  "GAINPUT Plugin"
+  "(Requires GFW Plugin)"
+  "plugins/Gainput"
+
 #---- Photon Plugin ----
 minvr_optional_adddir(
   WITH_PLUGIN_PHOTON
@@ -511,7 +518,7 @@ endif()
 minvr_optional_adddir(
   WITH_ITEST_G3D 
   "itest-G3D-example"
-  "(Requires the G3D Plugin" 
+  "(Requires the G3D Plugin)" 
   "tests-interactive/g3d-example"
 )
 
@@ -523,6 +530,12 @@ minvr_optional_adddir(
 #  "tests-interactive/pythonbindings-opengl" 
 #)
 
+minvr_optional_adddir(
+  WITH_GAMEPAD_TEST
+  "itest-gamepad-opengl-shaderpipeline-with-api"
+  "(Requires Gainput plugin)" 
+  "tests-interactive/gamepad-with-opengl-shaderpipeline"
+)
 
 
 

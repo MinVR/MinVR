@@ -156,6 +156,12 @@ std::vector<VRInputDevice*> getInputDevices()
   }
   
 
+  
+  const std::vector<VRInputDevice*>& getInputDevices()
+  {
+    return _main->getInputDevices();
+  }
+
 private:
 
     VRApp *_app;
@@ -205,6 +211,11 @@ std::vector<VRDisplayNode*> VRApp::getDisplayNodes(VRDisplayNode* displaynode)
 std::vector<VRInputDevice*> VRApp::getInputDevices()
 {
 	return _internal->getInputDevices();
+}
+
+const std::vector<VRInputDevice*>& VRApp::getInputDevices()
+{
+  return _internal->getInputDevices();
 }
 
 }

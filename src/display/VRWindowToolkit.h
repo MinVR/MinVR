@@ -96,6 +96,16 @@ public:
 	}
 
 	static std::string getAttributeName(){ return "windowtoolkitType"; };
+
+#ifdef __linux__
+	//linux code goes here
+
+#elif _WIN32
+	// windows code goes here
+
+#else
+
+#endif
 };
 
 

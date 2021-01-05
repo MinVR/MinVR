@@ -6,7 +6,7 @@ include(AutoBuild)
 
 
 # Usage:
-# AutoBuild_use_package_GLEW(
+# AutoBuild_use_package_Gainput(
 #    # The 1st argument is required.  It is the name of the target you wish to link this dependency to.
 #    my-program 
 #
@@ -15,9 +15,8 @@ include(AutoBuild)
 #    PUBLIC 
 # )
 #
-macro(AutoBuild_use_package_GLEW YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
-    set(PACKAGE_NAME "GLEW")
-	set(GLEW_URL "")
+macro(AutoBuild_use_package_Gainput YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
+    set(PACKAGE_NAME "Gainput")
     string(TOUPPER ${PACKAGE_NAME} PACKAGE_NAME_UPPER)
 
     AutoBuild_find_package_module_mode(${PACKAGE_NAME})
@@ -26,25 +25,17 @@ macro(AutoBuild_use_package_GLEW YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
         if ("${AUTOBUILD_EXECUTE_NOW}")
 
             message(STATUS "AutoBuild: Beginning download, build, install sequence.")
-			message(STATUS "CMAKE_GENERATOR ${CMAKE_GENERATOR}")
-			message(STATUS "MSVC_VERSION ${MSVC_VERSION}")
-			
-      if((${MSVC_VERSION} GREATER_EQUAL 1910) )
-			   message(STATUS "Getting GLEW support for VS 15.0")   
-			   set(GLEW_URL https://sourceforge.net/projects/glew/files/glew/snapshots/glew-20190928.zip )
-			else()
-			   set(GLEW_URL https://sourceforge.net/projects/glew/files/glew/2.1.0/glew-2.1.0.zip )
-			endif()
-			
+
             AutoBuild_download_project( 
                 ${PACKAGE_NAME}
-				URL ${GLEW_URL}
+                GIT_REPOSITORY https://github.com/jkuhlmann/gainput.git
             )
+
 
             AutoBuild_build_and_install_project(
                 ${PACKAGE_NAME}
-                build/cmake
-                -D_OPENGL_LIB_PATH=${_OPENGL_LIB_PATH} -D_OPENGL_INCLUDE_PATH=${_OPENGL_INCLUDE_PATH} -DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
+				.
+				-DCMAKE_GENERATOR_PLATFORM=${CMAKE_GENERATOR_PLATFORM}
             )
 
             AutoBuild_find_built_package_module_mode(${PACKAGE_NAME})
@@ -62,14 +53,8 @@ macro(AutoBuild_use_package_GLEW YOUR_TARGET INTERFACE_PUBLIC_OR_PRIVATE)
     if ("${${PACKAGE_NAME}_FOUND}" OR "${${PACKAGE_NAME_UPPER}_FOUND}")
         message(STATUS "Linking target ${YOUR_TARGET} with ${INTERFACE_PUBLIC_OR_PRIVATE} dependency ${PACKAGE_NAME}.")
 
-        if (TARGET GLEW::GLEW)
-            # No need to set include dirs; this uses the modern cmake imported targets, so they are set automatically
-            target_link_libraries(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} GLEW::GLEW)
-        else()
-            # If we found an old version of glew that doesn't provide the GLEW::GLEW imported target, this should work instead
-            target_link_libraries(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} ${GLEW_LIBRARIES})
-            target_include_directories(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} ${GLEW_INCLUDE_DIR})
-        endif()
+        target_link_libraries(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} ${GAINPUT_LIBRARY})
+        target_include_directories(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} ${GAINPUT_INCLUDE_DIR})
 
         target_compile_definitions(${YOUR_TARGET} ${INTERFACE_PUBLIC_OR_PRIVATE} -DUSE_${PACKAGE_NAME})
     endif()
