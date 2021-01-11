@@ -137,7 +137,7 @@ public:
 	//	return _internal->getInputDeviceByType();
 	//}
 
-		const std::vector<VRInputDevice*>& getInputDevices();
+		
 
 private:
 

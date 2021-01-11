@@ -413,7 +413,7 @@ minvr_optional_adddir(
   "GAINPUT Plugin"
   "(Requires GFW Plugin)"
   "plugins/Gainput"
-
+)
 #---- Photon Plugin ----
 minvr_optional_adddir(
   WITH_PLUGIN_PHOTON
