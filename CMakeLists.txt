@@ -430,6 +430,14 @@ minvr_optional_adddir(
   "plugins/HoloPlay"
 )
 
+#---- VTK Plugin ----
+minvr_optional_adddir(
+  WITH_PLUGIN_VTK
+  "HoloPlay Plugin"
+  "(Requires HoloPlayCoreSDK from LookingGlassFactory)"
+  "plugins/VTK"
+)
+
 # ---- Plugins that Provide a Window Toolkit ----
 # Save a list of plugins that provide a window toolkit so that we can error out
 # if building a graphics program and no window toolkit is available.
