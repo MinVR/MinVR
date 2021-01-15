@@ -545,6 +545,12 @@ minvr_optional_adddir(
   "tests-interactive/gamepad-with-opengl-shaderpipeline"
 )
 
+minvr_optional_adddir(
+  WITH_VTK_TEST
+  "itest-vtk-with-api"
+  "(Requires Gainput plugin)" 
+  "tests-interactive/vtk-with-api"
+)
 
 
 

@@ -19,12 +19,13 @@
 
 namespace MinVR {
 
-  class VRG3DPlugin : public VRPlugin {
+  class VRVTKPlugin : public VRPlugin {
   public:
-    PLUGIN_API VRG3DPlugin() {
+    PLUGIN_API VRVTKPlugin() {
       //std::cout << "OpenGLPlugin created." << std::endl;
+
     }
-    PLUGIN_API virtual ~VRG3DPlugin() {
+    PLUGIN_API virtual ~VRVTKPlugin() {
       //std::cout << "OpenGLPlugin destroyed." << std::endl;
     }
 
@@ -50,7 +51,7 @@ namespace MinVR {
 extern "C"
 {
   PLUGIN_API MinVR::VRPlugin* createPlugin() {
-    return new MinVR::VRG3DPlugin();
+    return new MinVR::VRVTKPlugin();
   }
 }
 

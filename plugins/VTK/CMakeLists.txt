@@ -25,6 +25,29 @@ set (HEADERFILES
   src/VRVTKApp.h
 )
 
+find_path(VTK_INCLUDE REQUIRED
+	NAMES
+	ExternalVTKWidget.h
+	vtkExternalOpenGLCamera.h
+	HINTS
+	"${VTK_INCLUDE_DIRS}"
+	ENV CPATH # For OSCAR modules at Brown/CCV
+	)
+
+#gainput name must be out of the path
+
+
+find_library(VTK_LIBRARY REQUIRED
+	NAMES
+	vtkCommonCore
+	vtkRenderingExternal
+	vtkRenderingCore
+	HINTS
+    ${VTK_LIBRARIES}
+	ENV LIBRARY_PATH # For OSCAR modules at Brown/CCV
+	)
+
+message(STATUS "VTK_LIBRARY is in ${VTK_LIBRARY}")
 
 # Define the target
 add_library(${PROJECT_NAME} SHARED ${HEADERFILES} ${SOURCEFILES})
@@ -32,6 +55,7 @@ add_library(${PROJECT_NAME} SHARED ${HEADERFILES} ${SOURCEFILES})
 target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>                  # for headers when building
     $<INSTALL_INTERFACE:${INSTALL_PLUGININCLUDE_DEST}/${PROJECT_NAME}>  # for client in install mode
+	${VTK_INCLUDE}
 )
 
 
@@ -40,8 +64,21 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../src>  # for headers when building
 	
     $<INSTALL_INTERFACE:${INSTALL_INCLUDE_DEST}>              # for client in install mode
+	
 )
 target_link_libraries(${PROJECT_NAME} PUBLIC MinVR)
+
+target_link_libraries(${PROJECT_NAME} 
+                     PUBLIC debug  ${VTK_LIBRARY}/vtkCommonCored.lib
+                     PUBLIC debug  ${VTK_LIBRARY}/vtkRenderingExternald.lib
+                     PUBLIC debug ${VTK_LIBRARY}/vtkRenderingCored.lib
+)
+		
+target_link_libraries(${PROJECT_NAME} 
+            PUBLIC optimized ${VTK_LIBRARY}/vtkCommonCore.lib 
+			PUBLIC optimized ${VTK_LIBRARY}/vtkRenderingExternal.lib 
+			PUBLIC optimized ${VTK_LIBRARY}/vtkRenderingCore.lib
+)
 
 
 # Setup dependency on OpenGL:

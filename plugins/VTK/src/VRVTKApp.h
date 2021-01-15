@@ -4,7 +4,8 @@
 #define VRG3DVRAPP_H
 
 #include <api/MinVR.h>
-
+#include <ExternalVTKWidget.h>
+#include <vtkExternalOpenGLCamera.h>
 
 namespace MinVR
 {
@@ -25,8 +26,10 @@ namespace MinVR
 
 
   protected:
-    
-    
+    vtkNew<ExternalVTKWidget> externalVTKWidget;
+    vtkSmartPointer<vtkRenderer> ren;
+    vtkSmartPointer<vtkExternalOpenGLCamera> camera;
+    vtkNew<vtkExternalOpenGLRenderWindow> renWin;
   };
 }
 
