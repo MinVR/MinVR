@@ -39,13 +39,22 @@ AutoBuild_use_package_OpenGL(${PROJECT_NAME} PUBLIC)
 include(AutoBuildGainput)
 AutoBuild_use_package_Gainput(${PROJECT_NAME} PUBLIC)
 
-if(${CMAKE_BUILD_TYPE} EQUAL Debug )
- set(GAINPUT_LIB "MinVR_Gainputd.lib")
-else()
- set(GAINPUT_LIB "MinVR_Gainput.lib")
-endif()
+#if(${CMAKE_BUILD_TYPE} EQUAL Debug )
+# set(GAINPUT_LIB "MinVR_Gainput-d.lib")
+#else()
+# set(GAINPUT_LIB "MinVR_Gainput.lib")
+#endif()
 
-set(MinVR_GAINPUT_LIB ${CMAKE_CURRENT_BINARY_DIR}/../../lib/${GAINPUT_LIB})
+find_library(MinVR_GAINPUT_LIB
+	NAMES
+	MinVR_Gainput
+	MinVR_Gainputd
+	HINTS
+    ${CMAKE_INSTALL_PREFIX}/lib/MinVR-2.0
+	ENV LIBRARY_PATH # For OSCAR modules at Brown/CCV
+	)
+
+#set(MinVR_GAINPUT_LIB ${CMAKE_CURRENT_BINARY_DIR}/../../lib/${GAINPUT_LIB})
 message(STATUS "MinVR_GAINPUT_LIB is ${MinVR_GAINPUT_LIB}") 
 
 if(EXISTS ${MinVR_GAINPUT_LIB})

@@ -16,7 +16,18 @@ To integrate with MinVR, build it enabling the **WITH_GAINPUT** option, and  add
 
 
 
-For guidance, build MinVR with the option **WITH_GAMEPAD_TEST**, and execute the example with the configuration file 
+For guidance, follow the given example building MinVR with the option **WITH_GAMEPAD_TEST**. 
+<br/>
+Because the example requires the plugin installed, you have to build,compile and install MinVR_Gainput. 
+<br/>
+Please follow these steps:
+
+
+1. Build, compile and install MinVR_Gainput plugin.
+2. Run cmake script again, but this time enabling **WITH_GAMEPAD_TEST**.
+3. Compile and run.
+
+and execute the example with the configuration file 
 
 *GamePadController.minvr*
 
