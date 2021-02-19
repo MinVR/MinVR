@@ -61,6 +61,11 @@ find_library(VTK_LIBRARY REQUIRED
 	vtkCommonExecutionModel
 	vtkRenderingCore
 	vtkFiltersSources
+	vtkCommonExecutionModel
+	vtkRenderingOpenGL2
+	vtkCommonMath
+	vtkCommonDataModel
+	vtkCommonColor
 	HINTS
     ${VTK_LIBRARIES}
 	ENV LIBRARY_PATH # For OSCAR modules at Brown/CCV
@@ -93,13 +98,21 @@ target_link_libraries(${PROJECT_NAME}
 					 PUBLIC debug ${VTK_LIBRARY}/vtkRenderingCored.lib
                      PUBLIC debug  ${VTK_LIBRARY}/vtkFiltersSourcesd.lib
 					 PUBLIC debug  ${VTK_LIBRARY}/vtkCommonExecutionModeld.lib
+					 PUBLIC debug ${VTK_LIBRARY}/vtkRenderingOpenGL2d.lib
+	                 PUBLIC debug ${VTK_LIBRARY}/vtkCommonMathd.lib
+	                 PUBLIC debug ${VTK_LIBRARY}/vtkCommonDataModeld.lib
+	                 PUBLIC debug ${VTK_LIBRARY}/vtkCommonColord.lib
 )
 		
 target_link_libraries(${PROJECT_NAME} 
             PUBLIC optimized ${VTK_LIBRARY}/vtkCommonCore.lib 
 			PUBLIC optimized ${VTK_LIBRARY}/vtkRenderingCore.lib
-			PUBLIC debug  ${VTK_LIBRARY}/vtkFiltersSourcesd.lib
-			PUBLIC debug  ${VTK_LIBRARY}/vtkCommonExecutionModeld.lib
+			PUBLIC optimized  ${VTK_LIBRARY}/vtkFiltersSourcesd.lib
+			PUBLIC optimized  ${VTK_LIBRARY}/vtkCommonExecutionModeld.lib
+	        PUBLIC optimized ${VTK_LIBRARY}/vtkRenderingOpenGL2.lib
+	        PUBLIC optimized ${VTK_LIBRARY}/vtkCommonMath.lib
+	        PUBLIC optimized ${VTK_LIBRARY}/vtkCommonDataModel.lib
+	        PUBLIC optimized ${VTK_LIBRARY}/vtkCommonColor.lib
 )
 
 # Setup dependency on OpenGL:

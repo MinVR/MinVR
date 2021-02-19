@@ -36,7 +36,13 @@ using namespace MinVR;
 #include <vtkCubeSource.h>
 
 
+#include <vtkSmartPointer.h>
+#include <vtkMatrix4x4.h>
+#include <vtkUnsignedCharArray.h>
+#include <vtkPolyData.h>
 
+#include <vtkCellData.h>
+#include <vtkNamedColors.h>
 
 #include <vtkAutoInit.h>
 
@@ -65,8 +71,19 @@ public:
 
   void onAnalogChange(const VRAnalogEvent& state) {
     if (state.getName() == "FrameStart") {
+
       double time = state.getValue();
-      actor->RotateY(0.5* time);
+      VRMatrix4 modelMatrix = VRMatrix4::rotationX(0.5f * time);
+      vtkSmartPointer<vtkMatrix4x4> sm = vtkSmartPointer<vtkMatrix4x4>::New();
+      double doublemodel[16];
+      for (int i = 0; i < 16; i++) {
+        doublemodel[i] = modelMatrix.getArray()[i];
+      }
+      sm->DeepCopy(doublemodel);
+      sm->Transpose();
+      //this->actor->GetMatrix(m);
+      this->actor->SetUserMatrix(sm);
+      //actor->RotateY(0.5* time);
     
       return;
     }
@@ -97,15 +114,39 @@ public:
     VRVTKApp::onRenderGraphicsContext(state);
     if (state.isInitialRenderCall()) {
      
-     
-      actor->SetMapper(mapper);
-      ren->AddActor(actor);
-      vtkNew<vtkCubeSource> cs;
-      mapper->SetInputConnection(cs->GetOutputPort());
-      ren->ResetCamera();
+    
+      vtkSmartPointer<vtkNamedColors> colors =
+        vtkSmartPointer<vtkNamedColors>::New();
+      vtkSmartPointer<vtkUnsignedCharArray> face_colors =
+        vtkSmartPointer<vtkUnsignedCharArray>::New();
+      face_colors->SetName("colors");
+      face_colors->SetNumberOfComponents(3);
+      auto face_x_plus = colors->GetColor3ub("Red").GetData();
+      auto face_x_minus = colors->GetColor3ub("Green").GetData();
+      auto face_y_plus = colors->GetColor3ub("Blue").GetData();
+      auto face_y_minus = colors->GetColor3ub("Yellow").GetData();
+      auto face_z_plus = colors->GetColor3ub("Cyan").GetData();
+      auto face_z_minus = colors->GetColor3ub("Magenta").GetData();
+      face_colors->InsertNextTypedTuple(face_x_minus);
+      face_colors->InsertNextTypedTuple(face_x_plus);
+      face_colors->InsertNextTypedTuple(face_y_minus);
+      face_colors->InsertNextTypedTuple(face_y_plus);
+      face_colors->InsertNextTypedTuple(face_z_minus);
+      face_colors->InsertNextTypedTuple(face_z_plus);
 
       
+      vtkSmartPointer<vtkCubeSource> cubeSource = vtkSmartPointer<vtkCubeSource>::New();
+      cubeSource->Update();
+
+      cubeSource->GetOutput()->GetCellData()->SetScalars(face_colors);
+      cubeSource->Update();
+
+      mapper->SetInputData(cubeSource->GetOutput());
+      mapper->Update();
+      ren->ResetCamera();
       
+      actor->SetMapper(mapper);
+      ren->AddActor(actor);
     }
   }
 
